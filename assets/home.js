@@ -1,0 +1,218 @@
+/* siteupdown.com — home page: checker, Global Pulse map, watchlist, gaming list, live feed. */
+(function () {
+  'use strict';
+  var S = window.SUD, $ = S.$, esc = S.esc;
+  var W = 1000, MAP = window.SUD_MAP, H = Math.round(W * 142 / 360 * 10) / 10;
+  var state = { host: '', share: '', timer: null, runId: 0, last: '' };
+  var BIG = { up: 'Up for everyone', partial: 'Reachable from some places', 'down-everywhere': 'Down for everyone', blocked: 'Blocking automated checks', down: 'Confirmed down', timeout: 'Timed out', inconclusive: 'Inconclusive' };
+
+  /* ---------- map ---------- */
+  var svg = $('#map-svg'), tip = $('#tip'), mwrap = $('#map');
+  function px(lon, lat) { return [(lon + 180) / 360 * W, (84 - lat) / 142 * (W * 142 / 360)]; }
+  function drawLand() {
+    if (!MAP || !svg) return;
+    var cell = W * MAP.cell / 360, s = cell * 0.62, o = (cell - s) / 2, p = '';
+    MAP.runs.forEach(function (runs, r) {
+      runs.forEach(function (run) { for (var c = run[0]; c < run[0] + run[1]; c++) p += 'M' + (c * cell + o).toFixed(1) + ' ' + (r * cell + o).toFixed(1) + 'h' + s.toFixed(1) + 'v' + s.toFixed(1) + 'h-' + s.toFixed(1) + 'z'; });
+    });
+    svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+    svg.innerHTML = '<path class="map-land" d="' + p + '"/><g id="markers"></g>';
+  }
+  var LBL = { ok: 'Responded', blocked: 'Blocked', error: 'Server error', none: 'No connection' };
+  function drawProbes(probes) {
+    var g = $('#markers'); if (!g) return;
+    var out = '';
+    probes.forEach(function (p, i) {
+      if (p.lat == null || p.lon == null) return;
+      var xy = px(p.lon, p.lat), st = p.state || 'none';
+      var tx = esc((p.city ? p.city + ', ' : '') + p.country) + ' · ' + LBL[st] + (p.code ? ' (' + p.code + ')' : '') + (p.ms != null ? ' · ' + p.ms + ' ms' : '');
+      out += '<g class="pr" tabindex="0" role="img" aria-label="' + tx + '" data-i="' + i + '" data-x="' + (xy[0] / W * 100).toFixed(2) + '" data-y="' + (xy[1] / H * 100).toFixed(2) + '" data-t="' + tx + '">'
+        + '<circle class="mk-ring ' + st + '" cx="' + xy[0].toFixed(1) + '" cy="' + xy[1].toFixed(1) + '" r="7"/>'
+        + '<circle class="mk ' + st + '" cx="' + xy[0].toFixed(1) + '" cy="' + xy[1].toFixed(1) + '" r="7"/></g>';
+    });
+    g.innerHTML = out;
+    S.$$('.pr', g).forEach(function (n) {
+      var show = function () { tip.textContent = n.getAttribute('data-t'); tip.style.left = n.getAttribute('data-x') + '%'; tip.style.top = n.getAttribute('data-y') + '%'; tip.hidden = false; };
+      n.addEventListener('mouseenter', show); n.addEventListener('focus', show); n.addEventListener('click', show);
+      n.addEventListener('mouseleave', function () { tip.hidden = true; }); n.addEventListener('blur', function () { tip.hidden = true; });
+    });
+  }
+  function mapMsg(t) { var m = $('#map-empty'); if (!m) return; m.hidden = !t; if (t) m.firstElementChild.textContent = t; }
+
+  /* ---------- verdict panel ---------- */
+  function setPanel(o) {
+    $('#v-pill').innerHTML = S.pill(o.key || 'pending');
+    $('#v-big').textContent = o.big || 'Waiting for probes';
+    $('#v-sub').textContent = o.sub || 'No address checked yet';
+    $('#s-reach').textContent = o.reach || '0/12';
+    $('#s-med').textContent = o.med || '—';
+    $('#s-at').textContent = o.at || '—';
+    $('#facts').innerHTML = o.facts || '';
+    $('#facts').hidden = !o.facts;
+    $('#run-again').hidden = !o.again;
+    $('#wl-add').hidden = !o.again;
+    $('#share').hidden = !o.share;
+    $('#pulse-status').textContent = o.status || 'Standby';
+  }
+  function factsFor(r) {
+    var f = '';
+    if (r.http_code) f += '<div>Server check: <b>HTTP ' + esc(r.http_code) + '</b> in <b>' + esc(S.ms(r.ms)) + '</b>' + (r.redirected ? ' (after a redirect)' : '') + '</div>';
+    if (r.note) f += '<div>' + esc(r.note) + '</div>';
+    if (r.title) f += '<div>Title: <b>' + esc(r.title) + '</b></div>';
+    (r.headings || []).forEach(function (h) { f += '<div>' + esc(h) + '</div>'; });
+    if (r.server) f += '<div>Server: <b>' + esc(r.server) + '</b></div>';
+    return f;
+  }
+  function renderResult(host, r, reg, verdict, at, share) {
+    var key = (verdict && verdict.key) || r.verdict;
+    var sub = (verdict && verdict.text) || r.note || '';
+    var done = reg && reg.done;
+    setPanel({
+      key: key, big: host + ' — ' + (BIG[key] || BIG[r.verdict] || 'Checked'), sub: sub,
+      reach: reg ? reg.reachable + '/' + (reg.total || 12) : '0/12', med: reg && reg.median_ms != null ? S.ms(reg.median_ms) : '—',
+      at: S.when(at), facts: factsFor(r), again: true, share: !!(done && reg.total > 0 && share),
+      status: done ? 'Complete' : 'Probing…'
+    });
+  }
+
+  /* ---------- run a check ---------- */
+  function saveRecent(h) { var a = JSON.parse(S.store.get('sud-recent') || '[]').filter(function (x) { return x !== h; }); a.unshift(h); S.store.set('sud-recent', JSON.stringify(a.slice(0, 6))); drawRecent(); }
+  function drawRecent() {
+    var a; try { a = JSON.parse(S.store.get('sud-recent') || '[]'); } catch (e) { a = []; }
+    var w = $('#recent-wrap'); if (!w) return; w.hidden = !a.length;
+    $('#recent-chips').innerHTML = a.map(function (h) { return '<button class="chip" type="button" data-h="' + esc(h) + '">' + esc(h) + '</button>'; }).join('')
+      + '<button class="chip dashed" type="button" id="recent-clear">✕ Clear</button>';
+  }
+  function setBusy(b) { var x = $('#chk-btn'); x.disabled = b; x.firstElementChild.textContent = b ? 'Checking…' : 'Check website'; }
+  function run(addr) {
+    addr = (addr || '').trim();
+    var err = $('#chk-err'); err.textContent = '';
+    if (!addr) { err.textContent = 'Please enter a website address.'; $('#chk-input').focus(); return; }
+    clearTimeout(state.timer);
+    var id = ++state.runId;
+    setBusy(true); state.last = addr;
+    setPanel({ key: 'pending', big: 'Checking ' + addr + '…', sub: 'Asking our server first, then probes around the world.', status: 'Running' });
+    drawProbes([]); mapMsg('Dispatching probes…'); tip.hidden = true;
+    $('#global-pulse').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    S.api('check.php', { address: addr, thorough: $('#chk-thorough').checked }).then(function (j) {
+      if (id !== state.runId) return;
+      state.host = j.result.host; state.share = j.share; state.result = j.result;
+      saveRecent(j.result.host); refreshFeed();
+      renderResult(j.result.host, j.result, null, null, j.checked_at, j.share);
+      setBusy(false);
+      return S.api('regional.php', { share: j.share }).then(function () { poll(id, 0); }).catch(function (e) {
+        mapMsg('The worldwide probes are busy, so this result is from our server only.'); finish(id, e.message);
+      });
+    }).catch(function (e) {
+      if (id !== state.runId) return;
+      setBusy(false); err.textContent = e.message; mapMsg(''); setPanel({ status: 'Standby' });
+    });
+  }
+  function poll(id, n) {
+    if (id !== state.runId) return;
+    fetch('/api/regional.php?share=' + state.share, { credentials: 'same-origin' }).then(function (r) { return r.json(); }).then(function (j) {
+      if (id !== state.runId) return;
+      var reg = j.regional;
+      if (reg && reg.probes && reg.probes.length) { mapMsg(''); drawProbes(reg.probes); }
+      if (reg && reg.done) { renderResult(state.host, state.result, reg, j.verdict, reg.measured_at, state.share); finish(id); return; }
+      if (reg) renderResult(state.host, state.result, reg, j.verdict, reg.measured_at, state.share);
+      if (n > 32) { mapMsg('The probes took too long. This is a partial picture.'); finish(id); return; }
+      state.timer = setTimeout(function () { poll(id, n + 1); }, 1500);
+    }).catch(function () { if (n > 4) finish(id); else state.timer = setTimeout(function () { poll(id, n + 1); }, 2000); });
+  }
+  function finish(id) {
+    if (id !== state.runId) return;
+    if (S.user && state.share) S.api('history.php', { action: 'add', share: state.share }).catch(function () { /* history is optional */ });
+    refreshFeed();
+  }
+
+  /* ---------- saved / shared result ---------- */
+  function loadShared(sid) {
+    fetch('/api/share.php?id=' + encodeURIComponent(sid)).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error); return j; }); }).then(function (j) {
+      state.host = j.host; state.share = sid; state.result = j.result; $('#chk-input').value = j.host;
+      renderResult(j.host, j.result, j.regional, j.verdict, j.checked_at, sid);
+      if (j.regional && j.regional.probes) { mapMsg(''); drawProbes(j.regional.probes); } else mapMsg('This shared check has no regional map.');
+      $('#pulse-status').textContent = 'Saved result';
+      $('#global-pulse').scrollIntoView({ block: 'start' });
+    }).catch(function (e) { S.toast(e.message || 'That shared check could not be loaded.', true); });
+  }
+
+  /* ---------- share ---------- */
+  function initShare() {
+    var box = $('#share'); if (!box) return;
+    box.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-share]'); if (!b || !state.share) return;
+      var url = location.origin + '/s/' + state.share, text = state.host + ' — is it down or just me? Checked from 12 places worldwide.';
+      var k = b.getAttribute('data-share');
+      if (k === 'copy') { (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () { S.toast('Link copied'); }, function () { window.prompt('Copy this link', url); }); }
+      else if (k === 'native') { navigator.share({ title: 'siteupdown.com', text: text, url: url }).catch(function () { /* cancelled */ }); }
+      else { var u = { x: 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(url), fb: 'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(url), wa: 'https://wa.me/?text=' + encodeURIComponent(text + ' ' + url) }[k]; window.open(u, '_blank', 'noopener'); }
+    });
+    if (navigator.share) $('[data-share=native]').hidden = false;
+  }
+
+  /* ---------- watch / top / gaming / feed ---------- */
+  function siteCard(x, extra) {
+    return '<button class="site" type="button" data-h="' + esc(x.host) + '"><div><b>' + esc(x.name) + '</b><small>' + esc(x.host) + '</small></div><div class="meta">' + S.pill(x.verdict || 'pending')
+      + '<span class="ms">' + (x.ms != null ? esc(S.ms(x.ms)) : '') + '</span></div>' + (extra || '') + '</button>';
+  }
+  var topItems = [], topFilter = 'all';
+  function drawTop() {
+    var g = $('#top-grid');
+    var items = topItems.filter(function (x) { return topFilter === 'all' || (x.verdict && x.verdict !== 'up'); });
+    g.innerHTML = items.length ? items.map(function (x) { return siteCard(x); }).join('') : '<div class="skeleton">' + (topFilter === 'all' ? 'Sweeping the watchlist…' : 'No issues right now. Every site we have checked is responding.') + '</div>';
+  }
+  function loadTop() {
+    fetch('/api/top.php').then(function (r) { return r.json(); }).then(function (j) {
+      topItems = j.items || []; drawTop();
+      $('#top-updated').textContent = j.updated ? 'Last sweep ' + S.ago(j.updated) + '.' : 'The first sweep is on its way.';
+    }).catch(function () { $('#top-grid').innerHTML = '<div class="skeleton">Could not load the watchlist. Please refresh.</div>'; });
+  }
+  var gq = '', gcat = 'All', gpage = 1, gtimer;
+  function loadGaming() {
+    var u = '/api/gaming.php?page=' + gpage + '&cat=' + encodeURIComponent(gcat) + '&q=' + encodeURIComponent(gq);
+    fetch(u).then(function (r) { return r.json(); }).then(function (j) {
+      gpage = j.page;
+      $('#g-cats').innerHTML = j.cats.map(function (c) { return '<button class="chip" type="button" data-c="' + esc(c) + '" aria-pressed="' + (c === gcat) + '">' + esc(c) + '</button>'; }).join('');
+      $('#g-count').textContent = j.total + (j.total === j.all_total ? ' services' : ' of ' + j.all_total + ' services') + ' · page ' + j.page + ' of ' + j.pages;
+      $('#g-grid').innerHTML = j.items.length ? j.items.map(function (x) { return siteCard(x, ''); }).join('') : '<div class="skeleton">No services match that search.</div>';
+      $('#g-prev').disabled = j.page <= 1; $('#g-next').disabled = j.page >= j.pages;
+    }).catch(function () { $('#g-grid').innerHTML = '<div class="skeleton">Could not load gaming services. Please refresh.</div>'; });
+  }
+  function refreshFeed() {
+    fetch('/api/recent.php').then(function (r) { return r.json(); }).then(function (j) {
+      var rows = (j.items || []).map(function (x) {
+        return '<tr><td><a href="/?q=' + encodeURIComponent(x.host) + '" data-h="' + esc(x.host) + '">' + esc(x.host) + '</a></td><td>' + S.pill(x.verdict) + '</td><td>' + esc(S.ago(x.at)) + '</td></tr>';
+      }).join('');
+      $('#feed-body').innerHTML = rows || '<tr><td colspan="3" class="skeleton">No checks yet. Be the first.</td></tr>';
+    }).catch(function () { $('#feed-body').innerHTML = '<tr><td colspan="3" class="skeleton">Could not load recent checks.</td></tr>'; });
+  }
+
+  /* ---------- wiring ---------- */
+  function go(h) { $('#chk-input').value = h; run(h); }
+  document.addEventListener('DOMContentLoaded', function () {
+    drawLand(); setPanel({}); drawRecent(); initShare();
+    $('#chk-form').addEventListener('submit', function (e) { e.preventDefault(); run($('#chk-input').value); });
+    document.addEventListener('click', function (e) {
+      var h = e.target.closest('[data-h]');
+      if (h && !h.closest('#recent-clear')) { e.preventDefault(); go(h.getAttribute('data-h')); return; }
+      if (e.target.closest('#recent-clear')) { S.store.del('sud-recent'); drawRecent(); }
+    });
+    $('#run-again').addEventListener('click', function () { if (state.host) go(state.host); });
+    $('#wl-add').addEventListener('click', function () {
+      if (!S.user) { location.href = '/login?next=' + encodeURIComponent('/'); return; }
+      S.api('watch.php', { action: 'add', address: state.host }).then(function () { S.toast(state.host + ' added to your watchlist'); }).catch(function (e) { S.toast(e.message, true); });
+    });
+    S.$$('[data-f]').forEach(function (b) { b.addEventListener('click', function () { topFilter = b.getAttribute('data-f'); S.$$('[data-f]').forEach(function (x) { x.setAttribute('aria-pressed', x === b); }); drawTop(); }); });
+    $('#g-q').addEventListener('input', function (e) { clearTimeout(gtimer); gtimer = setTimeout(function () { gq = e.target.value.trim(); gpage = 1; loadGaming(); }, 250); });
+    $('#g-cats').addEventListener('click', function (e) { var c = e.target.closest('[data-c]'); if (c) { gcat = c.getAttribute('data-c'); gpage = 1; loadGaming(); } });
+    $('#g-prev').addEventListener('click', function () { gpage--; loadGaming(); $('#online-gaming').scrollIntoView({ behavior: 'smooth' }); });
+    $('#g-next').addEventListener('click', function () { gpage++; loadGaming(); $('#online-gaming').scrollIntoView({ behavior: 'smooth' }); });
+    loadTop(); loadGaming(); refreshFeed();
+    setInterval(function () { if (!document.hidden) { loadTop(); loadGaming(); refreshFeed(); } }, 60000);
+    var p = new URLSearchParams(location.search);
+    var pm = location.pathname.match(/^\/s\/([a-f0-9]{10})\/?$/), rid = (pm && pm[1]) || p.get('r');
+    if (rid && /^[a-f0-9]{10}$/.test(rid)) loadShared(rid);
+    else if (p.get('q')) { $('#chk-input').value = p.get('q'); run(p.get('q')); }
+  });
+})();

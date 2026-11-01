@@ -1,0 +1,40 @@
+# siteupdown.com — Apache/LiteSpeed rules (Hostinger)
+Options -Indexes
+DirectoryIndex index.html
+
+# Keep source, tools and secrets out of public view.
+RedirectMatch 404 ^/(_tools|_src|\.git|\.github|README|DEPLOY)
+RedirectMatch 404 ^/sud-config
+RedirectMatch 404 ^/api/_
+
+RewriteEngine On
+# Always HTTPS; www.siteupdown.com goes to siteupdown.com.
+RewriteCond %{HTTPS} off
+RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+RewriteCond %{HTTP_HOST} ^www\.siteupdown\.com$ [NC]
+RewriteRule ^ https://siteupdown.com%{REQUEST_URI} [R=301,L]
+
+# Share links: /s/abc123... shows a saved check on the home page.
+RewriteRule ^s/([a-f0-9]{10})/?$ /index.html?r=$1 [L,QSA]
+
+# Clean URLs.
+RewriteRule ^(login|account|monitor|privacy|legal|contact)/?$ /$1.html [L]
+RewriteCond %{THE_REQUEST} \s/+(login|account|monitor|privacy|legal|contact|index)\.html[\s?]
+RewriteRule ^(login|account|monitor|privacy|legal|contact|index)\.html$ /$1 [R=301,L]
+RewriteRule ^index$ / [R=301,L]
+
+ErrorDocument 404 /404.html
+
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "geolocation=(), camera=(), microphone=()"
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self' https://accounts.google.com; style-src 'self' 'unsafe-inline' https://accounts.google.com; img-src 'self' data: https:; connect-src 'self' https://accounts.google.com; frame-src https://accounts.google.com; base-uri 'self'; form-action 'self'; object-src 'none'"
+  <FilesMatch "\.(css|js|svg|png)$">
+    Header set Cache-Control "public, max-age=604800"
+  </FilesMatch>
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>

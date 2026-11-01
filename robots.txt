@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /login
+Disallow: /account
+Sitemap: https://siteupdown.com/sitemap.xml

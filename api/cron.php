@@ -1,0 +1,39 @@
+<?php
+// Re-probes the watched sites. Run every 5 minutes from hPanel > Advanced > Cron Jobs:
+//   */5 * * * *  /usr/bin/php /home/USER/domains/siteupdown.com/public_html/api/cron.php
+// If you cannot use cron, call https://siteupdown.com/api/cron.php?key=YOUR_CRON_KEY from a free uptime pinger.
+declare(strict_types=1);
+require __DIR__ . '/_boot.php';
+require __DIR__ . '/_probe.php';
+require __DIR__ . '/_sites.php';
+$c = config();
+if (PHP_SAPI !== 'cli') {
+    $key = (string)($_GET['key'] ?? '');
+    if (!$c || empty($c['cron_key']) || !hash_equals((string)$c['cron_key'], $key)) out(403, ['error' => 'Forbidden.']);
+    @set_time_limit(100);
+    ignore_user_abort(true);
+}
+$pdo = db();
+$batch = (int)($c['cron_batch'] ?? 40);
+$hosts = [];
+foreach (top_sites() as $s) $hosts[$s[0]] = 1;
+foreach (gaming_sites() as $s) $hosts[$s[0]] = 1;
+foreach ($pdo->query('SELECT DISTINCT host FROM watchlist')->fetchAll() as $r) $hosts[$r['host']] = 1;
+$st = [];
+foreach ($pdo->query('SELECT host, checked_at FROM site_status')->fetchAll() as $r) $st[$r['host']] = $r['checked_at'];
+$list = array_keys($hosts);
+usort($list, fn($a, $b) => strcmp($st[$a] ?? '', $st[$b] ?? '')); // never-checked first, then the stalest
+$list = array_slice($list, 0, $batch);
+$up = $pdo->prepare('REPLACE INTO site_status (host, verdict, http_code, ms, checked_at) VALUES (?,?,?,?,?)');
+$n = 0; $t0 = time();
+foreach ($list as $h) {
+    if (time() - $t0 > 85) break;
+    $r = check_site($h, '/', false, true);
+    $up->execute([$h, $r['verdict'], $r['http_code'], $r['ms'], sql_now()]);
+    $n++;
+}
+// Housekeeping: drop old feed rows and expired share links.
+$pdo->prepare('DELETE FROM checks WHERE checked_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - 3 * 86400)]);
+$pdo->prepare('DELETE FROM shares WHERE created_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - 30 * 86400)]);
+$pdo->prepare('DELETE FROM resets WHERE expires_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - 86400)]);
+if (PHP_SAPI === 'cli') echo "Probed $n sites\n"; else out(200, ['probed' => $n]);
