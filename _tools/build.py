@@ -221,7 +221,7 @@ def login():
 <p class="card" id="off" hidden>Accounts are not switched on yet. Please check back soon.</p>
 <div class="lg-card" id="card">
 <div class="seg" hidden id="seg" role="tablist"><button type="button" role="tab" data-v="signin" aria-selected="true">Sign in</button><button type="button" role="tab" data-v="create" aria-selected="false">Create account</button></div>
-<div class="stack" id="gwrap" hidden><div id="gbtn"></div><p class="err" id="g-err" role="alert"></p><div class="or">or use your email</div></div>
+<div class="stack" id="gwrap"><div id="gbtn"></div><p class="err" id="g-err" role="alert"></p><div class="or">or use your email</div></div>
 
 <form class="stack" id="v-signin" novalidate>
 <label class="fl"><span>Email</span><div class="field"><input name="email" type="email" autocomplete="email" placeholder="you@example.com" aria-label="Email" required></div></label>

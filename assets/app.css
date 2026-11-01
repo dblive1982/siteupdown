@@ -369,3 +369,6 @@ section[id],[id=global-pulse]{scroll-margin-top:84px}
 :root[data-theme=light] .site-head{background:rgba(243,248,243,.9)}
 .hl,h1 .dot,h2 .dot{color:var(--hl)}
 .hl{text-decoration-color:var(--hl)}
+/* no layout jump while Google's button loads */
+#gbtn{min-height:44px;width:100%;display:flex;justify-content:center;align-items:center}
+#gwrap[hidden]{display:none}
