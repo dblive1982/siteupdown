@@ -39,6 +39,39 @@
   }
   function mapMsg(t) { var m = $('#map-empty'); if (!m) return; m.hidden = !t; if (t) m.firstElementChild.textContent = t; }
 
+
+  /* ---------- charts under the map ---------- */
+  var COL = { ok: 'var(--green)', blocked: 'var(--amber)', error: 'var(--red)', none: 'var(--grey)' };
+  function chartsClear() { ['ch-bars', 'ch-donut', 'ch-range'].forEach(function (id) { var e = $('#' + id); if (e) { e.className = 'ch-empty'; e.textContent = 'Run a check to see this chart.'; } }); }
+  function drawCharts(probes, res) {
+    if (!probes || !probes.length) { chartsClear(); return; }
+    var n = probes.length, byState = { ok: 0, blocked: 0, error: 0, none: 0 };
+    probes.forEach(function (p) { byState[p.state || 'none']++; });
+    /* 1. response time by region */
+    var withMs = probes.filter(function (p) { return p.ms != null; }), max = Math.max.apply(null, withMs.map(function (p) { return p.ms; }).concat([res && res.ms || 0, 100]));
+    var sorted = probes.slice().sort(function (a, b) { return (a.ms == null ? 1e9 : a.ms) - (b.ms == null ? 1e9 : b.ms); });
+    var bars = sorted.map(function (p) {
+      var st = p.state || 'none', w = p.ms != null ? Math.max(3, p.ms / max * 100) : 0;
+      return '<div class="br"><span class="bl">' + esc(p.country || '?') + '</span><span class="bt"><i style="width:' + w.toFixed(1) + '%;background:' + COL[st] + '"></i></span><span class="bv">' + (p.ms != null ? esc(S.ms(p.ms)) : (st === 'none' ? 'no reply' : esc(LBL[st]))) + '</span></div>';
+    }).join('');
+    var b = $('#ch-bars'); b.className = 'bars'; b.innerHTML = bars;
+    /* 2. outcomes donut */
+    var R = 52, C = 2 * Math.PI * R, off = 0, segs = '', keys = ['ok', 'blocked', 'error', 'none'];
+    keys.forEach(function (k) { if (!byState[k]) return; var len = byState[k] / n * C; segs += '<circle r="' + R + '" cx="70" cy="70" fill="none" stroke="' + COL[k] + '" stroke-width="18" stroke-dasharray="' + len.toFixed(2) + ' ' + (C - len).toFixed(2) + '" stroke-dashoffset="' + (-off).toFixed(2) + '" transform="rotate(-90 70 70)"/>'; off += len; });
+    var leg = keys.map(function (k) { return '<li><i style="background:' + COL[k] + '"></i>' + LBL[k] + '<b>' + byState[k] + '</b></li>'; }).join('');
+    var d = $('#ch-donut'); d.className = 'donut';
+    d.innerHTML = '<svg viewBox="0 0 140 140" role="img" aria-label="' + byState.ok + ' of ' + n + ' probes responded"><circle r="' + R + '" cx="70" cy="70" fill="none" stroke="var(--line)" stroke-width="18"/>' + segs + '<text x="70" y="68" text-anchor="middle" class="dn">' + byState.ok + '/' + n + '</text><text x="70" y="86" text-anchor="middle" class="dl">responded</text></svg><ul>' + leg + '</ul>';
+    /* 3. speed range */
+    var r = $('#ch-range');
+    if (!withMs.length) { r.className = 'ch-empty'; r.textContent = 'No regional response times to compare.'; return; }
+    var ms = withMs.map(function (p) { return p.ms; }).sort(function (a, c) { return a - c; }), mid = ms[Math.floor(ms.length / 2)], lo = ms[0], hi = ms[ms.length - 1], top = Math.max(hi, res && res.ms || 0, 100);
+    var pos = function (v) { return (v / top * 100).toFixed(1) + '%'; };
+    var srv = res && res.ms != null ? '<span class="tick" title="Our server" style="left:' + pos(res.ms) + '"></span>' : '';
+    r.className = 'range';
+    r.innerHTML = '<div class="track"><i class="span" style="left:' + pos(lo) + ';width:' + (((hi - lo) / top) * 100).toFixed(1) + '%"></i><span class="pin" style="left:' + pos(mid) + '"><b>Median</b>' + esc(S.ms(mid)) + '</span>' + srv + '</div>'
+      + '<dl><dt>Fastest</dt><dd>' + esc(S.ms(lo)) + '</dd><dt>Median</dt><dd>' + esc(S.ms(mid)) + '</dd><dt>Slowest</dt><dd>' + esc(S.ms(hi)) + '</dd>' + (res && res.ms != null ? '<dt class="srv">Our server</dt><dd>' + esc(S.ms(res.ms)) + '</dd>' : '') + '</dl>';
+  }
+
   /* ---------- verdict panel ---------- */
   function setPanel(o) {
     $('#v-pill').innerHTML = S.pill(o.key || 'pending');
@@ -46,7 +79,7 @@
     $('#v-sub').textContent = o.sub || 'No address checked yet';
     $('#s-reach').textContent = o.reach || '0/12';
     $('#s-med').textContent = o.med || '—';
-    $('#s-at').textContent = o.at || '—';
+    $('#s-at').textContent = o.at || '—'; if ($('#s-at').nextElementSibling) $('#s-at').nextElementSibling.textContent = o.at ? 'your local time' : 'Not run yet';
     $('#facts').innerHTML = o.facts || '';
     $('#facts').hidden = !o.facts;
     $('#run-again').hidden = !o.again;
@@ -102,7 +135,7 @@
     var id = ++state.runId;
     setBusy(true); state.last = addr;
     setPanel({ key: 'pending', big: 'Checking ' + addr + '…', sub: 'Asking our server first, then probes around the world.', status: 'Running' });
-    drawProbes([]); mapMsg('Dispatching probes…'); tip.hidden = true;
+    drawProbes([]); chartsClear(); mapMsg('Dispatching probes…'); tip.hidden = true;
     $('#global-pulse').scrollIntoView({ behavior: 'smooth', block: 'start' });
     S.api('check.php', { address: addr, thorough: $('#chk-thorough').checked }).then(function (j) {
       if (id !== state.runId) return;
@@ -123,7 +156,7 @@
     fetch('/api/regional.php?share=' + state.share, { credentials: 'same-origin' }).then(function (r) { return r.json(); }).then(function (j) {
       if (id !== state.runId) return;
       var reg = j.regional;
-      if (reg && reg.probes && reg.probes.length) { mapMsg(''); drawProbes(reg.probes); }
+      if (reg && reg.probes && reg.probes.length) { mapMsg(''); drawProbes(reg.probes); drawCharts(reg.probes, state.result); }
       if (reg && reg.done) { renderResult(state.host, state.result, reg, j.verdict, reg.measured_at, state.share); finish(id); return; }
       if (reg) renderResult(state.host, state.result, reg, j.verdict, reg.measured_at, state.share);
       if (n > 32) { mapMsg('The probes took too long. This is a partial picture.'); finish(id); return; }
@@ -141,7 +174,7 @@
     fetch('/api/share.php?id=' + encodeURIComponent(sid)).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error); return j; }); }).then(function (j) {
       state.host = j.host; state.share = sid; state.result = j.result; $('#chk-input').value = j.host;
       renderResult(j.host, j.result, j.regional, j.verdict, j.checked_at, sid);
-      if (j.regional && j.regional.probes) { mapMsg(''); drawProbes(j.regional.probes); } else mapMsg('This shared check has no regional map.');
+      if (j.regional && j.regional.probes) { mapMsg(''); drawProbes(j.regional.probes); drawCharts(j.regional.probes, j.result); } else mapMsg('This shared check has no regional map.');
       $('#pulse-status').textContent = 'Saved result';
       $('#global-pulse').scrollIntoView({ block: 'start' });
     }).catch(function (e) { S.toast(e.message || 'That shared check could not be loaded.', true); });
@@ -162,20 +195,26 @@
   }
 
   /* ---------- watch / top / gaming / feed ---------- */
-  function siteCard(x, extra) {
-    return '<button class="site" type="button" data-h="' + esc(x.host) + '"><div><b>' + esc(x.name) + '</b><small>' + esc(x.host) + '</small></div><div class="meta">' + S.pill(x.verdict || 'pending')
-      + '<span class="ms">' + (x.ms != null ? esc(S.ms(x.ms)) : '') + '</span></div>' + (extra || '') + '</button>';
+  function siteCard(x) {
+    var v = x.verdict, cls = !v ? 'none' : (v === 'up' ? 'up' : (v === 'down' || v === 'timeout' || !x.code ? 'bad' : 'warn'));
+    var say = !v ? 'has not been checked yet.' : v === 'up' ? 'is up.' : v === 'down' ? 'is down.' : v === 'timeout' ? 'timed out.' : x.code ? 'answered, but blocks automated checks.' : 'is not responding.';
+    var right = x.code ? 'HTTP ' + esc(x.code) + (x.ms != null ? ' · ' + esc(S.ms(x.ms)) : '') : (v ? 'No status' : '');
+    return '<div class="row ' + cls + '"><div class="rl"><b>' + esc(x.name) + '</b><span class="st"><i></i>' + esc(x.host) + ' ' + say + (x.at ? ' <em>Checked ' + esc(S.ago(x.at)) + '</em>' : '') + '</span></div>'
+      + '<div class="rr"><span class="code">' + right + '</span><button class="go" type="button" data-h="' + esc(x.host) + '" aria-label="Check ' + esc(x.name) + '" title="Check ' + esc(x.name) + '">↗</button></div></div>';
   }
   var topItems = [], topFilter = 'all';
   function drawTop() {
     var g = $('#top-grid');
     var items = topItems.filter(function (x) { return topFilter === 'all' || (x.verdict && x.verdict !== 'up'); });
+    var bad = topItems.filter(function (x) { return x.verdict && x.verdict !== 'up'; }).length, got = topItems.filter(function (x) { return x.verdict; });
+    $('#f-issues').textContent = 'Issues (' + bad + ')';
+    $('#top-count').textContent = got.length ? (got.length - bad) + '/' + got.length + ' answering' : '';
     g.innerHTML = items.length ? items.map(function (x) { return siteCard(x); }).join('') : '<div class="skeleton">' + (topFilter === 'all' ? 'Sweeping the watchlist…' : 'No issues right now. Every site we have checked is responding.') + '</div>';
   }
   function loadTop() {
     fetch('/api/top.php').then(function (r) { return r.json(); }).then(function (j) {
       topItems = j.items || []; drawTop();
-      $('#top-updated').textContent = j.updated ? 'Last sweep ' + S.ago(j.updated) + '.' : 'The first sweep is on its way.';
+      $('#top-updated').textContent = j.updated ? 'A snapshot, not continuous uptime monitoring. Last sweep ' + S.ago(j.updated) + '.' : 'The first sweep is on its way.';
     }).catch(function () { $('#top-grid').innerHTML = '<div class="skeleton">Could not load the watchlist. Please refresh.</div>'; });
   }
   var gq = '', gcat = 'All', gpage = 1, gtimer;
@@ -185,7 +224,7 @@
       gpage = j.page;
       $('#g-cats').innerHTML = j.cats.map(function (c) { return '<button class="chip" type="button" data-c="' + esc(c) + '" aria-pressed="' + (c === gcat) + '">' + esc(c) + '</button>'; }).join('');
       $('#g-count').textContent = j.total + (j.total === j.all_total ? ' services' : ' of ' + j.all_total + ' services') + ' · page ' + j.page + ' of ' + j.pages;
-      $('#g-grid').innerHTML = j.items.length ? j.items.map(function (x) { return siteCard(x, ''); }).join('') : '<div class="skeleton">No services match that search.</div>';
+      $('#g-grid').innerHTML = j.items.length ? j.items.map(function (x) { return siteCard(x); }).join('') : '<div class="skeleton">No services match that search.</div>';
       $('#g-prev').disabled = j.page <= 1; $('#g-next').disabled = j.page >= j.pages;
     }).catch(function () { $('#g-grid').innerHTML = '<div class="skeleton">Could not load gaming services. Please refresh.</div>'; });
   }
@@ -214,6 +253,7 @@
       S.api('watch.php', { action: 'add', address: state.host }).then(function () { S.toast(state.host + ' added to your watchlist'); }).catch(function (e) { S.toast(e.message, true); });
     });
     S.$$('[data-f]').forEach(function (b) { b.addEventListener('click', function () { topFilter = b.getAttribute('data-f'); S.$$('[data-f]').forEach(function (x) { x.setAttribute('aria-pressed', x === b); }); drawTop(); }); });
+    var rf = $('#top-refresh'); if (rf) rf.addEventListener('click', function () { loadTop(); });
     $('#g-q').addEventListener('input', function (e) { clearTimeout(gtimer); gtimer = setTimeout(function () { gq = e.target.value.trim(); gpage = 1; loadGaming(); }, 250); });
     $('#g-cats').addEventListener('click', function (e) { var c = e.target.closest('[data-c]'); if (c) { gcat = c.getAttribute('data-c'); gpage = 1; loadGaming(); } });
     $('#g-prev').addEventListener('click', function () { gpage--; loadGaming(); $('#online-gaming').scrollIntoView({ behavior: 'smooth' }); });

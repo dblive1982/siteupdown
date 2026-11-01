@@ -28,6 +28,7 @@ I_ARROW = ico('<path d="M5 12h14M13 6l6 6-6 6"/>')
 I_MAIL = ico('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>')
 I_LOCK = ico('<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>')
 I_USER = ico('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>')
+I_REFRESH = ico('<path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/>')
 I_SEARCH = ico('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>')
 I_FB = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 8V6.5c0-.7.3-1 1-1h2V2h-3a4 4 0 0 0-4 4.2V8H7.5v3.5H10V22h4V11.5h2.7L17 8z"/></svg>'
 I_IG = ico('<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/>')
@@ -56,6 +57,8 @@ def head(title, desc, path, extra_head='', noindex=False):
 <meta property="og:image" content="{SITE}/assets/og.png"><meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#060d0a">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="/assets/app.css">
 {extra_head}
 </head>
@@ -112,57 +115,68 @@ def home():
     share_btns = ''.join(f'<button class="btn small ghost" type="button" data-share="{k}"{" hidden" if k=="native" else ""}>{l}</button>' for k, l in [('copy', 'Copy link'), ('x', 'X'), ('fb', 'Facebook'), ('wa', 'WhatsApp'), ('native', 'Share…')])
     body = f'''
 <section class="hero"><div class="wrap">
+<svg class="rings" viewBox="0 0 400 400" aria-hidden="true"><circle cx="200" cy="200" r="60"/><circle cx="200" cy="200" r="130"/><circle cx="200" cy="200" r="198"/><rect x="262" y="52" width="9" height="9" fill="var(--green)"/></svg>
 <span class="eyebrow"><i></i>A little clarity. In one click.</span>
-<h1>Is it down — or just you<span class="dot">?</span></h1>
-<p class="lead">Paste any address for a clear answer in seconds. Probes on six continents show whether a site is down for everyone or only for you.</p>
+<h1>Is it down — or <span class="hl">just you?</span></h1>
+<p class="lead">Paste any address for a clear answer in seconds, then watch real probes on six continents show whether a site is down for everyone — or just you.</p>
 <form class="card checker" id="chk-form" aria-labelledby="checker-title" novalidate>
-<div class="top"><span id="checker-title">{I_RADIO}Check a website</span><span class="live">Live from our server</span></div>
-<div class="stack">
-<div><label class="lbl" for="chk-input">Website address</label>
-<div class="field">{I_GLOBE}<input id="chk-input" name="address" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Type any website address, e.g. example.com" maxlength="300"></div></div>
-<button class="btn block" id="chk-btn" type="submit"><span>Check website</span>{I_ARROW}</button>
+<div class="top"><span id="checker-title">{I_RADIO}Check a website <em>· Live from our server</em></span><span class="live">Live check</span></div>
+<div class="chk-row">
+<div class="field">{I_GLOBE}<input id="chk-input" name="address" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Type any website address, e.g. example.com" maxlength="300" aria-label="Website address"></div>
+<button class="btn" id="chk-btn" type="submit"><span>Check website</span>{I_ARROW}</button></div>
 <p class="err" id="chk-err" role="alert"></p>
-<label class="check thorough"><input type="checkbox" id="chk-thorough"><span><b>Thorough check</b><small>Downloads part of the page and extracts the title, headers &amp; more</small></span></label>
-<p class="assure">{I_SHIELD}No sign-up. No downloads. Just answers.</p>
-</div></form>
+<div class="chk-foot"><label class="check thorough"><input type="checkbox" id="chk-thorough"><span><b>Thorough check</b><small>Downloads part of the page and extracts title, headers &amp; more</small></span></label>
+<p class="assure">{I_SHIELD}No sign-up. No downloads. Just answers.</p></div>
+</form>
 <div class="recent-row" id="recent-wrap" hidden><div class="eyebrow">Your recent searches</div><div class="chips" id="recent-chips"></div></div>
-<div class="recent-row"><div class="eyebrow">Try a website</div><div class="chips">
-<button class="chip" type="button" data-h="google.com">google.com</button><button class="chip" type="button" data-h="youtube.com">youtube.com</button><button class="chip" type="button" data-h="github.com">github.com</button></div>
-<p class="fine" style="margin-top:14px">Each check uses one server check plus twelve regional probes.</p></div>
+<div class="try-row"><span class="eyebrow">Try a website</span><div class="chips">
+<button class="chip" type="button" data-h="google.com">google.com<span class="ne">↗</span></button><button class="chip" type="button" data-h="youtube.com">youtube.com<span class="ne">↗</span></button><button class="chip" type="button" data-h="github.com">github.com<span class="ne">↗</span></button></div></div>
+<p class="rule-note"><span>One server check, twelve regional probes. No sign-up, no guesswork.</span></p>
 </div></section>
 
 <section id="global-pulse"><div class="wrap">
-<div class="sec-head"><span class="eyebrow"><i></i>Global pulse · worldwide probes</span>
+<div class="card pulse-card" aria-live="polite">
+<div class="pc-head"><div><span class="eyebrow"><i></i>Global pulse · worldwide probes</span>
 <h2>Down for everyone — or just you<span class="dot">?</span></h2>
 <p class="lead">One run asks machines in different countries to fetch the same address at the same time. If they can all reach it, the problem is probably on your side.</p></div>
-<div class="pulse-grid">
-<div class="card map-card"><div class="map-wrap" id="map"><svg id="map-svg" role="img" aria-label="World map of probe results" preserveAspectRatio="xMidYMid meet"></svg>
+<div class="pc-actions"><span class="statchip"><i></i><span id="pulse-status">Standby</span></span><button class="btn small ghost" type="button" id="run-again" hidden>Run again</button></div></div>
+<div class="strip">
+<div class="cell wide"><span class="k">Verdict</span><b id="v-big">Waiting for probes</b><small id="v-sub">No address checked yet</small><span id="v-pill"></span></div>
+<div class="cell"><span class="k">Reachable</span><b id="s-reach">0/12</b><small>probes that answered</small></div>
+<div class="cell"><span class="k">Median response</span><b id="s-med">—</b><small>across responding probes</small></div>
+<div class="cell"><span class="k">Measured at</span><b id="s-at">—</b><small>Not run yet</small></div>
+</div>
+<div class="map-card"><div class="map-wrap" id="map"><svg id="map-svg" role="img" aria-label="World map of probe results" preserveAspectRatio="xMidYMid meet"></svg>
 <div class="map-empty" id="map-empty"><span>No regional run yet. Check a website and the map lights up.</span></div><div class="tip" id="tip" hidden></div></div>
 <div class="legend" aria-label="Map legend"><span><i style="background:var(--green)"></i>Responded</span><span><i style="background:var(--amber)"></i>Blocked</span><span><i style="background:var(--red)"></i>Server error</span><span><i style="border:2px solid var(--grey)"></i>No connection</span></div>
 <p class="fine" style="margin-top:10px">Hover or tap a marker for details. Regions without a probe are not claimed. Each run is a snapshot, not continuous monitoring. Probe network: <a href="https://globalping.io" rel="noopener">Globalping</a>.</p></div>
-<div class="card verdict" aria-live="polite">
-<div class="row-actions" style="justify-content:space-between;align-items:center"><span class="eyebrow" id="pulse-status">Standby</span><span id="v-pill"></span></div>
-<div><div class="big" id="v-big">Waiting for probes</div><p class="note" id="v-sub" style="margin:6px 0 0">No address checked yet</p></div>
-<dl class="stat" style="margin:0"><dt>Reachable</dt><dd id="s-reach">0/12</dd><dt>Median response</dt><dd id="s-med">—</dd><dt>Measured at</dt><dd id="s-at">—</dd></dl>
-<div class="facts" id="facts" hidden></div>
-<div class="row-actions"><button class="btn small" type="button" id="run-again" hidden>Run again</button><button class="btn small ghost" type="button" id="wl-add" hidden>Add to my watchlist</button></div>
-<div class="share" id="share" hidden><span class="lbl eyebrow">Share</span>{share_btns}</div>
-</div></div></div></section>
+<div class="details"><div class="facts" id="facts" hidden></div>
+<div class="row-actions"><button class="btn small ghost" type="button" id="wl-add" hidden>Add to my watchlist</button></div>
+<div class="share" id="share" hidden><span class="lbl eyebrow">Share</span>{share_btns}</div></div>
+</div>
 
-<section id="top-sites"><div class="wrap">
-<div class="sec-head"><span class="eyebrow"><i></i>Watchlist · real requests</span><h2>Top websites<span class="dot">.</span></h2>
-<p class="lead">The sites everyone checks first, probed every few minutes. Tap one to check it worldwide.</p></div>
-<div class="tools"><div class="chips"><button class="chip" type="button" data-f="all" aria-pressed="true">All sites</button><button class="chip" type="button" data-f="issues" aria-pressed="false">Issues</button></div><span class="fine" id="top-updated"></span></div>
-<div class="grid" id="top-grid"><div class="skeleton">Sweeping the watchlist…</div></div>
-<p class="fine" style="margin-top:14px">A snapshot, not continuous uptime monitoring.</p>
+<div class="charts" id="charts">
+<div class="card chart"><h3>Response time by region</h3><p class="fine">Lower is faster. Colour shows the outcome.</p><div id="ch-bars" class="ch-empty">Run a check to see this chart.</div></div>
+<div class="card chart"><h3>Probe outcomes</h3><p class="fine">How the twelve probes fared.</p><div id="ch-donut" class="ch-empty">Run a check to see this chart.</div></div>
+<div class="card chart"><h3>Speed range</h3><p class="fine">Our server against the worldwide spread.</p><div id="ch-range" class="ch-empty">Run a check to see this chart.</div></div>
+</div>
 </div></section>
+
+<section id="top-sites"><div class="wrap"><div class="card toplist">
+<div class="pc-head"><div><span class="eyebrow"><i></i>Watchlist · real requests</span><h2>Top websites<span class="dot">.</span></h2>
+<p class="lead">A rolling sweep of the sites people ask about most. Every line is a real request from this server — a red entry is one that answered with an error or not at all.</p></div>
+<div class="pc-actions col"><div class="seg2"><button type="button" data-f="all" aria-pressed="true">All sites</button><button type="button" data-f="issues" aria-pressed="false" id="f-issues">Issues</button></div>
+<span class="fine" id="top-count"></span><button class="btn small ghost" type="button" id="top-refresh">{I_REFRESH}Refresh</button></div></div>
+<div class="rows" id="top-grid"><div class="skeleton">Sweeping the watchlist…</div></div>
+<p class="fine" id="top-updated" style="margin-top:14px">A snapshot, not continuous uptime monitoring.</p>
+</div></div></section>
 
 <section id="online-gaming"><div class="wrap">
 <div class="sec-head"><span class="eyebrow"><i></i>Games &amp; services</span><h2>Online gaming<span class="dot">.</span></h2>
 <p class="lead">Is the game down, or is it your connection? Search a service or browse by type.</p></div>
 <div class="tools"><div class="field" style="flex:1;min-width:240px;max-width:420px">{I_SEARCH}<input id="g-q" type="search" placeholder="Search gaming services" aria-label="Search gaming services" autocomplete="off"></div><span class="fine" id="g-count"></span></div>
 <div class="chips" id="g-cats" style="margin-bottom:16px"></div>
-<div class="grid" id="g-grid"><div class="skeleton">Loading gaming services…</div></div>
+<div class="rows" id="g-grid"><div class="skeleton">Loading gaming services…</div></div>
 <div class="pager"><button class="btn small ghost" type="button" id="g-prev">Prev</button><button class="btn small ghost" type="button" id="g-next">Next</button></div>
 </div></section>
 
@@ -320,7 +334,7 @@ def static_pages():
 <h2>Acceptable use</h2>
 <p>Please do not use the checker to attack, overload or probe other people&rsquo;s systems. We limit how often one visitor can run checks, and we only fetch public web addresses on the standard web ports.</p>
 <h2>Third parties</h2>
-<p>Regional probes run on the public <a href="https://globalping.io" rel="noopener">Globalping</a> network. Sign-in with Google uses Google&rsquo;s own sign-in service.</p>
+<p>Regional probes run on the public <a href="https://globalping.io" rel="noopener">Globalping</a> network. Sign-in with Google uses Google&rsquo;s own sign-in service, and the site&rsquo;s fonts (Space Grotesk and JetBrains Mono) are loaded from Google Fonts.</p>
 <h2>Content</h2>
 <p>Site names shown in lists are used only to identify the services being checked.</p>''')
     prose('contact.html', 'Contact', 'Get in touch with siteupdown.com.', '/contact', '''
