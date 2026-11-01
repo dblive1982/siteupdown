@@ -256,3 +256,5 @@ section[id],[id=global-pulse]{scroll-margin-top:84px}
 .alt a{color:var(--text);font-weight:600;text-decoration:underline}
 .field .eye{font-family:inherit;font-size:13px;font-weight:600;padding:6px 12px;background:var(--card);border:1px solid var(--line);border-radius:999px;color:var(--text)}
 .seg[hidden]{display:none}
+#gbtn{color-scheme:light;background:transparent;border-radius:999px;overflow:hidden;line-height:0}
+#gbtn iframe{color-scheme:light;background:transparent}
