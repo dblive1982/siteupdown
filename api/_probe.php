@@ -83,7 +83,7 @@ function resolve_public(string $host): array {
  * code, ms, err (dns|blocked|timeout|ssl|connect|redirects|null), final, title, headings[], server, https
  */
 function http_probe(string $host, string $path, bool $https, bool $thorough, int $timeout = 8): array {
-    $res = ['code' => null, 'ms' => null, 'err' => null, 'final' => null, 'title' => null, 'headings' => [], 'server' => null, 'https' => $https, 'hops' => 0];
+    $res = ['code' => null, 'ms' => null, 'err' => null, 'final' => null, 'title' => null, 'headings' => [], 'server' => null, 'https' => $https, 'hops' => 0, 'ctype' => null, 'bytes' => null, 'desc' => null, 'lang' => null, 'tls_expires' => null, 'tls_issuer' => null, 'sec' => [], 'ip' => null];
     $start = microtime(true);
     $curHost = $host; $curPath = $path; $curHttps = $https;
     for ($hop = 0; $hop <= 5; $hop++) {
@@ -107,6 +107,7 @@ function http_probe(string $host, string $path, bool $https, bool $thorough, int
             CURLOPT_RESOLVE => [$curHost . ':' . $port . ':' . $ip],
             CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS,
             CURLOPT_ENCODING => '',
+            CURLOPT_CERTINFO => $thorough && $curHttps,
             CURLOPT_HEADERFUNCTION => function ($c, $line) use (&$headers) {
                 $t = trim($line);
                 if (stripos($t, 'HTTP/') === 0) $headers = [];
@@ -122,6 +123,7 @@ function http_probe(string $host, string $path, bool $https, bool $thorough, int
         curl_exec($ch);
         $errno = curl_errno($ch);
         $code = (int)curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+        $ci = ($thorough && $curHttps) ? curl_getinfo($ch, CURLINFO_CERTINFO) : [];
         curl_close($ch);
         $res['ms'] = (int)round((microtime(true) - $start) * 1000);
         if ($code === 0) {
@@ -152,8 +154,20 @@ function http_probe(string $host, string $path, bool $https, bool $thorough, int
         }
         $res['final'] = ($curHttps ? 'https://' : 'http://') . $curHost;
         $res['https'] = $curHttps;
+        if ($thorough) {
+            $res['ip'] = $ip;
+            $res['ctype'] = isset($headers['content-type']) ? mb_substr(trim(explode(';', $headers['content-type'])[0]), 0, 60) : null;
+            foreach (['strict-transport-security' => 'HSTS', 'content-security-policy' => 'CSP', 'x-frame-options' => 'X-Frame-Options', 'x-content-type-options' => 'X-Content-Type-Options', 'referrer-policy' => 'Referrer-Policy'] as $hk => $hn) {
+                if (isset($headers[$hk])) $res['sec'][] = $hn;
+            }
+            $res['bytes'] = strlen($body);
+            if (!empty($ci[0]['Expire date'])) { $t = strtotime($ci[0]['Expire date']); if ($t) $res['tls_expires'] = gmdate('Y-m-d', $t); }
+            if (!empty($ci[0]['Issuer']) && preg_match('~(?:^|[,/ ])O ?= ?([^,/]+)~', $ci[0]['Issuer'], $mm)) $res['tls_issuer'] = mb_substr(trim($mm[1]), 0, 60);
+        }
         if ($thorough && $body !== '' && preg_match('~text/html|application/xhtml~i', $headers['content-type'] ?? 'text/html')) {
             if (preg_match('~<title[^>]*>(.*?)</title>~is', $body, $m)) $res['title'] = mb_substr(trim(html_entity_decode(strip_tags($m[1]), ENT_QUOTES | ENT_HTML5, 'UTF-8')), 0, 160);
+            if (preg_match('~<meta[^>]+name=["\']description["\'][^>]*content=["\']([^"\']*)~i', $body, $m) || preg_match('~<meta[^>]+content=["\']([^"\']*)["\'][^>]*name=["\']description~i', $body, $m)) $res['desc'] = mb_substr(trim(html_entity_decode($m[1], ENT_QUOTES | ENT_HTML5, 'UTF-8')), 0, 200);
+            if (preg_match('~<html[^>]*\slang=["\']?([A-Za-z-]{2,10})~i', $body, $m)) $res['lang'] = $m[1];
             if (preg_match_all('~<h([12])[^>]*>(.*?)</h\1>~is', $body, $m, PREG_SET_ORDER)) {
                 foreach ($m as $h) {
                     $t = mb_substr(trim(preg_replace('/\s+/', ' ', html_entity_decode(strip_tags($h[2]), ENT_QUOTES | ENT_HTML5, 'UTF-8'))), 0, 120);
@@ -204,5 +218,6 @@ function check_site(string $host, string $path = '/', bool $thorough = false, bo
         'host' => $host, 'verdict' => $verdict, 'http_code' => $code, 'ms' => $r['ms'], 'note' => $note, 'err' => $r['err'],
         'title' => $r['title'], 'headings' => $r['headings'], 'server' => $r['server'], 'https' => $r['https'],
         'redirected' => ($r['hops'] ?? 0) > 0, 'attempts' => $attempts,
+        'extra' => ['final' => $r['final'], 'ip' => $r['ip'], 'ctype' => $r['ctype'], 'bytes' => $r['bytes'], 'desc' => $r['desc'], 'lang' => $r['lang'], 'sec' => $r['sec'], 'tls_expires' => $r['tls_expires'], 'tls_issuer' => $r['tls_issuer']],
     ];
 }

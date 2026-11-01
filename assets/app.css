@@ -229,3 +229,9 @@ table.feed a{color:var(--text);text-decoration:none}table.feed a:hover{color:var
 section[id],[id=global-pulse]{scroll-margin-top:84px}
 @media(max-width:560px){.mk,.mk-ring{r:9}.wrap{padding:0 14px}}
 @media(max-width:640px){.item{grid-template-columns:1fr}.item .acts{justify-content:flex-start}.tools{align-items:flex-start}}
+
+.field .eye{flex:none;background:none;border:0;color:var(--muted);cursor:pointer;padding:6px;border-radius:8px;display:grid;place-items:center}
+.field .eye svg{width:20px;height:20px;color:inherit}
+.field .eye:hover,.field .eye:focus-visible{color:var(--green);outline:0}
+.field input[type=password],.field input{caret-color:var(--green)}
+.facts .xt{display:grid;gap:4px;margin-top:6px;padding-top:8px;border-top:1px dashed var(--line)}

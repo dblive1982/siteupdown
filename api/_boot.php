@@ -21,6 +21,7 @@ function config(): ?array {
     $file = getenv('SUD_CONFIG') ?: dirname(__DIR__, 2) . '/sud-config.php';
     if (!is_file($file)) return $c = null;
     $r = require $file;
+    if (is_array($r) && empty($r['google_client_id'])) $r['google_client_id'] = '399166260433-afv3a0nbjm97eje3ib0m0u9nidtht3v7.apps.googleusercontent.com'; // public web client ID (not a secret)
     return $c = (is_array($r) ? $r : null);
 }
 

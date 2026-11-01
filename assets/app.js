@@ -47,7 +47,7 @@
   d.addEventListener('DOMContentLoaded', function () {
     applyTheme(theme);
     var b = S.$('#theme'); if (b) b.addEventListener('click', function () { theme = theme === 'dark' ? 'light' : 'dark'; S.store.set('sud-theme', theme); applyTheme(theme); });
-    initAuth(); initCookies();
+    initAuth(); initCookies(); initEyes();
     try { var fl = sessionStorage.getItem('sud-flash'); if (fl) { sessionStorage.removeItem('sud-flash'); S.toast(fl); } } catch (e) { /* ignore */ }
     S.$$('[data-year]').forEach(function (e) { e.textContent = new Date().getFullYear(); });
   });
@@ -107,6 +107,18 @@
     if (q('#c-cus')) q('#c-cus').onclick = function () { showCookies(true); };
     if (q('#c-all')) q('#c-all').onclick = function () { saveConsent(true, true); };
     if (q('#c-save')) q('#c-save').onclick = function () { saveConsent(q('#c-an').checked, q('#c-mk').checked); };
+  }
+  function initEyes() {
+    var open = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>';
+    var shut = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.9 17.9A10.4 10.4 0 0 1 12 19C5.6 19 2 12 2 12a18 18 0 0 1 4.1-5.1M9.9 5.2A9.7 9.7 0 0 1 12 5c6.4 0 10 7 10 7a18 18 0 0 1-2.2 3.2M1 1l22 22"/><path d="M14.1 14.1a3 3 0 1 1-4.2-4.2"/></svg>';
+    S.$$('.field input[type=password]').forEach(function (inp) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'eye'; b.setAttribute('aria-label', 'Show password'); b.setAttribute('aria-pressed', 'false'); b.innerHTML = open;
+      b.addEventListener('click', function () {
+        var show = inp.type === 'password'; inp.type = show ? 'text' : 'password';
+        b.innerHTML = show ? shut : open; b.setAttribute('aria-label', show ? 'Hide password' : 'Show password'); b.setAttribute('aria-pressed', show ? 'true' : 'false'); inp.focus();
+      });
+      inp.parentNode.appendChild(b);
+    });
   }
   function initCookies() {
     if (!S.consent()) showCookies(false);

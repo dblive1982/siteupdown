@@ -61,6 +61,16 @@
     if (r.title) f += '<div>Title: <b>' + esc(r.title) + '</b></div>';
     (r.headings || []).forEach(function (h) { f += '<div>' + esc(h) + '</div>'; });
     if (r.server) f += '<div>Server: <b>' + esc(r.server) + '</b></div>';
+    var x = r.extra;
+    if (x && (x.ip || x.ctype || x.desc || x.tls_expires)) {
+      f += '<div class="xt"><div><b>Thorough details</b></div>';
+      if (x.final) f += '<div>Final address: <b>' + esc(x.final) + '</b></div>';
+      if (x.ip) f += '<div>Server IP: <b>' + esc(x.ip) + '</b></div>';
+      if (x.ctype) f += '<div>Content type: <b>' + esc(x.ctype) + '</b>' + (x.lang ? ' (language ' + esc(x.lang) + ')' : '') + '</div>';
+      if (x.desc) f += '<div>Description: ' + esc(x.desc) + '</div>';
+      if (x.tls_expires) f += '<div>Certificate: <b>valid until ' + esc(x.tls_expires) + '</b>' + (x.tls_issuer ? ' (' + esc(x.tls_issuer) + ')' : '') + '</div>';
+      f += '<div>Security headers: <b>' + (x.sec && x.sec.length ? esc(x.sec.join(', ')) : 'none seen') + '</b></div></div>';
+    }
     return f;
   }
   function renderResult(host, r, reg, verdict, at, share) {
