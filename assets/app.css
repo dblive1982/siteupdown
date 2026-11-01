@@ -372,3 +372,10 @@ section[id],[id=global-pulse]{scroll-margin-top:84px}
 /* no layout jump while Google's button loads */
 #gbtn{min-height:44px;width:100%;display:flex;justify-content:center;align-items:center}
 #gwrap[hidden]{display:none}
+/* cookie popup like the original: compact, centred at the bottom */
+.cookie{left:50%;right:auto;transform:translateX(-50%);width:min(460px,calc(100% - 24px));bottom:18px;padding:16px;box-shadow:4px 4px 0 var(--hard),0 16px 40px rgba(0,0,0,.55)}
+.cookie h3{font-size:15px}.cookie p{font-size:13px;margin-bottom:12px}
+.cookie .btns{grid-template-columns:repeat(3,1fr);gap:8px}
+.cookie .btns .wide{grid-column:auto}
+.cookie .btn{min-height:42px;font-size:10.5px;padding:0 8px;letter-spacing:.08em}
+@media(max-width:420px){.cookie .btns{grid-template-columns:1fr 1fr}.cookie .btns .wide{grid-column:1/-1}}
