@@ -361,3 +361,11 @@ section[id],[id=global-pulse]{scroll-margin-top:84px}
 .range .tick{position:absolute;top:-5px;width:3px;height:20px;background:var(--amber);border-radius:2px;transform:translateX(-50%)}
 .range dt.srv{color:var(--amber)}
 .row .code{text-transform:none}
+
+/* exact colours of the original siteupdown.com (dark theme) */
+:root:not([data-theme=light]){--bg:#050805;--bg2:#0a110c;--card:#070f0a;--card2:#0a110c;--line:#1d2b22;--text:#eaf4ec;--muted:#a1b4a8;--green:#39b54a;--green-ink:#04120a;--green-soft:rgba(57,181,74,.14);--hl:#4ec962;--dot:rgba(140,185,150,.09);--hard:#0d2014;--glow:rgba(57,181,74,.10)}
+:root[data-theme=light]{--hl:#2a8f3a}
+.site-head{background:rgba(5,8,5,.88)}
+:root[data-theme=light] .site-head{background:rgba(243,248,243,.9)}
+.hl,h1 .dot,h2 .dot{color:var(--hl)}
+.hl{text-decoration-color:var(--hl)}
