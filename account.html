@@ -14,7 +14,7 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="/assets/app.css?v=8af6ecfb">
+<link rel="stylesheet" href="/assets/app.css?v=322ae743">
 
 </head>
 <body data-page="account">
@@ -27,20 +27,20 @@
 <main id="main">
 
 <section class="page"><div class="wrap" id="acct" hidden>
-<span class="eyebrow"><i></i>Your account</span>
-<h1 style="margin:14px 0 6px">Account<span class="dot">.</span></h1><p class="note" id="a-since"></p>
+<div class="card toplist">
+<div class="pc-head"><div><span class="eyebrow"><i></i>Your account</span><h2>Account<span class="dot">.</span></h2><p class="note" id="a-since" style="margin:8px 0 0"></p></div></div>
 <div class="tabs" id="tabs" role="tablist"><button type="button" role="tab" data-t="checks" aria-selected="true">My checks</button><button type="button" role="tab" data-t="settings" aria-selected="false">Settings</button></div>
 
-<div id="p-checks"><div class="tools"><p class="note" style="margin:0">Your last 100 checks, saved while you were signed in. Only you can see them.</p><button class="btn small ghost" type="button" id="clear-checks" hidden>Clear all</button></div>
+<div id="p-checks" class="pad"><div class="tools"><p class="note" style="margin:0">Your last 100 checks, saved while you were signed in. Only you can see them.</p><button class="btn small ghost" type="button" id="clear-checks" hidden>Clear all</button></div>
 <div class="list" id="checks-list"><div class="skeleton">Loading your checks…</div></div></div>
 
-<div id="p-settings" hidden class="stack" style="max-width:620px">
+<div id="p-settings" hidden class="stack pad" style="max-width:680px">
 <form class="card stack" id="f-name" novalidate><h3>Profile</h3><p class="note" style="margin:0">Signed in as <b id="a-email"></b></p>
 <div><label class="lbl" for="a-name">Display name</label><div class="field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg><input id="a-name" type="text" maxlength="60" autocomplete="name"></div></div>
 <button class="btn small" type="submit" style="justify-self:start">Save name</button><p class="err" role="alert"></p></form>
 <div id="pw-card"><form class="card stack" id="f-pw" novalidate><h3>Change password</h3>
 <div class="field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><input name="cur" type="password" autocomplete="current-password" placeholder="Current password" aria-label="Current password"></div>
-<div class="field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><input name="nw" type="password" autocomplete="new-password" placeholder="New password (8+ characters)" aria-label="New password" minlength="8"></div>
+<div class="field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><input name="nw" type="password" autocomplete="new-password" placeholder="New password (8+)" aria-label="New password" minlength="8"></div>
 <button class="btn small" type="submit" style="justify-self:start">Change password</button><p class="err" role="alert"></p></form></div>
 <div class="card stack"><h3>Reset my data</h3><p class="note" style="margin:0">Clears your saved checks and your watchlist. Your account stays.</p><button class="btn small ghost" type="button" id="reset-data" style="justify-self:start">Reset my data</button></div>
 <div class="card stack danger-zone"><h3>Delete account</h3><p class="note" style="margin:0">Permanently deletes your account and everything saved with it. This cannot be undone.</p>
@@ -49,7 +49,7 @@
 <div id="del-pw-wrap"><div class="field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><input name="password" type="password" placeholder="Your password" aria-label="Your password" autocomplete="current-password"></div></div>
 <button class="btn small danger" type="submit" style="justify-self:start">Permanently delete</button><p class="err" role="alert"></p></form></div>
 </div>
-</div></section>
+</div></div></section>
 </main>
 <footer class="site-foot"><div class="wrap">
 <div class="foot-brand"><svg viewBox="0 0 11 8" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true"><rect x="2" y="0" width="1" height="1"/><rect x="8" y="0" width="1" height="1"/><rect x="3" y="1" width="1" height="1"/><rect x="7" y="1" width="1" height="1"/><rect x="2" y="2" width="1" height="1"/><rect x="3" y="2" width="1" height="1"/><rect x="4" y="2" width="1" height="1"/><rect x="5" y="2" width="1" height="1"/><rect x="6" y="2" width="1" height="1"/><rect x="7" y="2" width="1" height="1"/><rect x="8" y="2" width="1" height="1"/><rect x="1" y="3" width="1" height="1"/><rect x="2" y="3" width="1" height="1"/><rect x="4" y="3" width="1" height="1"/><rect x="5" y="3" width="1" height="1"/><rect x="6" y="3" width="1" height="1"/><rect x="8" y="3" width="1" height="1"/><rect x="9" y="3" width="1" height="1"/><rect x="0" y="4" width="1" height="1"/><rect x="1" y="4" width="1" height="1"/><rect x="2" y="4" width="1" height="1"/><rect x="3" y="4" width="1" height="1"/><rect x="4" y="4" width="1" height="1"/><rect x="5" y="4" width="1" height="1"/><rect x="6" y="4" width="1" height="1"/><rect x="7" y="4" width="1" height="1"/><rect x="8" y="4" width="1" height="1"/><rect x="9" y="4" width="1" height="1"/><rect x="10" y="4" width="1" height="1"/><rect x="0" y="5" width="1" height="1"/><rect x="2" y="5" width="1" height="1"/><rect x="3" y="5" width="1" height="1"/><rect x="4" y="5" width="1" height="1"/><rect x="5" y="5" width="1" height="1"/><rect x="6" y="5" width="1" height="1"/><rect x="7" y="5" width="1" height="1"/><rect x="8" y="5" width="1" height="1"/><rect x="10" y="5" width="1" height="1"/><rect x="0" y="6" width="1" height="1"/><rect x="2" y="6" width="1" height="1"/><rect x="8" y="6" width="1" height="1"/><rect x="10" y="6" width="1" height="1"/><rect x="3" y="7" width="1" height="1"/><rect x="4" y="7" width="1" height="1"/><rect x="6" y="7" width="1" height="1"/><rect x="7" y="7" width="1" height="1"/><rect x="3" y="3" width="1" height="1" fill="var(--bg)"/><rect x="7" y="3" width="1" height="1" fill="var(--bg)"/></svg><span class="wordmark">siteupdown.com</span></div>
@@ -60,7 +60,7 @@
 <div class="foot-links"><a href="/#global-pulse">Regional map</a><a href="/#how-it-works">How it works</a><a href="/monitor">Monitor</a><a href="/account">Account</a><a href="/contact">Contact</a><a href="/legal">Legal notice</a><a href="/privacy">Privacy</a><button type="button" data-cookie-settings>Cookie settings</button></div>
 <p class="fine">&copy; <span data-year>2026</span> siteupdown.com. An independent website checker, not affiliated with the sites it checks. Regional probes use the public <a href="https://globalping.io" rel="noopener">Globalping</a> network.</p>
 </div></footer>
-<script src="/assets/app.js?v=8af6ecfb"></script>
-<script src="/assets/pages.js?v=8af6ecfb"></script>
+<script src="/assets/app.js?v=322ae743"></script>
+<script src="/assets/pages.js?v=322ae743"></script>
 </body>
 </html>

@@ -257,20 +257,20 @@ def account():
     h = head('Your account — siteupdown.com', 'Your saved checks and account settings.', '/account', noindex=True).replace('{BODYATTR}', ' data-page="account"')
     body = f'''
 <section class="page"><div class="wrap" id="acct" hidden>
-<span class="eyebrow"><i></i>Your account</span>
-<h1 style="margin:14px 0 6px">Account<span class="dot">.</span></h1><p class="note" id="a-since"></p>
+<div class="card toplist">
+<div class="pc-head"><div><span class="eyebrow"><i></i>Your account</span><h2>Account<span class="dot">.</span></h2><p class="note" id="a-since" style="margin:8px 0 0"></p></div></div>
 <div class="tabs" id="tabs" role="tablist"><button type="button" role="tab" data-t="checks" aria-selected="true">My checks</button><button type="button" role="tab" data-t="settings" aria-selected="false">Settings</button></div>
 
-<div id="p-checks"><div class="tools"><p class="note" style="margin:0">Your last 100 checks, saved while you were signed in. Only you can see them.</p><button class="btn small ghost" type="button" id="clear-checks" hidden>Clear all</button></div>
+<div id="p-checks" class="pad"><div class="tools"><p class="note" style="margin:0">Your last 100 checks, saved while you were signed in. Only you can see them.</p><button class="btn small ghost" type="button" id="clear-checks" hidden>Clear all</button></div>
 <div class="list" id="checks-list"><div class="skeleton">Loading your checks…</div></div></div>
 
-<div id="p-settings" hidden class="stack" style="max-width:620px">
+<div id="p-settings" hidden class="stack pad" style="max-width:680px">
 <form class="card stack" id="f-name" novalidate><h3>Profile</h3><p class="note" style="margin:0">Signed in as <b id="a-email"></b></p>
 <div><label class="lbl" for="a-name">Display name</label><div class="field">{I_USER}<input id="a-name" type="text" maxlength="60" autocomplete="name"></div></div>
 <button class="btn small" type="submit" style="justify-self:start">Save name</button><p class="err" role="alert"></p></form>
 <div id="pw-card"><form class="card stack" id="f-pw" novalidate><h3>Change password</h3>
 <div class="field">{I_LOCK}<input name="cur" type="password" autocomplete="current-password" placeholder="Current password" aria-label="Current password"></div>
-<div class="field">{I_LOCK}<input name="nw" type="password" autocomplete="new-password" placeholder="New password (8+ characters)" aria-label="New password" minlength="8"></div>
+<div class="field">{I_LOCK}<input name="nw" type="password" autocomplete="new-password" placeholder="New password (8+)" aria-label="New password" minlength="8"></div>
 <button class="btn small" type="submit" style="justify-self:start">Change password</button><p class="err" role="alert"></p></form></div>
 <div class="card stack"><h3>Reset my data</h3><p class="note" style="margin:0">Clears your saved checks and your watchlist. Your account stays.</p><button class="btn small ghost" type="button" id="reset-data" style="justify-self:start">Reset my data</button></div>
 <div class="card stack danger-zone"><h3>Delete account</h3><p class="note" style="margin:0">Permanently deletes your account and everything saved with it. This cannot be undone.</p>
@@ -279,7 +279,7 @@ def account():
 <div id="del-pw-wrap"><div class="field">{I_LOCK}<input name="password" type="password" placeholder="Your password" aria-label="Your password" autocomplete="current-password"></div></div>
 <button class="btn small danger" type="submit" style="justify-self:start">Permanently delete</button><p class="err" role="alert"></p></form></div>
 </div>
-</div></section>
+</div></div></section>
 '''
     scripts = '<script src="/assets/app.js"></script>\n<script src="/assets/pages.js"></script>'
     write('account.html', h + body + foot(scripts))
@@ -289,9 +289,10 @@ def monitor():
     h = head('Monitor your websites — siteupdown.com', 'Build a personal watchlist and see at a glance which of your websites are up.', '/monitor').replace('{BODYATTR}', ' data-page="monitor"')
     body = f'''
 <section class="page"><div class="wrap">
-<span class="eyebrow"><i></i>Your watchlist</span>
-<h1 style="margin:14px 0 10px">Monitor<span class="dot">.</span></h1>
-<p class="lead" style="margin-bottom:26px">Keep an eye on the websites you care about. We re-check them every few minutes and show the latest result here.</p>
+<div class="card toplist">
+<div class="pc-head"><div><span class="eyebrow"><i></i>Your watchlist</span><h2>Monitor<span class="dot">.</span></h2>
+<p class="lead">Keep an eye on the websites you care about. We re-check them every few minutes and show the latest result here.</p></div></div>
+<div class="pad">
 <div class="card" id="m-out" hidden><h3 style="margin-bottom:8px">Sign in to build your watchlist</h3><p class="note">A free account lets you save up to 25 sites and see their status at a glance. The checker on the home page stays free without one.</p>
 <div class="row-actions" style="margin-top:14px"><a class="btn" href="/login?next=%2Fmonitor"><span>Sign in</span>{I_ARROW}</a><a class="btn ghost" href="/login?next=%2Fmonitor#create">Create account</a></div></div>
 <div id="m-in" hidden>
@@ -299,7 +300,7 @@ def monitor():
 <div class="row-actions" style="flex-wrap:nowrap"><div class="field" style="flex:1">{I_GLOBE}<input id="m-input" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="example.com" maxlength="300"></div><button class="btn" type="submit"><span>Add</span></button></div><p class="err" id="m-err" role="alert"></p></form>
 <div class="tools"><span class="fine" id="m-count"></span><span class="fine">Updates every minute while this page is open.</span></div>
 <div class="list" id="m-list"><div class="skeleton">Loading your watchlist…</div></div></div>
-</div></section>
+</div></div></div></section>
 '''
     scripts = '<script src="/assets/app.js"></script>\n<script src="/assets/pages.js"></script>'
     write('monitor.html', h + body + foot(scripts))

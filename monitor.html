@@ -14,7 +14,7 @@
 <link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="/assets/app.css?v=8af6ecfb">
+<link rel="stylesheet" href="/assets/app.css?v=322ae743">
 
 </head>
 <body data-page="monitor">
@@ -27,9 +27,10 @@
 <main id="main">
 
 <section class="page"><div class="wrap">
-<span class="eyebrow"><i></i>Your watchlist</span>
-<h1 style="margin:14px 0 10px">Monitor<span class="dot">.</span></h1>
-<p class="lead" style="margin-bottom:26px">Keep an eye on the websites you care about. We re-check them every few minutes and show the latest result here.</p>
+<div class="card toplist">
+<div class="pc-head"><div><span class="eyebrow"><i></i>Your watchlist</span><h2>Monitor<span class="dot">.</span></h2>
+<p class="lead">Keep an eye on the websites you care about. We re-check them every few minutes and show the latest result here.</p></div></div>
+<div class="pad">
 <div class="card" id="m-out" hidden><h3 style="margin-bottom:8px">Sign in to build your watchlist</h3><p class="note">A free account lets you save up to 25 sites and see their status at a glance. The checker on the home page stays free without one.</p>
 <div class="row-actions" style="margin-top:14px"><a class="btn" href="/login?next=%2Fmonitor"><span>Sign in</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a><a class="btn ghost" href="/login?next=%2Fmonitor#create">Create account</a></div></div>
 <div id="m-in" hidden>
@@ -37,7 +38,7 @@
 <div class="row-actions" style="flex-wrap:nowrap"><div class="field" style="flex:1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg><input id="m-input" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="example.com" maxlength="300"></div><button class="btn" type="submit"><span>Add</span></button></div><p class="err" id="m-err" role="alert"></p></form>
 <div class="tools"><span class="fine" id="m-count"></span><span class="fine">Updates every minute while this page is open.</span></div>
 <div class="list" id="m-list"><div class="skeleton">Loading your watchlist…</div></div></div>
-</div></section>
+</div></div></div></section>
 </main>
 <footer class="site-foot"><div class="wrap">
 <div class="foot-brand"><svg viewBox="0 0 11 8" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true"><rect x="2" y="0" width="1" height="1"/><rect x="8" y="0" width="1" height="1"/><rect x="3" y="1" width="1" height="1"/><rect x="7" y="1" width="1" height="1"/><rect x="2" y="2" width="1" height="1"/><rect x="3" y="2" width="1" height="1"/><rect x="4" y="2" width="1" height="1"/><rect x="5" y="2" width="1" height="1"/><rect x="6" y="2" width="1" height="1"/><rect x="7" y="2" width="1" height="1"/><rect x="8" y="2" width="1" height="1"/><rect x="1" y="3" width="1" height="1"/><rect x="2" y="3" width="1" height="1"/><rect x="4" y="3" width="1" height="1"/><rect x="5" y="3" width="1" height="1"/><rect x="6" y="3" width="1" height="1"/><rect x="8" y="3" width="1" height="1"/><rect x="9" y="3" width="1" height="1"/><rect x="0" y="4" width="1" height="1"/><rect x="1" y="4" width="1" height="1"/><rect x="2" y="4" width="1" height="1"/><rect x="3" y="4" width="1" height="1"/><rect x="4" y="4" width="1" height="1"/><rect x="5" y="4" width="1" height="1"/><rect x="6" y="4" width="1" height="1"/><rect x="7" y="4" width="1" height="1"/><rect x="8" y="4" width="1" height="1"/><rect x="9" y="4" width="1" height="1"/><rect x="10" y="4" width="1" height="1"/><rect x="0" y="5" width="1" height="1"/><rect x="2" y="5" width="1" height="1"/><rect x="3" y="5" width="1" height="1"/><rect x="4" y="5" width="1" height="1"/><rect x="5" y="5" width="1" height="1"/><rect x="6" y="5" width="1" height="1"/><rect x="7" y="5" width="1" height="1"/><rect x="8" y="5" width="1" height="1"/><rect x="10" y="5" width="1" height="1"/><rect x="0" y="6" width="1" height="1"/><rect x="2" y="6" width="1" height="1"/><rect x="8" y="6" width="1" height="1"/><rect x="10" y="6" width="1" height="1"/><rect x="3" y="7" width="1" height="1"/><rect x="4" y="7" width="1" height="1"/><rect x="6" y="7" width="1" height="1"/><rect x="7" y="7" width="1" height="1"/><rect x="3" y="3" width="1" height="1" fill="var(--bg)"/><rect x="7" y="3" width="1" height="1" fill="var(--bg)"/></svg><span class="wordmark">siteupdown.com</span></div>
@@ -48,7 +49,7 @@
 <div class="foot-links"><a href="/#global-pulse">Regional map</a><a href="/#how-it-works">How it works</a><a href="/monitor">Monitor</a><a href="/account">Account</a><a href="/contact">Contact</a><a href="/legal">Legal notice</a><a href="/privacy">Privacy</a><button type="button" data-cookie-settings>Cookie settings</button></div>
 <p class="fine">&copy; <span data-year>2026</span> siteupdown.com. An independent website checker, not affiliated with the sites it checks. Regional probes use the public <a href="https://globalping.io" rel="noopener">Globalping</a> network.</p>
 </div></footer>
-<script src="/assets/app.js?v=8af6ecfb"></script>
-<script src="/assets/pages.js?v=8af6ecfb"></script>
+<script src="/assets/app.js?v=322ae743"></script>
+<script src="/assets/pages.js?v=322ae743"></script>
 </body>
 </html>

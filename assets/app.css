@@ -379,3 +379,21 @@ section[id],[id=global-pulse]{scroll-margin-top:84px}
 .cookie .btns .wide{grid-column:auto}
 .cookie .btn{min-height:42px;font-size:10.5px;padding:0 8px;letter-spacing:.08em}
 @media(max-width:420px){.cookie .btns{grid-template-columns:1fr 1fr}.cookie .btns .wide{grid-column:1/-1}}
+
+/* account + monitor use the same card layout as the home page */
+.toplist .pad{padding:4px 26px 26px}
+.toplist .tabs{padding:0 14px;border-top:1px solid var(--line);margin:0}
+.toplist .tabs button{padding:14px 12px}
+.toplist .list{display:grid;gap:0;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.toplist .item{border:0;border-bottom:1px solid var(--line);border-radius:0;background:none;padding:16px 22px}
+.toplist .item:last-child{border-bottom:0}
+.toplist .item .t b{font-family:var(--sans);font-size:15.5px}
+.toplist .item .t small{font-size:13px}
+.toplist .skeleton{padding:22px}
+.toplist #m-add{margin-top:6px}
+.toplist .pad>.card{box-shadow:none}
+.toplist .card.stack{background:var(--card2)}
+.stack>*,.toplist .pad>*{min-width:0}
+.toplist .pad{box-sizing:border-box;max-width:100%}
+.field input{min-width:0;width:100%}
+@media(max-width:560px){.toplist .pad{padding:4px 14px 18px}.pc-head{padding:20px 16px 14px}.row{padding:14px 16px}.toplist .item{padding:14px 16px}.toplist .tabs{padding:0 6px}}
