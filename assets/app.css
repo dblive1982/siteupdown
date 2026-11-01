@@ -246,7 +246,7 @@ section[id],[id=global-pulse]{scroll-margin-top:84px}
 .fl>span{font-size:14px;font-weight:600;color:var(--text)}
 .lg-card .field{min-height:50px;padding:0 14px}
 .lg-card .field input{font-family:inherit;font-size:16px}
-.lg-card .btn{font-family:inherit;letter-spacing:.02em;text-transform:none;font-size:16px;border-radius:999px;min-height:50px}
+.lg-card .btn{font-family:inherit;letter-spacing:.02em;text-transform:none;font-size:16px;min-height:50px}
 #gwrap{gap:14px;margin-bottom:18px;justify-items:center}
 #gwrap .or{width:100%;font-family:inherit;letter-spacing:.02em;text-transform:none;font-size:14px}
 .err:empty{display:none}

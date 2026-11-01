@@ -52,7 +52,7 @@
           S.api('google.php', { credential: r.credential }).then(function (j) { done(j.user, 'Signed in with Google as ' + j.user.email); }).catch(function (e) { $('#g-err').textContent = e.message; });
         } });
         var w = Math.min(400, Math.max(200, $('#gbtn').clientWidth || 320));
-        window.google.accounts.id.renderButton($('#gbtn'), { type: 'standard', theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'outline' : 'filled_black', size: 'large', text: 'continue_with', shape: 'rectangular', width: w });
+        window.google.accounts.id.renderButton($('#gbtn'), { type: 'standard', theme: document.documentElement.getAttribute('data-theme') === 'light' ? 'outline' : 'filled_black', size: 'large', text: 'continue_with', shape: 'pill', width: w });
       };
       s.onerror = function () { $('#g-err').textContent = 'Google sign-in could not be loaded. Try email instead.'; };
       document.head.appendChild(s);
