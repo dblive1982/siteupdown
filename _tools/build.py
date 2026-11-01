@@ -86,7 +86,17 @@ def foot(scripts):
 </html>
 '''
 
+import hashlib, re as _re
+def _ver():
+    h = hashlib.md5()
+    for n in ('app.css', 'app.js', 'home.js', 'pages.js', 'worldmap.js'):
+        try: h.update(open(os.path.join(ROOT, 'assets', n), 'rb').read())
+        except OSError: pass
+    return h.hexdigest()[:8]
 def write(name, content):
+    if name.endswith('.html'):
+        v = _ver()
+        content = _re.sub(r'(/assets/(?:app\.css|app\.js|home\.js|pages\.js|worldmap\.js))(?=")', r'\1?v=' + v, content)
     with open(os.path.join(ROOT, name), 'w', encoding='utf-8') as f:
         f.write(content)
     print('wrote', name, len(content), 'bytes')
