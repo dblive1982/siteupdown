@@ -19,7 +19,6 @@
       view = v;
       $('#t-h').innerHTML = esc(T[v][0]).replace(/\.$/, '<span class="dot">.</span>'); $('#t-p').textContent = T[v][1];
       ['signin', 'create', 'forgot', 'reset', 'sent'].forEach(function (x) { var f = $('#v-' + x); if (f) f.hidden = x !== v; });
-      $('#seg').hidden = !(v === 'signin' || v === 'create');
       $('#gwrap').hidden = !(S.google && (v === 'signin' || v === 'create'));
       S.$$('#seg button').forEach(function (b) { b.setAttribute('aria-selected', b.getAttribute('data-v') === v); });
       S.$$('.err').forEach(function (e) { e.textContent = ''; });

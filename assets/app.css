@@ -235,3 +235,24 @@ section[id],[id=global-pulse]{scroll-margin-top:84px}
 .field .eye:hover,.field .eye:focus-visible{color:var(--green);outline:0}
 .field input[type=password],.field input{caret-color:var(--green)}
 .facts .xt{display:grid;gap:4px;margin-top:6px;padding-top:8px;border-top:1px dashed var(--line)}
+
+/* friendlier sign-in (GoUnscramble style) */
+.lg-head{margin-bottom:18px}
+.lg-head h1{font-size:clamp(30px,6vw,40px);margin:0 0 10px;text-align:left}
+.lg-head .lead{font-size:16px;text-align:left;margin:0}
+.lg-card{background:none;border:0;padding:0;box-shadow:none}
+.lg-card .stack{gap:16px}
+.fl{display:grid;gap:6px}
+.fl>span{font-size:14px;font-weight:600;color:var(--text)}
+.lg-card .field{min-height:50px;padding:0 14px}
+.lg-card .field input{font-family:inherit;font-size:16px}
+.lg-card .btn{font-family:inherit;letter-spacing:.02em;text-transform:none;font-size:16px;border-radius:999px;min-height:50px}
+#gwrap{gap:14px;margin-bottom:18px;justify-items:center}
+#gwrap .or{width:100%;font-family:inherit;letter-spacing:.02em;text-transform:none;font-size:14px}
+.err:empty{display:none}
+.lg-card .links{justify-content:center}
+.lg-card .links a{text-decoration:underline;color:var(--text)}
+.alt{text-align:center;font-size:15px;margin:0}
+.alt a{color:var(--text);font-weight:600;text-decoration:underline}
+.field .eye{font-family:inherit;font-size:13px;font-weight:600;padding:6px 12px;background:var(--card);border:1px solid var(--line);border-radius:999px;color:var(--text)}
+.seg[hidden]{display:none}

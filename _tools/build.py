@@ -193,37 +193,36 @@ def login():
     h = head('Sign in — siteupdown.com', 'Sign in or create a free siteupdown.com account to save your checks and build a watchlist.', '/login', noindex=True).replace('{BODYATTR}', ' data-page="login"')
     body = f'''
 <section class="page"><div class="wrap narrow">
-<div class="center"><span class="eyebrow"><i></i>Your account</span>
-<h1 id="t-h" style="margin:14px 0">Sign in<span class="dot">.</span></h1><p class="lead" id="t-p" style="margin-bottom:26px">Save your checks, build a watchlist and keep your history across devices. The checker itself stays free and works without signing in.</p></div>
+<div class="lg-head"><h1 id="t-h">Sign in<span class="dot">.</span></h1><p class="lead" id="t-p">Sign in to save your checks and watchlist and take them to any device. The checker is free to use without an account.</p></div>
 <p class="card" id="off" hidden>Accounts are not switched on yet. Please check back soon.</p>
-<div class="card" id="card">
-<div class="seg" id="seg" role="tablist"><button type="button" role="tab" data-v="signin" aria-selected="true">Sign in</button><button type="button" role="tab" data-v="create" aria-selected="false">Create account</button></div>
-<div class="stack" id="gwrap" hidden><div id="gbtn"></div><p class="err" id="g-err" role="alert"></p><div class="or">or with email</div></div>
+<div class="lg-card" id="card">
+<div class="seg" hidden id="seg" role="tablist"><button type="button" role="tab" data-v="signin" aria-selected="true">Sign in</button><button type="button" role="tab" data-v="create" aria-selected="false">Create account</button></div>
+<div class="stack" id="gwrap" hidden><div id="gbtn"></div><p class="err" id="g-err" role="alert"></p><div class="or">or use your email</div></div>
 
 <form class="stack" id="v-signin" novalidate>
-<div class="field">{I_MAIL}<input name="email" type="email" autocomplete="email" placeholder="you@example.com" aria-label="Email" required></div>
-<div class="field">{I_LOCK}<input name="password" type="password" autocomplete="current-password" placeholder="Password" aria-label="Password" required></div>
-<button class="btn block" type="submit"><span>Sign in</span>{I_ARROW}</button><p class="err" role="alert"></p>
-<div class="links"><a href="#" data-go="forgot">Forgot password?</a><a href="#" data-go="create">Need an account? Create one</a></div></form>
+<label class="fl"><span>Email</span><div class="field"><input name="email" type="email" autocomplete="email" placeholder="you@example.com" aria-label="Email" required></div></label>
+<label class="fl"><span>Password</span><div class="field"><input name="password" type="password" autocomplete="current-password" placeholder="Your password" aria-label="Password" required></div></label>
+<button class="btn block" type="submit"><span>Sign in</span></button><p class="err" role="alert"></p>
+<div class="links"><a href="#" data-go="forgot">Forgot your password?</a></div><p class="alt">New here? <a href="#" data-go="create">Create an account</a></p></form>
 
 <form class="stack" id="v-create" hidden novalidate>
-<div class="field">{I_USER}<input name="name" type="text" autocomplete="name" placeholder="What should we call you?" aria-label="Name" maxlength="60" required></div>
-<div class="field">{I_MAIL}<input name="email" type="email" autocomplete="email" placeholder="you@example.com" aria-label="Email" required></div>
-<div class="field">{I_LOCK}<input name="password" type="password" autocomplete="new-password" placeholder="Password (8+ characters)" aria-label="Password" minlength="8" required></div>
-<button class="btn block" type="submit"><span>Create account</span>{I_ARROW}</button><p class="err" role="alert"></p>
+<label class="fl"><span>Your name</span><div class="field"><input name="name" type="text" autocomplete="name" placeholder="What should we call you?" aria-label="Name" maxlength="60" required></div></label>
+<label class="fl"><span>Email</span><div class="field"><input name="email" type="email" autocomplete="email" placeholder="you@example.com" aria-label="Email" required></div></label>
+<label class="fl"><span>Password</span><div class="field"><input name="password" type="password" autocomplete="new-password" placeholder="Password (8+ characters)" aria-label="Password" minlength="8" required></div></label>
+<button class="btn block" type="submit"><span>Create account</span></button><p class="err" role="alert"></p>
 <p class="note">By creating an account you agree to our <a href="/legal">legal notice</a> and <a href="/privacy">privacy policy</a>.</p>
-<div class="links"><a href="#" data-go="signin">Already have an account? Sign in</a></div></form>
+<p class="alt">Already have an account? <a href="#" data-go="signin">Sign in</a></p></form>
 
 <form class="stack" id="v-forgot" hidden novalidate>
-<div class="field">{I_MAIL}<input name="email" type="email" autocomplete="email" placeholder="you@example.com" aria-label="Email" required></div>
-<button class="btn block" type="submit"><span>Send reset link</span>{I_ARROW}</button><p class="err" role="alert"></p>
-<div class="links"><a href="#" data-go="signin">Back to sign in</a></div></form>
+<label class="fl"><span>Email</span><div class="field"><input name="email" type="email" autocomplete="email" placeholder="you@example.com" aria-label="Email" required></div></label>
+<button class="btn block" type="submit"><span>Send reset link</span></button><p class="err" role="alert"></p>
+<p class="alt"><a href="#" data-go="signin">Back to sign in</a></p></form>
 
 <form class="stack" id="v-reset" hidden novalidate>
-<div class="field">{I_LOCK}<input name="password" type="password" autocomplete="new-password" placeholder="New password (8+ characters)" aria-label="New password" minlength="8" required></div>
-<button class="btn block" type="submit"><span>Save new password</span>{I_ARROW}</button><p class="err" role="alert"></p></form>
+<label class="fl"><span>Password</span><div class="field"><input name="password" type="password" autocomplete="new-password" placeholder="New password (8+ characters)" aria-label="New password" minlength="8" required></div></label>
+<button class="btn block" type="submit"><span>Save new password</span></button><p class="err" role="alert"></p></form>
 
-<div class="stack" id="v-sent" hidden><p class="note">Check your inbox, and your spam folder just in case.</p><div class="links"><a href="#" data-go="signin">Back to sign in</a></div></div>
+<div class="stack" id="v-sent" hidden><p class="note">Check your inbox, and your spam folder just in case.</p><p class="alt"><a href="#" data-go="signin">Back to sign in</a></p></div>
 </div></div></section>
 '''
     scripts = '<script src="/assets/app.js"></script>\n<script src="/assets/pages.js"></script>'
