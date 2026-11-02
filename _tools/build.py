@@ -470,7 +470,7 @@ def site_pages_build():
     assert len(slugs) == len(set(slugs)), 'duplicate slug in SITES'
     # the list the PHP side reads (api/_ files are blocked from the web by .htaccess)
     with open(os.path.join(ROOT, 'api', '_sitepages.json'), 'w') as f:
-        _json.dump({h: {'name': n, 'page': SP.page_path(n), 'cat': c} for n, h, c, _ in SP.SITES}, f, separators=(',', ':'))
+        _json.dump({h: dict({'name': n, 'page': SP.page_path(n), 'cat': c}, **({'app': [list(x) for x in SP.APPS[n]]} if n in SP.APPS else {})) for n, h, c, _ in SP.SITES}, f, separators=(',', ':'))
     kinds = ''.join('<button type="button" class="rk" data-kind="%s">%s</button>' % (k, l) for k, l in SP.KIND_LABELS)
     for name, host, cat, blurb in SP.SITES:
         n = html.escape(name); hh = html.escape(host)
@@ -497,11 +497,13 @@ def site_pages_build():
         tipsli = ''.join('<li>%s</li>' % t for t in tips)
         faqh = ''.join('<details><summary>%s</summary><p>%s</p></details>' % (html.escape(q), html.escape(a)) for q, a in faqs)
         body = (
-            '<section class="page"><div class="wrap prose sitepage" data-sp="site" data-host="%s" data-name="%s">' % (hh, n) +
+            '<section class="page"><div class="wrap prose sitepage" data-sp="site" data-host="%s" data-name="%s"%s>' % (hh, n, ' data-app="1"' if name in SP.APPS else '') +
             '<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/is-it-down/">Is it down?</a> / %s</nav>' % n +
             '<h1 class="sp-h1" style="margin:14px 0 18px">%s<span>Is %s down?</span></h1>' % (tile(name, host), n) +
             '<div class="sp-card" id="sp-status" aria-live="polite"><div class="sp-head"><span class="sp-pill" id="sp-pill">Checking…</span><span class="sp-msg" id="sp-msg">Loading the latest result for %s.</span></div>' % hh +
             '<div class="sp-stats" id="sp-stats"></div><noscript><p>Turn on JavaScript to see the live status.</p></noscript></div>' +
+            ('<div class="sp-card" id="sp-app" hidden><div class="sp-rhead"><b>%s app servers</b><span class="sp-level">Servers the app uses</span></div><ul class="sp-svc" id="sp-svc"></ul>'
+             '<p class="note">These are the servers the %s app talks to. If they answer, the servers are reachable, but that does not prove everything inside the app is working, such as messages, feeds or logins. For in-app problems, see what other visitors are reporting below.</p></div>' % (n, n) if name in SP.APPS else '') +
             '<p class="lead" style="margin-top:22px">%s</p>' % blurb +
             '<h2>Are other people having problems with %s?</h2>' % n +
             '<div class="sp-card" id="sp-reports"><div class="sp-rhead"><b id="sp-rtotal">Problem reports</b><span id="sp-rlevel" class="sp-level"></span></div>'
@@ -524,7 +526,7 @@ def site_pages_build():
     order = ['social', 'video', 'search', 'work', 'shopping', 'news', 'gaming']
     for cat in order:
         items = [(n, h, p) for n, h, c, p in SP.SITES if c == cat]
-        li = ''.join('<li data-host="%s" data-name="%s"><i class="dot-s"></i>%s<a href="%s">%s</a><span class="rep"></span></li>' % (html.escape(h), html.escape(n.lower()), tile(n, h), SP.page_path(n), html.escape(n)) for n, h, p in items)
+        li = ''.join('<li data-host="%s" data-name="%s"><i class="dot-s"></i>%s<a href="%s">%s</a><span class="rep"></span></li>' % (html.escape(h), html.escape(n.lower()), tile(n, h), SP.page_path(n), html.escape(n) + (' <em class="apptag">App</em>' if n in SP.APPS else '')) for n, h, p in items)
         groups += '<section class="dgroup"><h2>%s</h2><ul>%s</ul></section>' % (html.escape(SP.CATS[cat][0]), li)
     ld = '<script type="application/ld+json">' + _json.dumps({"@context": "https://schema.org", "@type": "CollectionPage", "name": "Is it down? Status of popular websites", "url": SITE + "/is-it-down/"}) + '</script>'
     h = head('Is it down? Live status of popular websites — siteupdown.com', 'Live status for popular websites, apps and games, checked every few minutes from our servers, with problem reports from other visitors.', '/is-it-down/', ld).replace('{BODYATTR}', '')

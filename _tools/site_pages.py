@@ -141,6 +141,30 @@ SITES = [
     ('Genshin Impact', 'genshin.hoyoverse.com', 'gaming', 'Genshin Impact is an open-world action game from HoYoverse. This page checks its website, not the game servers.'),
 ]
 
+# App back-end addresses that apps talk to (public web/API hosts that answer an ordinary request). Name -> [(label, host)].
+APPS = {
+    'WhatsApp': [('WhatsApp Web', 'web.whatsapp.com'), ('API', 'api.whatsapp.com')],
+    'Instagram': [('App API', 'i.instagram.com'), ('Graph API', 'graph.instagram.com')],
+    'Facebook': [('Mobile site', 'm.facebook.com'), ('Graph API', 'graph.facebook.com')],
+    'TikTok': [('Mobile site', 'm.tiktok.com')],
+    'Snapchat': [('App servers', 'app.snapchat.com'), ('Accounts', 'accounts.snapchat.com')],
+    'Telegram': [('Web app', 'web.telegram.org'), ('Bot API', 'api.telegram.org')],
+    'Discord': [('Gateway', 'gateway.discord.gg'), ('Media servers', 'cdn.discordapp.com')],
+    'Spotify': [('Web API', 'api.spotify.com'), ('Accounts and login', 'accounts.spotify.com')],
+    'Netflix': [('App API', 'api-global.netflix.com')],
+    'YouTube': [('App API', 'youtubei.googleapis.com')],
+    'Roblox': [('Game API', 'apis.roblox.com'), ('Login', 'auth.roblox.com')],
+    'Fortnite': [('Epic account service', 'account-public-service-prod.ol.epicgames.com')],
+    'Minecraft': [('Session servers', 'sessionserver.mojang.com'), ('Services API', 'api.minecraftservices.com')],
+    'Steam': [('Steam API', 'api.steampowered.com')],
+    'Twitch': [('API', 'api.twitch.tv')],
+    'Reddit': [('App API', 'oauth.reddit.com')],
+    'X': [('API', 'api.x.com')],
+    'Pinterest': [('API', 'api.pinterest.com')],
+    'ChatGPT': [('API servers', 'api.openai.com')],
+    'Xbox': [('Xbox sign-in', 'login.live.com')],
+}
+
 import re as _re
 
 def slug(name):

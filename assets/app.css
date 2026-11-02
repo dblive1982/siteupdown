@@ -695,3 +695,12 @@ abbr[data-n]:hover::after{content:attr(data-n);position:absolute;left:0;bottom:c
 .cform .btn:disabled{opacity:.6;cursor:default}
 .cf-ok{max-width:640px;margin:26px 0;padding:22px;border:1px solid var(--green);border-radius:var(--r);background:var(--green-soft)}
 .cf-ok h2{margin-top:0}
+
+/* app servers card + app tag */
+.sp-svc{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:10px}
+.sp-svc li{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
+.sp-svc code{color:var(--muted);font-size:.85em;word-break:break-all}
+.sp-svc .sp-pill{font-size:.75rem;padding:3px 10px;min-width:74px;text-align:center}
+.sp-ms{color:var(--muted);font-size:.85em}
+.apptag{font-style:normal;font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--green);border:1px solid var(--line);border-radius:999px;padding:1px 7px;margin-left:6px;vertical-align:middle}
+.prose .sp-svc{padding:0;margin:12px 0 0}.prose .sp-svc li{padding-left:0;margin:0}.prose .sp-svc li::before{content:none}

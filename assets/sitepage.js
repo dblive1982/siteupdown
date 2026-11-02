@@ -46,7 +46,7 @@
 
   /* ----------------------------------------------------------------- site page */
   var host = root.getAttribute('data-host'), name = root.getAttribute('data-name');
-  var rep = { level: 'none' }, cur = null;
+  var rep = { level: 'none' }, cur = null, isApp = root.getAttribute('data-app') === '1';
 
   function headline() {
     var pill = $('#sp-pill'), msg = $('#sp-msg');
@@ -56,7 +56,7 @@
     if (v === 'up') {
       pill.className = 'sp-pill up'; pill.textContent = 'Up';
       msg.textContent = busy ? 'We can reach ' + host + ', but many visitors are reporting problems. It may affect the app, logging in or certain regions.'
-        : name + ' is up. Our server reached ' + host + ' ' + ago(cur.at) + (cur.ms ? ' in ' + cur.ms + ' ms' : '') + '.';
+        : name + ' is up. Our server reached ' + host + ' ' + ago(cur.at) + (cur.ms ? ' in ' + cur.ms + ' ms' : '') + '.' + (isApp ? ' This shows the servers are reachable. Problems inside the app can still happen, so check the reports below.' : '');
     } else if (v === 'down') {
       pill.className = 'sp-pill down'; pill.textContent = 'Down';
       msg.textContent = name + ' looks down. Our server got errors on two attempts ' + ago(cur.at) + '.';
@@ -120,4 +120,21 @@
         if (r.ok) { pick.hidden = true; try { localStorage.setItem(key, String(Date.now())); } catch (e) {} loadReports(); }
       }).catch(function () { rmsg.textContent = 'Sorry, that did not work. Please try again later.'; });
   });
+})();
+
+/* App servers card (only on pages for apps) */
+(function () {
+  var root = document.querySelector('[data-sp="site"][data-app]');
+  if (!root) return;
+  var host = root.getAttribute('data-host');
+  var LBL = { up: ['up', 'Up'], down: ['down', 'Down'], timeout: ['slow', 'Slow'], inconclusive: ['unsure', 'Not sure'] };
+  function e(t) { return String(t == null ? '' : t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  fetch('/api/appsvc.php?host=' + encodeURIComponent(host)).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+    if (!j || !j.items || !j.items.length) return;
+    document.getElementById('sp-svc').innerHTML = j.items.map(function (x) {
+      var l = x.v ? LBL[x.v] || LBL.inconclusive : ['unsure', 'Not checked yet'];
+      return '<li><span class="sp-pill ' + l[0] + '">' + l[1] + '</span> <b>' + e(x.label) + '</b> <code>' + e(x.host) + '</code>' + (x.ms && x.v === 'up' ? ' <span class="sp-ms">' + x.ms + ' ms</span>' : '') + '</li>';
+    }).join('');
+    document.getElementById('sp-app').hidden = false;
+  }).catch(function () {});
 })();

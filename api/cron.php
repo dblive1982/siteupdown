@@ -21,7 +21,7 @@ $batch = (int)($c['cron_batch'] ?? 40);
 $hosts = [];
 foreach (top_sites() as $s) $hosts[$s[0]] = 1;
 foreach (gaming_sites() as $s) $hosts[$s[0]] = 1;
-foreach (array_keys(site_pages()) as $h0) $hosts[$h0] = 1;
+foreach (site_pages() as $h0 => $sp0) { $hosts[$h0] = 1; foreach ($sp0['app'] ?? [] as $ap) $hosts[$ap[1]] = 1; }
 foreach ($pdo->query('SELECT DISTINCT host FROM watchlist')->fetchAll() as $r) $hosts[$r['host']] = 1;
 $st = [];
 foreach ($pdo->query('SELECT host, checked_at FROM site_status')->fetchAll() as $r) $st[$r['host']] = $r['checked_at'];
