@@ -476,6 +476,6 @@ abbr[data-n]:hover::after,abbr[data-n]:focus::after{content:attr(data-n);positio
 /* smaller hero text on phones */
 @media(max-width:640px){
 .hero h1{font-size:clamp(26px,7.4vw,32px)}
-.hero .lead{font-size:14px;line-height:1.55;max-width:34ch}
+.hero .lead{font-size:14px;line-height:1.55}
 .hero .eyebrow{font-size:11px;letter-spacing:.12em}
 }
