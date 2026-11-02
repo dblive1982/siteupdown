@@ -575,3 +575,12 @@ abbr[data-n]:hover::after,abbr[data-n]:focus::after{content:attr(data-n);positio
 .tool .tgo{font-family:var(--mono);font-size:12px;color:var(--green);margin-top:8px}
 @media(max-width:900px){.tools-grid{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:520px){.tools-grid{grid-template-columns:1fr}}
+
+/* FAQ */
+.faq{display:grid;gap:10px;max-width:860px}
+.faq details{border:1px solid var(--line);border-radius:10px;background:var(--card);padding:0 18px}
+.faq summary{cursor:pointer;padding:16px 0;font-weight:600;font-size:16.5px;list-style:none;display:flex;justify-content:space-between;gap:14px}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";color:var(--green);font-family:var(--mono);font-size:20px;line-height:1}
+.faq details[open] summary::after{content:"–"}
+.faq p{margin:0 0 16px;color:var(--muted)}

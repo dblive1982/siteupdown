@@ -3,4 +3,10 @@ Allow: /
 Disallow: /api/
 Disallow: /login
 Disallow: /account
+Disallow: /s/
+
+# Google AdSense reviewer
+User-agent: Mediapartners-Google
+Allow: /
+
 Sitemap: https://siteupdown.com/sitemap.xml

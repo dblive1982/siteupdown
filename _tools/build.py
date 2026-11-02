@@ -46,7 +46,7 @@ def head(title, desc, path, extra_head='', noindex=False):
     t = html.escape(title)
     d = html.escape(desc)
     canon = SITE + path
-    robots = '<meta name="robots" content="noindex,follow">' if noindex else ''
+    robots = '<meta name="robots" content="noindex,follow">' if noindex else '<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">'
     return f'''<!doctype html>
 <html lang="en" data-theme="dark">
 <head>
@@ -58,9 +58,11 @@ def head(title, desc, path, extra_head='', noindex=False):
 <link rel="canonical" href="{canon}">
 <meta property="og:type" content="website"><meta property="og:site_name" content="siteupdown.com">
 <meta property="og:title" content="{t}"><meta property="og:description" content="{d}"><meta property="og:url" content="{canon}">
-<meta property="og:image" content="{SITE}/assets/og.png"><meta name="twitter:card" content="summary_large_image">
+<meta property="og:image" content="{SITE}/assets/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:locale" content="en_GB">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{t}"><meta name="twitter:description" content="{d}"><meta name="twitter:image" content="{SITE}/assets/og.png">
+<meta name="application-name" content="siteupdown.com"><meta name="format-detection" content="telephone=no">
 <meta name="theme-color" content="#130228">
-<link rel="icon" href="/favicon-64.png" type="image/png" sizes="64x64"><link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" href="/favicon-64.png" type="image/png" sizes="64x64"><link rel="manifest" href="/site.webmanifest"><link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="/assets/app.css">
@@ -77,7 +79,7 @@ def head(title, desc, path, extra_head='', noindex=False):
 '''
 
 def foot(scripts):
-    links = [('Regional map', '/#global-pulse'), ('How it works', '/#how-it-works'), ('Speed test', '/speed'), ('Monitor', '/monitor'), ('Account', '/account'), ('Contact', '/contact'), ('Legal notice', '/legal'), ('Privacy', '/privacy')]
+    links = [('Regional map', '/#global-pulse'), ('How it works', '/#how-it-works'), ('About', '/about'), ('Speed test', '/speed'), ('Monitor', '/monitor'), ('About', '/about'), ('Account', '/account'), ('Contact', '/contact'), ('Legal notice', '/legal'), ('Privacy', '/privacy')]
     return f'''</main>
 <footer class="site-foot"><div class="wrap">
 <div class="foot-brand">{BRAND}</div>
@@ -109,11 +111,14 @@ def write(name, content):
     print('wrote', name, len(content), 'bytes')
 
 # ---------------------------------------------------------------- home
+ADS_ON = False
+def ADS_OFF_GUARD(): return ADS_ON  # switch to True once AdSense is approved and the ad code is added
 def ad(label, text):
+    if not ADS_OFF_GUARD(): return ''
     return f'<aside class="ad" aria-label="Advertisement"><small>{label}</small><span>{text}</span></aside>'
 
 def home():
-    jsonld = '''<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"siteupdown.com","url":"https://siteupdown.com/","description":"Check whether a website is down for everyone or just you, with probes in twelve places around the world."}</script>'''
+    jsonld = '<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebSite", "@id": "https://siteupdown.com/#website", "name": "siteupdown.com", "url": "https://siteupdown.com/", "description": "Check whether a website is down for everyone or just you, with probes in twelve places around the world.", "inLanguage": "en-GB"}, {"@type": "Organization", "@id": "https://siteupdown.com/#org", "name": "siteupdown.com", "url": "https://siteupdown.com/", "logo": "https://siteupdown.com/android-chrome-512.png", "email": "hello@siteupdown.com"}, {"@type": "WebApplication", "name": "siteupdown.com website checker", "url": "https://siteupdown.com/", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "GBP"}}]}</script>\n<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I know if a website is down for everyone or just me?", "acceptedAnswer": {"@type": "Answer", "text": "Paste the address into the checker. We load it from our own server and from twelve probes in different countries at the same moment. If every probe reaches it, the site is up and the problem is probably on your side (your network, DNS, browser or device). If most fail, it is down for everyone."}}, {"@type": "Question", "name": "Why does it say Timeout or Inconclusive instead of Down?", "acceptedAnswer": {"@type": "Answer", "text": "A slow or blocked response is not proof that a site is down. We only call a site Confirmed down when the server returns errors on two attempts. Timeouts and blocked requests are reported as such so you are never told something we cannot be sure of."}}, {"@type": "Question", "name": "Is siteupdown.com free to use?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The checker, speed test and status pages are free and need no sign-up. A free account lets you keep a watchlist of up to 25 sites, see their uptime history and get an email when one goes down or comes back."}}, {"@type": "Question", "name": "How does the website speed test work?", "acceptedAnswer": {"@type": "Answer", "text": "It loads the page three times from our server and reports the median. You see how long finding the server, connecting, securing the connection, waiting and downloading each took, plus page size, compression, protocol and a grade with plain-English tips."}}, {"@type": "Question", "name": "Can I check an SSL certificate or a domain\'s expiry date?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Every check shows the SSL certificate (who issued it, when it expires, whether it covers the address) as well as DNS records, redirects and the domain registration expiry date."}}, {"@type": "Question", "name": "How often are monitored sites checked?", "acceptedAnswer": {"@type": "Answer", "text": "Sites on a watchlist are re-checked about every five minutes. A site is only reported as down after two failed checks in a row, which avoids false alarms."}}]}</script>'
     h = head('siteupdown.com — Is the website down, or just you?', 'Paste any website address to see if it is down for everyone or only for you. We check from our server and from twelve probes in different countries, at the same time.', '/', jsonld)
     h = h.replace('{BODYATTR}', ' data-page="home"')
     share_btns = ''.join(f'<button class="sb{" wide" if k=="copy" else ""}" type="button" data-share="{k}" title="{t}" aria-label="{t}"{" hidden" if k=="native" else ""}>{i}{("<span>"+t+"</span>") if k=="copy" else ""}</button>' for k, t, i in [('copy', 'Copy link', I_LINK), ('x', 'Share on X', I_X), ('fb', 'Share on Facebook', I_FB), ('wa', 'Share on WhatsApp', I_WA), ('native', 'More share options', I_SHARE)])
@@ -210,6 +215,17 @@ def home():
 <a class="tool" href="/monitor"><span class="ti">🔔</span><h3>Monitor &amp; email alerts</h3><p>Watch up to 25 sites and get an email when one goes down and when it is back.</p><span class="tgo">Open Monitor →</span></a>
 <a class="tool" href="#checker-title" onclick="document.getElementById('chk-input').focus()"><span class="ti">🔒</span><h3>SSL, DNS &amp; domain expiry</h3><p>Every check shows the certificate, DNS records, redirects and when the domain expires.</p><span class="tgo">Run a check →</span></a>
 <a class="tool" href="/monitor"><span class="ti">📈</span><h3>Uptime history &amp; status pages</h3><p>Uptime over 24 hours, 7 and 30 days, with a public status page you can share.</p><span class="tgo">Start tracking →</span></a>
+</div></div></section>
+
+<section id="faq"><div class="wrap">
+<div class="sec-head"><span class="eyebrow"><i></i>Questions</span><h2>Frequently asked questions<span class="dot">.</span></h2></div>
+<div class="faq">
+<details><summary>How do I know if a website is down for everyone or just me?</summary><p>Paste the address into the checker. We load it from our own server and from twelve probes in different countries at the same moment. If every probe reaches it, the site is up and the problem is probably on your side (your network, DNS, browser or device). If most fail, it is down for everyone.</p></details>
+<details><summary>Why does it say Timeout or Inconclusive instead of Down?</summary><p>A slow or blocked response is not proof that a site is down. We only call a site Confirmed down when the server returns errors on two attempts. Timeouts and blocked requests are reported as such so you are never told something we cannot be sure of.</p></details>
+<details><summary>Is siteupdown.com free to use?</summary><p>Yes. The checker, speed test and status pages are free and need no sign-up. A free account lets you keep a watchlist of up to 25 sites, see their uptime history and get an email when one goes down or comes back.</p></details>
+<details><summary>How does the website speed test work?</summary><p>It loads the page three times from our server and reports the median. You see how long finding the server, connecting, securing the connection, waiting and downloading each took, plus page size, compression, protocol and a grade with plain-English tips.</p></details>
+<details><summary>Can I check an SSL certificate or a domain's expiry date?</summary><p>Yes. Every check shows the SSL certificate (who issued it, when it expires, whether it covers the address) as well as DNS records, redirects and the domain registration expiry date.</p></details>
+<details><summary>How often are monitored sites checked?</summary><p>Sites on a watchlist are re-checked about every five minutes. A site is only reported as down after two failed checks in a row, which avoids false alarms.</p></details>
 </div></div></section>
 
 <section id="how-it-works"><div class="wrap">
@@ -353,6 +369,18 @@ def prose(name, title, desc, path, inner):
     write(name, h + body + foot('<script src="/assets/app.js"></script>'))
 
 def static_pages():
+    prose('about.html', 'About', 'About siteupdown.com: a free, independent website status, speed and uptime checker.', '/about', '''
+<p class="lead">siteupdown.com answers one question quickly: is this website down for everyone, or is it just you?</p>
+<h2>What we do</h2>
+<p>When a page will not load, it is hard to tell whether the site is broken or something on your side is. You paste the address, and we load it from our own server and from twelve probes in different countries at the same moment. If every probe reaches it, the site is up and the problem is probably your network, DNS, browser or device. If most fail, it is down for everyone.</p>
+<h2>More than a status check</h2>
+<p>Every check also shows the SSL certificate, DNS records, redirects and the domain&rsquo;s registration expiry. The <a href="/speed">speed test</a> times where a page&rsquo;s load goes. With a free account you can keep a <a href="/monitor">watchlist</a>, see uptime history and get an email when a site goes down or comes back, and each monitored site has a public status page.</p>
+<h2>How we try to be fair</h2>
+<p>We would rather say &ldquo;not sure&rdquo; than be wrong. A slow response is a Timeout and a blocked request is Inconclusive; we only say Confirmed down after repeated server errors. Every result is a snapshot of one moment, and we say so.</p>
+<h2>Independent</h2>
+<p>siteupdown.com is not affiliated with the websites, games or services it checks. Regional probes run on the public <a href="https://globalping.io" rel="noopener">Globalping</a> network. The site is supported by advertising, so it stays free to use.</p>
+<h2>Get in touch</h2>
+<p>Found a bug or want a site added to the lists? <a href="/contact">Contact us</a>.</p>''')
     prose('privacy.html', 'Privacy', 'How siteupdown.com handles checks, accounts, cookies and your data.', '/privacy', '''
 <p>We keep this short and plain. siteupdown.com checks whether websites are reachable. We collect as little as we can to do that.</p>
 <h2>Website checks</h2>
@@ -363,6 +391,8 @@ def static_pages():
 <p>If you sign in with Google, Google tells us your name and verified email address. We do not get access to anything else in your Google account.</p>
 <h2>Cookies and storage</h2>
 <p>We use essential storage to run the site: your theme, your cookie choice, your recent searches (kept on your device) and a sign-in cookie if you are signed in. Analytics and advertising cookies are optional and off until you allow them in &ldquo;Cookie settings&rdquo;. No advertising script is connected at the moment.</p>
+<h2>Advertising</h2>
+<p>siteupdown.com is supported by advertising. Third-party vendors, including Google, may use cookies to serve ads based on a visitor&rsquo;s previous visits to this and other websites. Google&rsquo;s use of advertising cookies enables it and its partners to serve ads based on visits to this site and/or other sites on the internet. Advertising cookies are only used if you allow them in our cookie choices. You can opt out of personalised advertising at <a href="https://www.google.com/settings/ads" rel="noopener">Google Ads Settings</a>, or at <a href="https://www.aboutads.info" rel="noopener">aboutads.info</a>.</p>
 <h2>Technical logs</h2>
 <p>To keep the service safe from abuse we briefly keep a one-way hash of the visitor&rsquo;s network address for rate limiting. It cannot be turned back into an address and is removed within a day.</p>
 <h2>Results are snapshots</h2>

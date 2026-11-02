@@ -154,11 +154,14 @@
     var m = location.pathname.match(/\/status\/([^\/]+)/), host = m ? decodeURIComponent(m[1]).toLowerCase() : '', range = '24h';
     if (!host) { $('#st-p').textContent = 'Add a website address to the end of this link, like /status/example.com.'; $('#st-body').innerHTML = ''; return; }
     document.title = host + ' status — siteupdown.com';
+    (function () { var c = document.querySelector('link[rel=canonical]'), u = location.origin + '/status/' + host; if (c) c.href = u; var set = function (sel, v) { var m = document.querySelector(sel); if (m) m.setAttribute('content', v); };
+      var d = 'Live status, uptime and recent outages for ' + host + ', checked every few minutes by siteupdown.com.'; set('meta[name=description]', d); set('meta[property="og:title"]', host + ' status — siteupdown.com'); set('meta[property="og:description"]', d); set('meta[property="og:url"]', u); set('meta[name="twitter:title"]', host + ' status — siteupdown.com'); })();
     $('#st-h').innerHTML = esc(host) + '<span class="dot">.</span>';
     function dur(sec) { if (sec < 90) return 'about a minute'; if (sec < 5400) return Math.round(sec / 60) + ' min'; if (sec < 172800) return (sec / 3600).toFixed(1) + ' hours'; return (sec / 86400).toFixed(1) + ' days'; }
     function fmtPct(v) { return v == null ? '—' : (v >= 99.995 ? '100' : v.toFixed(2).replace(/0$/, '')) + '%'; }
     function load() {
       fetch('/api/uptime.php?host=' + encodeURIComponent(host) + '&range=' + range).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || 'Could not load.'); return j; }); }).then(draw).catch(function (e) {
+        var rb = document.querySelector('meta[name=robots]'); if (rb) rb.setAttribute('content', 'noindex,follow');
         $('#st-p').textContent = ''; $('#st-pill').innerHTML = '';
         $('#st-body').innerHTML = '<div class="empty">' + esc(e.message) + '<br><br><a class="btn small" href="/monitor"><span>Open Monitor</span></a> <a class="btn small ghost" href="/?q=' + encodeURIComponent(host) + '">Check it now</a></div>';
       });
