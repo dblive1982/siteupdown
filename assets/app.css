@@ -707,3 +707,11 @@ abbr[data-n]:hover::after{content:attr(data-n);position:absolute;left:0;bottom:c
 
 .app-row{margin-top:14px}
 a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--text)}
+
+/* gently pulsing live status (switched off by prefers-reduced-motion above) */
+.sp-pill.up{animation:glowg 2.6s ease-in-out infinite}
+.sp-pill.down{animation:glowr 1.2s ease-in-out infinite}
+.sp-pill.slow{animation:glowa 1.8s ease-in-out infinite}
+.dot-s.up{animation:glowg 2.6s ease-in-out infinite}
+.dot-s.down{animation:glowr 1.2s ease-in-out infinite}
+.dot-s.slow{animation:glowa 1.8s ease-in-out infinite}
