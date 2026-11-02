@@ -536,3 +536,5 @@ abbr[data-n]:hover::after,abbr[data-n]:focus::after{content:attr(data-n);positio
 /* darker navy: page is deeper than the logo, cards use the logo colour #130228 */
 :root:not([data-theme=light]){--bg:#0b0119;--bg2:#130228;--card:#130228;--card2:#170633;--line:#2b1a52}
 :root:not([data-theme=light]) .site-head{background:rgba(11,1,25,.94)}
+.live{color:var(--red)!important}
+.live::before{background:var(--red);box-shadow:0 0 8px var(--red)}
