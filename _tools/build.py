@@ -129,8 +129,8 @@ def home():
 <div class="field">{I_GLOBE}<input id="chk-input" name="address" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Type any website address, e.g. example.com" maxlength="300" aria-label="Website address"></div>
 <button class="btn" id="chk-btn" type="submit"><span>Check website</span>{I_ARROW}</button></div>
 <p class="err" id="chk-err" role="alert"></p>
-<div class="chk-foot"><label class="check thorough"><input type="checkbox" id="chk-thorough"><span><b>Thorough check</b><small>Downloads part of the page, reads title &amp; headers, and adds DNS and domain-expiry details</small></span></label>
-<p class="assure">{I_SHIELD}No sign-up. No downloads. Just answers.</p></div>
+<div class="chk-foot">
+<p class="assure">{I_SHIELD}No sign-up. Just answers.</p></div>
 </form>
 <div class="recent-row" id="recent-wrap" hidden><div class="eyebrow">Your recent searches</div><div class="chips" id="recent-chips"></div></div>
 <div class="try-row"><span class="eyebrow">Try a website</span><div class="chips">

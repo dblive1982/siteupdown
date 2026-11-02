@@ -106,7 +106,7 @@
     if (r.chain && r.chain.length > 1) f += '<div>Redirects: ' + r.chain.map(function (c) { return '<b>' + esc(c.url.replace(/^https?:\/\//, '')) + '</b> <small>(' + esc(c.code) + ')</small>'; }).join(' → ') + '</div>';
     var x = r.extra;
     if (x && (x.ip || x.ctype || x.desc || x.tls_expires)) {
-      f += '<div class="xt"><div><b>Thorough details</b></div>';
+      f += '<div class="xt"><div><b>More details</b></div>';
       if (x.final) f += '<div>Final address: <b>' + esc(x.final) + '</b></div>';
       if (x.ip) f += '<div>Server IP: <b>' + esc(x.ip) + '</b></div>';
       if (x.ctype) f += '<div>Content type: <b>' + esc(x.ctype) + '</b>' + (x.lang ? ' (language ' + esc(x.lang) + ')' : '') + '</div>';
@@ -115,7 +115,7 @@
       f += '<div>Security headers: <b>' + (x.sec && x.sec.length ? esc(x.sec.join(', ')) : 'none seen') + '</b></div></div>';
     }
     var on = !!(r.dns || (x && (x.ip || x.ctype || x.desc || x.tls_expires)));
-    return f ? '<details class="dl"><summary>What was downloaded &amp; checked<span>Thorough check ' + (on ? 'on' : 'off') + '</span></summary><div class="dlb">' + f + '</div></details>' : '';
+    return f ? '<details class="dl"><summary>What was checked<span>' + (on ? 'Full details' : 'Basic') + '</span></summary><div class="dlb">' + f + '</div></details>' : '';
   }
 
 
@@ -192,7 +192,7 @@
     setPanel({ key: 'pending', big: 'Checking ' + addr + '…', sub: 'Asking our server first, then probes around the world.', status: 'Running' });
     drawProbes([]); chartsClear(); mapMsg('Dispatching probes…'); tip.hidden = true;
     $('#global-pulse').scrollIntoView({ behavior: 'smooth', block: 'start' });
-    S.api('check.php', { address: addr, thorough: $('#chk-thorough').checked }).then(function (j) {
+    S.api('check.php', { address: addr }).then(function (j) {
       if (id !== state.runId) return;
       state.host = j.result.host; state.share = j.share; state.result = j.result;
       saveRecent(j.result.host); refreshFeed();

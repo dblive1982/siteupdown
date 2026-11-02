@@ -1,5 +1,5 @@
 <?php
-// POST {address, thorough} -> server check result + a share id used for the regional run.
+// POST {address} -> server check result + a share id used for the regional run.
 require __DIR__ . '/_boot.php';
 require __DIR__ . '/_probe.php';
 require __DIR__ . '/_tls.php';
@@ -11,7 +11,7 @@ if (!$t) out(422, ['error' => 'Please enter a website address like example.com.'
 $pdo = db();
 throttle('check', 30, 10);
 note_attempt('check');
-$thorough = !empty($in['thorough']);
+$thorough = true; // every check is a full check
 $r = check_site($host, $path, $thorough);
 $r['tls'] = null;
 if (!in_array($r['err'] ?? null, ['dns', 'blocked'], true)) {
