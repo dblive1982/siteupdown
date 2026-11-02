@@ -18,7 +18,7 @@ def invader():
     r += '<rect x="3" y="3" width="1" height="1" fill="var(--bg)"/><rect x="7" y="3" width="1" height="1" fill="var(--bg)"/>'
     return '<svg viewBox="0 0 11 8" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">%s</svg>' % r
 INV = invader()
-BRAND = '<img class="logo-mark" src="/assets/dino.png" alt="" width="55" height="52"><img class="wm wm-d" src="/assets/wordmark-dark.png" alt="siteupdown.com" width="150" height="26"><img class="wm wm-l" src="/assets/wordmark-light.png" alt="" width="150" height="26">'
+BRAND = '<img class="lf lf-d" src="/assets/logo-full-dark.png" alt="siteupdown.com" width="116" height="48"><img class="lf lf-l" src="/assets/logo-full-light.png" alt="" width="116" height="48">'
 
 def ico(path, extra=''):
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"%s>%s</svg>' % (extra, path)

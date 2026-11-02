@@ -512,3 +512,16 @@ abbr[data-n]:hover::after,abbr[data-n]:focus::after{content:attr(data-n);positio
 @keyframes blinksq{0%,100%{opacity:1}50%{opacity:.1}}
 .hero .wrap>*:not(.rings){position:relative;z-index:1}
 .site-head .wm{height:27px}@media(max-width:520px){.site-head .wm{height:21px}}
+
+/* full logo (green S tile + stacked name), theme-aware */
+.lf{height:48px;width:auto;display:block}
+.lf-l{display:none}
+:root[data-theme=light] .lf-d{display:none}:root[data-theme=light] .lf-l{display:block}
+.foot-brand .lf{height:44px}
+@media(max-width:520px){.lf{height:38px}.foot-brand .lf{height:38px}}
+.brand{gap:0}
+
+/* deep-blue preview from the logo (?navy=1) */
+:root.navy:not([data-theme=light]){--bg:#130228;--bg2:#1b0a38;--card:#170633;--card2:#1d0b3d;--line:#33205a;--text:#eef0f6;--muted:#a79fc4;--dot:rgba(170,150,230,.10);--hard:#0d0120;--glow:rgba(57,181,74,.08)}
+:root.navy:not([data-theme=light]) .site-head{background:rgba(19,2,40,.92)}
+.site-head .lf{height:56px}@media(max-width:520px){.site-head .lf{height:44px}}
