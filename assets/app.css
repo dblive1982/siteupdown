@@ -466,3 +466,9 @@ abbr[data-n]:hover::after,abbr[data-n]:focus::after{content:attr(data-n);positio
 .pill.pending::before,.pill.none::before,.pill.inconclusive::before{animation:none}
 .eyebrow i,.row .st i{animation:blinkdot 2.2s ease-in-out infinite}
 .row.down .st i{animation-duration:.9s}
+
+/* sign-in: the Google slot keeps one fixed size whether it is loading, loaded or failed, so nothing moves */
+#gbtn{height:44px;min-height:44px;overflow:hidden}
+#gbtn.gfail{font-size:14px;color:var(--muted);border:1px dashed var(--line);border-radius:999px;line-height:1.2;padding:0 14px;text-align:center}
+#gwrap{gap:12px}
+#g-err:empty{display:none}

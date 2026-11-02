@@ -54,7 +54,7 @@
         var w = Math.min(400, Math.max(200, $('#gbtn').clientWidth || 320));
         window.google.accounts.id.renderButton($('#gbtn'), { type: 'standard', theme: 'outline', size: 'large', text: 'continue_with', shape: 'pill', width: w });
       };
-      s.onerror = function () { $('#g-err').textContent = 'Google sign-in could not be loaded. Try email instead.'; };
+      s.onerror = function () { var g = $('#gbtn'); g.className = 'gfail'; g.textContent = 'Google sign-in is unavailable. Use email below.'; };
       document.head.appendChild(s);
     }
   }
