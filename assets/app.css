@@ -511,3 +511,4 @@ abbr[data-n]:hover::after,abbr[data-n]:focus::after{content:attr(data-n);positio
 .rings rect{animation:blinksq 1.1s ease-in-out infinite}
 @keyframes blinksq{0%,100%{opacity:1}50%{opacity:.1}}
 .hero .wrap>*:not(.rings){position:relative;z-index:1}
+.site-head .wm{height:27px}@media(max-width:520px){.site-head .wm{height:21px}}
