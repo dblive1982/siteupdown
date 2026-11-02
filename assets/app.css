@@ -704,3 +704,6 @@ abbr[data-n]:hover::after{content:attr(data-n);position:absolute;left:0;bottom:c
 .sp-ms{color:var(--muted);font-size:.85em}
 .apptag{font-style:normal;font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--green);border:1px solid var(--line);border-radius:999px;padding:1px 7px;margin-left:6px;vertical-align:middle}
 .prose .sp-svc{padding:0;margin:12px 0 0}.prose .sp-svc li{padding-left:0;margin:0}.prose .sp-svc li::before{content:none}
+
+.app-row{margin-top:14px}
+a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--text)}
