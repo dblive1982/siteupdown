@@ -40,7 +40,7 @@ I_X = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="
 I_TT = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 3a5 5 0 0 0 4 4.4v3.3a8 8 0 0 1-4-1.2v6.2a6 6 0 1 1-6-6c.3 0 .7 0 1 .1v3.4a2.7 2.7 0 1 0 1.8 2.5V3z"/></svg>'
 I_YT = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2C2 8.8 2 12 2 12s0 3.2.4 4.8a2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8c.4-1.6.4-4.8.4-4.8s0-3.2-.4-4.8zM10 15V9l5.2 3z"/></svg>'
 
-NAV = [('Regional map', '/#global-pulse'), ('Top websites', '/#top-sites'), ('Gaming', '/#online-gaming'), ('Speed test', '/speed'), ('Monitor', '/monitor'), ('Account', '/account'), ('How it works', '/#how-it-works')]
+NAV = [('Regional map', '/#global-pulse'), ('Top websites', '/#top-sites'), ('Gaming', '/#online-gaming'), ('Monitor', '/monitor'), ('Account', '/account'), ('How it works', '/#how-it-works')]
 
 def head(title, desc, path, extra_head='', noindex=False):
     t = html.escape(title)
