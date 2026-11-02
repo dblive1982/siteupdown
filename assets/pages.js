@@ -131,8 +131,9 @@
       $('#m-count').textContent = j.items.length + ' of ' + j.max + ' sites';
       if (!j.items.length) { L.innerHTML = '<div class="empty">Your watchlist is empty.<br>Add a site above to see whether it is up.</div>'; return; }
       L.innerHTML = j.items.map(function (x) {
-        return '<div class="item"><div class="t"><b>' + esc(x.host) + '</b><small>' + (x.at ? 'Last checked ' + esc(S.ago(x.at)) : 'Not checked yet') + (x.ms != null ? ' · ' + esc(S.ms(x.ms)) : '') + (x.code ? ' · HTTP ' + x.code : '') + '</small></div>'
-          + '<div class="acts">' + S.pill(x.verdict || 'pending') + '<button class="btn small ghost" data-chk="' + esc(x.host) + '">Check now</button><a class="btn small ghost" href="/?q=' + encodeURIComponent(x.host) + '">Worldwide</a><button class="btn small ghost" data-rm="' + esc(x.host) + '" aria-label="Remove ' + esc(x.host) + '">Remove</button></div></div>';
+        return '<div class="item"><div class="t"><b>' + esc(x.host) + '</b><small>' + (x.at ? 'Last checked ' + esc(S.ago(x.at)) : 'Not checked yet') + (x.ms != null ? ' · ' + esc(S.ms(x.ms)) : '') + (x.code ? ' · HTTP ' + x.code : '') + (x.uptime != null ? ' · ' + x.uptime + '% up (24h)' : '') + '</small></div>'
+          + '<div class="acts">' + S.pill(x.verdict || 'pending') + '<button class="btn small ghost bell' + (x.alerts ? ' on' : '') + '" data-al="' + esc(x.host) + '" data-on="' + (x.alerts ? 1 : 0) + '" aria-pressed="' + !!x.alerts + '" title="Email me when this site goes down or comes back">' + (x.alerts ? 'Alerts on' : 'Alerts off') + '</button>'
+          + '<a class="btn small ghost" href="/status/' + encodeURIComponent(x.host) + '">History</a><button class="btn small ghost" data-chk="' + esc(x.host) + '">Check now</button><a class="btn small ghost" href="/?q=' + encodeURIComponent(x.host) + '">Worldwide</a><button class="btn small ghost" data-rm="' + esc(x.host) + '" aria-label="Remove ' + esc(x.host) + '">Remove</button></div></div>';
       }).join('');
     }
     function load() { S.api('watch.php').then(draw).catch(function (e) { $('#m-list').innerHTML = '<div class="empty">' + esc(e.message) + '</div>'; }); }
@@ -141,13 +142,61 @@
       S.api('watch.php', { action: 'add', address: i.value }).then(function (j) { i.value = ''; draw(j); }).catch(function (x) { er.textContent = x.message; }).then(function () { b.disabled = false; });
     });
     $('#m-list').addEventListener('click', function (e) {
-      var c = e.target.closest('[data-chk]'), r = e.target.closest('[data-rm]');
+      var c = e.target.closest('[data-chk]'), r = e.target.closest('[data-rm]'), al = e.target.closest('[data-al]');
+      if (al) { S.api('watch.php', { action: 'alerts', host: al.getAttribute('data-al'), on: al.getAttribute('data-on') !== '1' }).then(draw).catch(function (x) { S.toast(x.message, true); }); }
       if (c) { c.disabled = true; c.textContent = 'Checking…'; S.api('watch.php', { action: 'check', host: c.getAttribute('data-chk') }).then(draw).catch(function (x) { S.toast(x.message, true); load(); }); }
       if (r) S.api('watch.php', { action: 'remove', host: r.getAttribute('data-rm') }).then(draw).catch(function (x) { S.toast(x.message, true); });
     });
   }
 
+  /* ================= STATUS PAGE ================= */
+  function initStatus() {
+    var m = location.pathname.match(/\/status\/([^\/]+)/), host = m ? decodeURIComponent(m[1]).toLowerCase() : '', range = '24h';
+    if (!host) { $('#st-p').textContent = 'Add a website address to the end of this link, like /status/example.com.'; $('#st-body').innerHTML = ''; return; }
+    document.title = host + ' status — siteupdown.com';
+    $('#st-h').innerHTML = esc(host) + '<span class="dot">.</span>';
+    function dur(sec) { if (sec < 90) return 'about a minute'; if (sec < 5400) return Math.round(sec / 60) + ' min'; if (sec < 172800) return (sec / 3600).toFixed(1) + ' hours'; return (sec / 86400).toFixed(1) + ' days'; }
+    function fmtPct(v) { return v == null ? '—' : (v >= 99.995 ? '100' : v.toFixed(2).replace(/0$/, '')) + '%'; }
+    function load() {
+      fetch('/api/uptime.php?host=' + encodeURIComponent(host) + '&range=' + range).then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.error || 'Could not load.'); return j; }); }).then(draw).catch(function (e) {
+        $('#st-p').textContent = ''; $('#st-pill').innerHTML = '';
+        $('#st-body').innerHTML = '<div class="empty">' + esc(e.message) + '<br><br><a class="btn small" href="/monitor"><span>Open Monitor</span></a> <a class="btn small ghost" href="/?q=' + encodeURIComponent(host) + '">Check it now</a></div>';
+      });
+    }
+    function draw(j) {
+      var c = j.current, v = c.verdict;
+      var say = { up: 'is up and answering.', down: 'looks down right now.', timeout: 'is slow to answer right now.', inconclusive: 'could not be verified on the last check.' }[v] || 'status unknown.';
+      $('#st-p').textContent = host + ' ' + say + ' Last checked ' + S.ago(c.at) + '.';
+      $('#st-pill').innerHTML = S.pill(v);
+      var u = j.uptime, h = '<div class="stat-row">'
+        + '<div class="stat"><span class="k">Uptime 24h</span><b>' + fmtPct(u['24h']) + '</b></div><div class="stat"><span class="k">Uptime 7 days</span><b>' + fmtPct(u['7d']) + '</b></div><div class="stat"><span class="k">Uptime 30 days</span><b>' + fmtPct(u['30d']) + '</b></div>'
+        + '<div class="stat"><span class="k">Avg response</span><b>' + (j.avg_ms != null ? esc(S.ms(j.avg_ms)) : '—') + '</b></div></div>';
+      h += '<div class="seg2" role="tablist">' + ['24h', '7d', '30d'].map(function (r) { return '<button type="button" data-r="' + r + '" aria-selected="' + (r === range) + '">' + (r === '24h' ? 'Last 24 hours' : r === '7d' ? 'Last 7 days' : 'Last 30 days') + '</button>'; }).join('') + '</div>';
+      h += '<div class="upbar" role="img" aria-label="Uptime over the selected period">' + j.series.map(function (b) { return '<i class="' + b.state + '" title="' + esc(S.when(b.t)) + ' · ' + (b.state === 'none' ? 'no data' : b.state === 'up' ? 'up' : b.state === 'down' ? 'down' : 'some failures') + (b.ms != null ? ' · ' + esc(S.ms(b.ms)) : '') + '"></i>'; }).join('') + '</div>';
+      h += '<div class="upleg"><span>' + (range === '24h' ? '24 hours ago' : range === '7d' ? '7 days ago' : '30 days ago') + '</span><span>Now</span></div>';
+      h += '<h3 class="sh3">Response time</h3>' + lineChart(j.series);
+      h += '<h3 class="sh3">Recent outages</h3>';
+      h += j.incidents.length ? '<div class="inc">' + j.incidents.map(function (i) { return '<div><b>' + (i.ended ? 'Down for ' + esc(dur(i.seconds)) : 'Down now · ' + esc(dur(i.seconds)) + ' so far') + '</b><small>' + esc(S.when(i.started)) + (i.ended ? ' → ' + esc(S.when(i.ended)) : '') + '</small></div>'; }).join('') + '</div>' : '<p class="note">No outages recorded. ✔</p>';
+      if (j.ssl && j.ssl.days != null) h += '<p class="note" style="margin-top:14px">SSL certificate: <b>' + esc(j.ssl.status === 'valid' || j.ssl.status === 'expiring' ? 'valid, expires in ' + j.ssl.days + ' days' : j.ssl.status) + '</b></p>';
+      h += '<div class="row-actions" style="margin-top:18px"><a class="btn small" href="/?q=' + encodeURIComponent(host) + '"><span>Check from 12 places</span></a><button class="btn small ghost" id="st-copy" type="button">Copy this link</button></div>';
+      $('#st-body').innerHTML = h;
+    }
+    function lineChart(series) {
+      var pts = series.map(function (b, i) { return b.ms != null ? [i, b.ms] : null; }).filter(Boolean);
+      if (pts.length < 2) return '<p class="note">Not enough data yet. Results appear after a few checks.</p>';
+      var W = 600, H = 150, max = Math.max.apply(null, pts.map(function (p) { return p[1]; })) * 1.15 || 1, n = series.length - 1;
+      var xy = function (p) { return (p[0] / n * W).toFixed(1) + ',' + (H - 10 - (p[1] / max) * (H - 24)).toFixed(1); };
+      var d = pts.map(xy).join(' ');
+      return '<svg class="lc" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" role="img" aria-label="Response time over the selected period"><line x1="0" x2="' + W + '" y1="' + (H - 10) + '" y2="' + (H - 10) + '" class="ax"/><polyline points="' + d + '" class="ln"/><polyline points="0,' + (H - 10) + ' ' + d + ' ' + W + ',' + (H - 10) + '" class="ar"/></svg><div class="upleg"><span>Peak ' + esc(S.ms(Math.round(max / 1.15))) + '</span><span>Lower is faster</span></div>';
+    }
+    $('#st-body').addEventListener('click', function (e) {
+      var b = e.target.closest('[data-r]'); if (b) { range = b.getAttribute('data-r'); load(); }
+      if (e.target.closest('#st-copy')) { try { navigator.clipboard.writeText(location.href); S.toast('Link copied'); } catch (x) { S.toast('Copy the address from your browser bar'); } }
+    });
+    load(); setInterval(function () { if (!document.hidden) load(); }, 60000);
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
-    if (page === 'login') initLogin(); else if (page === 'account') initAccount(); else if (page === 'monitor') initMonitor();
+    if (page === 'login') initLogin(); else if (page === 'account') initAccount(); else if (page === 'monitor') initMonitor(); else if (page === 'status') initStatus();
   });
 })();

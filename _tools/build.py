@@ -129,7 +129,7 @@ def home():
 <div class="field">{I_GLOBE}<input id="chk-input" name="address" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Type any website address, e.g. example.com" maxlength="300" aria-label="Website address"></div>
 <button class="btn" id="chk-btn" type="submit"><span>Check website</span>{I_ARROW}</button></div>
 <p class="err" id="chk-err" role="alert"></p>
-<div class="chk-foot"><label class="check thorough"><input type="checkbox" id="chk-thorough"><span><b>Thorough check</b><small>Downloads part of the page and extracts title, headers &amp; more</small></span></label>
+<div class="chk-foot"><label class="check thorough"><input type="checkbox" id="chk-thorough"><span><b>Thorough check</b><small>Downloads part of the page, reads title &amp; headers, and adds DNS and domain-expiry details</small></span></label>
 <p class="assure">{I_SHIELD}No sign-up. No downloads. Just answers.</p></div>
 </form>
 <div class="recent-row" id="recent-wrap" hidden><div class="eyebrow">Your recent searches</div><div class="chips" id="recent-chips"></div></div>
@@ -154,7 +154,7 @@ def home():
 <div class="map-empty" id="map-empty"><span>No regional run yet. Check a website and the map lights up.</span></div><div class="tip" id="tip" hidden></div></div>
 <div class="legend" aria-label="Map legend"><span><i style="background:var(--green)"></i>Responded</span><span><i style="background:var(--amber)"></i>Blocked</span><span><i style="background:var(--red)"></i>Server error</span><span><i style="border:2px solid var(--grey)"></i>No connection</span></div>
 <p class="fine" style="margin-top:10px">Hover or tap a marker for details. Regions without a probe are not claimed. Each run is a snapshot, not continuous monitoring. Probe network: <a href="https://globalping.io" rel="noopener">Globalping</a>.</p></div>
-<div class="details"><div id="ssl" hidden></div><div class="facts" id="facts" hidden></div>
+<div class="details"><div id="ssl" hidden></div><div id="dns" hidden></div><div class="facts" id="facts" hidden></div>
 <div class="row-actions"><button class="btn small ghost" type="button" id="wl-add" hidden>Add to my watchlist</button><a class="btn small ghost" id="open-site" target="_blank" rel="noopener noreferrer" hidden>Open website ↗</a></div>
 <div class="share" id="share" hidden><span class="eyebrow">Share this check</span><div class="sbtns">{share_btns}</div></div></div>
 </div>
@@ -295,7 +295,7 @@ def monitor():
 <section class="page"><div class="wrap">
 <div class="card toplist">
 <div class="pc-head"><div><span class="eyebrow"><i></i>Your watchlist</span><h2>Monitor<span class="dot">.</span></h2>
-<p class="lead">Keep an eye on the websites you care about. We re-check them every few minutes and show the latest result here.</p></div></div>
+<p class="lead">Keep an eye on the websites you care about. We re-check them every few minutes, keep their uptime history, and email you if one goes down.</p></div></div>
 <div class="pad">
 <div class="card" id="m-out" hidden><h3 style="margin-bottom:8px">Sign in to build your watchlist</h3><p class="note">A free account lets you save up to 25 sites and see their status at a glance. The checker on the home page stays free without one.</p>
 <div class="row-actions" style="margin-top:14px"><a class="btn" href="/login?next=%2Fmonitor"><span>Sign in</span>{I_ARROW}</a><a class="btn ghost" href="/login?next=%2Fmonitor#create">Create account</a></div></div>
@@ -308,6 +308,18 @@ def monitor():
 '''
     scripts = '<script src="/assets/app.js"></script>\n<script src="/assets/pages.js"></script>'
     write('monitor.html', h + body + foot(scripts))
+
+# ---------------------------------------------------------------- status page
+def status():
+    h = head('Website status — siteupdown.com', 'Live status, uptime and recent outages for a website, checked every few minutes by siteupdown.com.', '/status').replace('{BODYATTR}', ' data-page="status"')
+    body = f'''
+<section class="page"><div class="wrap">
+<div class="card toplist">
+<div class="pc-head"><div><span class="eyebrow"><i></i>Status page</span><h1 id="st-h" style="margin:10px 0 6px">Website status<span class="dot">.</span></h1><p class="lead" id="st-p">Loading…</p></div><div id="st-pill"></div></div>
+<div class="pad" id="st-body"><div class="skeleton">Loading status…</div></div>
+</div></div></section>
+'''
+    write('status.html', h + body + foot('<script src="/assets/app.js"></script>\n<script src="/assets/pages.js"></script>'))
 
 # ---------------------------------------------------------------- legal pages
 def prose(name, title, desc, path, inner):
@@ -350,4 +362,4 @@ def static_pages():
     write('404.html', h + '<section class="page"><div class="wrap narrow center"><span class="eyebrow"><i></i>Error 404</span><h1 style="margin:14px 0">Not found<span class="dot">.</span></h1><p class="lead">We checked everywhere. This page is down for everyone.</p><p style="margin-top:24px"><a class="btn" href="/"><span>Back to the checker</span></a></p></div></section>' + foot('<script src="/assets/app.js"></script>'))
 
 if __name__ == '__main__':
-    home(); login(); account(); monitor(); static_pages()
+    home(); login(); account(); monitor(); status(); static_pages()

@@ -89,6 +89,7 @@
     $('#facts').innerHTML = o.facts || '';
     $('#facts').hidden = !o.facts;
     var ss = $('#ssl'); if (ss) { ss.innerHTML = o.ssl || ''; ss.hidden = !o.ssl; }
+    var dd = $('#dns'); if (dd) { dd.innerHTML = o.dns || ''; dd.hidden = !o.dns; }
     var os = $('#open-site'); if (os) { os.hidden = !(o.again && o.host); if (o.host) os.href = 'https://' + o.host + '/'; }
     $('#run-again').hidden = !o.again;
     $('#wl-add').hidden = !o.again;
@@ -102,6 +103,7 @@
     if (r.title) f += '<div>Title: <b>' + esc(r.title) + '</b></div>';
     (r.headings || []).forEach(function (h) { f += '<div>' + esc(h) + '</div>'; });
     if (r.server) f += '<div>Server: <b>' + esc(r.server) + '</b></div>';
+    if (r.chain && r.chain.length > 1) f += '<div>Redirects: ' + r.chain.map(function (c) { return '<b>' + esc(c.url.replace(/^https?:\/\//, '')) + '</b> <small>(' + esc(c.code) + ')</small>'; }).join(' → ') + '</div>';
     var x = r.extra;
     if (x && (x.ip || x.ctype || x.desc || x.tls_expires)) {
       f += '<div class="xt"><div><b>Thorough details</b></div>';
@@ -112,8 +114,25 @@
       if (x.tls_expires) f += '<div>Certificate: <b>valid until ' + esc(x.tls_expires) + '</b>' + (x.tls_issuer ? ' (' + esc(x.tls_issuer) + ')' : '') + '</div>';
       f += '<div>Security headers: <b>' + (x.sec && x.sec.length ? esc(x.sec.join(', ')) : 'none seen') + '</b></div></div>';
     }
-    var on = !!(x && (x.ip || x.ctype || x.desc || x.tls_expires));
+    var on = !!(r.dns || (x && (x.ip || x.ctype || x.desc || x.tls_expires)));
     return f ? '<details class="dl"><summary>What was downloaded &amp; checked<span>Thorough check ' + (on ? 'on' : 'off') + '</span></summary><div class="dlb">' + f + '</div></details>' : '';
+  }
+
+
+  /* ---------- DNS & domain card (thorough check) ---------- */
+  function dnsFor(r) {
+    var d = r && r.dns; if (!d) return '';
+    var cell = function (k, v) { return '<div class="c"><span class="k">' + k + '</span><b>' + v + '</b></div>'; };
+    var list = function (a) { return a && a.length ? a.map(esc).join('<br>') : '—'; };
+    var w = d.whois, h = '<div class="ssl dnsc"><div class="sh"><span>DNS &amp; domain</span><span class="bd none">' + esc(d.domain) + '</span></div>';
+    if (w && w.expires) {
+      var warn = w.days_left != null && w.days_left <= 30;
+      h += '<p class="note">Domain registration ' + (w.days_left < 0 ? '<b class="badt">expired ' + Math.abs(w.days_left) + ' days ago</b>' : 'expires <b' + (warn ? ' class="badt"' : '') + '>' + esc(w.expires) + '</b> (in ' + w.days_left + ' days)') + (w.registrar ? ' · registrar ' + esc(w.registrar) : '') + (w.created ? ' · registered ' + esc(w.created) : '') + '.</p>';
+    } else h += '<p class="note">The registry did not share an expiry date for this domain.</p>';
+    h += '<div class="grid2">' + cell('Address (A)', list(d.a)) + cell('IPv6 (AAAA)', list(d.aaaa)) + cell('Name servers', list(d.ns))
+      + cell('Mail (MX)', d.mx && d.mx.length ? d.mx.map(function (m) { return esc(m.pri + ' ' + m.host); }).join('<br>') : 'No mail records')
+      + (d.cname ? cell('Alias (CNAME)', esc(d.cname)) : '') + cell('Email protection', (d.spf ? '✓ SPF' : '✕ no SPF') + ' · ' + (d.dmarc ? '✓ DMARC' : '✕ no DMARC')) + '</div></div>';
+    return h;
   }
 
   /* ---------- SSL certificate card ---------- */
@@ -149,7 +168,7 @@
     setPanel({
       key: key, big: host + ' — ' + (BIG[key] || BIG[r.verdict] || 'Checked'), sub: sub,
       reach: reg ? reg.reachable + '/' + (reg.total || 12) : '0/12', med: reg && reg.median_ms != null ? S.ms(reg.median_ms) : '—',
-      at: S.when(at), facts: factsFor(r), ssl: sslFor(r, host), host: host, again: true, share: !!(done && reg.total > 0 && share),
+      at: S.when(at), facts: factsFor(r), ssl: sslFor(r, host), dns: dnsFor(r), host: host, again: true, share: !!(done && reg.total > 0 && share),
       status: done ? 'Complete' : 'Probing…'
     });
   }

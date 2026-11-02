@@ -17,6 +17,9 @@ RewriteRule ^ https://siteupdown.com%{REQUEST_URI} [R=301,L]
 # Share links: /s/abc123... shows a saved check on the home page.
 RewriteRule ^s/([a-f0-9]{10})/?$ /index.html?r=$1 [L,QSA]
 
+# Public status pages: /status/example.com
+RewriteRule ^status/[A-Za-z0-9.-]+/?$ /status.html [L]
+
 # Clean URLs.
 RewriteRule ^(login|account|monitor|privacy|legal|contact)/?$ /$1.html [L]
 RewriteCond %{THE_REQUEST} \s/+(login|account|monitor|privacy|legal|contact|index)\.html[\s?]

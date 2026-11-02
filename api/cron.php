@@ -6,6 +6,7 @@ declare(strict_types=1);
 require __DIR__ . '/_boot.php';
 require __DIR__ . '/_probe.php';
 require __DIR__ . '/_tls.php';
+require __DIR__ . '/_track.php';
 require __DIR__ . '/_sites.php';
 $c = config();
 if (PHP_SAPI !== 'cli') {
@@ -31,6 +32,7 @@ foreach ($list as $h) {
     if (time() - $t0 > 85) break;
     $r = check_site($h, '/', false, true);
     $up->execute([$h, $r['verdict'], $r['http_code'], $r['ms'], sql_now()]);
+    track_result($pdo, $h, $r['verdict'], $r['ms']);
     $n++;
 }
 // Certificates: each host once a day, a few per run (top sites and gaming services).
@@ -55,6 +57,8 @@ foreach ($certList as $h) {
 }
 // Housekeeping: drop old feed rows and expired share links.
 $pdo->prepare('DELETE FROM checks WHERE checked_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - 3 * 86400)]);
+$pdo->prepare('DELETE FROM site_log WHERE ts < ?')->execute([gmdate('Y-m-d H:i:s', time() - 35 * 86400)]);
+$pdo->prepare('DELETE FROM incidents WHERE started_at < ? AND ended_at IS NOT NULL')->execute([gmdate('Y-m-d H:i:s', time() - 95 * 86400)]);
 $pdo->prepare('DELETE FROM shares WHERE created_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - 30 * 86400)]);
 $pdo->prepare('DELETE FROM resets WHERE expires_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - 86400)]);
 if (PHP_SAPI === 'cli') echo "Probed $n sites, $nc certificates\n"; else out(200, ['probed' => $n, 'certs' => $nc]);

@@ -101,6 +101,30 @@ function ensure_schema(PDO $pdo): void {
         expires VARCHAR(12) NULL,
         checked_at DATETIME NOT NULL
     )$cs");
+    // Result history for every watched site (pruned after 35 days), outages, and the down/up state used for alerts.
+    $pdo->exec("CREATE TABLE IF NOT EXISTS site_log (
+        host VARCHAR(253) NOT NULL,
+        ts DATETIME NOT NULL,
+        verdict VARCHAR(16) NOT NULL,
+        ms INT NULL
+    )$cs");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS incidents (
+        id $id,
+        host VARCHAR(253) NOT NULL,
+        started_at DATETIME NOT NULL,
+        ended_at DATETIME NULL
+    )$cs");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS alert_state (
+        host VARCHAR(253) NOT NULL PRIMARY KEY,
+        state VARCHAR(8) NOT NULL,
+        fails INT NOT NULL DEFAULT 0,
+        since DATETIME NULL
+    )$cs");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS domain_info (
+        domain VARCHAR(253) NOT NULL PRIMARY KEY,
+        data TEXT NOT NULL,
+        checked_at DATETIME NOT NULL
+    )$cs");
     $pdo->exec("CREATE TABLE IF NOT EXISTS shares (
         id CHAR(10) NOT NULL PRIMARY KEY,
         host VARCHAR(253) NOT NULL,
@@ -131,12 +155,16 @@ function ensure_schema(PDO $pdo): void {
         'CREATE INDEX IF NOT EXISTS i_att ON attempts (ip_hash, kind, ts)',
         'CREATE INDEX IF NOT EXISTS i_chk ON checks (checked_at)',
         'CREATE INDEX IF NOT EXISTS i_sc ON saved_checks (user_id, checked_at)',
+        'CREATE INDEX IF NOT EXISTS i_log ON site_log (host, ts)',
+        'CREATE INDEX IF NOT EXISTS i_inc ON incidents (host, started_at)',
     ] as $q) {
         try { $pdo->exec($q); } catch (Throwable $e) { /* MySQL has no IF NOT EXISTS for indexes: created below */ }
     }
+    try { $pdo->exec('ALTER TABLE watchlist ADD COLUMN alerts TINYINT NOT NULL DEFAULT 1'); } catch (Throwable $e) { /* already there */ }
     if (!$lite) {
         foreach ([
             ['attempts', 'i_att', '(ip_hash, kind, ts)'], ['checks', 'i_chk', '(checked_at)'], ['saved_checks', 'i_sc', '(user_id, checked_at)'],
+            ['site_log', 'i_log', '(host, ts)'], ['incidents', 'i_inc', '(host, started_at)'],
         ] as [$t, $n, $cols]) {
             try { $pdo->exec("CREATE INDEX $n ON $t $cols"); } catch (Throwable $e) { /* already exists */ }
         }

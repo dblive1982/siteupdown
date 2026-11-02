@@ -83,7 +83,7 @@ function resolve_public(string $host): array {
  * code, ms, err (dns|blocked|timeout|ssl|connect|redirects|null), final, title, headings[], server, https
  */
 function http_probe(string $host, string $path, bool $https, bool $thorough, int $timeout = 8): array {
-    $res = ['code' => null, 'ms' => null, 'err' => null, 'final' => null, 'title' => null, 'headings' => [], 'server' => null, 'https' => $https, 'hops' => 0, 'ctype' => null, 'bytes' => null, 'desc' => null, 'lang' => null, 'tls_expires' => null, 'tls_issuer' => null, 'sec' => [], 'ip' => null];
+    $res = ['code' => null, 'ms' => null, 'err' => null, 'final' => null, 'title' => null, 'headings' => [], 'server' => null, 'https' => $https, 'hops' => 0, 'ctype' => null, 'bytes' => null, 'desc' => null, 'lang' => null, 'tls_expires' => null, 'tls_issuer' => null, 'sec' => [], 'ip' => null, 'chain' => []];
     $start = microtime(true);
     $curHost = $host; $curPath = $path; $curHttps = $https;
     for ($hop = 0; $hop <= 5; $hop++) {
@@ -135,6 +135,7 @@ function http_probe(string $host, string $path, bool $https, bool $thorough, int
         }
         // A deliberate abort after the headers (errno 23) is fine.
         $res['code'] = $code;
+        if (count($res['chain']) < 7) $res['chain'][] = ['url' => mb_substr(($curHttps ? 'https://' : 'http://') . $curHost . $curPath, 0, 200), 'code' => $code];
         $res['server'] = $headers['server'] ?? $res['server'];
         $res['hops'] = $hop;
         if ($code >= 300 && $code < 400 && !empty($headers['location'])) {
@@ -218,6 +219,7 @@ function check_site(string $host, string $path = '/', bool $thorough = false, bo
         'host' => $host, 'verdict' => $verdict, 'http_code' => $code, 'ms' => $r['ms'], 'note' => $note, 'err' => $r['err'],
         'title' => $r['title'], 'headings' => $r['headings'], 'server' => $r['server'], 'https' => $r['https'],
         'redirected' => ($r['hops'] ?? 0) > 0, 'attempts' => $attempts,
+        'chain' => count($r['chain']) > 1 ? $r['chain'] : [],
         'extra' => ['final' => $r['final'], 'ip' => $r['ip'], 'ctype' => $r['ctype'], 'bytes' => $r['bytes'], 'desc' => $r['desc'], 'lang' => $r['lang'], 'sec' => $r['sec'], 'tls_expires' => $r['tls_expires'], 'tls_issuer' => $r['tls_issuer']],
     ];
 }

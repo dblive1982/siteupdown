@@ -3,6 +3,7 @@
 require __DIR__ . '/_boot.php';
 require __DIR__ . '/_probe.php';
 require __DIR__ . '/_tls.php';
+require __DIR__ . '/_dns.php';
 $in = read_post();
 $t = parse_target((string)($in['address'] ?? ''));
 if (!$t) out(422, ['error' => 'Please enter a website address like example.com.']);
@@ -17,6 +18,8 @@ if (!in_array($r['err'] ?? null, ['dns', 'blocked'], true)) {
     $rp = resolve_public($host);
     if (!$rp['error'] && $rp['ips']) $r['tls'] = tls_inspect($host, $rp['ips'][0]);
 }
+$r['dns'] = null;
+if ($thorough && !filter_var($host, FILTER_VALIDATE_IP) && ($r['err'] ?? null) !== 'blocked') $r['dns'] = dns_info($host);
 $now = sql_now();
 if (!filter_var($host, FILTER_VALIDATE_IP)) {
     $pdo->prepare('INSERT INTO checks (host, verdict, http_code, ms, checked_at) VALUES (?,?,?,?,?)')->execute([$host, $r['verdict'], $r['http_code'], $r['ms'], $now]);

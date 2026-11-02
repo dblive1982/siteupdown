@@ -2,20 +2,32 @@
 // Signed-in users only. GET -> my watchlist with latest status. POST {action: add|remove|check}.
 require __DIR__ . '/_boot.php';
 require __DIR__ . '/_probe.php';
+require __DIR__ . '/_track.php';
 $pdo = db();
 $uid = require_user();
 const MAX_WATCH = 25;
 
 function my_list(PDO $pdo, int $uid): array {
-    $s = $pdo->prepare('SELECT w.host, w.added_at, s.verdict, s.http_code, s.ms, s.checked_at
+    $s = $pdo->prepare('SELECT w.host, w.added_at, w.alerts, s.verdict, s.http_code, s.ms, s.checked_at
         FROM watchlist w LEFT JOIN site_status s ON s.host = w.host WHERE w.user_id=? ORDER BY w.added_at DESC, w.id DESC');
     $s->execute([$uid]);
-    return array_map(fn($r) => ['host' => $r['host'], 'verdict' => $r['verdict'], 'code' => $r['http_code'] !== null ? (int)$r['http_code'] : null,
-        'ms' => $r['ms'] !== null ? (int)$r['ms'] : null, 'at' => $r['checked_at'] ? iso($r['checked_at']) : null, 'added' => iso($r['added_at'])], $s->fetchAll());
+    $rows = $s->fetchAll();
+    // Uptime over the last 24 hours, from the result history.
+    $up = [];
+    if ($rows) {
+        $in = implode(',', array_fill(0, count($rows), '?'));
+        $q = $pdo->prepare("SELECT host, SUM(CASE WHEN verdict='up' THEN 1 ELSE 0 END) AS ok, SUM(CASE WHEN verdict IN ('down','timeout') THEN 1 ELSE 0 END) AS bad
+            FROM site_log WHERE ts > ? AND host IN ($in) GROUP BY host");
+        $q->execute(array_merge([gmdate('Y-m-d H:i:s', time() - 86400)], array_column($rows, 'host')));
+        foreach ($q->fetchAll() as $u) { $t = (int)$u['ok'] + (int)$u['bad']; if ($t > 0) $up[$u['host']] = round(100 * (int)$u['ok'] / $t, 2); }
+    }
+    return array_map(fn($r) => ['host' => $r['host'], 'alerts' => (int)$r['alerts'] === 1, 'uptime' => $up[$r['host']] ?? null, 'verdict' => $r['verdict'], 'code' => $r['http_code'] !== null ? (int)$r['http_code'] : null,
+        'ms' => $r['ms'] !== null ? (int)$r['ms'] : null, 'at' => $r['checked_at'] ? iso($r['checked_at']) : null, 'added' => iso($r['added_at'])], $rows);
 }
 function probe_and_store(PDO $pdo, string $host): void {
     $r = check_site($host, '/', false, true);
     $pdo->prepare('REPLACE INTO site_status (host, verdict, http_code, ms, checked_at) VALUES (?,?,?,?,?)')->execute([$host, $r['verdict'], $r['http_code'], $r['ms'], sql_now()]);
+    track_result($pdo, $host, $r['verdict'], $r['ms']);
 }
 
 if (($_SERVER['REQUEST_METHOD'] ?? '') === 'GET') out(200, ['items' => my_list($pdo, $uid), 'max' => MAX_WATCH]);
@@ -41,6 +53,10 @@ if ($a === 'add') {
 }
 if ($a === 'remove') {
     $pdo->prepare('DELETE FROM watchlist WHERE user_id=? AND host=?')->execute([$uid, strtolower((string)($in['host'] ?? ''))]);
+    out(200, ['items' => my_list($pdo, $uid), 'max' => MAX_WATCH]);
+}
+if ($a === 'alerts') {
+    $pdo->prepare('UPDATE watchlist SET alerts=? WHERE user_id=? AND host=?')->execute([!empty($in['on']) ? 1 : 0, $uid, strtolower((string)($in['host'] ?? ''))]);
     out(200, ['items' => my_list($pdo, $uid), 'max' => MAX_WATCH]);
 }
 if ($a === 'check') {
