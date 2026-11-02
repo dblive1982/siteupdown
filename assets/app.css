@@ -584,3 +584,8 @@ abbr[data-n]:hover::after,abbr[data-n]:focus::after{content:attr(data-n);positio
 .faq summary::after{content:"+";color:var(--green);font-family:var(--mono);font-size:20px;line-height:1}
 .faq details[open] summary::after{content:"–"}
 .faq p{margin:0 0 16px;color:var(--muted)}
+
+/* cookie popup: white card in both themes so it stands out from the navy page */
+.cookie{--card:#ffffff;--card2:#f3f6f4;--line:#d5ddd8;--text:#0f1f14;--muted:#4a5d52;--green:#1f8a30;--green-ink:#ffffff;--hl:#1f8a30;--hard:#1a0838;background:#fff;color:#0f1f14;border-color:#d5ddd8;box-shadow:4px 4px 0 var(--hard),0 16px 40px rgba(0,0,0,.55)}
+.cookie h3{color:#0f1f14}
+.cookie .btn.ghost{background:#fff;color:#0f1f14;border:1px solid #9fb0a6}
