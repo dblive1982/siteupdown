@@ -2,7 +2,7 @@
 // Branded HTML emails (with a plain-text copy): welcome and password reset.
 declare(strict_types=1);
 
-function sud_email(string $to, string $subject, string $heading, string $paraHtml, string $paraText, string $btnText = '', string $btnUrl = ''): void {
+function sud_email(string $to, string $subject, string $heading, string $paraHtml, string $paraText, string $btnText = '', string $btnUrl = '', string $replyTo = ''): void {
     $c = config() ?: [];
     $site = rtrim($c['site'] ?? 'https://siteupdown.com', '/');
     $from = $c['mail_from'] ?? 'noreply@siteupdown.com';
@@ -26,13 +26,14 @@ function sud_email(string $to, string $subject, string $heading, string $paraHtm
     $body = "--$b\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Transfer-Encoding: base64\r\n\r\n" . chunk_split(base64_encode($text), 76, "\r\n")
         . "--$b\r\nContent-Type: text/html; charset=utf-8\r\nContent-Transfer-Encoding: base64\r\n\r\n" . chunk_split(base64_encode($html), 76, "\r\n") . "--$b--";
     $subj = '=?UTF-8?B?' . base64_encode($subject) . '?=';
+    $rt = ($replyTo !== '' && filter_var($replyTo, FILTER_VALIDATE_EMAIL)) ? "Reply-To: <$replyTo>\r\n" : '';
     if (!empty($c['smtp_user']) && !empty($c['smtp_pass'])) {
         $sfrom = $c['smtp_user'];
-        $hdr = "From: \"siteupdown.com\" <$sfrom>\r\nTo: <$to>\r\nSubject: $subj\r\nDate: " . date('r')
+        $hdr = "From: \"siteupdown.com\" <$sfrom>\r\nTo: <$to>\r\nSubject: $subj\r\n" . $rt . "Date: " . date('r')
             . "\r\nMessage-ID: <" . bin2hex(random_bytes(12)) . "@siteupdown.com>\r\nMIME-Version: 1.0\r\nContent-Type: multipart/alternative; boundary=\"$b\"\r\n";
         if (sud_smtp($c, $sfrom, $to, $hdr . "\r\n" . $body)) return;
     }
-    @mail($to, $subj, $body, "From: \"siteupdown.com\" <$from>\r\nMIME-Version: 1.0\r\nContent-Type: multipart/alternative; boundary=\"$b\"");
+    @mail($to, $subj, $body, "From: \"siteupdown.com\" <$from>\r\n" . $rt . "MIME-Version: 1.0\r\nContent-Type: multipart/alternative; boundary=\"$b\"");
 }
 
 function sud_smtp(array $c, string $from, string $to, string $data): bool {

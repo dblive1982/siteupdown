@@ -422,10 +422,36 @@ def static_pages():
 <p>Regional probes run on the public <a href="https://globalping.io" rel="noopener">Globalping</a> network. Sign-in with Google uses Google&rsquo;s own sign-in service, and the site&rsquo;s fonts (Space Grotesk and JetBrains Mono) are loaded from Google Fonts.</p>
 <h2>Content</h2>
 <p>Site names shown in lists are used only to identify the services being checked.</p>''')
-    prose('contact.html', 'Contact', 'Get in touch with siteupdown.com.', '/contact', '''
-<p>Found a bug, want a site added to the lists, or need your data removed? Send us an email and we will get back to you.</p>
-<p><a href="mailto:hello@siteupdown.com">hello@siteupdown.com</a></p>
-<p class="note">Please include the website address you checked if you are reporting a wrong result.</p>''')
+    prose('contact.html', 'Contact', 'Get in touch with siteupdown.com: send feedback, report a problem, suggest a site or ask about your data.', '/contact', '''
+<p class="lead">Questions, feedback or something not working? Tell us below and we will reply by email.</p>
+<form id="cf" class="cform" novalidate>
+<label for="cf-topic">What is this about?</label>
+<div class="field"><select id="cf-topic" required>
+<option value="">Choose a topic&hellip;</option>
+<option value="feedback">General feedback</option>
+<option value="issue">Report a problem with the site</option>
+<option value="wrong">A check gave the wrong result</option>
+<option value="addsite">Suggest a site to add</option>
+<option value="account">Account or sign-in help</option>
+<option value="complaint">Complaint</option>
+<option value="data">Data or privacy request</option>
+<option value="business">Advertising or business enquiry</option>
+<option value="other">Something else</option>
+</select></div>
+<div class="cf-two">
+<div><label for="cf-name">Your name <span class="opt">(optional)</span></label><div class="field"><input id="cf-name" type="text" maxlength="80" autocomplete="name"></div></div>
+<div><label for="cf-email">Your email</label><div class="field"><input id="cf-email" type="email" maxlength="200" autocomplete="email" required></div></div>
+</div>
+<div id="cf-siterow" hidden><label for="cf-site">Website address <span class="opt">(optional)</span></label><div class="field"><input id="cf-site" type="text" maxlength="253" placeholder="example.com" autocapitalize="none" autocorrect="off" spellcheck="false"></div></div>
+<label for="cf-msg">Your message</label>
+<textarea id="cf-msg" rows="6" maxlength="4000" required></textarea>
+<div class="cf-hp" aria-hidden="true"><label>Leave this empty <input id="cf-hp" type="text" tabindex="-1" autocomplete="off"></label></div>
+<p id="cf-err" class="cf-err" role="alert" hidden></p>
+<p><button class="btn" type="submit" id="cf-btn"><span>Send message</span></button></p>
+<p class="note">We only use your email to reply. See our <a href="/privacy">privacy policy</a>. Prefer email? Write to <a href="mailto:hello@siteupdown.com">hello@siteupdown.com</a>.</p>
+</form>
+<div id="cf-ok" class="cf-ok" hidden role="status"><h2>Message sent</h2><p>Thanks, we have it. We will reply to the email address you gave, usually within a few days.</p></div>
+<script src="/assets/contact.js"></script>''')
     h = head('Page not found — siteupdown.com', 'That page could not be found.', '/404', noindex=True).replace('{BODYATTR}', '')
     write('404.html', h + '<section class="page"><div class="wrap narrow center"><span class="eyebrow"><i></i>Error 404</span><h1 style="margin:14px 0">Not found<span class="dot">.</span></h1><p class="lead">We checked everywhere. This page is down for everyone.</p><p style="margin-top:24px"><a class="btn" href="/"><span>Back to the checker</span></a></p></div></section>' + foot('<script src="/assets/app.js"></script>'))
 
