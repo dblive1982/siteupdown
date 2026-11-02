@@ -2,6 +2,7 @@
 // POST {address, thorough} -> server check result + a share id used for the regional run.
 require __DIR__ . '/_boot.php';
 require __DIR__ . '/_probe.php';
+require __DIR__ . '/_tls.php';
 $in = read_post();
 $t = parse_target((string)($in['address'] ?? ''));
 if (!$t) out(422, ['error' => 'Please enter a website address like example.com.']);
@@ -11,6 +12,11 @@ throttle('check', 30, 10);
 note_attempt('check');
 $thorough = !empty($in['thorough']);
 $r = check_site($host, $path, $thorough);
+$r['tls'] = null;
+if (!in_array($r['err'] ?? null, ['dns', 'blocked'], true)) {
+    $rp = resolve_public($host);
+    if (!$rp['error'] && $rp['ips']) $r['tls'] = tls_inspect($host, $rp['ips'][0]);
+}
 $now = sql_now();
 if (!filter_var($host, FILTER_VALIDATE_IP)) {
     $pdo->prepare('INSERT INTO checks (host, verdict, http_code, ms, checked_at) VALUES (?,?,?,?,?)')->execute([$host, $r['verdict'], $r['http_code'], $r['ms'], $now]);

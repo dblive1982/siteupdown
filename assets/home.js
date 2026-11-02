@@ -82,6 +82,8 @@
     $('#s-at').textContent = o.at || '—'; if ($('#s-at').nextElementSibling) $('#s-at').nextElementSibling.textContent = o.at ? 'your local time' : 'Not run yet';
     $('#facts').innerHTML = o.facts || '';
     $('#facts').hidden = !o.facts;
+    var ss = $('#ssl'); if (ss) { ss.innerHTML = o.ssl || ''; ss.hidden = !o.ssl; }
+    var os = $('#open-site'); if (os) { os.hidden = !(o.again && o.host); if (o.host) os.href = 'https://' + o.host + '/'; }
     $('#run-again').hidden = !o.again;
     $('#wl-add').hidden = !o.again;
     $('#share').hidden = !o.share;
@@ -104,8 +106,36 @@
       if (x.tls_expires) f += '<div>Certificate: <b>valid until ' + esc(x.tls_expires) + '</b>' + (x.tls_issuer ? ' (' + esc(x.tls_issuer) + ')' : '') + '</div>';
       f += '<div>Security headers: <b>' + (x.sec && x.sec.length ? esc(x.sec.join(', ')) : 'none seen') + '</b></div></div>';
     }
-    return f;
+    var on = !!(x && (x.ip || x.ctype || x.desc || x.tls_expires));
+    return f ? '<details class="dl"><summary>What was downloaded &amp; checked<span>Thorough check ' + (on ? 'on' : 'off') + '</span></summary><div class="dlb">' + f + '</div></details>' : '';
   }
+
+  /* ---------- SSL certificate card ---------- */
+  var SSL_BADGE = { valid: ['Trusted & valid', 'ok'], expiring: ['Expires soon', 'warn'], expired: ['Expired', 'bad'], notyet: ['Not valid yet', 'bad'], mismatch: ['Wrong name', 'bad'], untrusted: ['Not trusted', 'bad'], none: ['No certificate', 'none'] };
+  function sslFor(r, host) {
+    var t = r && r.tls;
+    if (!t) return r && r.verdict && !r.https && r.http_code ? '<div class="ssl"><div class="sh"><span>SSL certificate</span><span class="bd bad">No HTTPS</span></div><p class="note">This site answered over plain HTTP only, so there is no secure connection to inspect.</p></div>' : '';
+    var bd = SSL_BADGE[t.status] || SSL_BADGE.none;
+    var h = '<div class="ssl"><div class="sh"><span>SSL certificate</span><span class="bd ' + bd[1] + '">' + esc(bd[0]) + '</span></div>';
+    if (t.status === 'none') return h + '<p class="note">' + esc(t.note) + '</p></div>';
+    var cell = function (k, v, cls) { return '<div class="c"><span class="k">' + k + '</span><b' + (cls ? ' class="' + cls + '"' : '') + '>' + v + '</b></div>'; };
+    h += '<p class="note">' + esc(t.note) + '</p>';
+    h += '<div class="g1"><span class="k">Secured domain</span><b>' + esc(t.subject || host) + '</b></div><div class="grid2">'
+      + cell('Issued by', esc(t.issuer || '—'))
+      + cell('Covers this host', t.covers ? '✓ Yes' : '✕ No', t.covers ? '' : 'badt')
+      + cell('Issued', esc(t.from))
+      + cell('Expires', esc(t.to) + ' <em>' + (t.days_left < 0 ? Math.abs(t.days_left) + ' days ago' : 'in ' + t.days_left + ' days') + '</em>', t.days_left <= 14 ? 'badt' : '')
+      + cell('Protocol', esc(t.protocol || '—'))
+      + cell('Cipher', esc(t.cipher || '—'))
+      + cell('Public key', t.key_bits ? esc(t.key_bits + ' bit' + (t.key_type ? ' ' + t.key_type : '')) : '—')
+      + cell('Serial', '<small>' + esc(t.serial || '—') + '</small>') + '</div>';
+    if (t.fingerprint) h += '<div class="fpr"><span class="k">Fingerprint (SHA-256)</span><code>' + esc(t.fingerprint) + '</code></div>';
+    if (t.elapsed != null) h += '<div class="vw"><div><span>Validity window</span><span>' + esc(t.from) + ' → ' + esc(t.to) + ' (' + t.elapsed + '% elapsed)</span></div><div class="bar"><i style="width:' + t.elapsed + '%"></i></div></div>';
+    if (t.sans_total > 1) h += '<details class="sans"><summary>Also covers ' + (t.sans_total - 1) + ' domain' + (t.sans_total === 2 ? '' : 's') + '</summary><p>' + t.sans.map(esc).join(' · ') + (t.sans_total > t.sans.length ? ' …' : '') + '</p></details>';
+    if (t.chain && t.chain.length) h += '<div class="chain"><span class="k">Certificate chain</span>' + t.chain.map(function (c) { return '<div class="ch"><i class="' + (c.role === 'leaf' ? 'lf' : '') + '"></i><div><b>' + esc(c.subject) + '</b><small>issued by ' + esc(c.issuer) + '</small></div><span>' + esc(c.role) + '</span></div>'; }).join('') + '</div>';
+    return h + '</div>';
+  }
+
   function renderResult(host, r, reg, verdict, at, share) {
     var key = (verdict && verdict.key) || r.verdict;
     var sub = (verdict && verdict.text) || r.note || '';
@@ -113,7 +143,7 @@
     setPanel({
       key: key, big: host + ' — ' + (BIG[key] || BIG[r.verdict] || 'Checked'), sub: sub,
       reach: reg ? reg.reachable + '/' + (reg.total || 12) : '0/12', med: reg && reg.median_ms != null ? S.ms(reg.median_ms) : '—',
-      at: S.when(at), facts: factsFor(r), again: true, share: !!(done && reg.total > 0 && share),
+      at: S.when(at), facts: factsFor(r), ssl: sslFor(r, host), host: host, again: true, share: !!(done && reg.total > 0 && share),
       status: done ? 'Complete' : 'Probing…'
     });
   }
