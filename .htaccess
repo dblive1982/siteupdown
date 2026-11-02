@@ -8,6 +8,9 @@ RedirectMatch 404 ^/sud-config
 RedirectMatch 404 ^/api/_
 
 RewriteEngine On
+# Nothing on this site takes file uploads or multipart forms (everything is JSON), so refuse them early.
+RewriteCond %{HTTP:Content-Type} multipart/ [NC]
+RewriteRule ^ - [F,L]
 # Always HTTPS; www.siteupdown.com goes to siteupdown.com.
 RewriteCond %{HTTPS} off
 RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
@@ -53,4 +56,8 @@ ErrorDocument 404 /404.html
   <FilesMatch "\.html$">
     Header set Cache-Control "no-cache"
   </FilesMatch>
+</IfModule>
+
+<IfModule mod_headers.c>
+  Header always unset X-Powered-By
 </IfModule>
