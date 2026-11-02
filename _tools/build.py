@@ -126,7 +126,7 @@ def home():
 <form class="card checker" id="chk-form" aria-labelledby="checker-title" novalidate>
 <div class="top"><span id="checker-title">{I_RADIO}Check a website <em>· Live from our server</em></span><span class="live">Live check</span></div>
 <div class="chk-row">
-<div class="field">{I_GLOBE}<input id="chk-input" name="address" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Type any website address, e.g. example.com" maxlength="300" aria-label="Website address"></div>
+<div class="field">{I_GLOBE}<input id="chk-input" name="address" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Website address, e.g. example.com" maxlength="300" aria-label="Website address"></div>
 <button class="btn" id="chk-btn" type="submit"><span>Check website</span>{I_ARROW}</button></div>
 <p class="err" id="chk-err" role="alert"></p>
 <div class="chk-foot">
