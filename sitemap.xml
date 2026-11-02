@@ -2,6 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url><loc>https://siteupdown.com/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>
 <url><loc>https://siteupdown.com/monitor</loc><changefreq>monthly</changefreq></url>
+<url><loc>https://siteupdown.com/speed</loc><changefreq>monthly</changefreq></url>
 <url><loc>https://siteupdown.com/privacy</loc><changefreq>yearly</changefreq></url>
 <url><loc>https://siteupdown.com/legal</loc><changefreq>yearly</changefreq></url>
 <url><loc>https://siteupdown.com/contact</loc><changefreq>yearly</changefreq></url>

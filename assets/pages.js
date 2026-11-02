@@ -196,7 +196,36 @@
     load(); setInterval(function () { if (!document.hidden) load(); }, 60000);
   }
 
+
+  /* ================= SPEED TEST ================= */
+  function initSpeed() {
+    var q = new URLSearchParams(location.search).get('q');
+    function kb(n) { return n >= 1048576 ? (n / 1048576).toFixed(2) + ' MB' : n >= 1024 ? (n / 1024).toFixed(1) + ' KB' : n + ' B'; }
+    $('#sp-form').addEventListener('submit', function (e) { e.preventDefault(); run($('#sp-input').value); });
+    function run(addr) {
+      var er = $('#sp-err'), b = $('#sp-btn'); er.textContent = '';
+      if (!addr.trim()) { er.textContent = 'Please enter a website address.'; return; }
+      b.disabled = true; b.firstElementChild.textContent = 'Testing…';
+      var o = $('#sp-out'); o.hidden = false; o.innerHTML = '<div class="skeleton">Loading the page three times… this takes a few seconds.</div>';
+      S.api('speed.php', { address: addr }).then(draw).catch(function (x) { o.hidden = true; er.textContent = x.message; }).then(function () { b.disabled = false; b.firstElementChild.textContent = 'Test speed'; });
+    }
+    function draw(j) {
+      var o = $('#sp-out');
+      if (!j.ok) { o.innerHTML = '<div class="empty">' + esc(j.error) + '</div>'; return; }
+      var m = j.median, parts = [['Find server (DNS)', m.dns, 'dns'], ['Connect', m.connect, 'con'], ['Secure (TLS)', m.tls, 'tls'], ['Wait for server', m.wait, 'wait'], ['Download', m.download, 'dl']].filter(function (p) { return p[1] > 0 || p[2] === 'wait'; });
+      var sum = parts.reduce(function (a, p) { return a + p[1]; }, 0) || 1;
+      var h = '<div class="sp-top"><div class="grade g' + j.grade + '"><b>' + j.grade + '</b><span>' + j.score + '/100</span></div><div><h2 class="sp-h">' + esc(j.host) + '<span class="dot">.</span></h2><p class="note">Loaded in <b>' + esc(S.ms(m.total)) + '</b> (median of ' + j.runs.length + ' loads: ' + j.runs.map(function (x) { return esc(S.ms(x)); }).join(', ') + '). First byte after <b>' + esc(S.ms(m.ttfb)) + '</b>.</p></div></div>';
+      h += '<h3 class="sh3">Where the time goes</h3><div class="wf">' + parts.map(function (p) { return '<div class="wr"><span class="wl">' + p[0] + '</span><span class="wt"><i class="' + p[2] + '" style="width:' + Math.max(2, p[1] / sum * 100).toFixed(1) + '%"></i></span><b>' + esc(S.ms(p[1])) + '</b></div>'; }).join('') + '</div>';
+      h += '<div class="stat-row" style="margin-top:20px"><div class="stat"><span class="k">Page size</span><b>' + kb(j.size) + '</b></div><div class="stat"><span class="k">Sent compressed</span><b>' + (j.encoding ? esc(j.encoding) + (j.wire ? ' · ' + kb(j.wire) : '') : 'No') + '</b></div><div class="stat"><span class="k">Protocol</span><b>' + esc(j.version || '—') + (j.https ? '' : ' · no HTTPS') + '</b></div><div class="stat"><span class="k">Redirects</span><b>' + j.redirects + '</b></div></div>';
+      h += '<p class="note">The page links <b>' + j.resources.scripts + '</b> scripts, <b>' + j.resources.styles + '</b> stylesheets and <b>' + j.resources.images + '</b> images (counted in the HTML). ' + (j.cache.cache_control ? 'Cache-Control: <b>' + esc(j.cache.cache_control) + '</b>.' : 'No Cache-Control header.') + '</p>';
+      h += '<h3 class="sh3">What to improve</h3><ul class="tips">' + j.tips.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>';
+      h += '<p class="fine" style="margin-top:14px">This tests the page document from our server, not every file it loads, and one location only. For a view from 12 places, run a <a href="/?q=' + encodeURIComponent(j.host) + '">worldwide check</a>.</p>';
+      o.innerHTML = h;
+    }
+    if (q) { $('#sp-input').value = q; run(q); }
+  }
+
   document.addEventListener('DOMContentLoaded', function () {
-    if (page === 'login') initLogin(); else if (page === 'account') initAccount(); else if (page === 'monitor') initMonitor(); else if (page === 'status') initStatus();
+    if (page === 'login') initLogin(); else if (page === 'account') initAccount(); else if (page === 'monitor') initMonitor(); else if (page === 'status') initStatus(); else if (page === 'speed') initSpeed();
   });
 })();
