@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   var S = window.SUD, $ = S.$, esc = S.esc;
-  function tile(n, h) { var k = 0; for (var i = 0; i < h.length; i++) k += h.charCodeAt(i); return '<span class="tile" style="--h:' + (k * 37 % 360) + '" aria-hidden="true">' + esc(String(n).charAt(0).toUpperCase()) + '</span>'; }
+  function tile() { return ''; }
   var W = 1000, MAP = window.SUD_MAP, H = Math.round(W * 142 / 360 * 10) / 10;
   var state = { host: '', share: '', timer: null, runId: 0, last: '' };
   var BIG = { up: 'Up for everyone', partial: 'Reachable from some places', 'down-everywhere': 'Down for everyone', blocked: 'Blocking automated checks', down: 'Confirmed down', timeout: 'Timed out', inconclusive: 'Inconclusive' };

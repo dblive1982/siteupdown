@@ -433,8 +433,7 @@ def static_pages():
 import site_pages as SP
 
 def tile(name, host):
-    hue = sum(ord(ch) for ch in host) * 37 % 360
-    return '<span class="tile" style="--h:%d" aria-hidden="true">%s</span>' % (hue, html.escape(name[:1].upper()))
+    return ''  # letter tiles removed; the name speaks for itself
 
 def site_pages_build():
     hosts = [h for _, h, _, _ in SP.SITES]
