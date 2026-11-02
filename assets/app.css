@@ -525,3 +525,10 @@ abbr[data-n]:hover::after,abbr[data-n]:focus::after{content:attr(data-n);positio
 :root.navy:not([data-theme=light]){--bg:#130228;--bg2:#1b0a38;--card:#170633;--card2:#1d0b3d;--line:#33205a;--text:#eef0f6;--muted:#a79fc4;--dot:rgba(170,150,230,.10);--hard:#0d0120;--glow:rgba(57,181,74,.08)}
 :root.navy:not([data-theme=light]) .site-head{background:rgba(19,2,40,.92)}
 .site-head .lf{height:56px}@media(max-width:520px){.site-head .lf{height:44px}}
+
+/* ===== navy theme (from the new logo) is now the dark theme ===== */
+:root:not([data-theme=light]){--bg:#130228;--bg2:#1b0a38;--card:#170633;--card2:#1d0b3d;--line:#33205a;--text:#eef0f6;--muted:#a79fc4;--green:#3cb54b;--hl:#52cc62;--green-ink:#130228;--green-soft:rgba(60,181,75,.16);--dot:rgba(170,150,230,.10);--hard:#0f7c43;--glow:rgba(60,181,75,.10)}
+:root:not([data-theme=light]) .site-head{background:rgba(19,2,40,.92)}
+:root:not([data-theme=light]) .btn{box-shadow:none}
+:root:not([data-theme=light]) .btn:hover{background:#4cc85a}
+:root:not([data-theme=light]) .checker,:root:not([data-theme=light]) .card{box-shadow:4px 4px 0 rgba(15,124,67,.35)}
