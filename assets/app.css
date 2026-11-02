@@ -715,3 +715,14 @@ a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--t
 .dot-s.up{animation:glowg 2.6s ease-in-out infinite}
 .dot-s.down{animation:glowr 1.2s ease-in-out infinite}
 .dot-s.slow{animation:glowa 1.8s ease-in-out infinite}
+
+/* live pulse dot inside status pills + ring pulse on directory dots */
+@keyframes dotring{0%{box-shadow:0 0 0 0 currentColor}70%,100%{box-shadow:0 0 0 9px transparent}}
+.sp-pill::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:currentColor;margin-right:8px;vertical-align:1px}
+.sp-pill.up::before{animation:dotring 2.2s ease-out infinite}
+.sp-pill.down::before{animation:dotring 1.1s ease-out infinite}
+.sp-pill.slow::before{animation:dotring 1.6s ease-out infinite}
+.sp-svc .sp-pill::before{width:6px;height:6px;margin-right:6px}
+.dot-s.up{color:var(--green);animation:dotring 2.2s ease-out infinite}
+.dot-s.down{color:#ff6b6b;animation:dotring 1.1s ease-out infinite}
+.dot-s.slow{color:#ffb454;animation:dotring 1.6s ease-out infinite}
