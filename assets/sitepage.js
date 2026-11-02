@@ -53,6 +53,7 @@
     var busy = rep.level === 'high' || rep.level === 'raised';
     if (!cur) { pill.className = 'sp-pill unsure'; pill.textContent = 'No data yet'; msg.textContent = 'We have not run a scheduled check of ' + host + ' yet. Use the button below to test it now.'; return; }
     var v = cur.verdict;
+    $('#sp-status').setAttribute('data-v', v);
     if (v === 'up') {
       pill.className = 'sp-pill up'; pill.textContent = 'Up';
       msg.textContent = busy ? 'We can reach ' + host + ', but many visitors are reporting problems. It may affect the app, logging in or certain regions.'
@@ -135,6 +136,9 @@
       var l = x.v ? LBL[x.v] || LBL.inconclusive : ['unsure', 'Not checked yet'];
       return '<li><span class="sp-pill ' + l[0] + '">' + l[1] + '</span> <b>' + e(x.label) + '</b> <code>' + e(x.host) + '</code>' + (x.ms && x.v === 'up' ? ' <span class="sp-ms">' + x.ms + ' ms</span>' : '') + '</li>';
     }).join('');
+    var rank = { down: 3, timeout: 2, inconclusive: 1, up: 0 }, worst = null;
+    j.items.forEach(function (x) { if (x.v && (worst === null || rank[x.v] > rank[worst])) worst = x.v; });
+    if (worst) document.getElementById('sp-app').setAttribute('data-v', worst);
     document.getElementById('sp-app').hidden = false;
   }).catch(function () {});
 })();
