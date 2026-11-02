@@ -541,3 +541,8 @@ abbr[data-n]:hover::after,abbr[data-n]:focus::after{content:attr(data-n);positio
 .site-head .lf{height:45px}.foot-brand .lf{height:35px}
 @media(max-width:520px){.site-head .lf{height:35px}.foot-brand .lf{height:30px}}
 @media(max-width:520px){.checker .top em{display:none}.checker .top{flex-wrap:nowrap}}
+
+/* flatter cards; only the main checker keeps the chunky offset shadow */
+.card,:root:not([data-theme=light]) .card{box-shadow:none}
+.checker,:root:not([data-theme=light]) .checker{box-shadow:5px 5px 0 rgba(15,124,67,.5)}
+:root[data-theme=light] .checker{box-shadow:5px 5px 0 var(--hard)}
