@@ -8,6 +8,7 @@ require __DIR__ . '/_probe.php';
 require __DIR__ . '/_tls.php';
 require __DIR__ . '/_track.php';
 require __DIR__ . '/_sites.php';
+require __DIR__ . '/_sitepages.php';
 $c = config();
 if (PHP_SAPI !== 'cli') {
     $key = (string)($_GET['key'] ?? '');
@@ -20,6 +21,7 @@ $batch = (int)($c['cron_batch'] ?? 40);
 $hosts = [];
 foreach (top_sites() as $s) $hosts[$s[0]] = 1;
 foreach (gaming_sites() as $s) $hosts[$s[0]] = 1;
+foreach (array_keys(site_pages()) as $h0) $hosts[$h0] = 1;
 foreach ($pdo->query('SELECT DISTINCT host FROM watchlist')->fetchAll() as $r) $hosts[$r['host']] = 1;
 $st = [];
 foreach ($pdo->query('SELECT host, checked_at FROM site_status')->fetchAll() as $r) $st[$r['host']] = $r['checked_at'];
@@ -41,6 +43,7 @@ foreach ($pdo->query('SELECT host, checked_at FROM site_cert')->fetchAll() as $r
 $certHosts = [];
 foreach (top_sites() as $s2) $certHosts[$s2[0]] = 1;
 foreach (gaming_sites() as $s2) $certHosts[$s2[0]] = 1;
+foreach (array_keys(site_pages()) as $h0) $certHosts[$h0] = 1;
 $certList = array_keys($certHosts);
 $cut = gmdate('Y-m-d H:i:s', time() - 22 * 3600);
 $certList = array_values(array_filter($certList, fn($h) => ($certAt[$h] ?? '') < $cut));
@@ -58,6 +61,7 @@ foreach ($certList as $h) {
 // Housekeeping: drop old feed rows and expired share links.
 $pdo->prepare('DELETE FROM checks WHERE checked_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - 3 * 86400)]);
 $pdo->prepare('DELETE FROM site_log WHERE ts < ?')->execute([gmdate('Y-m-d H:i:s', time() - 35 * 86400)]);
+$pdo->prepare('DELETE FROM reports WHERE ts < ?')->execute([gmdate('Y-m-d H:i:s', time() - 35 * 86400)]);
 $pdo->prepare('DELETE FROM incidents WHERE started_at < ? AND ended_at IS NOT NULL')->execute([gmdate('Y-m-d H:i:s', time() - 95 * 86400)]);
 $pdo->prepare('DELETE FROM shares WHERE created_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - 30 * 86400)]);
 $pdo->prepare('DELETE FROM resets WHERE expires_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - 86400)]);

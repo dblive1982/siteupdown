@@ -2,6 +2,8 @@
 // GET ?q=&cat=&page= -> gaming services with their latest status (24 per page).
 require __DIR__ . '/_boot.php';
 require __DIR__ . '/_sites.php';
+require __DIR__ . '/_sitepages.php';
+$pg = site_pages();
 $pdo = db();
 $st = [];
 foreach ($pdo->query('SELECT host, verdict, http_code, ms, checked_at FROM site_status')->fetchAll() as $r) $st[$r['host']] = $r;
@@ -27,7 +29,7 @@ $page = min($page, $pages);
 $items = [];
 foreach (array_slice($f, ($page - 1) * $per, $per) as [$host, $name, $c]) {
     $r = $st[$host] ?? null;
-    $items[] = ['host' => $host, 'name' => $name, 'cat' => $c, 'verdict' => $r['verdict'] ?? null,
+    $items[] = ['host' => $host, 'name' => $name, 'page' => $pg[$host]['page'] ?? null, 'cat' => $c, 'verdict' => $r['verdict'] ?? null,
                 'ms' => isset($r['ms']) ? (int)$r['ms'] : null, 'at' => $r ? iso($r['checked_at']) : null,
                 'ssl' => $cert[$host]['status'] ?? null, 'ssl_days' => isset($cert[$host]['days_left']) ? (int)$cert[$host]['days_left'] : null];
 }

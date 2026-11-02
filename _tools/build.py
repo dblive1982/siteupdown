@@ -79,7 +79,7 @@ def head(title, desc, path, extra_head='', noindex=False):
 '''
 
 def foot(scripts):
-    links = [('Regional map', '/#global-pulse'), ('How it works', '/#how-it-works'), ('Help centre', '/help/'), ('Speed test', '/speed'), ('Monitor', '/monitor'), ('Account', '/account'), ('About', '/about'), ('Contact', '/contact'), ('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')]
+    links = [('Regional map', '/#global-pulse'), ('How it works', '/#how-it-works'), ('Help centre', '/help/'), ('Is it down?', '/is-it-down/'), ('Speed test', '/speed'), ('Monitor', '/monitor'), ('Account', '/account'), ('About', '/about'), ('Contact', '/contact'), ('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')]
     return f'''</main>
 <footer class="site-foot"><div class="wrap">
 <div class="foot-brand">{BRAND}</div>
@@ -398,6 +398,8 @@ def static_pages():
 <h2>Accounts</h2>
 <p>Signing in is optional. If you create an account (with email and password, or with Google) we store your email address, display name and a hashed password (we never see or store your password itself). While you are signed in we also save your checks and your watchlist, and they are private to you. You can reset your data or delete your account at any time from the Account page; deleting removes everything saved with it.</p>
 <p>If you sign in with Google, Google tells us your name and verified email address. We do not get access to anything else in your Google account.</p>
+<h2>Problem reports</h2>
+<p>On the &ldquo;Is it down?&rdquo; pages you can report a problem with a site. A report stores the site, the type of problem, the time, and a one-way hash of your network address, which is used only to limit repeat reports. It is kept for up to 35 days. We do not ask for your name or email address for reports, and reports are shown only as anonymous counts.</p>
 <h2>Cookies and storage</h2>
 <p>We use essential storage to run the site: your theme, your cookie choice, your recent searches (kept on your device) and a sign-in cookie if you are signed in. Analytics and advertising cookies are optional and off until you allow them in &ldquo;Cookie settings&rdquo;. No advertising script is connected at the moment.</p>
 <h2>Advertising</h2>
@@ -426,12 +428,94 @@ def static_pages():
     write('404.html', h + '<section class="page"><div class="wrap narrow center"><span class="eyebrow"><i></i>Error 404</span><h1 style="margin:14px 0">Not found<span class="dot">.</span></h1><p class="lead">We checked everywhere. This page is down for everyone.</p><p style="margin-top:24px"><a class="btn" href="/"><span>Back to the checker</span></a></p></div></section>' + foot('<script src="/assets/app.js"></script>'))
 
 
+
+# ---------------------------------------------------------------- "Is X down?" pages
+import site_pages as SP
+
+def tile(name, host):
+    hue = sum(ord(ch) for ch in host) * 37 % 360
+    return '<span class="tile" style="--h:%d" aria-hidden="true">%s</span>' % (hue, html.escape(name[:1].upper()))
+
+def site_pages_build():
+    hosts = [h for _, h, _, _ in SP.SITES]
+    assert len(hosts) == len(set(hosts)), 'duplicate host in SITES'
+    slugs = [SP.slug(n) for n, _, _, _ in SP.SITES]
+    assert len(slugs) == len(set(slugs)), 'duplicate slug in SITES'
+    # the list the PHP side reads (api/_ files are blocked from the web by .htaccess)
+    with open(os.path.join(ROOT, 'api', '_sitepages.json'), 'w') as f:
+        _json.dump({h: {'name': n, 'page': SP.page_path(n), 'cat': c} for n, h, c, _ in SP.SITES}, f, separators=(',', ':'))
+    kinds = ''.join('<button type="button" class="rk" data-kind="%s">%s</button>' % (k, l) for k, l in SP.KIND_LABELS)
+    for name, host, cat, blurb in SP.SITES:
+        n = html.escape(name); hh = html.escape(host)
+        path = SP.page_path(name)
+        catname, tips = SP.CATS[cat]
+        title = 'Is %s down? Live status and outage reports' % name
+        desc = 'Is %s (%s) down right now? See the live status checked from our servers, response time, uptime and problems reported by other visitors in the last 24 hours.' % (name, host)
+        faqs = [
+            ('Is %s down right now?' % name, 'Look at the live status box at the top of this page. It shows the result of our latest automatic check of %s, repeated every few minutes. If it says the site is up but things still fail for you, the problem is probably on your side or limited to one feature or region.' % host),
+            ('Why is %s not working for me when it works for others?' % name, 'A site can fail for some people and not others because of DNS caching, regional servers, your internet provider, a firewall or VPN, or a problem with your device or app. Our guide on why a website can be down for some people and not others explains how to tell which one it is.'),
+            ('How do I report a problem with %s?' % name, 'Use the report buttons on this page and choose what is going wrong. Reports are anonymous and unverified, and each visitor can report once every 30 minutes. They are shown as a chart so you can see whether other people are having the same problem.'),
+            ('How does siteupdown.com check %s?' % name, 'Our server loads %s every few minutes, the way a browser would, and records the response code and how long it took. A site is only called down after two server errors in a row. Our page on how the checks work has the details.' % host),
+        ]
+        ld = {"@context": "https://schema.org", "@graph": [
+            {"@type": "BreadcrumbList", "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Home", "item": SITE + "/"},
+                {"@type": "ListItem", "position": 2, "name": "Is it down?", "item": SITE + "/is-it-down/"},
+                {"@type": "ListItem", "position": 3, "name": 'Is %s down?' % name, "item": SITE + path}]},
+            {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faqs]}]}
+        extra = '<script type="application/ld+json">' + _json.dumps(ld) + '</script>'
+        h = head(title + ' — siteupdown.com', desc, path, extra).replace('{BODYATTR}', '')
+        same = [(n2, SP.page_path(n2)) for n2, h2, c2, _ in SP.SITES if c2 == cat and n2 != name][:8]
+        rel = ''.join('<li><a href="%s">Is %s down?</a></li>' % (pth, html.escape(n2)) for n2, pth in same)
+        tipsli = ''.join('<li>%s</li>' % t for t in tips)
+        faqh = ''.join('<details><summary>%s</summary><p>%s</p></details>' % (html.escape(q), html.escape(a)) for q, a in faqs)
+        body = (
+            '<section class="page"><div class="wrap prose sitepage" data-sp="site" data-host="%s" data-name="%s">' % (hh, n) +
+            '<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/is-it-down/">Is it down?</a> / %s</nav>' % n +
+            '<h1 class="sp-h1" style="margin:14px 0 18px">%s<span>Is %s down?</span></h1>' % (tile(name, host), n) +
+            '<div class="sp-card" id="sp-status" aria-live="polite"><div class="sp-head"><span class="sp-pill" id="sp-pill">Checking…</span><span class="sp-msg" id="sp-msg">Loading the latest result for %s.</span></div>' % hh +
+            '<div class="sp-stats" id="sp-stats"></div><noscript><p>Turn on JavaScript to see the live status.</p></noscript></div>' +
+            '<p class="lead" style="margin-top:22px">%s</p>' % blurb +
+            '<h2>Are other people having problems with %s?</h2>' % n +
+            '<div class="sp-card" id="sp-reports"><div class="sp-rhead"><b id="sp-rtotal">Problem reports</b><span id="sp-rlevel" class="sp-level"></span></div>'
+            '<div class="sp-chart" id="sp-chart" role="img" aria-label="Problem reports per hour over the last 24 hours"></div>'
+            '<div class="sp-axis"><span>24 hours ago</span><span>Now</span></div><div class="sp-kinds" id="sp-kinds"></div>'
+            '<div class="sp-report"><button type="button" class="btn small" id="sp-rbtn"><span>I am having a problem with %s</span></button>' % n +
+            '<div class="sp-rpick" id="sp-rpick" hidden><p>What is going wrong?</p><div class="sp-rbtns">%s</div></div><p class="sp-rmsg" id="sp-rmsg" role="status"></p></div>' % kinds +
+            '<p class="note">Reports are anonymous and unverified, and each visitor can report once every 30 minutes. They show how many people say they are affected, not why.</p></div>'
+            '<h2>If %s is not loading for you</h2><ul>%s</ul>' % (n, tipsli) +
+            '<p>Still stuck? Work through our <a href="/help/website-not-loading-checklist">website not loading checklist</a>, or read <a href="/help/down-for-some-people-not-others">why a site can be down for some people and not others</a>.</p>'
+            '<h2>Check %s from twelve places</h2><p>This page shows our latest scheduled check. To test %s right now from our server and from twelve countries, run a live check.</p>' % (n, hh) +
+            '<p><a class="btn" href="/?q=%s"><span>Check %s now</span></a> <a class="btn ghost" href="/status/%s"><span>Full status page</span></a></p>' % (hh, n, hh) +
+            '<h2>Questions about %s</h2><div class="faq">%s</div>' % (n, faqh) +
+            '<h2>Other %s checks</h2><ul>%s</ul>' % (html.escape(catname.lower()), rel) +
+            '<p class="note">Category: %s. siteupdown.com is independent and is not affiliated with %s.</p>' % (html.escape(catname), n) +
+            '<p style="margin-top:20px"><a href="/is-it-down/">&larr; All site status pages</a></p></div></section>')
+        write(path.lstrip('/') + '.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/sitepage.js"></script>'))
+    # directory
+    groups = ''
+    order = ['social', 'video', 'search', 'work', 'shopping', 'news', 'gaming']
+    for cat in order:
+        items = [(n, h, p) for n, h, c, p in SP.SITES if c == cat]
+        li = ''.join('<li data-host="%s" data-name="%s"><i class="dot-s"></i>%s<a href="%s">%s</a><span class="rep"></span></li>' % (html.escape(h), html.escape(n.lower()), tile(n, h), SP.page_path(n), html.escape(n)) for n, h, p in items)
+        groups += '<section class="dgroup"><h2>%s</h2><ul>%s</ul></section>' % (html.escape(SP.CATS[cat][0]), li)
+    ld = '<script type="application/ld+json">' + _json.dumps({"@context": "https://schema.org", "@type": "CollectionPage", "name": "Is it down? Status of popular websites", "url": SITE + "/is-it-down/"}) + '</script>'
+    h = head('Is it down? Live status of popular websites — siteupdown.com', 'Live status for popular websites, apps and games, checked every few minutes from our servers, with problem reports from other visitors.', '/is-it-down/', ld).replace('{BODYATTR}', '')
+    body = ('<section class="page"><div class="wrap prose sitedir" data-sp="dir"><span class="eyebrow"><i></i>siteupdown.com</span><h1 style="margin:14px 0 12px">Is it down?<span class="dot">.</span></h1>'
+            '<p class="lead">Live status for popular websites, apps and games. Each page shows our latest check, response time and uptime, and the problems other visitors have reported in the last 24 hours.</p>'
+            '<div class="sp-card" id="sp-top" hidden><b>Most reported right now</b><ul id="sp-toplist"></ul></div>'
+            '<label class="sr" for="sp-find">Find a site</label><input id="sp-find" class="sp-find" type="search" placeholder="Find a site, e.g. Netflix" autocomplete="off">'
+            + groups +
+            '<p>Not listed? <a href="/">Check any website</a> from twelve places.</p></div></section>')
+    write('is-it-down/index.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/sitepage.js"></script>'))
+
 # ---------------------------------------------------------------- help centre
 import json as _json
 from help_content import CATS, ARTICLES, BY_SLUG
 
 def help_pages():
     os.makedirs(os.path.join(ROOT, 'help'), exist_ok=True)
+    os.makedirs(os.path.join(ROOT, 'is-it-down'), exist_ok=True)
     catname = {c[0]: c[1] for c in CATS}
     # hub
     cards = ''
@@ -466,9 +550,9 @@ def help_pages():
                 '<p style="margin-top:20px"><a href="/help/">&larr; All help guides</a></p></div></section>')
         write('help/' + a['slug'] + '.html', h + body + foot('<script src="/assets/app.js"></script>'))
     # sitemap
-    urls = [('/', 'daily', '1.0'), ('/speed', 'monthly', '0.8'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/about', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
+    urls = [('/', 'daily', '1.0'), ('/speed', 'monthly', '0.8'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8')] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES] + [('/about', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
     sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join('<url><loc>%s%s</loc><lastmod>2026-11-02</lastmod><changefreq>%s</changefreq><priority>%s</priority></url>\n' % (SITE, u, c, p) for u, c, p in urls) + '</urlset>\n'
     open(os.path.join(ROOT, 'sitemap.xml'), 'w').write(sm)
 
 if __name__ == '__main__':
-    home(); login(); account(); monitor(); speed(); status(); static_pages(); help_pages()
+    home(); login(); account(); monitor(); speed(); status(); static_pages(); help_pages(); site_pages_build()

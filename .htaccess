@@ -25,6 +25,11 @@ RewriteRule ^help/([a-z0-9-]+)/?$ /help/$1.html [L]
 RewriteCond %{THE_REQUEST} \s/+help/(?!index\.)([a-z0-9-]+)\.html[\s?]
 RewriteRule ^help/(?!index\.)([a-z0-9-]+)\.html$ /help/$1 [R=301,L]
 
+# "Is X down?" pages: /is-instagram-down and /is-it-down/
+RewriteRule ^(?!is-it-down/?$)(is-[a-z0-9-]+-down)/?$ /$1.html [L]
+RewriteCond %{THE_REQUEST} \s/+(is-[a-z0-9-]+-down)\.html[\s?]
+RewriteRule ^(is-[a-z0-9-]+-down)\.html$ /$1 [R=301,L]
+
 # Clean URLs.
 RewriteRule ^(login|account|monitor|speed|about|privacy|legal|contact)/?$ /$1.html [L]
 RewriteCond %{THE_REQUEST} \s/+(login|account|monitor|speed|about|privacy|legal|contact|index)\.html[\s?]

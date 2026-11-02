@@ -2,6 +2,7 @@
 (function () {
   'use strict';
   var S = window.SUD, $ = S.$, esc = S.esc;
+  function tile(n, h) { var k = 0; for (var i = 0; i < h.length; i++) k += h.charCodeAt(i); return '<span class="tile" style="--h:' + (k * 37 % 360) + '" aria-hidden="true">' + esc(String(n).charAt(0).toUpperCase()) + '</span>'; }
   var W = 1000, MAP = window.SUD_MAP, H = Math.round(W * 142 / 360 * 10) / 10;
   var state = { host: '', share: '', timer: null, runId: 0, last: '' };
   var BIG = { up: 'Up for everyone', partial: 'Reachable from some places', 'down-everywhere': 'Down for everyone', blocked: 'Blocking automated checks', down: 'Confirmed down', timeout: 'Timed out', inconclusive: 'Inconclusive' };
@@ -263,7 +264,7 @@
     var v = x.verdict, cls = !v ? 'none' : (v === 'up' ? 'up' : (v === 'down' || v === 'timeout' || !x.code ? 'bad' : 'warn'));
     var say = !v ? 'has not been checked yet.' : v === 'up' ? 'is up.' : v === 'down' ? 'is down.' : v === 'timeout' ? 'timed out.' : x.code ? 'answered, but blocks automated checks.' : 'is not responding.';
     var right = x.code ? 'HTTP ' + esc(x.code) + (x.ms != null ? ' · ' + esc(S.ms(x.ms)) : '') : (v ? 'No status' : '');
-    return '<div class="row ' + cls + '"><div class="rl"><b>' + esc(x.name) + '</b><span class="st"><i></i>' + esc(x.host) + ' ' + say + (x.at ? ' <em>Checked ' + esc(S.ago(x.at)) + '</em>' : '') + '</span></div>'
+    return '<div class="row ' + cls + '"><div class="rl"><b>' + tile(x.name, x.host) + (x.page ? '<a href="' + esc(x.page) + '">' + esc(x.name) + '</a>' : esc(x.name)) + '</b><span class="st"><i></i>' + esc(x.host) + ' ' + say + (x.at ? ' <em>Checked ' + esc(S.ago(x.at)) + '</em>' : '') + '</span></div>'
       + '<div class="rr"><span class="code">' + right + '</span>' + sslTag(x)
       + '<button class="go" type="button" data-h="' + esc(x.host) + '" aria-label="Check ' + esc(x.name) + '" title="Check ' + esc(x.name) + '">↗</button></div></div>';
   }

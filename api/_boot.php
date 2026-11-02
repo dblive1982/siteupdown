@@ -125,6 +125,14 @@ function ensure_schema(PDO $pdo): void {
         data TEXT NOT NULL,
         checked_at DATETIME NOT NULL
     )$cs");
+    // Visitor problem reports for the "Is X down?" pages (pruned after 35 days).
+    $pdo->exec("CREATE TABLE IF NOT EXISTS reports (
+        id $id,
+        host VARCHAR(253) NOT NULL,
+        kind VARCHAR(12) NOT NULL,
+        ip_hash CHAR(64) NOT NULL,
+        ts DATETIME NOT NULL
+    )$cs");
     $pdo->exec("CREATE TABLE IF NOT EXISTS shares (
         id CHAR(10) NOT NULL PRIMARY KEY,
         host VARCHAR(253) NOT NULL,
@@ -157,6 +165,7 @@ function ensure_schema(PDO $pdo): void {
         'CREATE INDEX IF NOT EXISTS i_sc ON saved_checks (user_id, checked_at)',
         'CREATE INDEX IF NOT EXISTS i_log ON site_log (host, ts)',
         'CREATE INDEX IF NOT EXISTS i_inc ON incidents (host, started_at)',
+        'CREATE INDEX IF NOT EXISTS i_rep ON reports (host, ts)',
     ] as $q) {
         try { $pdo->exec($q); } catch (Throwable $e) { /* MySQL has no IF NOT EXISTS for indexes: created below */ }
     }
@@ -164,7 +173,7 @@ function ensure_schema(PDO $pdo): void {
     if (!$lite) {
         foreach ([
             ['attempts', 'i_att', '(ip_hash, kind, ts)'], ['checks', 'i_chk', '(checked_at)'], ['saved_checks', 'i_sc', '(user_id, checked_at)'],
-            ['site_log', 'i_log', '(host, ts)'], ['incidents', 'i_inc', '(host, started_at)'],
+            ['site_log', 'i_log', '(host, ts)'], ['incidents', 'i_inc', '(host, started_at)'], ['reports', 'i_rep', '(host, ts)'],
         ] as [$t, $n, $cols]) {
             try { $pdo->exec("CREATE INDEX $n ON $t $cols"); } catch (Throwable $e) { /* already exists */ }
         }
