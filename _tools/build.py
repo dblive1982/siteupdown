@@ -40,7 +40,7 @@ I_X = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="
 I_TT = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 3a5 5 0 0 0 4 4.4v3.3a8 8 0 0 1-4-1.2v6.2a6 6 0 1 1-6-6c.3 0 .7 0 1 .1v3.4a2.7 2.7 0 1 0 1.8 2.5V3z"/></svg>'
 I_YT = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2C2 8.8 2 12 2 12s0 3.2.4 4.8a2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8c.4-1.6.4-4.8.4-4.8s0-3.2-.4-4.8zM10 15V9l5.2 3z"/></svg>'
 
-NAV = [('Regional map', '/#global-pulse'), ('Top websites', '/#top-sites'), ('Gaming', '/#online-gaming'), ('Monitor', '/monitor'), ('Account', '/account'), ('How it works', '/#how-it-works')]
+NAV = [('Regional map', '/#global-pulse'), ('Top websites', '/#top-sites'), ('Gaming', '/#online-gaming'), ('Monitor', '/monitor'), ('Account', '/account'), ('Help', '/help/'), ('How it works', '/#how-it-works')]
 
 def head(title, desc, path, extra_head='', noindex=False):
     t = html.escape(title)
@@ -79,7 +79,7 @@ def head(title, desc, path, extra_head='', noindex=False):
 '''
 
 def foot(scripts):
-    links = [('Regional map', '/#global-pulse'), ('How it works', '/#how-it-works'), ('About', '/about'), ('Speed test', '/speed'), ('Monitor', '/monitor'), ('About', '/about'), ('Account', '/account'), ('Contact', '/contact'), ('Legal notice', '/legal'), ('Privacy', '/privacy')]
+    links = [('Regional map', '/#global-pulse'), ('How it works', '/#how-it-works'), ('Help centre', '/help/'), ('Speed test', '/speed'), ('Monitor', '/monitor'), ('Account', '/account'), ('About', '/about'), ('Contact', '/contact'), ('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')]
     return f'''</main>
 <footer class="site-foot"><div class="wrap">
 <div class="foot-brand">{BRAND}</div>
@@ -215,6 +215,15 @@ def home():
 <a class="tool" href="/monitor"><span class="ti">🔔</span><h3>Monitor &amp; email alerts</h3><p>Watch up to 25 sites and get an email when one goes down and when it is back.</p><span class="tgo">Open Monitor →</span></a>
 <a class="tool" href="#checker-title" onclick="document.getElementById('chk-input').focus()"><span class="ti">🔒</span><h3>SSL, DNS &amp; domain expiry</h3><p>Every check shows the certificate, DNS records, redirects and when the domain expires.</p><span class="tgo">Run a check →</span></a>
 <a class="tool" href="/monitor"><span class="ti">📈</span><h3>Uptime history &amp; status pages</h3><p>Uptime over 24 hours, 7 and 30 days, with a public status page you can share.</p><span class="tgo">Start tracking →</span></a>
+</div></div></section>
+
+<section id="help-teaser"><div class="wrap">
+<div class="sec-head"><span class="eyebrow"><i></i>Help centre</span><h2>Plain-English guides<span class="dot">.</span></h2></div>
+<div class="tools-grid">
+<a class="tool" href="/help/website-not-loading-checklist"><span class="ti">🧭</span><h3>Website not loading?</h3><p>A step-by-step checklist to find out whether it is the site or you.</p><span class="tgo">Read the guide →</span></a>
+<a class="tool" href="/help/server-errors-500-502-503-504"><span class="ti">🛠</span><h3>500, 502, 503, 504 errors</h3><p>What each server error means and what to try.</p><span class="tgo">Read the guide →</span></a>
+<a class="tool" href="/help/ssl-certificate-errors"><span class="ti">🔒</span><h3>SSL certificate errors</h3><p>Why browsers warn that a connection is not private, and how to fix it.</p><span class="tgo">Read the guide →</span></a>
+<a class="tool" href="/help/"><span class="ti">📚</span><h3>All help guides</h3><p>Error codes, fixes, DNS, uptime and speed, in one place.</p><span class="tgo">Open the help centre →</span></a>
 </div></div></section>
 
 <section id="faq"><div class="wrap">
@@ -416,5 +425,50 @@ def static_pages():
     h = head('Page not found — siteupdown.com', 'That page could not be found.', '/404', noindex=True).replace('{BODYATTR}', '')
     write('404.html', h + '<section class="page"><div class="wrap narrow center"><span class="eyebrow"><i></i>Error 404</span><h1 style="margin:14px 0">Not found<span class="dot">.</span></h1><p class="lead">We checked everywhere. This page is down for everyone.</p><p style="margin-top:24px"><a class="btn" href="/"><span>Back to the checker</span></a></p></div></section>' + foot('<script src="/assets/app.js"></script>'))
 
+
+# ---------------------------------------------------------------- help centre
+import json as _json
+from help_content import CATS, ARTICLES, BY_SLUG
+
+def help_pages():
+    os.makedirs(os.path.join(ROOT, 'help'), exist_ok=True)
+    catname = {c[0]: c[1] for c in CATS}
+    # hub
+    cards = ''
+    for key, name, blurb in CATS:
+        items = ''.join('<li><a href="/help/%s">%s</a></li>' % (a['slug'], html.escape(a['title'])) for a in ARTICLES if a['cat'] == key)
+        cards += '<section class="hcat"><h2>%s</h2><p>%s</p><ul>%s</ul></section>' % (html.escape(name), html.escape(blurb), items)
+    ld = '<script type="application/ld+json">' + _json.dumps({"@context": "https://schema.org", "@type": "CollectionPage", "name": "siteupdown.com help centre", "url": SITE + "/help/"}) + '</script>'
+    h = head('Help centre: website errors, DNS, SSL and uptime guides — siteupdown.com', 'Plain-English guides to website errors, DNS, SSL certificates, uptime and speed. Find out why a site will not load and how to fix it.', '/help/', ld).replace('{BODYATTR}', '')
+    body = ('<section class="page"><div class="wrap prose helphub"><span class="eyebrow"><i></i>siteupdown.com</span><h1 style="margin:14px 0 12px">Help centre<span class="dot">.</span></h1>'
+            '<p class="lead">Plain-English answers about website errors, DNS, SSL, uptime and speed. Written to help you work out whether a site is down, and what to do next.</p>'
+            '<div class="hgrid">' + cards + '</div>'
+            '<p style="margin-top:34px"><a href="/">&larr; Back to the website checker</a></p></div></section>')
+    write('help/index.html', h + body + foot('<script src="/assets/app.js"></script>'))
+    for a in ARTICLES:
+        path = '/help/' + a['slug']
+        art = {"@context": "https://schema.org", "@type": "Article", "headline": a['title'], "description": a['desc'], "datePublished": "2026-11-02", "dateModified": "2026-11-02",
+               "author": {"@type": "Organization", "name": "siteupdown.com", "url": SITE + "/"}, "publisher": {"@type": "Organization", "name": "siteupdown.com", "url": SITE + "/"},
+               "mainEntityOfPage": SITE + path}
+        crumbs = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Home", "item": SITE + "/"},
+            {"@type": "ListItem", "position": 2, "name": "Help centre", "item": SITE + "/help/"},
+            {"@type": "ListItem", "position": 3, "name": a['title'], "item": SITE + path}]}
+        extra = '<script type="application/ld+json">' + _json.dumps(art) + '</script><script type="application/ld+json">' + _json.dumps(crumbs) + '</script>'
+        h = head(a['title'] + ' — siteupdown.com', a['desc'], path, extra).replace('{BODYATTR}', '')
+        rel = ''.join('<li><a href="/help/%s">%s</a></li>' % (r, html.escape(BY_SLUG[r]['title'])) for r in a['related'])
+        body = ('<section class="page"><div class="wrap prose article">'
+                '<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/help/">Help centre</a> / ' + html.escape(catname[a['cat']]) + '</nav>'
+                '<h1 style="margin:14px 0 20px">' + html.escape(a['title']) + '</h1>' + a['body'] +
+                '<div class="cta-box"><b>Check a website now</b><p>Is it down for everyone, or just you? Paste an address and we test it from twelve places.</p><a class="btn" href="/"><span>Open the checker</span></a></div>'
+                '<h2>Related guides</h2><ul>' + rel + '</ul>'
+                '<p class="note">Last updated 2 November 2026. Written by the siteupdown.com team. <a href="/contact">Spotted a mistake?</a></p>'
+                '<p style="margin-top:20px"><a href="/help/">&larr; All help guides</a></p></div></section>')
+        write('help/' + a['slug'] + '.html', h + body + foot('<script src="/assets/app.js"></script>'))
+    # sitemap
+    urls = [('/', 'daily', '1.0'), ('/speed', 'monthly', '0.8'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/about', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
+    sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join('<url><loc>%s%s</loc><lastmod>2026-11-02</lastmod><changefreq>%s</changefreq><priority>%s</priority></url>\n' % (SITE, u, c, p) for u, c, p in urls) + '</urlset>\n'
+    open(os.path.join(ROOT, 'sitemap.xml'), 'w').write(sm)
+
 if __name__ == '__main__':
-    home(); login(); account(); monitor(); speed(); status(); static_pages()
+    home(); login(); account(); monitor(); speed(); status(); static_pages(); help_pages()
