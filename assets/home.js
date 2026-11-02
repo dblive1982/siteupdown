@@ -94,6 +94,7 @@
     var sl = $('#speed-link'); if (sl) { sl.hidden = !(o.again && o.host); if (o.host) sl.href = '/speed?q=' + encodeURIComponent(o.host); }
     var os = $('#open-site'); if (os) { os.hidden = !(o.again && o.host); if (o.host) os.href = 'https://' + o.host + '/'; }
     $('#run-again').hidden = !o.again;
+    repBox(o.again && o.host ? o.host : null);
     $('#wl-add').hidden = !o.again;
     $('#share').hidden = !o.share;
     $('#pulse-status').textContent = o.status || 'Standby';
@@ -174,6 +175,37 @@
       status: done ? 'Complete' : 'Probing…'
     });
   }
+
+
+  /* ---------- report a problem with the site just checked ---------- */
+  var repHost = null, REPKIND = { site: 'website not loading', login: 'cannot log in', app: 'app not working', slow: 'very slow' };
+  function repBox(host) {
+    var box = $('#rep-box'); if (!box) return;
+    if (!host) { box.hidden = true; repHost = null; return; }
+    if (host === repHost) return;
+    repHost = host; box.hidden = false; $('#rb-pick').hidden = true; $('#rb-msg').textContent = '';
+    $('#rb-title').textContent = 'Problems reported for ' + host; $('#rb-level').textContent = ''; $('#rb-chart').hidden = true;
+    fetch('/api/reports.php?host=' + encodeURIComponent(host)).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      if (!j || host !== repHost) return;
+      var total = j.total || 0, hours = j.hours || [], max = Math.max.apply(null, hours.concat([3]));
+      $('#rb-title').textContent = total ? total + (total === 1 ? ' problem report' : ' problem reports') + ' for ' + host + ' in the last 24 hours' : 'No problem reports for ' + host + ' in the last 24 hours';
+      var L = $('#rb-level'); L.className = 'sp-level ' + j.level; L.textContent = j.level === 'high' ? 'Many more than usual' : j.level === 'raised' ? 'More than usual' : '';
+      var ch = $('#rb-chart'); ch.hidden = !total;
+      ch.innerHTML = hours.map(function (n) { return '<span class="bar' + (n ? ' has' : '') + '" style="height:' + Math.max(4, Math.round(100 * n / max)) + '%"></span>'; }).join('');
+    }).catch(function () {});
+  }
+  (function () {
+    var btn = $('#rb-btn'); if (!btn) return;
+    btn.addEventListener('click', function () { $('#rb-pick').hidden = !$('#rb-pick').hidden; });
+    $('#rb-pick').addEventListener('click', function (e) {
+      var b = e.target.closest('.rk'); if (!b || !repHost) return;
+      var h = repHost, m = $('#rb-msg'); m.textContent = 'Sending…';
+      fetch('/api/report.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ host: h, kind: b.getAttribute('data-kind') }), credentials: 'same-origin' })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+        .then(function (r) { m.textContent = r.ok ? r.j.message : (r.j.error || 'Sorry, that did not work. Please try again later.'); if (r.ok) { $('#rb-pick').hidden = true; repHost = null; repBox(h); m.textContent = r.j.message; } })
+        .catch(function () { m.textContent = 'Sorry, that did not work. Please try again later.'; });
+    });
+  })();
 
   /* ---------- run a check ---------- */
   function saveRecent(h) { var a = JSON.parse(S.store.get('sud-recent') || '[]').filter(function (x) { return x !== h; }); a.unshift(h); S.store.set('sud-recent', JSON.stringify(a.slice(0, 6))); drawRecent(); }

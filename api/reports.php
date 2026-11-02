@@ -3,6 +3,7 @@
 // GET ?top=1            -> the sites with the most reports in the last 3 hours.
 require __DIR__ . '/_boot.php';
 require __DIR__ . '/_sitepages.php';
+require __DIR__ . '/_probe.php';
 $pdo = db();
 $sites = site_pages();
 $now = time();
@@ -20,7 +21,11 @@ if (!empty($_GET['top'])) {
 }
 
 $host = strtolower(trim((string)($_GET['host'] ?? '')));
-if (!isset($sites[$host])) out(404, ['error' => 'No reports are collected for that address.']);
+if (!isset($sites[$host])) {
+    $t = parse_target($host);
+    if (!$t || filter_var($t[0], FILTER_VALIDATE_IP) || $t[0] !== $host) out(404, ['error' => 'No reports are collected for that address.']);
+}
+$name = $sites[$host]['name'] ?? $host;
 
 $since = $now - 24 * 3600;
 $q = $pdo->prepare('SELECT kind, ts FROM reports WHERE host=? AND ts > ? ORDER BY ts');
@@ -44,5 +49,5 @@ $level = 'none';
 if ($total > 0) $level = 'low';
 if ($last3 >= 12 && $last3 > 4 * $base * 3) $level = 'high';
 elseif ($last3 >= 5 && $last3 > 2 * $base * 3) $level = 'raised';
-out(200, ['host' => $host, 'name' => $sites[$host]['name'], 'hours' => $bars, 'total' => $total, 'kinds' => $kinds,
+out(200, ['host' => $host, 'name' => $name, 'page' => $sites[$host]['page'] ?? null, 'hours' => $bars, 'total' => $total, 'kinds' => $kinds,
           'last3h' => $last3, 'usual_per_hour' => $base, 'level' => $level, 'last' => iso($last), 'start' => gmdate('Y-m-d\TH:i:s\Z', $since)]);

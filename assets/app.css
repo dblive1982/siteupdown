@@ -662,3 +662,5 @@ abbr[data-n]:hover::after,abbr[data-n]:focus::after{content:attr(data-n);positio
 .nav a{white-space:nowrap}
 @media(min-width:900px) and (max-width:1120px){.nav a{padding:9px 6px;font-size:11.5px;letter-spacing:0}}
 .row .rl b{display:flex;align-items:center}
+.sp-chart.small{height:56px;margin:10px 0 12px}
+.rep-box{margin-top:14px}
