@@ -155,7 +155,7 @@ def home():
 <div class="legend" aria-label="Map legend"><span><i style="background:var(--green)"></i>Responded</span><span><i style="background:var(--amber)"></i>Blocked</span><span><i style="background:var(--red)"></i>Server error</span><span><i style="border:2px solid var(--grey)"></i>No connection</span></div>
 <p class="fine" style="margin-top:10px">Hover or tap a marker for details. Regions without a probe are not claimed. Each run is a snapshot, not continuous monitoring. Probe network: <a href="https://globalping.io" rel="noopener">Globalping</a>.</p></div>
 <div class="details"><div id="ssl" hidden></div><div id="dns" hidden></div><div class="facts" id="facts" hidden></div>
-<div class="row-actions"><button class="btn small ghost" type="button" id="wl-add" hidden>Add to my watchlist</button><a class="btn small ghost" id="open-site" target="_blank" rel="noopener noreferrer" hidden>Open website ↗</a></div>
+<div class="row-actions"><button class="btn small ghost" type="button" id="wl-add" hidden>Add to my watchlist</button><a class="btn small ghost" id="open-site" target="_blank" rel="noopener noreferrer" hidden>Open website ↗</a><a class="btn small ghost" id="speed-link" hidden>Test speed ⚡</a></div>
 <div class="share" id="share" hidden><span class="eyebrow">Share this check</span><div class="sbtns">{share_btns}</div></div></div>
 </div>
 
@@ -202,6 +202,15 @@ def home():
 </div></div></section>
 
 <div class="wrap">{ad('ADVERTISEMENT', 'Space for a little support.')}</div>
+
+<section id="tools"><div class="wrap">
+<div class="sec-head"><span class="eyebrow"><i></i>More than a status check</span><h2>Tools for every website<span class="dot">.</span></h2></div>
+<div class="tools-grid">
+<a class="tool" href="/speed"><span class="ti">⚡</span><h3>Website speed test</h3><p>See how fast a page loads, where the time goes, and what to fix. Free, no sign-up.</p><span class="tgo">Test a site →</span></a>
+<a class="tool" href="/monitor"><span class="ti">🔔</span><h3>Monitor &amp; email alerts</h3><p>Watch up to 25 sites and get an email when one goes down and when it is back.</p><span class="tgo">Open Monitor →</span></a>
+<a class="tool" href="#checker-title" onclick="document.getElementById('chk-input').focus()"><span class="ti">🔒</span><h3>SSL, DNS &amp; domain expiry</h3><p>Every check shows the certificate, DNS records, redirects and when the domain expires.</p><span class="tgo">Run a check →</span></a>
+<a class="tool" href="/monitor"><span class="ti">📈</span><h3>Uptime history &amp; status pages</h3><p>Uptime over 24 hours, 7 and 30 days, with a public status page you can share.</p><span class="tgo">Start tracking →</span></a>
+</div></div></section>
 
 <section id="how-it-works"><div class="wrap">
 <div class="sec-head"><span class="eyebrow"><i></i>Behind the signal</span><h2>Less guesswork. More peace of mind<span class="dot">.</span></h2></div>

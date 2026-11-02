@@ -566,3 +566,12 @@ abbr[data-n]:hover::after,abbr[data-n]:focus::after{content:attr(data-n);positio
 /* move the home content up a little */
 .hero{padding-top:22px}
 @media(max-width:640px){.hero{padding-top:6px}.hero h1{margin-top:10px}}
+
+/* tools section */
+.tools-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.tool{display:flex;flex-direction:column;gap:6px;border:1px solid var(--line);border-radius:10px;padding:18px;background:var(--card);color:var(--text);text-decoration:none;transition:border-color .15s,transform .15s}
+.tool:hover{border-color:var(--green);transform:translateY(-2px)}
+.tool .ti{font-size:24px;line-height:1}.tool h3{font-size:17px;margin:6px 0 0}.tool p{margin:0;color:var(--muted);font-size:14.5px;flex:1}
+.tool .tgo{font-family:var(--mono);font-size:12px;color:var(--green);margin-top:8px}
+@media(max-width:900px){.tools-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:520px){.tools-grid{grid-template-columns:1fr}}
