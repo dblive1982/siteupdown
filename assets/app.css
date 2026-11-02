@@ -472,3 +472,10 @@ abbr[data-n]:hover::after,abbr[data-n]:focus::after{content:attr(data-n);positio
 #gbtn.gfail{font-size:14px;color:var(--muted);border:1px dashed var(--line);border-radius:999px;line-height:1.2;padding:0 14px;text-align:center}
 #gwrap{gap:12px}
 #g-err:empty{display:none}
+
+/* smaller hero text on phones */
+@media(max-width:640px){
+.hero h1{font-size:clamp(26px,7.4vw,32px)}
+.hero .lead{font-size:14px;line-height:1.55;max-width:34ch}
+.hero .eyebrow{font-size:11px;letter-spacing:.12em}
+}
