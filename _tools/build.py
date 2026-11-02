@@ -533,7 +533,7 @@ def site_pages_build():
         groups += '<section class="dgroup"><h2>%s</h2><ul>%s</ul></section>' % (html.escape(SP.CATS[cat][0]), li)
     ld = '<script type="application/ld+json">' + _json.dumps({"@context": "https://schema.org", "@type": "CollectionPage", "name": "Is it down? Status of popular websites", "url": SITE + "/is-it-down/"}) + '</script>'
     h = head('Is it down? Live status of popular websites — siteupdown.com', 'Live status for popular websites, apps and games, checked every few minutes from our servers, with problem reports from other visitors.', '/is-it-down/', ld).replace('{BODYATTR}', '')
-    body = ('<section class="page"><div class="wrap prose sitedir" data-sp="dir"><span class="eyebrow"><i></i>siteupdown.com</span><h1 style="margin:14px 0 12px">Is it down?<span class="dot">.</span></h1>'
+    body = ('<section class="page"><div class="wrap prose sitedir" data-sp="dir"><span class="eyebrow"><i></i>siteupdown.com</span><h1 style="margin:14px 0 12px">Is it down<span class="dot">?</span></h1>'
             '<p class="lead">Live status for popular websites, apps and games. Each page shows our latest check, response time and uptime, and the problems other visitors have reported in the last 24 hours.</p>'
             '<div class="sp-card" id="sp-top" hidden><b>Most reported right now</b><ul id="sp-toplist"></ul></div>'
             '<label class="sr" for="sp-find">Find a site</label><input id="sp-find" class="sp-find" type="search" placeholder="Find a site, e.g. Netflix" autocomplete="off">'

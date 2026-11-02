@@ -93,6 +93,7 @@
       return '<span class="bar' + (n ? ' has' : '') + '" style="height:' + Math.max(4, Math.round(100 * n / max)) + '%" title="' + esc(lab) + '"></span>';
     }).join('');
     var total = rep.total || 0;
+    $('#sp-chart').classList.toggle('empty', !total);
     $('#sp-rtotal').textContent = total ? total + (total === 1 ? ' problem report' : ' problem reports') + ' in the last 24 hours' : 'No problem reports in the last 24 hours';
     var L = $('#sp-rlevel');
     L.className = 'sp-level ' + rep.level;
