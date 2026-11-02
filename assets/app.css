@@ -721,3 +721,9 @@ a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--t
 .sp-chart.empty{height:44px}
 @media(max-width:520px){.prose p>a.btn{display:flex;justify-content:center;width:100%;margin:0 0 10px}}
 @media(max-width:520px){.prose p>a.btn,.prose p>a.btn+a.btn{margin-left:0!important;margin-right:0!important;box-sizing:border-box}}
+@media(max-width:600px){
+  .sp-head{flex-direction:column;align-items:flex-start;gap:12px}
+  .sp-head .sp-msg{flex:none;width:100%;font-size:16px;line-height:1.55}
+  #sp-status .sp-head{padding-right:0}
+  #sp-status .sp-pill{margin-right:24px}
+}
