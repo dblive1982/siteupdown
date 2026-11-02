@@ -504,12 +504,3 @@ abbr[data-n]:hover::after,abbr[data-n]:focus::after{content:attr(data-n);positio
 .dnsc .grid2 b{font-size:14px;word-break:break-word;font-weight:600}
 .dnsc .note b.badt,.dnsc .note .badt{color:var(--red)}
 @media(max-width:640px){.stat-row{grid-template-columns:repeat(2,1fr)}.stat b{font-size:19px}}
-
-/* new logo: two arrow circles + wordmark */
-:root:not([data-theme=light]) .logo-mark,.logo-mark{filter:none}
-.logo-mark{height:28px;width:auto}
-.site-head .wm,.wm{height:24px}
-.foot-brand .logo-mark{height:26px}.foot-brand .wm{height:22px}
-@media(max-width:520px){.logo-mark{height:22px}.site-head .wm,.wm{height:19px}.foot-brand .logo-mark{height:22px}.foot-brand .wm{height:19px}}
-.logo-mark{height:34px}.foot-brand .logo-mark{height:30px}
-@media(max-width:520px){.logo-mark{height:27px}.foot-brand .logo-mark{height:27px}}
