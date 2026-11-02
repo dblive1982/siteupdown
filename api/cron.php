@@ -5,6 +5,7 @@
 declare(strict_types=1);
 require __DIR__ . '/_boot.php';
 require __DIR__ . '/_probe.php';
+require __DIR__ . '/_tls.php';
 require __DIR__ . '/_sites.php';
 $c = config();
 if (PHP_SAPI !== 'cli') {
@@ -32,8 +33,28 @@ foreach ($list as $h) {
     $up->execute([$h, $r['verdict'], $r['http_code'], $r['ms'], sql_now()]);
     $n++;
 }
+// Certificates: each host once a day, a few per run (top sites and gaming services).
+$certAt = [];
+foreach ($pdo->query('SELECT host, checked_at FROM site_cert')->fetchAll() as $r) $certAt[$r['host']] = $r['checked_at'];
+$certHosts = [];
+foreach (top_sites() as $s2) $certHosts[$s2[0]] = 1;
+foreach (gaming_sites() as $s2) $certHosts[$s2[0]] = 1;
+$certList = array_keys($certHosts);
+$cut = gmdate('Y-m-d H:i:s', time() - 22 * 3600);
+$certList = array_values(array_filter($certList, fn($h) => ($certAt[$h] ?? '') < $cut));
+usort($certList, fn($a, $b) => strcmp($certAt[$a] ?? '', $certAt[$b] ?? ''));
+$certList = array_slice($certList, 0, (int)($c['cert_batch'] ?? 8));
+$cu = $pdo->prepare('REPLACE INTO site_cert (host, status, days_left, expires, checked_at) VALUES (?,?,?,?,?)');
+$nc = 0;
+foreach ($certList as $h) {
+    if (time() - $t0 > 90) break;
+    $rp = resolve_public($h);
+    $t = (!$rp['error'] && $rp['ips']) ? tls_inspect($h, $rp['ips'][0], 5) : ['status' => 'none'];
+    $cu->execute([$h, $t['status'], $t['days_left'] ?? null, $t['to'] ?? null, sql_now()]);
+    $nc++;
+}
 // Housekeeping: drop old feed rows and expired share links.
 $pdo->prepare('DELETE FROM checks WHERE checked_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - 3 * 86400)]);
 $pdo->prepare('DELETE FROM shares WHERE created_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - 30 * 86400)]);
 $pdo->prepare('DELETE FROM resets WHERE expires_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - 86400)]);
-if (PHP_SAPI === 'cli') echo "Probed $n sites\n"; else out(200, ['probed' => $n]);
+if (PHP_SAPI === 'cli') echo "Probed $n sites, $nc certificates\n"; else out(200, ['probed' => $n, 'certs' => $nc]);

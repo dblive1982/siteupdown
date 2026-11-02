@@ -435,3 +435,20 @@ section[id],[id=global-pulse]{scroll-margin-top:84px}
 .dl summary::-webkit-details-marker{display:none}.dl .dlb{display:grid;gap:4px;margin-top:12px;font-size:14px;color:var(--muted)}.dl .dlb b{color:var(--text)}
 .details .facts{border:0;padding:0}
 @media(max-width:560px){.ssl .grid2{grid-template-columns:1fr 1fr;gap:0 16px}.ssl .g1{flex-direction:column;gap:4px}.ssl .g1 b{text-align:left}}
+
+/* country codes with a name on hover / tap */
+abbr[data-n]{text-decoration:underline dotted var(--muted);text-underline-offset:3px;cursor:help;position:relative;outline:0}
+abbr[data-n]:hover::after,abbr[data-n]:focus::after{content:attr(data-n);position:absolute;left:0;bottom:calc(100% + 6px);background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:6px 10px;font-family:var(--sans);font-size:12.5px;white-space:nowrap;z-index:10;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+/* tidier share area */
+.details .row-actions{gap:10px}
+.share{display:grid;gap:10px;border-top:1px solid var(--line);padding-top:16px;margin-top:4px}
+.sbtns{display:flex;gap:10px;flex-wrap:wrap}
+.sb{display:inline-flex;align-items:center;justify-content:center;gap:9px;min-width:44px;height:44px;padding:0 12px;border-radius:8px;background:var(--bg2);border:1px solid var(--line);color:var(--text);cursor:pointer;font:inherit;font-size:14px}
+.sb svg{width:19px;height:19px;color:var(--green);flex:none}
+.sb:hover,.sb:focus-visible{border-color:var(--green);outline:0}
+.sb.wide{padding:0 16px}
+.sb[hidden]{display:none}
+/* SSL tag in list rows */
+.sslt{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--muted)}
+.sslt.warn{color:var(--amber)}.sslt.bad{color:var(--red)}.sslt.none{color:var(--grey)}
+.share[hidden]{display:none}

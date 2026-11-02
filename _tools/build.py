@@ -30,6 +30,9 @@ I_MAIL = ico('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6
 I_LOCK = ico('<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>')
 I_USER = ico('<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>')
 I_REFRESH = ico('<path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/>')
+I_LINK = ico('<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>')
+I_WA = ico('<path d="M21 11.5a8.4 8.4 0 0 1-12.3 7.4L3 21l2.2-5.5A8.4 8.4 0 1 1 21 11.5z"/><path d="M9 9.5c.3 2.6 2.9 5.2 5.5 5.5l1.3-1.3-2-1-.8.8c-1-.4-1.9-1.300-2.300-2.300l.8-.8-1-2z" fill="currentColor" stroke="none"/>')
+I_SHARE = ico('<circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="6" r="2.5"/><circle cx="18" cy="18" r="2.5"/><path d="m8.2 10.8 7.600-3.600M8.200 13.200l7.600 3.600"/>')
 I_SEARCH = ico('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>')
 I_FB = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 8V6.5c0-.7.3-1 1-1h2V2h-3a4 4 0 0 0-4 4.2V8H7.5v3.5H10V22h4V11.5h2.7L17 8z"/></svg>'
 I_IG = ico('<rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/>')
@@ -113,7 +116,7 @@ def home():
     jsonld = '''<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"siteupdown.com","url":"https://siteupdown.com/","description":"Check whether a website is down for everyone or just you, with probes in twelve places around the world."}</script>'''
     h = head('siteupdown.com — Is the website down, or just you?', 'Paste any website address to see if it is down for everyone or only for you. We check from our server and from twelve probes in different countries, at the same time.', '/', jsonld)
     h = h.replace('{BODYATTR}', ' data-page="home"')
-    share_btns = ''.join(f'<button class="btn small ghost" type="button" data-share="{k}"{" hidden" if k=="native" else ""}>{l}</button>' for k, l in [('copy', 'Copy link'), ('x', 'X'), ('fb', 'Facebook'), ('wa', 'WhatsApp'), ('native', 'Share…')])
+    share_btns = ''.join(f'<button class="sb{" wide" if k=="copy" else ""}" type="button" data-share="{k}" title="{t}" aria-label="{t}"{" hidden" if k=="native" else ""}>{i}{("<span>"+t+"</span>") if k=="copy" else ""}</button>' for k, t, i in [('copy', 'Copy link', I_LINK), ('x', 'Share on X', I_X), ('fb', 'Share on Facebook', I_FB), ('wa', 'Share on WhatsApp', I_WA), ('native', 'More share options', I_SHARE)])
     body = f'''
 <section class="hero"><div class="wrap">
 <svg class="rings" viewBox="0 0 400 400" aria-hidden="true"><circle cx="200" cy="200" r="60"/><circle cx="200" cy="200" r="130"/><circle cx="200" cy="200" r="198"/><rect x="262" y="52" width="9" height="9" fill="var(--green)"/></svg>
@@ -153,11 +156,11 @@ def home():
 <p class="fine" style="margin-top:10px">Hover or tap a marker for details. Regions without a probe are not claimed. Each run is a snapshot, not continuous monitoring. Probe network: <a href="https://globalping.io" rel="noopener">Globalping</a>.</p></div>
 <div class="details"><div id="ssl" hidden></div><div class="facts" id="facts" hidden></div>
 <div class="row-actions"><button class="btn small ghost" type="button" id="wl-add" hidden>Add to my watchlist</button><a class="btn small ghost" id="open-site" target="_blank" rel="noopener noreferrer" hidden>Open website ↗</a></div>
-<div class="share" id="share" hidden><span class="lbl eyebrow">Share</span>{share_btns}</div></div>
+<div class="share" id="share" hidden><span class="eyebrow">Share this check</span><div class="sbtns">{share_btns}</div></div></div>
 </div>
 
 <div class="charts" id="charts">
-<div class="card chart"><h3>Response time by region</h3><p class="fine">Lower is faster. Colour shows the outcome.</p><div id="ch-bars" class="ch-empty">Run a check to see this chart.</div></div>
+<div class="card chart"><h3>Response time by region</h3><p class="fine">Lower is faster. Colour shows the outcome. The two-letter codes are countries: hover or tap one for its name.</p><div id="ch-bars" class="ch-empty">Run a check to see this chart.</div></div>
 <div class="card chart"><h3>Probe outcomes</h3><p class="fine">How the twelve probes fared.</p><div id="ch-donut" class="ch-empty">Run a check to see this chart.</div></div>
 <div class="card chart"><h3>Speed range</h3><p class="fine">Our server against the worldwide spread.</p><div id="ch-range" class="ch-empty">Run a check to see this chart.</div></div>
 </div>

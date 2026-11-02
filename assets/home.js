@@ -18,6 +18,12 @@
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
     svg.innerHTML = '<path class="map-land" d="' + p + '"/><g id="markers"></g>';
   }
+
+  var CN = { US: 'United States', CA: 'Canada', BR: 'Brazil', GB: 'United Kingdom', DE: 'Germany', FR: 'France', ZA: 'South Africa', AE: 'United Arab Emirates', IN: 'India', JP: 'Japan', SG: 'Singapore', AU: 'Australia',
+    NL: 'Netherlands', IE: 'Ireland', ES: 'Spain', IT: 'Italy', SE: 'Sweden', NO: 'Norway', FI: 'Finland', DK: 'Denmark', PL: 'Poland', CH: 'Switzerland', AT: 'Austria', BE: 'Belgium', PT: 'Portugal', CZ: 'Czechia', RO: 'Romania', UA: 'Ukraine', RU: 'Russia',
+    TR: 'Turkey', IL: 'Israel', SA: 'Saudi Arabia', EG: 'Egypt', NG: 'Nigeria', KE: 'Kenya', KR: 'South Korea', HK: 'Hong Kong', TW: 'Taiwan', CN: 'China', ID: 'Indonesia', TH: 'Thailand', VN: 'Vietnam', MY: 'Malaysia', PH: 'Philippines', NZ: 'New Zealand',
+    MX: 'Mexico', AR: 'Argentina', CL: 'Chile', CO: 'Colombia', PE: 'Peru' };
+  function cname(p) { var n = CN[p.country] || p.country || 'Unknown'; return (p.city ? p.city + ', ' : '') + n; }
   var LBL = { ok: 'Responded', blocked: 'Blocked', error: 'Server error', none: 'No connection' };
   function drawProbes(probes) {
     var g = $('#markers'); if (!g) return;
@@ -25,7 +31,7 @@
     probes.forEach(function (p, i) {
       if (p.lat == null || p.lon == null) return;
       var xy = px(p.lon, p.lat), st = p.state || 'none';
-      var tx = esc((p.city ? p.city + ', ' : '') + p.country) + ' · ' + LBL[st] + (p.code ? ' (' + p.code + ')' : '') + (p.ms != null ? ' · ' + p.ms + ' ms' : '');
+      var tx = esc(cname(p)) + ' · ' + LBL[st] + (p.code ? ' (' + p.code + ')' : '') + (p.ms != null ? ' · ' + p.ms + ' ms' : '');
       out += '<g class="pr" tabindex="0" role="img" aria-label="' + tx + '" data-i="' + i + '" data-x="' + (xy[0] / W * 100).toFixed(2) + '" data-y="' + (xy[1] / H * 100).toFixed(2) + '" data-t="' + tx + '">'
         + '<circle class="mk-ring ' + st + '" cx="' + xy[0].toFixed(1) + '" cy="' + xy[1].toFixed(1) + '" r="7"/>'
         + '<circle class="mk ' + st + '" cx="' + xy[0].toFixed(1) + '" cy="' + xy[1].toFixed(1) + '" r="7"/></g>';
@@ -52,7 +58,7 @@
     var sorted = probes.slice().sort(function (a, b) { return (a.ms == null ? 1e9 : a.ms) - (b.ms == null ? 1e9 : b.ms); });
     var bars = sorted.map(function (p) {
       var st = p.state || 'none', w = p.ms != null ? Math.max(3, p.ms / max * 100) : 0;
-      return '<div class="br"><span class="bl">' + esc(p.country || '?') + '</span><span class="bt"><i style="width:' + w.toFixed(1) + '%;background:' + COL[st] + '"></i></span><span class="bv">' + (p.ms != null ? esc(S.ms(p.ms)) : (st === 'none' ? 'no reply' : esc(LBL[st]))) + '</span></div>';
+      return '<div class="br"><span class="bl"><abbr tabindex="0" data-n="' + esc(cname(p)) + '">' + esc(p.country || '?') + '</abbr></span><span class="bt"><i style="width:' + w.toFixed(1) + '%;background:' + COL[st] + '"></i></span><span class="bv">' + (p.ms != null ? esc(S.ms(p.ms)) : (st === 'none' ? 'no reply' : esc(LBL[st]))) + '</span></div>';
     }).join('');
     var b = $('#ch-bars'); b.className = 'bars'; b.innerHTML = bars;
     /* 2. outcomes donut */
@@ -225,12 +231,21 @@
   }
 
   /* ---------- watch / top / gaming / feed ---------- */
+  function sslTag(x) {
+    if (!x.ssl) return '';
+    var st = x.ssl, d = x.ssl_days, cls = 'ok', txt;
+    if (st === 'none') return '<span class="sslt none" title="No HTTPS certificate could be read">SSL: none</span>';
+    if (st === 'expired') { cls = 'bad'; txt = 'SSL expired'; } else if (st === 'untrusted' || st === 'mismatch' || st === 'notyet') { cls = 'bad'; txt = 'SSL problem'; }
+    else if (st === 'expiring') { cls = 'warn'; txt = 'SSL expires in ' + d + ' d'; } else txt = 'SSL ' + (d != null ? d + ' d' : 'valid');
+    return '<span class="sslt ' + cls + '" title="' + esc(st === 'valid' ? 'Certificate valid for ' + d + ' more days' : txt) + '">🔒 ' + esc(txt) + '</span>';
+  }
   function siteCard(x) {
     var v = x.verdict, cls = !v ? 'none' : (v === 'up' ? 'up' : (v === 'down' || v === 'timeout' || !x.code ? 'bad' : 'warn'));
     var say = !v ? 'has not been checked yet.' : v === 'up' ? 'is up.' : v === 'down' ? 'is down.' : v === 'timeout' ? 'timed out.' : x.code ? 'answered, but blocks automated checks.' : 'is not responding.';
     var right = x.code ? 'HTTP ' + esc(x.code) + (x.ms != null ? ' · ' + esc(S.ms(x.ms)) : '') : (v ? 'No status' : '');
     return '<div class="row ' + cls + '"><div class="rl"><b>' + esc(x.name) + '</b><span class="st"><i></i>' + esc(x.host) + ' ' + say + (x.at ? ' <em>Checked ' + esc(S.ago(x.at)) + '</em>' : '') + '</span></div>'
-      + '<div class="rr"><span class="code">' + right + '</span><button class="go" type="button" data-h="' + esc(x.host) + '" aria-label="Check ' + esc(x.name) + '" title="Check ' + esc(x.name) + '">↗</button></div></div>';
+      + '<div class="rr"><span class="code">' + right + '</span>' + sslTag(x)
+      + '<button class="go" type="button" data-h="' + esc(x.host) + '" aria-label="Check ' + esc(x.name) + '" title="Check ' + esc(x.name) + '">↗</button></div></div>';
   }
   var topItems = [], topFilter = 'all';
   function drawTop() {

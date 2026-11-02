@@ -93,6 +93,14 @@ function ensure_schema(PDO $pdo): void {
         ms INT NULL,
         checked_at DATETIME NOT NULL
     )$cs");
+    // Daily certificate check for the same hosts (cron.php fills a few per run).
+    $pdo->exec("CREATE TABLE IF NOT EXISTS site_cert (
+        host VARCHAR(253) NOT NULL PRIMARY KEY,
+        status VARCHAR(16) NOT NULL,
+        days_left INT NULL,
+        expires VARCHAR(12) NULL,
+        checked_at DATETIME NOT NULL
+    )$cs");
     $pdo->exec("CREATE TABLE IF NOT EXISTS shares (
         id CHAR(10) NOT NULL PRIMARY KEY,
         host VARCHAR(253) NOT NULL,
