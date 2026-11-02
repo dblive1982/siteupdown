@@ -18,6 +18,7 @@ def invader():
     r += '<rect x="3" y="3" width="1" height="1" fill="var(--bg)"/><rect x="7" y="3" width="1" height="1" fill="var(--bg)"/>'
     return '<svg viewBox="0 0 11 8" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">%s</svg>' % r
 INV = invader()
+BRAND = '<img class="logo-mark" src="/assets/dino.png" alt="" width="55" height="52"><img class="wm wm-d" src="/assets/wordmark-dark.png" alt="siteupdown.com" width="150" height="26"><img class="wm wm-l" src="/assets/wordmark-light.png" alt="" width="150" height="26">'
 
 def ico(path, extra=''):
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"%s>%s</svg>' % (extra, path)
@@ -56,7 +57,7 @@ def head(title, desc, path, extra_head='', noindex=False):
 <meta property="og:title" content="{t}"><meta property="og:description" content="{d}"><meta property="og:url" content="{canon}">
 <meta property="og:image" content="{SITE}/assets/og.png"><meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#060d0a">
-<link rel="icon" href="/favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="icon" href="/favicon-64.png" type="image/png" sizes="64x64"><link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="/assets/app.css">
@@ -65,7 +66,7 @@ def head(title, desc, path, extra_head='', noindex=False):
 <body{{BODYATTR}}>
 <a class="skip" href="#main">Skip to content</a>
 <header class="site-head"><div class="wrap head-in">
-<a class="brand" href="/" aria-label="siteupdown.com home">{INV}<span class="wordmark">siteupdown.com</span></a>
+<a class="brand" href="/" aria-label="siteupdown.com home">{BRAND}</a>
 <nav class="nav" aria-label="Main">{''.join('<a href="%s">%s</a>' % (h, l) for l, h in NAV)}</nav>
 <div class="head-tools"><button class="icon-btn" id="theme" type="button" aria-label="Switch theme"></button><div id="auth"></div></div>
 </div></header>
@@ -76,7 +77,7 @@ def foot(scripts):
     links = [('Regional map', '/#global-pulse'), ('How it works', '/#how-it-works'), ('Monitor', '/monitor'), ('Account', '/account'), ('Contact', '/contact'), ('Legal notice', '/legal'), ('Privacy', '/privacy')]
     return f'''</main>
 <footer class="site-foot"><div class="wrap">
-<div class="foot-brand">{INV}<span class="wordmark">siteupdown.com</span></div>
+<div class="foot-brand">{BRAND}</div>
 <p class="note">Less refreshing. More knowing.</p>
 <div class="socials" aria-label="Social media">
 <a href="#" title="Facebook" aria-label="Facebook">{I_FB}</a><a href="#" title="Instagram" aria-label="Instagram">{I_IG}</a><a href="#" title="X" aria-label="X">{I_X}</a><a href="#" title="TikTok" aria-label="TikTok">{I_TT}</a><a href="#" title="YouTube" aria-label="YouTube">{I_YT}</a>

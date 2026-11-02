@@ -397,3 +397,14 @@ section[id],[id=global-pulse]{scroll-margin-top:84px}
 .toplist .pad{box-sizing:border-box;max-width:100%}
 .field input{min-width:0;width:100%}
 @media(max-width:560px){.toplist .pad{padding:4px 14px 18px}.pc-head{padding:20px 16px 14px}.row{padding:14px 16px}.toplist .item{padding:14px 16px}.toplist .tabs{padding:0 6px}}
+
+/* logo: dino mark + wordmark that follows the theme */
+.brand{gap:14px}
+.logo-mark{height:52px;width:auto;flex:none}
+.wm{height:26px;width:auto;display:block}
+.wm-l{display:none}
+:root[data-theme=light] .wm-d{display:none}:root[data-theme=light] .wm-l{display:block}
+:root:not([data-theme=light]) .logo-mark{filter:drop-shadow(0 0 1px rgba(234,244,236,.6))}
+.foot-brand{display:flex;align-items:center;gap:12px}.foot-brand .logo-mark{height:40px}.foot-brand .wm{height:22px}
+@media(max-width:520px){.logo-mark{height:42px}.wm{height:20px}}
+.wm{height:30px}@media(max-width:520px){.wm{height:22px}}
