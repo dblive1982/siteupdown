@@ -408,3 +408,4 @@ section[id],[id=global-pulse]{scroll-margin-top:84px}
 .foot-brand{display:flex;align-items:center;gap:12px}.foot-brand .logo-mark{height:40px}.foot-brand .wm{height:22px}
 @media(max-width:520px){.logo-mark{height:42px}.wm{height:20px}}
 .wm{height:30px}@media(max-width:520px){.wm{height:22px}}
+.site-head .wm{height:22px}@media(max-width:520px){.site-head .wm{height:17px}}
