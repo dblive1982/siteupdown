@@ -22,8 +22,11 @@ RewriteRule ^status/[A-Za-z0-9.-]+/?$ /status.html [L]
 
 # Help centre: /help/ and /help/some-guide
 RewriteRule ^help/([a-z0-9-]+)/?$ /help/$1.html [L]
+RewriteRule ^tools/([a-z0-9-]+)/?$ /tools/$1.html [L]
 RewriteCond %{THE_REQUEST} \s/+help/(?!index\.)([a-z0-9-]+)\.html[\s?]
 RewriteRule ^help/(?!index\.)([a-z0-9-]+)\.html$ /help/$1 [R=301,L]
+RewriteCond %{THE_REQUEST} \s/+tools/(?!index\.)([a-z0-9-]+)\.html[\s?]
+RewriteRule ^tools/(?!index\.)([a-z0-9-]+)\.html$ /tools/$1 [R=301,L]
 
 # "Is X down?" pages: /is-instagram-down and /is-it-down/
 RewriteRule ^(?!is-it-down/?$)(is-[a-z0-9-]+-down)/?$ /$1.html [L]

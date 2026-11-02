@@ -40,7 +40,7 @@ I_X = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="
 I_TT = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 3a5 5 0 0 0 4 4.4v3.3a8 8 0 0 1-4-1.2v6.2a6 6 0 1 1-6-6c.3 0 .7 0 1 .1v3.4a2.7 2.7 0 1 0 1.8 2.5V3z"/></svg>'
 I_YT = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2C2 8.8 2 12 2 12s0 3.2.4 4.8a2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8c.4-1.6.4-4.8.4-4.8s0-3.2-.4-4.8zM10 15V9l5.2 3z"/></svg>'
 
-NAV = [('Regional map', '/#global-pulse'), ('Top websites', '/#top-sites'), ('Gaming', '/#online-gaming'), ('Monitor', '/monitor'), ('Account', '/account'), ('Help', '/help/'), ('How it works', '/#how-it-works')]
+NAV = [('Regional map', '/#global-pulse'), ('Top websites', '/#top-sites'), ('Gaming', '/#online-gaming'), ('Tools', '/tools/'), ('Monitor', '/monitor'), ('Account', '/account'), ('Help', '/help/'), ('How it works', '/#how-it-works')]
 
 def head(title, desc, path, extra_head='', noindex=False):
     t = html.escape(title)
@@ -79,7 +79,7 @@ def head(title, desc, path, extra_head='', noindex=False):
 '''
 
 def foot(scripts):
-    links = [('Regional map', '/#global-pulse'), ('How it works', '/#how-it-works'), ('Help centre', '/help/'), ('Is it down?', '/is-it-down/'), ('Speed test', '/speed'), ('Monitor', '/monitor'), ('Account', '/account'), ('About', '/about'), ('Contact', '/contact'), ('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')]
+    links = [('Regional map', '/#global-pulse'), ('How it works', '/#how-it-works'), ('Help centre', '/help/'), ('Tools', '/tools/'), ('Is it down?', '/is-it-down/'), ('Speed test', '/speed'), ('Monitor', '/monitor'), ('Account', '/account'), ('About', '/about'), ('Contact', '/contact'), ('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')]
     return f'''</main>
 <footer class="site-foot"><div class="wrap">
 <div class="foot-brand">{BRAND}</div>
@@ -220,7 +220,8 @@ def home():
 <a class="tool" href="/monitor"><span class="ti">🔔</span><h3>Monitor &amp; email alerts</h3><p>Watch up to 25 sites and get an email when one goes down and when it is back.</p><span class="tgo">Open Monitor →</span></a>
 <a class="tool" href="#checker-title" onclick="document.getElementById('chk-input').focus()"><span class="ti">🔒</span><h3>SSL, DNS &amp; domain expiry</h3><p>Every check shows the certificate, DNS records, redirects and when the domain expires.</p><span class="tgo">Run a check →</span></a>
 <a class="tool" href="/monitor"><span class="ti">📈</span><h3>Uptime history &amp; status pages</h3><p>Uptime over 24 hours, 7 and 30 days, with a public status page you can share.</p><span class="tgo">Start tracking →</span></a>
-</div></div></section>
+</div>
+<p class="tools-more"><a class="btn ghost" href="/tools/"><span>See all free tools</span></a></p></div></section>
 
 <section id="help-teaser"><div class="wrap">
 <div class="sec-head"><span class="eyebrow"><i></i>Help centre</span><h2>Plain-English guides<span class="dot">.</span></h2></div>
@@ -544,6 +545,7 @@ def site_pages_build():
 # ---------------------------------------------------------------- help centre
 import json as _json
 from help_content import CATS, ARTICLES, BY_SLUG
+from tools_content import TOOLS, BY_SLUG as TOOL_BY
 
 def help_pages():
     os.makedirs(os.path.join(ROOT, 'help'), exist_ok=True)
@@ -582,9 +584,56 @@ def help_pages():
                 '<p style="margin-top:20px"><a href="/help/">&larr; All help guides</a></p></div></section>')
         write('help/' + a['slug'] + '.html', h + body + foot('<script src="/assets/app.js"></script>'))
     # sitemap
-    urls = [('/', 'daily', '1.0'), ('/speed', 'monthly', '0.8'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8')] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES] + [('/about', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
+    urls = [('/', 'daily', '1.0'), ('/speed', 'monthly', '0.8'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8'), ('/tools/', 'monthly', '0.8')] + [('/tools/' + t['slug'], 'monthly', '0.7') for t in TOOLS] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES] + [('/about', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
     sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join('<url><loc>%s%s</loc><lastmod>2026-11-02</lastmod><changefreq>%s</changefreq><priority>%s</priority></url>\n' % (SITE, u, c, p) for u, c, p in urls) + '</urlset>\n'
     open(os.path.join(ROOT, 'sitemap.xml'), 'w').write(sm)
 
+
+# ---------------------------------------------------------------- tools
+def tools_pages():
+    os.makedirs(os.path.join(ROOT, 'tools'), exist_ok=True)
+    # hub
+    cards = ''.join('<a class="tool" href="/tools/%s"><span class="ti">%s</span><h3>%s</h3><p>%s</p><span class="tgo">Open the tool &rarr;</span></a>' % (t['slug'], t['icon'], html.escape(t['name']), t['short']) for t in TOOLS)
+    extra_cards = ('<a class="tool" href="/"><span class="ti">&#128269;</span><h3>Is it down?</h3><p>Check any website from our server and twelve places around the world.</p><span class="tgo">Open the checker &rarr;</span></a>'
+                   '<a class="tool" href="/speed"><span class="ti">&#9889;</span><h3>Website speed test</h3><p>See how fast a page loads and where the time goes.</p><span class="tgo">Test a site &rarr;</span></a>'
+                   '<a class="tool" href="/monitor"><span class="ti">&#128276;</span><h3>Monitor and alerts</h3><p>Watch your sites and get an email when one goes down.</p><span class="tgo">Open Monitor &rarr;</span></a>')
+    ld = '<script type="application/ld+json">' + _json.dumps({"@context": "https://schema.org", "@type": "CollectionPage", "name": "Free website tools", "url": SITE + "/tools/"}) + '</script>'
+    h = head('Free website tools: DNS, SSL, headers, redirects and more — siteupdown.com', 'Free website tools: DNS lookup, SSL certificate checker, HTTP header checker, redirect checker, WHOIS and domain expiry, MX lookup, robots.txt and security headers checks.', '/tools/', ld).replace('{BODYATTR}', '')
+    body = ('<section class="page"><div class="wrap prose toolhub"><span class="eyebrow"><i></i>siteupdown.com</span><h1 style="margin:14px 0 12px">Free website tools<span class="dot">.</span></h1>'
+            '<p class="lead">Quick checks for the things that go wrong behind a website: DNS, certificates, redirects, headers, email and search settings. No sign-up, no downloads.</p>'
+            '<h2>Look inside a website</h2><div class="tools-grid">' + cards + '</div>'
+            '<h2>Is it working?</h2><div class="tools-grid">' + extra_cards + '</div>'
+            '<p class="note">Each tool tests public websites only, from our servers, and we limit how often one visitor can run them. Results are a snapshot of the moment you ask. <a href="/help/how-our-checks-work">How our checks work</a>.</p>'
+            '<p style="margin-top:30px"><a href="/">&larr; Back to the website checker</a></p></div></section>')
+    write('tools/index.html', h + body + foot('<script src="/assets/app.js"></script>'))
+    for t in TOOLS:
+        path = '/tools/' + t['slug']
+        faq = ''.join('<details><summary>%s</summary><p>%s</p></details>' % (html.escape(q), a) for q, a in t['faqs'])
+        ld = {"@context": "https://schema.org", "@graph": [
+            {"@type": "WebApplication", "name": t['name'], "url": SITE + path, "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "GBP"}},
+            {"@type": "BreadcrumbList", "itemListElement": [
+                {"@type": "ListItem", "position": 1, "name": "Home", "item": SITE + "/"},
+                {"@type": "ListItem", "position": 2, "name": "Tools", "item": SITE + "/tools/"},
+                {"@type": "ListItem", "position": 3, "name": t['name'], "item": SITE + path}]},
+            {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": _re.sub('<[^>]+>', '', a)}} for q, a in t['faqs']]}]}
+        extra = '<script type="application/ld+json">' + _json.dumps(ld) + '</script>'
+        h = head(t['h1'] + ' — free online tool | siteupdown.com', t['desc'], path, extra).replace('{BODYATTR}', '')
+        others = ''.join('<li><a href="/tools/%s">%s</a></li>' % (o['slug'], html.escape(o['name'])) for o in TOOLS if o['slug'] != t['slug'])
+        helps = ''.join('<li><a href="/help/%s">%s</a></li>' % (sl, html.escape(tt)) for sl, tt in t['help'])
+        body = ('<section class="page"><div class="wrap prose toolpage" data-tool="%s">' % t['key'] +
+                '<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/tools/">Tools</a> / %s</nav>' % html.escape(t['name']) +
+                '<h1 style="margin:14px 0 14px">%s</h1>' % html.escape(t['h1']) +
+                '<form class="tool-form" id="tf" novalidate><div class="field"><input id="ti" type="text" inputmode="url" placeholder="%s" autocapitalize="none" autocorrect="off" spellcheck="false" aria-label="Website address"></div>' % t['ph'] +
+                '<button class="btn" type="submit" id="tb"><span>%s</span></button></form>' % t['btn'] +
+                '<p class="tool-err" id="te" role="alert" hidden></p><div class="tool-out" id="tout" aria-live="polite"></div>' +
+                ''.join('<p>%s</p>' % x for x in t['intro']) +
+                '<h2>How to read the results</h2><ul>' + ''.join('<li>%s</li>' % x for x in t['read']) + '</ul>' +
+                '<h2>Questions</h2><div class="faq">' + faq + '</div>' +
+                '<h2>Related guides</h2><ul>' + helps + '</ul>' +
+                '<h2>More free tools</h2><ul>' + others + '</ul>' +
+                '<p class="note">Results are a snapshot taken from our servers at the moment you ask, and can differ from what you see elsewhere. siteupdown.com tests public websites only. <a href="/contact">Spotted a problem?</a></p>'
+                '<p style="margin-top:20px"><a href="/tools/">&larr; All tools</a></p></div></section>')
+        write('tools/' + t['slug'] + '.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/tools.js"></script>'))
+
 if __name__ == '__main__':
-    home(); login(); account(); monitor(); speed(); status(); static_pages(); help_pages(); site_pages_build()
+    home(); login(); account(); monitor(); speed(); status(); static_pages(); help_pages(); tools_pages(); site_pages_build()
