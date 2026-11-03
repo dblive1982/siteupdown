@@ -447,8 +447,16 @@ def static_pages():
 <p>When a page will not load, it is hard to tell whether the site is broken or something on your side is. You paste the address, and we load it from our own server and from twelve probes in different countries at the same moment. If every probe reaches it, the site is up and the problem is probably your network, DNS, browser or device. If most fail, it is down for everyone.</p>
 <h2>More than a status check</h2>
 <p>Every check also shows the SSL certificate, DNS records, redirects and the domain&rsquo;s registration expiry. The <a href="/speed">speed test</a> times where a page&rsquo;s load goes. With a free account you can keep a <a href="/monitor">watchlist</a>, see uptime history and get an email when a site goes down or comes back, and each monitored site has a public status page.</p>
-<h2>How we try to be fair</h2>
-<p>We would rather say &ldquo;not sure&rdquo; than be wrong. A slow response is a Timeout and a blocked request is Inconclusive; we only say Confirmed down after repeated server errors. Every result is a snapshot of one moment, and we say so.</p>
+<h2>How we check, and how we try to be fair</h2>
+<p>We would rather say &ldquo;not sure&rdquo; than be wrong. Here is what happens when you check a site:</p>
+<ul>
+<li><b>Our own server</b> asks the site for its page. If the address gets no reply, we also try the other form (with or without &ldquo;www&rdquo;), because some sites only answer on one.</li>
+<li><b>Twelve probes</b> in different countries ask the same thing at the same moment, so you can see whether it is down for everyone or only in some places.</li>
+<li><b>We call a site down only on real evidence</b>, such as repeated server errors, or a site that was answering and then stops. Before we record an outage we ask probes in other countries as well, and if any of them can reach it, it is not counted as down.</li>
+<li><b>Silence is not proof.</b> Some large sites quietly ignore automated checks. When nothing answers and we have not seen the site working lately, we say &ldquo;no answer&rdquo; and &ldquo;we can&rsquo;t be sure&rdquo;, and give you a link to try the site yourself, instead of showing a false red alert.</li>
+<li><b>We use honest checks.</b> Our checker says who it is, and we do not disguise it as a browser to get past a site&rsquo;s protection.</li>
+</ul>
+<p>The live graph samples a site about every ten seconds while someone is watching it, and we keep daily records so you can see the last 24 hours, 7 days and 12 months, with a written summary of recent outages. Problem reports from visitors show what real people are seeing, and every result is a snapshot of one moment, which we say so.</p>
 <h2>Independent</h2>
 <p>siteupdown.com is not affiliated with the websites, games or services it checks. Regional probes run on the public <a href="https://globalping.io" rel="noopener">Globalping</a> network. The site is supported by advertising, so it stays free to use.</p>
 <h2>Get in touch</h2>
