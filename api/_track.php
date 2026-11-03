@@ -5,6 +5,7 @@ require_once __DIR__ . '/_mail.php';
 require_once __DIR__ . '/_notify.php';
 
 const SUD_FAILS_TO_ALERT = 2; // two failed checks in a row before we say a site is down
+const SUD_TIMEOUTS_TO_ALERT = 4; // timeouts are weaker evidence (some sites quietly ignore automated checks), so four in a row
 
 function track_result(PDO $pdo, string $host, string $verdict, ?int $ms): void {
     $now = sql_now();
@@ -24,7 +25,7 @@ function track_result(PDO $pdo, string $host, string $verdict, ?int $ms): void {
     $st = $s->fetch() ?: ['state' => 'up', 'fails' => 0, 'since' => null];
     if ($bad) {
         $fails = (int)$st['fails'] + 1;
-        if ($st['state'] !== 'down' && $fails >= SUD_FAILS_TO_ALERT) {
+        if ($st['state'] !== 'down' && $fails >= ($verdict === 'timeout' ? SUD_TIMEOUTS_TO_ALERT : SUD_FAILS_TO_ALERT)) {
             $pdo->prepare('REPLACE INTO alert_state (host, state, fails, since) VALUES (?,?,?,?)')->execute([$host, 'down', $fails, $now]);
             $pdo->prepare('INSERT INTO incidents (host, started_at) VALUES (?,?)')->execute([$host, $now]);
             notify_watchers($pdo, $host, true, $now, null);
