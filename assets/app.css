@@ -963,3 +963,14 @@ a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--t
 /* worldwide tool controls */
 .tool-sel{font:inherit;padding:12px 10px;border-radius:10px;border:1px solid var(--line,#2a3140);background:var(--card,transparent);color:inherit;min-height:48px}
 .tool-form .tool-sel{margin-right:8px}
+
+/* response-time graph: thin white bar that follows the pointer */
+.lv-cursor{position:absolute;top:0;bottom:0;width:2px;margin-left:-1px;background:currentColor;opacity:.9;box-shadow:0 0 6px currentColor;pointer-events:none;display:none;border-radius:1px}
+/* verdict status pill: double size, with room to wrap on small screens */
+#v-pill{display:block;margin-top:12px}
+#v-pill .pill{font-size:23px;padding:10px 24px;gap:14px;max-width:100%;white-space:normal;line-height:1.15}
+#v-pill .pill::before{width:14px;height:14px}
+@media(max-width:560px){#v-pill .pill{font-size:17px;padding:8px 16px;gap:10px}#v-pill .pill::before{width:11px;height:11px}}
+/* worldwide map on status pages */
+.sp-wmap{position:relative;aspect-ratio:1000/394;width:100%;margin:6px 0 10px}
+.sp-wmap svg{width:100%;height:100%;display:block}

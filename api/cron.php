@@ -105,6 +105,12 @@ if (!$lastSweep || $lastSweep < gmdate('Y-m-d H:i:s', time() - 3600)) {
 if ((int)gmdate('i') % 10 === 3) {
 $pdo->prepare('DELETE FROM tracked_hosts WHERE last_seen < ?')->execute([gmdate('Y-m-d H:i:s', time() - 7 * 86400)]);
 $pdo->prepare('DELETE FROM live_viewer WHERE ts < ?')->execute([time() - 3600]);
+// Close outage records that are still open for public pages we can no longer call down (the site answers again, or we cannot judge it). Watched sites keep their own alerts.
+foreach ($pdo->query("SELECT DISTINCT i.host, s.checked_at FROM incidents i JOIN site_status s ON s.host = i.host WHERE i.ended_at IS NULL AND i.started_at < '" . gmdate('Y-m-d H:i:s', time() - 1800) . "' AND s.verdict NOT IN ('down','timeout') AND s.checked_at > '" . gmdate('Y-m-d H:i:s', time() - 3600) . "'")->fetchAll() as $r) {
+    if (isset($watched[$r['host']])) continue;
+    $pdo->prepare('UPDATE incidents SET ended_at=? WHERE host=? AND ended_at IS NULL')->execute([$r['checked_at'], $r['host']]);
+    $pdo->prepare('REPLACE INTO alert_state (host, state, fails, since) VALUES (?,?,?,?)')->execute([$r['host'], 'up', 0, $r['checked_at']]);
+}
 // One-off clean-up (runs once): callofduty.com was wrongly shown as down because only its www address answers our server.
 $m1 = $pdo->prepare('SELECT 1 FROM corroboration WHERE host=?'); $m1->execute(['*cleanup-cod-2']);
 if (!$m1->fetchColumn()) {

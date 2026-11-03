@@ -627,14 +627,14 @@ def site_pages_build():
             '<p class="note">Reports are anonymous and unverified, and each visitor can report each problem once every 30 minutes. They show how many people say they are affected, not why.</p></div>'
             '<h2>If %s is not loading for you</h2><ul>%s</ul>' % (n, tipsli) +
             '<p>Still stuck? Work through our <a href="/help/website-not-loading-checklist">website not loading checklist</a>, or read <a href="/help/down-for-some-people-not-others">why a site can be down for some people and not others</a>.</p>'
-            '<div class="sp-card" id="sp-world" hidden><div class="sp-rhead"><b>Seen from around the world</b><span class="sp-level" id="sp-wwhen"></span></div><p id="sp-wsum" class="note"></p><div class="rt-wrap"><table class="rt" id="sp-wtab"><thead><tr><th>Place</th><th>Result</th><th>Time</th></tr></thead><tbody></tbody></table></div><p class="note">A snapshot from probes on the public Globalping network, refreshed every few hours. It shows whether the site answers from other countries, not what every visitor sees.</p></div>' +
+            '<div class="sp-card" id="sp-world" hidden><div class="sp-rhead"><b>Seen from around the world</b><span class="sp-level" id="sp-wwhen"></span></div><p id="sp-wsum" class="note"></p><div class="sp-wmap"><svg id="sp-wsvg" role="img" aria-label="World map of where this site was reached" preserveAspectRatio="xMidYMid meet"></svg></div><div class="rt-wrap"><table class="rt" id="sp-wtab"><thead><tr><th>Place</th><th>Result</th><th>Time</th></tr></thead><tbody></tbody></table></div><p class="note">A snapshot from probes on the public Globalping network, refreshed every few hours. It shows whether the site answers from other countries, not what every visitor sees.</p></div>' +
             '<h2>Check %s from fifteen places</h2><p>This page shows our latest scheduled check. To test %s right now from our server and from fifteen countries, run a live check.</p>' % (n, hh) +
             '<p><a class="btn" href="/?q=%s"><span>Check %s now</span></a> <a class="btn ghost" href="/status/%s"><span>Full status page</span></a></p>' % (hh, n, hh) +
             '<h2>Questions about %s</h2><div class="faq">%s</div>' % (n, faqh) +
             '<h2>Other %s checks</h2><ul>%s</ul>' % (html.escape(catname.lower()), rel) +
             '<p class="note">Category: %s. siteupdown.com is independent and is not affiliated with %s.</p>' % (html.escape(catname), n) +
             '<p style="margin-top:20px"><a href="/is-it-down/">&larr; All site status pages</a></p></div></section>')
-        write(path.lstrip('/') + '.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/sitepage.js"></script><script src="/assets/live.js"></script>'))
+        write(path.lstrip('/') + '.html', h + body + foot('<script src="/assets/worldmap.js"></script><script src="/assets/app.js"></script><script src="/assets/sitepage.js"></script><script src="/assets/live.js"></script>'))
     # directory
     groups = ''
     order = ['social', 'video', 'gaming', 'ai', 'finance', 'payments', 'trading', 'shopping', 'delivery', 'news', 'government', 'health', 'betting', 'telecom', 'travel', 'search', 'work']

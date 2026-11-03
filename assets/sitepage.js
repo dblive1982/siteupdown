@@ -97,6 +97,22 @@
       return '<tr><td data-l="Place">' + esc(nm) + (p.city ? ' <span class="sp-ms">' + esc(p.city) + '</span>' : '') + '</td><td data-l="Result"><span class="sp-pill ' + l[0] + '">' + l[1] + (p.code ? ' ' + p.code : '') + '</span></td><td data-l="Time">' + (p.ms != null && p.state !== 'none' ? p.ms + ' ms' : '') + '</td></tr>';
     });
     $('#sp-wtab tbody').innerHTML = rows.join('');
+    /* small dotted world map with one marker per place */
+    (function () {
+      var svg = $('#sp-wsvg'), M = window.SUD_MAP; if (!svg || !M) return;
+      var Wd = 1000, Hd = Math.round(Wd * 142 / 360 * 10) / 10, cell = Wd * M.cell / 360, sz = cell * 0.72, o = (cell - sz) / 2, d = '';
+      M.runs.forEach(function (runs, r) { runs.forEach(function (run) { for (var c = run[0]; c < run[0] + run[1]; c++) d += 'M' + (c * cell + o).toFixed(1) + ' ' + (r * cell + o).toFixed(1) + 'h' + sz.toFixed(1) + 'v' + sz.toFixed(1) + 'h-' + sz.toFixed(1) + 'z'; });
+      });
+      var mk = '', TXT = { ok: 'Reached', error: 'Server error', blocked: 'Blocked our check', none: 'No answer' };
+      w.probes.forEach(function (p) {
+        if (p.lat == null || p.lon == null) return;
+        var x = (p.lon + 180) / 360 * Wd, y = (84 - p.lat) / 142 * (Wd * 142 / 360), st = LBL[p.state] ? p.state : 'none';
+        var nm = (p.city ? p.city + ', ' : '') + (p.country ? (dn ? (dn.of(p.country) || p.country) : p.country) : '') + ': ' + TXT[st] + (p.ms != null && st !== 'none' ? ', ' + p.ms + ' ms' : '');
+        mk += '<g class="pr" role="img" aria-label="' + esc(nm) + '"><title>' + esc(nm) + '</title><circle class="mk-hit" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="20"/><circle class="mk ' + st + '" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" r="8"/></g>';
+      });
+      svg.setAttribute('viewBox', '0 0 ' + Wd + ' ' + Hd);
+      svg.innerHTML = '<path class="map-land" d="' + d + '"/>' + mk;
+    })();
     $('#sp-wsum').textContent = w.reachable + ' of ' + w.total + ' places reached ' + host + (w.median_ms ? ', typical time ' + w.median_ms + ' ms' : '') + '.';
     if (w.measured_at) $('#sp-wwhen').textContent = ago(w.measured_at);
     $('#sp-world').hidden = false;
