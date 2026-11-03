@@ -46,6 +46,9 @@ $nx = 0;
 $xr = $pdo->prepare('SELECT * FROM extra_checks WHERE checked_at IS NULL OR checked_at < ? ORDER BY checked_at');
 $xr->execute([gmdate('Y-m-d H:i:s', time() - 55)]);
 foreach ($xr->fetchAll() as $row) { if (time() - $t0 > 48) break; xcheck_track($pdo, $row, xcheck_run($row)); $nx++; }
+// 2b) Worldwide sweep: one public page from fifteen places, at a pace set by the Globalping allowance (see gp_world_sweep).
+// Runs before the public batch so a busy minute cannot starve it; it only does anything every few minutes.
+if (time() - $t0 < 25) { require_once __DIR__ . '/_gp.php'; try { gp_world_sweep($pdo, array_keys(site_pages()), $t0 + 40); } catch (Throwable $e) { error_log('world sweep: ' . $e->getMessage()); } }
 // 3) Public pages (top sites, games, apps): about every five minutes, a few per run, while there is time left.
 $pubBatch = (int)($c['cron_batch'] ?? 24);
 $pub = [];
@@ -98,8 +101,6 @@ if (!$lastSweep || $lastSweep < gmdate('Y-m-d H:i:s', time() - 3600)) {
         $k++;
     }
 }
-// 6) Worldwide sweep: one public page from fifteen places, at a pace set by the Globalping allowance (see gp_world_sweep).
-if (time() - $t0 < 40) { require_once __DIR__ . '/_gp.php'; try { gp_world_sweep($pdo, array_keys(site_pages()), $t0 + 52); } catch (Throwable $e) {} }
 // Housekeeping (about every ten minutes): drop old feed rows and expired share links.
 if ((int)gmdate('i') % 10 === 3) {
 $pdo->prepare('DELETE FROM tracked_hosts WHERE last_seen < ?')->execute([gmdate('Y-m-d H:i:s', time() - 7 * 86400)]);
