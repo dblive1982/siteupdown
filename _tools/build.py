@@ -40,7 +40,7 @@ I_X = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="
 I_TT = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 3a5 5 0 0 0 4 4.4v3.3a8 8 0 0 1-4-1.2v6.2a6 6 0 1 1-6-6c.3 0 .7 0 1 .1v3.4a2.7 2.7 0 1 0 1.8 2.5V3z"/></svg>'
 I_YT = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2C2 8.8 2 12 2 12s0 3.2.4 4.8a2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8c.4-1.6.4-4.8.4-4.8s0-3.2-.4-4.8zM10 15V9l5.2 3z"/></svg>'
 
-NAV = [('Regional map', '/#global-pulse'), ('Top websites', '/#top-sites'), ('Gaming', '/#online-gaming'), ('Tools', '/tools/'), ('Monitor', '/monitor'), ('Account', '/account'), ('Help', '/help/'), ('How it works', '/#how-it-works')]
+NAV = [('Regional map', '/#global-pulse'), ('Top websites', '/#top-sites'), ('Gaming', '/#online-gaming'), ('Speed test', '/internet-speed-test'), ('Tools', '/tools/'), ('Monitor', '/monitor'), ('Account', '/account'), ('Help', '/help/'), ('How it works', '/#how-it-works')]
 
 def head(title, desc, path, extra_head='', noindex=False):
     t = html.escape(title)
@@ -176,6 +176,7 @@ def home():
 <div class="try-row app-row"><span class="eyebrow">Checking an app?</span><div class="chips">
 <a class="chip" href="/is-whatsapp-down">WhatsApp</a><a class="chip" href="/is-instagram-down">Instagram</a><a class="chip" href="/is-spotify-down">Spotify</a><a class="chip" href="/is-roblox-down">Roblox</a><a class="chip" href="/is-it-down/">All apps &amp; sites<span class="ne">→</span></a>
 </div></div>
+<div class="try-row app-row"><span class="eyebrow">Test your connection</span><div class="chips"><a class="chip" href="/internet-speed-test">Internet speed test<span class="ne">&rarr;</span></a></div></div>
 <p class="rule-note"><span>One server check, fifteen regional probes. No sign-up, no guesswork.</span></p>
 </div></section>
 
@@ -784,10 +785,9 @@ def internet_speed_page():
     ld = {"@context": "https://schema.org", "@graph": [
         {"@type": "WebApplication", "name": "Internet speed test", "url": SITE + path, "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "GBP"}},
         {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": _re.sub('<[^>]+>', '', a)}} for q, a in faq]}]}
-    h = head('Internet speed test — check your download, upload and ping | siteupdown.com', 'Free internet speed test: measure your download speed, upload speed, ping and jitter in about 20 seconds. No app and no sign-up.', path, '<script type="application/ld+json">' + _json.dumps(ld) + '</script>').replace('{BODYATTR}', '')
+    h = head('Speed test — free internet speed test (download, upload, ping) | siteupdown.com', 'Free internet speed test: measure your download speed, upload speed, ping and jitter in about 20 seconds. No app and no sign-up.', path, '<script type="application/ld+json">' + _json.dumps(ld) + '</script>').replace('{BODYATTR}', '')
     body = ('<section class="page"><div class="wrap prose toolpage" data-tool="speedtest"><nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/tools/">Tools</a> / Internet speed test</nav>'
             '<h1 style="margin:14px 0 8px">Internet speed test<span class="dot">.</span></h1>'
-            '<p class="lead">How fast is your connection right now? Press start and we measure download, upload, ping and jitter in about 20 seconds.</p>'
             '<div class="sp-card st-card"><div class="st-gauge"><svg viewBox="0 0 200 200" aria-hidden="true"><path class="st-track" d="M36.4 163.6 A90 90 0 1 1 163.6 163.6"/><path id="st-arc" class="st-arc" d="M36.4 163.6 A90 90 0 1 1 163.6 163.6"/></svg>'
             '<div class="st-read" aria-live="polite"><b id="st-num">0</b><span id="st-unit">Mbps</span><em id="st-phase">Ready</em></div></div>'
             '<div class="st-btn"><button class="btn" id="st-go" type="button"><span>Start test</span></button></div>'
@@ -795,6 +795,7 @@ def internet_speed_page():
             '<div class="st-grid"><div class="st-t"><i>Download</i><b id="st-dl">&ndash;</b></div><div class="st-t"><i>Upload</i><b id="st-ul">&ndash;</b></div><div class="st-t"><i>Ping</i><b id="st-ping">&ndash;</b></div><div class="st-t"><i>Jitter</i><b id="st-jit">&ndash;</b></div></div>'
             '<p class="note" id="st-conn"></p><p class="note" id="st-used"></p><p class="note" id="st-last"></p></div>'
             '<div id="st-good" hidden></div>'
+            '<p class="lead" style="margin-top:22px">How fast is your connection right now? Press start and we measure your download speed, upload speed, ping and jitter in about 20 seconds. No app and no sign-up.</p>'
             '<p class="note">The test uses roughly 50 to 300 MB of data, so avoid it on a limited mobile plan. It runs between your browser and Cloudflare\'s public speed-test network. We do not store your result or your address. Results depend on your device, Wi-Fi and what else is using your connection.</p>'
             '<h2>Getting an accurate result</h2><ul><li>Use a cable if you can, or stand near the router.</li><li>Close streaming, downloads and other tabs first.</li><li>Turn off a VPN, which adds its own delay.</li><li>Run it two or three times and compare. Speeds vary from minute to minute.</li></ul>'
             '<h2>Questions</h2><div class="faq">' + ''.join('<details><summary>%s</summary><p>%s</p></details>' % (html.escape(q), a) for q, a in faq) + '</div>'
