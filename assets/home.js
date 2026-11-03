@@ -229,7 +229,7 @@
     var picker = S.repPicker($('#rb-pick'), function (kinds) {
       if (!repHost) return;
       var h = repHost, m = $('#rb-msg'); m.textContent = 'Sending…';
-      fetch('/api/report.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ host: h, kinds: kinds }), credentials: 'same-origin' })
+      fetch('/api/report.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ host: h, kinds: kinds, tz: S.tz() }), credentials: 'same-origin' })
         .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
         .then(function (r) { m.textContent = r.ok ? r.j.message : (r.j.error || 'Sorry, that did not work. Please try again later.'); if (r.ok) { $('#rb-pick').hidden = true; picker.reset(); repHost = null; repBox(h); m.textContent = r.j.message; } })
         .catch(function () { m.textContent = 'Sorry, that did not work. Please try again later.'; });

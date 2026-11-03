@@ -37,6 +37,7 @@
   var RANGES = { '24h': 'the last 24 hours', '7d': 'the last 7 days', '30d': 'the last 30 days', '1y': 'the last year' };
   S.repRangeText = function (r) { return RANGES[r] || RANGES['24h']; };
   function fmtDay(d, o) { return d.toLocaleDateString([], Object.assign({ timeZone: 'UTC' }, o)); }
+  S.tz = function () { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) { return ''; } };
   S.repChart = function (chart, detail, kindsEl, rep, extra) {
     var bk = rep.buckets || [], max = Math.max.apply(null, bk.map(function (b) { return b.n; }).concat([3])), K = Object.keys(S.REPKIND), unit = rep.unit || 'hour';
     function when(b) {
@@ -81,6 +82,12 @@
         kindsEl.innerHTML = '<div class="dn"><svg viewBox="0 0 100 100" role="img" aria-label="Share of each type of problem reported"><g transform="rotate(-90 50 50)">' + arcs + '</g><text x="50" y="48" text-anchor="middle" class="dn-n">' + tot + '</text><text x="50" y="62" text-anchor="middle" class="dn-l">' + (tot === 1 ? 'report' : 'reports') + '</text></svg><ul class="dn-leg">' +
           used.map(function (x) { return '<li><i class="kdot s-' + x + '"></i><span>' + S.REPKIND[x] + '</span><b>' + Math.round(100 * k[x] / tot) + '%</b></li>'; }).join('') + '</ul></div>' +
           '<p class="dn-top">Most reported: <b>' + S.REPKIND[top] + '</b> (' + Math.round(100 * k[top] / tot) + '% of reports).</p>';
+      }
+      var cs = rep.countries || [], ctot = cs.reduce(function (a, c) { return a + c.n; }, 0);
+      if (ctot >= 3) {
+        var nm = function (cc) { try { return new Intl.DisplayNames([], { type: 'region' }).of(cc) || cc; } catch (e) { return cc; } };
+        var share = cs[0].n / ctot, verdict = cs.length === 1 || share >= 0.8 ? 'Almost all reports come from ' + nm(cs[0].cc) + ', so this may be a local problem rather than a worldwide one.' : cs.length >= 3 ? 'Reports are coming from several countries, so this looks more widespread.' : 'Reports are coming from ' + cs.length + ' countries.';
+        kindsEl.innerHTML += '<div class="cn"><b>Where reports come from</b><ul class="dn-leg cn-l">' + cs.map(function (c) { var pc = Math.round(100 * c.n / ctot); return '<li><span>' + S.esc(nm(c.cc)) + '</span><i class="cn-bar"><u style="width:' + pc + '%"></u></i><b>' + pc + '%</b></li>'; }).join('') + '</ul><p class="dn-top">' + verdict + '</p></div>';
       }
     }
   };

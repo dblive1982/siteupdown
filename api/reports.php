@@ -57,6 +57,9 @@ foreach ($q->fetchAll() as $r) {
     $buckets[$key]['n'] += $c; $buckets[$key]['k'][$r['kind']] += $c; $total += $c; $kinds[$r['kind']] += $c;
 }
 foreach ($buckets as &$bk) unset($bk['s']); unset($bk);
+$cq = $pdo->prepare('SELECT country, COUNT(*) AS n FROM reports WHERE host=? AND ts >= ? AND country IS NOT NULL AND country <> \'\' GROUP BY country ORDER BY n DESC LIMIT 6');
+$cq->execute([$host, gmdate('Y-m-d H:i:s', $from)]);
+$countries = array_map(fn($r) => ['cc' => $r['country'], 'n' => (int)$r['n']], $cq->fetchAll());
 // Last three hours and what is normal for this site (average per hour over the previous 6 days) drive the "more than usual" label.
 $l3 = $pdo->prepare('SELECT COUNT(*), MAX(ts) FROM reports WHERE host=? AND ts > ?');
 $l3->execute([$host, gmdate('Y-m-d H:i:s', $now - 3 * 3600)]);
@@ -70,4 +73,4 @@ if ($total24 > 0) $level = 'low';
 if ($last3 >= 12 && $last3 > 4 * $base * 3) $level = 'high';
 elseif ($last3 >= 5 && $last3 > 2 * $base * 3) $level = 'raised';
 out(200, ['host' => $host, 'name' => $name, 'page' => $sites[$host]['page'] ?? null, 'range' => $range, 'unit' => $unit, 'buckets' => array_values($buckets),
-          'total' => $total, 'total24' => $total24, 'kinds' => $kinds, 'last3h' => $last3, 'usual_per_hour' => $base, 'level' => $level, 'last' => iso($lastTs), 'now' => gmdate('Y-m-d\TH:i:s\Z', $now)]);
+          'total' => $total, 'total24' => $total24, 'kinds' => $kinds, 'countries' => $countries, 'last3h' => $last3, 'usual_per_hour' => $base, 'level' => $level, 'last' => iso($lastTs), 'now' => gmdate('Y-m-d\TH:i:s\Z', $now)]);

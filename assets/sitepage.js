@@ -108,7 +108,7 @@
   btn.addEventListener('click', function () { pick.hidden = !pick.hidden; });
   var picker = S.repPicker(pick, function (kinds) {
     rmsg.textContent = 'Sending…';
-    fetch('/api/report.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ host: host, kinds: kinds }), credentials: 'same-origin' })
+    fetch('/api/report.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ host: host, kinds: kinds, tz: S.tz() }), credentials: 'same-origin' })
       .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (r) {
         rmsg.textContent = r.ok ? r.j.message : (r.j.error || 'Sorry, that did not work. Please try again later.');
