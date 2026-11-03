@@ -139,6 +139,29 @@ function ensure_schema(PDO $pdo): void {
         user_id $int NOT NULL,
         expires_at DATETIME NOT NULL
     )$cs");
+    // Expiry warnings already sent (SSL certificates and domains), and the user's extra checks (keyword on page, open port).
+    $pdo->exec("CREATE TABLE IF NOT EXISTS expiry_state (
+        host VARCHAR(253) NOT NULL,
+        kind VARCHAR(10) NOT NULL,
+        level INT NOT NULL,
+        ts DATETIME NOT NULL,
+        PRIMARY KEY (host, kind)
+    )$cs");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS extra_checks (
+        id $id,
+        user_id $int NOT NULL,
+        host VARCHAR(253) NOT NULL,
+        kind VARCHAR(10) NOT NULL,
+        param VARCHAR(190) NOT NULL,
+        state VARCHAR(8) NOT NULL DEFAULT 'up',
+        fails INT NOT NULL DEFAULT 0,
+        since DATETIME NULL,
+        verdict VARCHAR(16) NULL,
+        ms INT NULL,
+        detail VARCHAR(120) NULL,
+        checked_at DATETIME NULL,
+        created_at DATETIME NOT NULL
+    )$cs");
     // Visitor problem reports for the "Is X down?" pages (pruned after 35 days).
     $pdo->exec("CREATE TABLE IF NOT EXISTS reports (
         id $id,

@@ -16,7 +16,7 @@
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32"><link rel="icon" href="/favicon-64.png" type="image/png" sizes="64x64"><link rel="manifest" href="/site.webmanifest"><link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="/assets/app.css?v=18d950bb">
+<link rel="stylesheet" href="/assets/app.css?v=a386f20a">
 
 </head>
 <body data-page="monitor">
@@ -40,6 +40,17 @@
 <div class="row-actions" style="flex-wrap:nowrap"><div class="field" style="flex:1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg><input id="m-input" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="example.com" maxlength="300"></div><button class="btn" type="submit"><span>Add</span></button></div><p class="err" id="m-err" role="alert"></p></form>
 <div class="tools"><span class="fine" id="m-count"></span><span class="fine">Updates every minute while this page is open.</span></div>
 <div class="list" id="m-list"><div class="skeleton">Loading your watchlist…</div></div></div>
+<div class="card" id="xc-card" style="margin-top:26px" hidden><h3 style="margin-bottom:6px">Extra checks</h3>
+<p class="note">Go beyond &ldquo;is it up?&rdquo;. Check that a word is still on a page (for example your shop&rsquo;s &ldquo;Add to basket&rdquo; button), or that a port such as email or a database is answering. These run every minute, and we alert you after two fails in a row, the same way as your watchlist.</p>
+<div class="list" id="xc-list" style="margin:14px 0"></div>
+<form class="stack" id="xc-form" novalidate style="max-width:640px">
+<div class="field"><select id="xc-kind" aria-label="Check type"><option value="kw">A word must be on the page</option><option value="port">A port must be open</option></select></div>
+<div class="field"><input id="xc-host" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="example.com" maxlength="253" aria-label="Website address"></div>
+<div class="field" id="xc-wordf"><input id="xc-word" type="text" autocomplete="off" placeholder="Word or phrase on the page" maxlength="100" aria-label="Word or phrase"></div>
+<div class="field" id="xc-portf" hidden><select id="xc-port" aria-label="Port"><option value="443">443 &ndash; secure website</option><option value="80">80 &ndash; website</option><option value="22">22 &ndash; SSH</option><option value="25">25 &ndash; email (SMTP)</option><option value="465">465 &ndash; email (SMTPS)</option><option value="587">587 &ndash; email (submission)</option><option value="993">993 &ndash; email (IMAP)</option><option value="995">995 &ndash; email (POP3)</option><option value="143">143 &ndash; IMAP</option><option value="110">110 &ndash; POP3</option><option value="53">53 &ndash; DNS</option><option value="21">21 &ndash; FTP</option><option value="3306">3306 &ndash; MySQL</option><option value="5432">5432 &ndash; PostgreSQL</option><option value="8080">8080 &ndash; alternate web</option><option value="8443">8443 &ndash; alternate secure web</option></select></div>
+<div><button class="btn small" type="submit"><span>Add check</span></button> <span class="fine" id="xc-count"></span></div>
+<p class="err" id="xc-err" role="alert"></p></form>
+<p class="fine">Word checks read the first 600 KB of the page and ignore capital letters. Only check sites and servers you own or look after.</p></div>
 <div class="card" id="ch-card" style="margin-top:26px" hidden><h3 style="margin-bottom:6px">Alert channels</h3>
 <p class="note">We always email you. You can also get an instant message in Telegram, Slack or Discord when a site on your watchlist goes down or comes back up. Use the Alerts button on each site to switch alerts on or off.</p>
 <div class="list" id="ch-list" style="margin:14px 0"></div>
@@ -61,7 +72,7 @@
 <div class="foot-links"><a href="/#global-pulse">Regional map</a><a href="/#how-it-works">How it works</a><a href="/help/">Help centre</a><a href="/tools/">Tools</a><a href="/is-it-down/">Is it down?</a><a href="/speed">Speed test</a><a href="/monitor">Monitor</a><a href="/account">Account</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/legal">Terms &amp; legal</a><a href="/privacy">Privacy</a><button type="button" data-cookie-settings>Cookie settings</button></div>
 <p class="fine">&copy; <span data-year>2026</span> siteupdown.com. An independent website checker, not affiliated with the sites it checks. Regional probes use the public <a href="https://globalping.io" rel="noopener">Globalping</a> network.</p>
 </div></footer>
-<script src="/assets/app.js?v=18d950bb"></script>
-<script src="/assets/pages.js?v=18d950bb"></script>
+<script src="/assets/app.js?v=a386f20a"></script>
+<script src="/assets/pages.js?v=a386f20a"></script>
 </body>
 </html>

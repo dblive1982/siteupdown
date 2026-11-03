@@ -124,7 +124,7 @@
     var timer;
     S.onReady(function (u) {
       if (!u) { $('#m-out').hidden = false; return; }
-      $('#m-in').hidden = false; load(); loadCh(); timer = setInterval(function () { if (!document.hidden) load(); }, 60000);
+      $('#m-in').hidden = false; load(); loadCh(); loadXc(); timer = setInterval(function () { if (!document.hidden) load(); }, 60000);
     });
     function draw(j) {
       var L = $('#m-list');
@@ -169,6 +169,28 @@
       var t = e.target.closest('[data-cht]'), r = e.target.closest('[data-chr]');
       if (t) { t.disabled = true; S.api('channels.php', { action: 'test', id: +t.getAttribute('data-cht') }).then(function (j) { drawCh(j); S.toast('Test message sent'); }).catch(function (x) { S.toast(x.message, true); loadCh(); }); }
       if (r) S.api('channels.php', { action: 'remove', id: +r.getAttribute('data-chr') }).then(drawCh).catch(function (x) { S.toast(x.message, true); });
+    });
+    /* extra checks: word on page, open port */
+    function drawXc(j) {
+      $('#xc-card').hidden = false;
+      $('#xc-count').textContent = j.items.length + ' of ' + j.max;
+      $('#xc-list').innerHTML = j.items.length ? j.items.map(function (x) {
+        var v = x.verdict === 'up' ? 'up' : x.verdict === 'down' ? (x.state === 'down' ? 'down' : 'timeout') : 'pending';
+        return '<div class="item"><div class="t"><b>' + esc(x.host) + '</b><small>' + (x.kind === 'port' ? 'Port ' + esc(x.param) + ' must be open' : 'Page must contain &ldquo;' + esc(x.param) + '&rdquo;') + (x.detail ? ' &middot; ' + esc(x.detail) : '') + (x.at ? ' &middot; checked ' + esc(S.ago(x.at)) : ' &middot; not checked yet') + '</small></div>'
+          + '<div class="acts">' + S.pill(v) + '<button class="btn small ghost" data-xr="' + x.id + '">Check now</button><button class="btn small ghost" data-xd="' + x.id + '" aria-label="Remove this check">Remove</button></div></div>';
+      }).join('') : '<div class="empty" style="padding:14px">No extra checks yet.</div>';
+    }
+    function loadXc() { return S.api('xcheck.php').then(drawXc).catch(function () {}); }
+    $('#xc-kind').addEventListener('change', function () { var p = this.value === 'port'; $('#xc-portf').hidden = !p; $('#xc-wordf').hidden = p; });
+    $('#xc-form').addEventListener('submit', function (e) {
+      e.preventDefault(); var er = $('#xc-err'), b = $('button', e.target), port = $('#xc-kind').value === 'port'; er.textContent = ''; b.disabled = true;
+      S.api('xcheck.php', { action: 'add', kind: $('#xc-kind').value, address: $('#xc-host').value, param: port ? $('#xc-port').value : $('#xc-word').value })
+        .then(function (j) { drawXc(j); $('#xc-word').value = ''; S.toast('Check added'); }).catch(function (x) { er.textContent = x.message; }).then(function () { b.disabled = false; });
+    });
+    $('#xc-list').addEventListener('click', function (e) {
+      var r = e.target.closest('[data-xr]'), d = e.target.closest('[data-xd]');
+      if (r) { r.disabled = true; S.api('xcheck.php', { action: 'run', id: +r.getAttribute('data-xr') }).then(drawXc).catch(function (x) { S.toast(x.message, true); loadXc(); }); }
+      if (d) S.api('xcheck.php', { action: 'remove', id: +d.getAttribute('data-xd') }).then(drawXc).catch(function (x) { S.toast(x.message, true); });
     });
     function load() { S.api('watch.php').then(draw).catch(function (e) { $('#m-list').innerHTML = '<div class="empty">' + esc(e.message) + '</div>'; }); }
     $('#m-add').addEventListener('submit', function (e) {

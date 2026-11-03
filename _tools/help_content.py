@@ -364,7 +364,7 @@ ARTICLES = [
 <h2>Down for everyone, or just you?</h2>
 <p>If the server check and most probes succeed, the site is up and the problem is likely your own network, DNS, browser or device. If most fail, it is down for everyone. Mixed results usually mean a regional problem. See <a href="/help/down-for-some-people-not-others">why a site can be down for some people and not others</a>.</p>
 <h2>Watchlist alerts</h2>
-<p>Watched sites are re-checked about every five minutes. To avoid false alarms, a site is only reported as down after <b>two failed checks in a row</b>, and you get a second email when it recovers, with how long it was down. Inconclusive results never trigger an alert, while a Timeout counts as a failed check.</p>
+<p>Watched sites are re-checked about every minute. To avoid false alarms, a site is only reported as down after <b>two failed checks in a row</b>, and you get a second email when it recovers, with how long it was down. Inconclusive results never trigger an alert, while a Timeout counts as a failed check.</p>
 <h2>The limits</h2>
 <p>Every result is a snapshot of one moment. A short outage between two checks can be missed, and a site behind a strict firewall may look worse than it is for real visitors. Use the result as strong evidence, not as proof.</p>'''
 },

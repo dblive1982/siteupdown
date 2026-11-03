@@ -2,7 +2,7 @@
 // Branded HTML emails (with a plain-text copy): welcome, password reset, alerts and contact form.
 declare(strict_types=1);
 
-/** Builds the branded HTML and plain-text bodies. $tone: '' | 'down' | 'up' adds a coloured status chip. */
+/** Builds the branded HTML and plain-text bodies. $tone: '' | 'down' | 'up' | 'warn' adds a coloured status chip. */
 function sud_email_render(string $heading, string $paraHtml, string $paraText, string $btnText = '', string $btnUrl = '', string $tone = ''): array {
     $c = config() ?: [];
     $site = rtrim($c['site'] ?? 'https://siteupdown.com', '/');
@@ -17,6 +17,7 @@ function sud_email_render(string $heading, string $paraHtml, string $paraText, s
     $chip = '';
     $stripe = '#39b54a';
     if ($tone === 'down') { $stripe = '#e5484d'; $chip = '<p style="margin:0 0 12px"><span style="display:inline-block;background:#fde8e8;color:#a61b1f;font-size:12px;font-weight:700;letter-spacing:1.5px;padding:5px 12px;border-radius:99px;' . $F . '">&#9679; LOOKS DOWN</span></p>'; }
+    if ($tone === 'warn') { $stripe = '#f0a020'; $chip = '<p style="margin:0 0 12px"><span style="display:inline-block;background:#fff1d6;color:#8a5a00;font-size:12px;font-weight:700;letter-spacing:1.5px;padding:5px 12px;border-radius:99px;' . $F . '">&#9679; HEADS UP</span></p>'; }
     if ($tone === 'up') { $chip = '<p style="margin:0 0 12px"><span style="display:inline-block;background:#e3f5e7;color:#1d7a2e;font-size:12px;font-weight:700;letter-spacing:1.5px;padding:5px 12px;border-radius:99px;' . $F . '">&#9679; BACK UP</span></p>'; }
     $link = fn(string $t, string $href) => '<a href="' . $site . $href . '" style="color:#b9aee0;text-decoration:underline">' . $t . '</a>';
     $html = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"><title>' . $h . '</title></head>'

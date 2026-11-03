@@ -1,6 +1,6 @@
 <?php
-// Re-probes the watched sites. Run every 5 minutes from hPanel > Advanced > Cron Jobs:
-//   */5 * * * *  /usr/bin/php /home/USER/domains/siteupdown.com/public_html/api/cron.php
+// Re-probes watched sites every minute and public pages about every five. Run every minute from hPanel > Advanced > Cron Jobs:
+//   * * * * *  /usr/bin/php /home/USER/domains/siteupdown.com/public_html/api/cron.php
 // If you cannot use cron, call https://siteupdown.com/api/cron.php?key=YOUR_CRON_KEY from a free uptime pinger.
 declare(strict_types=1);
 require __DIR__ . '/_boot.php';
@@ -9,6 +9,7 @@ require __DIR__ . '/_tls.php';
 require __DIR__ . '/_track.php';
 require __DIR__ . '/_sites.php';
 require __DIR__ . '/_sitepages.php';
+require __DIR__ . '/_xcheck.php';
 $c = config();
 if (PHP_SAPI !== 'cli') {
     $key = (string)($_GET['key'] ?? '');
@@ -17,30 +18,45 @@ if (PHP_SAPI !== 'cli') {
     ignore_user_abort(true);
 }
 $pdo = db();
-$batch = (int)($c['cron_batch'] ?? 40);
-$hosts = [];
-foreach (top_sites() as $s) $hosts[$s[0]] = 1;
-foreach (gaming_sites() as $s) $hosts[$s[0]] = 1;
-foreach (site_pages() as $h0 => $sp0) { $hosts[$h0] = 1; foreach ($sp0['app'] ?? [] as $ap) $hosts[$ap[1]] = 1; }
-foreach ($pdo->query('SELECT DISTINCT host FROM watchlist')->fetchAll() as $r) $hosts[$r['host']] = 1;
+// One run at a time: if the previous minute's run is still going, skip this one.
+$lock = @fopen(sys_get_temp_dir() . '/sud-cron.lock', 'c');
+if ($lock && !flock($lock, LOCK_EX | LOCK_NB)) { if (PHP_SAPI === 'cli') echo "Already running\n"; else out(200, ['skipped' => true]); exit; }
+$t0 = time();
+$now = sql_now();
 $st = [];
 foreach ($pdo->query('SELECT host, checked_at FROM site_status')->fetchAll() as $r) $st[$r['host']] = $r['checked_at'];
-$list = array_keys($hosts);
-usort($list, fn($a, $b) => strcmp($st[$a] ?? '', $st[$b] ?? '')); // never-checked first, then the stalest
-$list = array_slice($list, 0, $batch);
 $up = $pdo->prepare('REPLACE INTO site_status (host, verdict, http_code, ms, checked_at) VALUES (?,?,?,?,?)');
-$n = 0; $t0 = time();
-foreach ($list as $h) {
-    if (time() - $t0 > 85) break;
+$n = 0;
+$probe = function (string $h) use ($pdo, $up, &$n) {
     $r = check_site($h, '/', false, true);
     $up->execute([$h, $r['verdict'], $r['http_code'], $r['ms'], sql_now()]);
     track_result($pdo, $h, $r['verdict'], $r['ms']);
     $n++;
-}
-// Certificates: each host once a day, a few per run (top sites and gaming services).
+};
+// 1) Sites on someone's watchlist: every minute, stalest first. If there are more than fit in a minute, the stalest simply wait their turn.
+$watched = [];
+foreach ($pdo->query('SELECT DISTINCT host FROM watchlist')->fetchAll() as $r) $watched[$r['host']] = 1;
+$due = array_values(array_filter(array_keys($watched), fn($h) => ($st[$h] ?? '') < gmdate('Y-m-d H:i:s', time() - 55)));
+usort($due, fn($a, $b) => strcmp($st[$a] ?? '', $st[$b] ?? ''));
+foreach ($due as $h) { if (time() - $t0 > 40) break; $probe($h); }
+// 2) Extra checks (keyword on page, open port), also every minute.
+$nx = 0;
+$xr = $pdo->prepare('SELECT * FROM extra_checks WHERE checked_at IS NULL OR checked_at < ? ORDER BY checked_at');
+$xr->execute([gmdate('Y-m-d H:i:s', time() - 55)]);
+foreach ($xr->fetchAll() as $row) { if (time() - $t0 > 48) break; xcheck_track($pdo, $row, xcheck_run($row)); $nx++; }
+// 3) Public pages (top sites, games, apps): about every five minutes, a few per run, while there is time left.
+$pubBatch = (int)($c['cron_batch'] ?? 8);
+$pub = [];
+foreach (top_sites() as $s) $pub[$s[0]] = 1;
+foreach (gaming_sites() as $s) $pub[$s[0]] = 1;
+foreach (site_pages() as $h0 => $sp0) { $pub[$h0] = 1; foreach ($sp0['app'] ?? [] as $ap) $pub[$ap[1]] = 1; }
+$pl = array_values(array_filter(array_keys($pub), fn($h) => !isset($watched[$h]) && ($st[$h] ?? '') < gmdate('Y-m-d H:i:s', time() - 270)));
+usort($pl, fn($a, $b) => strcmp($st[$a] ?? '', $st[$b] ?? ''));
+foreach (array_slice($pl, 0, $pubBatch) as $h) { if (time() - $t0 > 52) break; $probe($h); }
+// 4) Certificates: each host once a day, a few per run (public pages and every watched site).
 $certAt = [];
 foreach ($pdo->query('SELECT host, checked_at FROM site_cert')->fetchAll() as $r) $certAt[$r['host']] = $r['checked_at'];
-$certHosts = [];
+$certHosts = $watched;
 foreach (top_sites() as $s2) $certHosts[$s2[0]] = 1;
 foreach (gaming_sites() as $s2) $certHosts[$s2[0]] = 1;
 foreach (array_keys(site_pages()) as $h0) $certHosts[$h0] = 1;
@@ -52,17 +68,36 @@ $certList = array_slice($certList, 0, (int)($c['cert_batch'] ?? 8));
 $cu = $pdo->prepare('REPLACE INTO site_cert (host, status, days_left, expires, checked_at) VALUES (?,?,?,?,?)');
 $nc = 0;
 foreach ($certList as $h) {
-    if (time() - $t0 > 90) break;
+    if (time() - $t0 > 56) break;
     $rp = resolve_public($h);
     $t = (!$rp['error'] && $rp['ips']) ? tls_inspect($h, $rp['ips'][0], 5) : ['status' => 'none'];
     $cu->execute([$h, $t['status'], $t['days_left'] ?? null, $t['to'] ?? null, sql_now()]);
+    if (isset($watched[$h]) && isset($t['days_left'], $t['to']) && $t['status'] !== 'none') expiry_check($pdo, $h, 'ssl', (int)$t['days_left'], (string)$t['to']);
     $nc++;
 }
-// Housekeeping: drop old feed rows and expired share links.
+// 5) Domain registration dates for watched sites, hourly (RDAP answers are cached for a week).
+$sw = $pdo->prepare('SELECT ts FROM expiry_state WHERE host=? AND kind=?'); $sw->execute(['*', 'sweep']);
+$lastSweep = $sw->fetchColumn();
+if (!$lastSweep || $lastSweep < gmdate('Y-m-d H:i:s', time() - 3600)) {
+    $pdo->prepare('DELETE FROM expiry_state WHERE host=? AND kind=?')->execute(['*', 'sweep']);
+    $pdo->prepare('INSERT INTO expiry_state (host, kind, level, ts) VALUES (?,?,?,?)')->execute(['*', 'sweep', 0, sql_now()]);
+    $doms = [];
+    foreach (array_keys($watched) as $h) { $d = registrable_domain($h); if ($d !== '' && !filter_var($d, FILTER_VALIDATE_IP)) $doms[$d] = 1; }
+    $k = 0;
+    foreach (array_keys($doms) as $d) {
+        if (time() - $t0 > 56 || $k >= 6) break;
+        $w = domain_whois($d);
+        if ($w && isset($w['days_left'], $w['expires'])) expiry_check($pdo, $d, 'domain', (int)$w['days_left'], (string)$w['expires']);
+        $k++;
+    }
+}
+// Housekeeping (about every ten minutes): drop old feed rows and expired share links.
+if ((int)gmdate('i') % 10 === 3) {
 $pdo->prepare('DELETE FROM checks WHERE checked_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - 3 * 86400)]);
 $pdo->prepare('DELETE FROM site_log WHERE ts < ?')->execute([gmdate('Y-m-d H:i:s', time() - 35 * 86400)]);
 $pdo->prepare('DELETE FROM reports WHERE ts < ?')->execute([gmdate('Y-m-d H:i:s', time() - 35 * 86400)]);
 $pdo->prepare('DELETE FROM incidents WHERE started_at < ? AND ended_at IS NOT NULL')->execute([gmdate('Y-m-d H:i:s', time() - 95 * 86400)]);
 $pdo->prepare('DELETE FROM shares WHERE created_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - 30 * 86400)]);
 $pdo->prepare('DELETE FROM resets WHERE expires_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - 86400)]);
-if (PHP_SAPI === 'cli') echo "Probed $n sites, $nc certificates\n"; else out(200, ['probed' => $n, 'certs' => $nc]);
+}
+if (PHP_SAPI === 'cli') echo "Probed $n sites, $nx extra checks, $nc certificates\n"; else out(200, ['probed' => $n, 'extra' => $nx, 'certs' => $nc]);

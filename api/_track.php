@@ -8,7 +8,15 @@ const SUD_FAILS_TO_ALERT = 2; // two failed checks in a row before we say a site
 
 function track_result(PDO $pdo, string $host, string $verdict, ?int $ms): void {
     $now = sql_now();
-    $pdo->prepare('INSERT INTO site_log (host, ts, verdict, ms) VALUES (?,?,?,?)')->execute([$host, $now, $verdict, $ms]);
+    // One history row per host per five minutes (the worst result in that window wins), so one-minute checks do not bloat the history.
+    $lg = $pdo->prepare('SELECT ts, verdict FROM site_log WHERE host=? ORDER BY ts DESC LIMIT 1');
+    $lg->execute([$host]);
+    $last = $lg->fetch();
+    if ($last && intdiv(strtotime($last['ts'] . ' UTC'), 300) === intdiv(time(), 300)) {
+        if ($last['verdict'] === 'up' && $verdict !== 'up') $pdo->prepare('UPDATE site_log SET verdict=?, ms=? WHERE host=? AND ts=?')->execute([$verdict, $ms, $host, $last['ts']]);
+    } else {
+        $pdo->prepare('INSERT INTO site_log (host, ts, verdict, ms) VALUES (?,?,?,?)')->execute([$host, $now, $verdict, $ms]);
+    }
     if ($verdict === 'inconclusive') return; // blocked or unverifiable: neither proves up nor down
     $bad = in_array($verdict, ['down', 'timeout'], true);
     $s = $pdo->prepare('SELECT state, fails, since FROM alert_state WHERE host=?');
