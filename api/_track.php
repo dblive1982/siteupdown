@@ -2,6 +2,7 @@
 // Keeps the result history, outages and "down / back up" emails for watched sites.
 declare(strict_types=1);
 require_once __DIR__ . '/_mail.php';
+require_once __DIR__ . '/_notify.php';
 
 const SUD_FAILS_TO_ALERT = 2; // two failed checks in a row before we say a site is down
 
@@ -42,7 +43,7 @@ function human_span(int $sec): string {
 }
 
 function notify_watchers(PDO $pdo, string $host, bool $down, string $now, ?string $since): void {
-    $q = $pdo->prepare('SELECT u.email, u.name FROM watchlist w JOIN users u ON u.id = w.user_id WHERE w.host=? AND w.alerts=1');
+    $q = $pdo->prepare('SELECT u.id, u.email, u.name FROM watchlist w JOIN users u ON u.id = w.user_id WHERE w.host=? AND w.alerts=1');
     $q->execute([$host]);
     $site = rtrim((config()['site'] ?? 'https://siteupdown.com'), '/');
     $page = $site . '/status/' . rawurlencode($host);
@@ -54,6 +55,7 @@ function notify_watchers(PDO $pdo, string $host, bool $down, string $now, ?strin
                 "<p>Hi $name,</p><p>We could not reach <b>$h</b> on two checks in a row, so we think it is down. We will email you again as soon as it answers.</p>",
                 "Hi {$u['name']},\n\nWe could not reach $host on two checks in a row, so we think it is down. We will email you again as soon as it answers.",
                 'See live status', $page);
+            push_user($pdo, (int)$u['id'], "\u{1F534} $host looks down. We could not reach it on two checks in a row.", $page);
         } else {
             $for = $since ? human_span(max(0, strtotime($now . ' UTC') - strtotime($since . ' UTC'))) : '';
             $ex = $for ? " It was down for $for." : '';
@@ -61,6 +63,7 @@ function notify_watchers(PDO $pdo, string $host, bool $down, string $now, ?strin
                 "<p>Hi $name,</p><p>Good news: <b>$h</b> is answering again.$ex</p>",
                 "Hi {$u['name']},\n\nGood news: $host is answering again.$ex",
                 'See live status', $page);
+            push_user($pdo, (int)$u['id'], "\u{1F7E2} $host is back up." . $ex, $page);
         }
     }
 }

@@ -124,7 +124,7 @@
     var timer;
     S.onReady(function (u) {
       if (!u) { $('#m-out').hidden = false; return; }
-      $('#m-in').hidden = false; load(); timer = setInterval(function () { if (!document.hidden) load(); }, 60000);
+      $('#m-in').hidden = false; load(); loadCh(); timer = setInterval(function () { if (!document.hidden) load(); }, 60000);
     });
     function draw(j) {
       var L = $('#m-list');
@@ -136,6 +136,40 @@
           + '<a class="btn small ghost" href="/status/' + encodeURIComponent(x.host) + '">History</a><button class="btn small ghost" data-chk="' + esc(x.host) + '">Check now</button><a class="btn small ghost" href="/?q=' + encodeURIComponent(x.host) + '">Worldwide</a><button class="btn small ghost" data-rm="' + esc(x.host) + '" aria-label="Remove ' + esc(x.host) + '">Remove</button></div></div>';
       }).join('');
     }
+    /* alert channels */
+    var chPoll, chBefore = 0;
+    function drawCh(j) {
+      $('#ch-card').hidden = false;
+      $('#ch-tg-box').hidden = !j.can.telegram;
+      var L = $('#ch-list');
+      L.innerHTML = j.items.length ? j.items.map(function (x) {
+        return '<div class="item"><div class="t"><b>' + esc(x.label) + '</b><small>' + (x.kind === 'telegram' ? 'Telegram chat' : x.kind === 'slack' ? 'Slack webhook' : 'Discord webhook') + '</small></div><div class="acts"><button class="btn small ghost" data-cht="' + x.id + '">Send test</button><button class="btn small ghost" data-chr="' + x.id + '">Remove</button></div></div>';
+      }).join('') : '<div class="empty" style="padding:14px">No extra channels yet. Email alerts are always on.</div>';
+      return j;
+    }
+    function loadCh() { return S.api('channels.php').then(drawCh).catch(function () {}); }
+    function stopPoll() { clearInterval(chPoll); chPoll = null; }
+    $('#ch-tg').addEventListener('click', function () {
+      var b = this, msg = $('#ch-tg-msg'), open = $('#ch-tg-open'); msg.textContent = ''; b.disabled = true;
+      S.api('channels.php', { action: 'tg_link' }).then(function (j) {
+        drawCh(j); chBefore = j.items.length; open.href = j.link; open.hidden = false;
+        msg.textContent = 'Tap Open Telegram, then press Start. This page updates by itself.';
+        stopPoll(); var n = 0;
+        chPoll = setInterval(function () {
+          if (++n > 40) { stopPoll(); msg.textContent = 'The link expired. Tap Connect Telegram to try again.'; open.hidden = true; return; }
+          S.api('channels.php').then(function (r) { if (r.items.length > chBefore) { stopPoll(); drawCh(r); open.hidden = true; msg.textContent = ''; S.toast('Telegram connected'); } }).catch(function () {});
+        }, 3000);
+      }).catch(function (x) { msg.textContent = x.message; }).then(function () { b.disabled = false; });
+    });
+    $('#ch-wh').addEventListener('submit', function (e) {
+      e.preventDefault(); var er = $('#ch-err'), i = $('#ch-url'), b = $('button', e.target); er.textContent = ''; b.disabled = true;
+      S.api('channels.php', { action: 'add_webhook', url: i.value }).then(function (j) { i.value = ''; drawCh(j); S.toast('Connected. A test message was sent.'); }).catch(function (x) { er.textContent = x.message; }).then(function () { b.disabled = false; });
+    });
+    $('#ch-list').addEventListener('click', function (e) {
+      var t = e.target.closest('[data-cht]'), r = e.target.closest('[data-chr]');
+      if (t) { t.disabled = true; S.api('channels.php', { action: 'test', id: +t.getAttribute('data-cht') }).then(function (j) { drawCh(j); S.toast('Test message sent'); }).catch(function (x) { S.toast(x.message, true); loadCh(); }); }
+      if (r) S.api('channels.php', { action: 'remove', id: +r.getAttribute('data-chr') }).then(drawCh).catch(function (x) { S.toast(x.message, true); });
+    });
     function load() { S.api('watch.php').then(draw).catch(function (e) { $('#m-list').innerHTML = '<div class="empty">' + esc(e.message) + '</div>'; }); }
     $('#m-add').addEventListener('submit', function (e) {
       e.preventDefault(); var er = $('#m-err'), i = $('#m-input'), b = $('button', e.target); er.textContent = ''; b.disabled = true;

@@ -16,7 +16,7 @@
 <link rel="icon" href="/favicon-64.png" type="image/png" sizes="64x64"><link rel="manifest" href="/site.webmanifest"><link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="/assets/app.css?v=a2e6f7d3">
+<link rel="stylesheet" href="/assets/app.css?v=18d950bb">
 
 </head>
 <body data-page="monitor">
@@ -40,6 +40,16 @@
 <div class="row-actions" style="flex-wrap:nowrap"><div class="field" style="flex:1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg><input id="m-input" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="example.com" maxlength="300"></div><button class="btn" type="submit"><span>Add</span></button></div><p class="err" id="m-err" role="alert"></p></form>
 <div class="tools"><span class="fine" id="m-count"></span><span class="fine">Updates every minute while this page is open.</span></div>
 <div class="list" id="m-list"><div class="skeleton">Loading your watchlist…</div></div></div>
+<div class="card" id="ch-card" style="margin-top:26px" hidden><h3 style="margin-bottom:6px">Alert channels</h3>
+<p class="note">We always email you. You can also get an instant message in Telegram, Slack or Discord when a site on your watchlist goes down or comes back up. Use the Alerts button on each site to switch alerts on or off.</p>
+<div class="list" id="ch-list" style="margin:14px 0"></div>
+<div id="ch-tg-box" hidden><button class="btn small" type="button" id="ch-tg"><span>Connect Telegram</span></button> <a class="btn small ghost" id="ch-tg-open" href="#" target="_blank" rel="noopener" hidden><span>Open Telegram</span></a> <span class="fine" id="ch-tg-msg"></span></div>
+<form class="stack" id="ch-wh" novalidate style="max-width:640px;margin-top:16px"><label class="lbl" for="ch-url">Slack or Discord webhook address</label>
+<div class="row-actions" style="flex-wrap:nowrap"><div class="field" style="flex:1"><input id="ch-url" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="https://hooks.slack.com/services/..." maxlength="300" aria-label="Webhook address"></div><button class="btn small" type="submit"><span>Add</span></button></div>
+<p class="err" id="ch-err" role="alert"></p></form>
+<details class="faq-mini"><summary>How do I get a webhook address?</summary>
+<p><b>Slack:</b> in Slack, open the Apps menu, add &ldquo;Incoming Webhooks&rdquo;, pick a channel and copy the Webhook URL. <b>Discord:</b> open the channel settings, choose Integrations, then Webhooks, create one and copy its URL. Paste the address above and we will send a test message straight away.</p></details>
+<p class="note">Webhook addresses are private, so keep them to yourself. You can remove a channel at any time, and deleting your account removes them all.</p></div>
 </div></div></div></section>
 </main>
 <footer class="site-foot"><div class="wrap">
@@ -51,7 +61,7 @@
 <div class="foot-links"><a href="/#global-pulse">Regional map</a><a href="/#how-it-works">How it works</a><a href="/help/">Help centre</a><a href="/tools/">Tools</a><a href="/is-it-down/">Is it down?</a><a href="/speed">Speed test</a><a href="/monitor">Monitor</a><a href="/account">Account</a><a href="/about">About</a><a href="/contact">Contact</a><a href="/legal">Terms &amp; legal</a><a href="/privacy">Privacy</a><button type="button" data-cookie-settings>Cookie settings</button></div>
 <p class="fine">&copy; <span data-year>2026</span> siteupdown.com. An independent website checker, not affiliated with the sites it checks. Regional probes use the public <a href="https://globalping.io" rel="noopener">Globalping</a> network.</p>
 </div></footer>
-<script src="/assets/app.js?v=a2e6f7d3"></script>
-<script src="/assets/pages.js?v=a2e6f7d3"></script>
+<script src="/assets/app.js?v=18d950bb"></script>
+<script src="/assets/pages.js?v=18d950bb"></script>
 </body>
 </html>

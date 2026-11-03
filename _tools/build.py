@@ -237,7 +237,7 @@ def home():
 <div class="faq">
 <details><summary>How do I know if a website is down for everyone or just me?</summary><p>Paste the address into the checker. We load it from our own server and from twelve probes in different countries at the same moment. If every probe reaches it, the site is up and the problem is probably on your side (your network, DNS, browser or device). If most fail, it is down for everyone.</p></details>
 <details><summary>Why does it say Timeout or Inconclusive instead of Down?</summary><p>A slow or blocked response is not proof that a site is down. We only call a site Confirmed down when the server returns errors on two attempts. Timeouts and blocked requests are reported as such so you are never told something we cannot be sure of.</p></details>
-<details><summary>Is siteupdown.com free to use?</summary><p>Yes. The checker, speed test and status pages are free and need no sign-up. A free account lets you keep a watchlist of up to 25 sites, see their uptime history and get an email when one goes down or comes back.</p></details>
+<details><summary>Is siteupdown.com free to use?</summary><p>Yes. The checker, speed test and status pages are free and need no sign-up. A free account lets you keep a watchlist of up to 25 sites, see their uptime history and get an email, a Telegram message or a Slack or Discord message when one goes down or comes back.</p></details>
 <details><summary>How does the website speed test work?</summary><p>It loads the page three times from our server and reports the median. You see how long finding the server, connecting, securing the connection, waiting and downloading each took, plus page size, compression, protocol and a grade with plain-English tips.</p></details>
 <details><summary>Can I check an SSL certificate or a domain's expiry date?</summary><p>Yes. Every check shows the SSL certificate (who issued it, when it expires, whether it covers the address) as well as DNS records, redirects and the domain registration expiry date.</p></details>
 <details><summary>How often are monitored sites checked?</summary><p>Sites on a watchlist are re-checked about every five minutes. A site is only reported as down after two failed checks in a row, which avoids false alarms.</p></details>
@@ -344,6 +344,16 @@ def monitor():
 <div class="row-actions" style="flex-wrap:nowrap"><div class="field" style="flex:1">{I_GLOBE}<input id="m-input" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="example.com" maxlength="300"></div><button class="btn" type="submit"><span>Add</span></button></div><p class="err" id="m-err" role="alert"></p></form>
 <div class="tools"><span class="fine" id="m-count"></span><span class="fine">Updates every minute while this page is open.</span></div>
 <div class="list" id="m-list"><div class="skeleton">Loading your watchlist…</div></div></div>
+<div class="card" id="ch-card" style="margin-top:26px" hidden><h3 style="margin-bottom:6px">Alert channels</h3>
+<p class="note">We always email you. You can also get an instant message in Telegram, Slack or Discord when a site on your watchlist goes down or comes back up. Use the Alerts button on each site to switch alerts on or off.</p>
+<div class="list" id="ch-list" style="margin:14px 0"></div>
+<div id="ch-tg-box" hidden><button class="btn small" type="button" id="ch-tg"><span>Connect Telegram</span></button> <a class="btn small ghost" id="ch-tg-open" href="#" target="_blank" rel="noopener" hidden><span>Open Telegram</span></a> <span class="fine" id="ch-tg-msg"></span></div>
+<form class="stack" id="ch-wh" novalidate style="max-width:640px;margin-top:16px"><label class="lbl" for="ch-url">Slack or Discord webhook address</label>
+<div class="row-actions" style="flex-wrap:nowrap"><div class="field" style="flex:1"><input id="ch-url" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="https://hooks.slack.com/services/..." maxlength="300" aria-label="Webhook address"></div><button class="btn small" type="submit"><span>Add</span></button></div>
+<p class="err" id="ch-err" role="alert"></p></form>
+<details class="faq-mini"><summary>How do I get a webhook address?</summary>
+<p><b>Slack:</b> in Slack, open the Apps menu, add &ldquo;Incoming Webhooks&rdquo;, pick a channel and copy the Webhook URL. <b>Discord:</b> open the channel settings, choose Integrations, then Webhooks, create one and copy its URL. Paste the address above and we will send a test message straight away.</p></details>
+<p class="note">Webhook addresses are private, so keep them to yourself. You can remove a channel at any time, and deleting your account removes them all.</p></div>
 </div></div></div></section>
 '''
     scripts = '<script src="/assets/app.js"></script>\n<script src="/assets/pages.js"></script>'
@@ -403,6 +413,8 @@ def static_pages():
 <p>Share links keep a copy of the result so it can be shown to whoever you send it to. They expire after 30 days.</p>
 <h2>Accounts</h2>
 <p>Signing in is optional. If you create an account (with email and password, or with Google) we store your email address, display name and a hashed password (we never see or store your password itself). While you are signed in we also save your checks and your watchlist, and they are private to you. You can reset your data or delete your account at any time from the Account page; deleting removes everything saved with it.</p>
+<h2>Alert channels</h2>
+<p>If you connect Telegram, Slack or Discord alerts, we store the Telegram chat number or the webhook address you give us, so we can send you a short message when a site on your watchlist goes down or comes back up. These messages pass through Telegram, Slack or Discord, which have their own privacy policies. You can remove a channel at any time on the Monitor page, send /stop to our Telegram bot, or delete your account to remove them all.</p>
 <p>If you sign in with Google, Google tells us your name and verified email address. We do not get access to anything else in your Google account.</p>
 <h2>Problem reports</h2>
 <p>After a check, and on the &ldquo;Is it down?&rdquo; pages, you can report a problem with a site. A report stores the site, the type of problem, the time, and a one-way hash of your network address, which is used only to limit repeat reports. It is kept for up to 35 days. We do not ask for your name or email address for reports, and reports are shown only as anonymous counts.</p>

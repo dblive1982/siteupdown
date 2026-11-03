@@ -13,6 +13,8 @@ return [
     // 'smtp_user' => 'hello@siteupdown.com', 'smtp_pass' => 'THE-MAILBOX-PASSWORD',
     'google_client_id' => '',          // Google sign-in: Client ID only, no secret needed
     'cron_key' => 'PUT-A-LONG-RANDOM-STRING-HERE', // lets a web pinger call /api/cron.php?key=... if hPanel cron is unavailable
+    // Telegram alerts (optional): create a bot with @BotFather, then open /api/telegram.php?setup=1&key=YOUR_CRON_KEY once.
+    // 'tg_token' => '123456:ABC...', 'tg_bot' => 'YourBotUsername', 'tg_secret' => 'A-LONG-RANDOM-STRING',
     // 'globalping_token' => '',       // optional free token from globalping.io for higher limits
     // 'cron_batch' => 40,             // sites re-probed per cron run
 ];

@@ -125,6 +125,20 @@ function ensure_schema(PDO $pdo): void {
         data TEXT NOT NULL,
         checked_at DATETIME NOT NULL
     )$cs");
+    // Extra alert channels (Telegram chats, Slack and Discord webhooks), one row per connection.
+    $pdo->exec("CREATE TABLE IF NOT EXISTS alert_channels (
+        id $id,
+        user_id $int NOT NULL,
+        kind VARCHAR(10) NOT NULL,
+        target VARCHAR(500) NOT NULL,
+        label VARCHAR(80) NOT NULL,
+        created_at DATETIME NOT NULL
+    )$cs");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS tg_links (
+        token_hash CHAR(64) NOT NULL PRIMARY KEY,
+        user_id $int NOT NULL,
+        expires_at DATETIME NOT NULL
+    )$cs");
     // Visitor problem reports for the "Is X down?" pages (pruned after 35 days).
     $pdo->exec("CREATE TABLE IF NOT EXISTS reports (
         id $id,

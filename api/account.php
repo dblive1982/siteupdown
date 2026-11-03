@@ -44,6 +44,7 @@ switch ($a) {
         throttle('acct', 8, 15);
         $pdo->prepare('DELETE FROM saved_checks WHERE user_id=?')->execute([$uid]);
         $pdo->prepare('DELETE FROM watchlist WHERE user_id=?')->execute([$uid]);
+        $pdo->prepare('DELETE FROM alert_channels WHERE user_id=?')->execute([$uid]);
         out(200, ['ok' => true]);
 
     case 'delete':
@@ -51,7 +52,7 @@ switch ($a) {
         if (($in['confirm'] ?? '') !== 'DELETE') out(422, ['error' => 'Type DELETE to confirm.']);
         check_pw($u, $in);
         $pdo->beginTransaction();
-        foreach (['resets', 'saved_checks', 'watchlist'] as $t) $pdo->prepare("DELETE FROM $t WHERE user_id=?")->execute([$uid]);
+        foreach (['resets', 'saved_checks', 'watchlist', 'alert_channels', 'tg_links'] as $t) $pdo->prepare("DELETE FROM $t WHERE user_id=?")->execute([$uid]);
         $pdo->prepare('DELETE FROM users WHERE id=?')->execute([$uid]);
         $pdo->commit();
         end_session();
