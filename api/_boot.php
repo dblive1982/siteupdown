@@ -126,6 +126,16 @@ function ensure_schema(PDO $pdo): void {
         down_s INT NOT NULL DEFAULT 0,
         PRIMARY KEY (host, day)
     )$cs");
+    // Which site each visitor is watching live (one at a time), and sites outside the built-in list that people have checked, so history starts building for them.
+    $pdo->exec("CREATE TABLE IF NOT EXISTS live_viewer (
+        viewer CHAR(64) NOT NULL PRIMARY KEY,
+        host VARCHAR(253) NOT NULL,
+        ts BIGINT NOT NULL
+    )$cs");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS tracked_hosts (
+        host VARCHAR(253) NOT NULL PRIMARY KEY,
+        last_seen DATETIME NOT NULL
+    )$cs");
     $pdo->exec("CREATE TABLE IF NOT EXISTS alert_state (
         host VARCHAR(253) NOT NULL PRIMARY KEY,
         state VARCHAR(8) NOT NULL,

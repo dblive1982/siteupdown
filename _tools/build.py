@@ -98,7 +98,7 @@ def foot(scripts):
 import hashlib, re as _re
 def _ver():
     h = hashlib.md5()
-    for n in ('app.css', 'app.js', 'home.js', 'pages.js', 'worldmap.js'):
+    for n in ('app.css', 'app.js', 'home.js', 'pages.js', 'worldmap.js', 'live.js', 'sitepage.js'):
         try: h.update(open(os.path.join(ROOT, 'assets', n), 'rb').read())
         except OSError: pass
     return h.hexdigest()[:8]
@@ -130,7 +130,7 @@ def write(name, content):
     if name.endswith('.html'):
         content = _svgicons(content)
         v = _ver()
-        content = _re.sub(r'(/assets/(?:app\.css|app\.js|home\.js|pages\.js|worldmap\.js))(?=")', r'\1?v=' + v, content)
+        content = _re.sub(r'(/assets/(?:app\.css|app\.js|home\.js|pages\.js|worldmap\.js|live\.js|sitepage\.js))(?=")', r'\1?v=' + v, content)
     with open(os.path.join(ROOT, name), 'w', encoding='utf-8') as f:
         f.write(content)
     print('wrote', name, len(content), 'bytes')
@@ -190,6 +190,7 @@ def home():
 <p class="fine" style="margin-top:10px">Hover or tap a marker for details. Regions without a probe are not claimed. Each run is a snapshot, not continuous monitoring. Probe network: <a href="https://globalping.io" rel="noopener">Globalping</a>.</p></div>
 <div class="details"><div id="ssl" hidden></div><div id="dns" hidden></div><div class="facts" id="facts" hidden></div>
 <div class="row-actions"><button class="btn small ghost" type="button" id="wl-add" hidden>Add to my watchlist</button><a class="btn small ghost" id="open-site" target="_blank" rel="noopener noreferrer" hidden>Open website ↗</a><a class="btn small ghost" id="speed-link" hidden>Test speed ⚡</a></div>
+<div id="lv-home" hidden></div>
 <div class="sp-card rep-box" id="rep-box" hidden><div class="sp-rhead"><b id="rb-title">Problems reported by visitors</b><span id="rb-level" class="sp-level"></span></div><div class="sp-ranges" id="rb-ranges" role="group" aria-label="Time range"><button type="button" class="rg on" data-range="24h" aria-pressed="true">24 hours</button><button type="button" class="rg" data-range="7d" aria-pressed="false">7 days</button><button type="button" class="rg" data-range="30d" aria-pressed="false">30 days</button><button type="button" class="rg" data-range="1y" aria-pressed="false">1 year</button></div><div class="sp-rdate" id="rb-date"></div><div class="sp-chart small" id="rb-chart"></div><div class="sp-axis" id="rb-axis"><span>24 hours ago</span><span>Now</span></div><p class="sp-rdetail" id="rb-detail"></p><div class="sp-kinds" id="rb-kinds"></div><div class="sp-report"><button type="button" class="btn small ghost" id="rb-btn"><span>Report a problem</span></button><div class="sp-rpick" id="rb-pick" hidden><p>What is going wrong? Pick everything that applies.</p><div class="sp-rbtns">{report_kinds}</div><p class="sp-rsendrow"><button type="button" class="btn small rsend" disabled><span>Send report</span></button></p></div><p class="sp-rmsg" id="rb-msg" role="status"></p></div></div>
 <div class="share" id="share" hidden><span class="eyebrow">Share this check</span><div class="sbtns">{share_btns}</div></div></div>
 </div>
@@ -278,7 +279,7 @@ def home():
 <p class="center" style="margin-top:28px"><a class="btn" href="#checker-title" onclick="document.getElementById('chk-input').focus()"><span>Check a website</span>{I_ARROW}</a></p>
 </div></section>
 '''
-    scripts = '<script src="/assets/worldmap.js"></script>\n<script src="/assets/app.js"></script>\n<script src="/assets/home.js"></script>'
+    scripts = '<script src="/assets/worldmap.js"></script>\n<script src="/assets/app.js"></script>\n<script src="/assets/home.js"></script><script src="/assets/live.js"></script>'
     write('index.html', h + body + foot(scripts))
 
 # ---------------------------------------------------------------- login
@@ -588,15 +589,7 @@ def site_pages_build():
             '<div class="sp-stats" id="sp-stats"></div><noscript><p>Turn on JavaScript to see the live status.</p></noscript></div>' +
             ('<div class="sp-card" id="sp-app" hidden><div class="sp-rhead"><b>%s app servers</b><span class="sp-level">Servers the app uses</span></div><ul class="sp-svc" id="sp-svc"></ul>'
              '<p class="note">These are the servers the %s app talks to. If they answer, the servers are reachable, but that does not prove everything inside the app is working, such as messages, feeds or logins. For in-app problems, see what other visitors are reporting below.</p></div>' % (n, n) if name in SP.APPS else '') +
-            '<div class="sp-card live-card" id="sp-live" hidden><div class="sp-rhead"><b>Response time</b><span class="sp-pill up" id="lv-pill">Live</span></div>'
-            '<div class="sp-ranges" id="lv-ranges" role="group" aria-label="Graph range"><button type="button" class="rg on" data-range="live" aria-pressed="true">Live</button><button type="button" class="rg" data-range="24h" aria-pressed="false">24 hours</button><button type="button" class="rg" data-range="48h" aria-pressed="false">48 hours</button><button type="button" class="rg" data-range="7d" aria-pressed="false">7 days</button><button type="button" class="rg" data-range="1y" aria-pressed="false">12 months</button></div>'
-            '<div class="lv-now"><b id="lv-ms">&mdash;</b><span id="lv-sub">Waiting for the first sample&hellip;</span></div>'
-            '<div class="lv-wrap"><svg id="lv-svg" viewBox="0 0 600 170" preserveAspectRatio="none" role="img" aria-label="Response time graph"></svg><div class="lv-tip" id="lv-tip" hidden></div></div>'
-            '<div class="lv-strip" id="lv-strip" aria-hidden="true"></div>'
-            '<div class="sp-axis"><span id="lv-a1">5 minutes ago</span><span id="lv-a2">Now</span></div>'
-            '<p class="sp-rdetail" id="lv-detail">Tap or hover the graph for a time.</p></div>' +
-            '<div class="sp-card" id="sp-outages" hidden><div class="sp-rhead"><b>Outages in the last 7 days</b><span class="sp-level" id="so-sum"></span></div><div id="so-body"></div>'
-            '<p class="note" id="so-year"></p><p class="note">Times are shown in your own time zone. A site counts as down after two failed checks in a row, so start times can be a few minutes late and lengths are approximate.</p></div>' +
+            '<div id="lv-slot" data-host="%s"></div>' % hh +
             '<p class="lead" style="margin-top:22px">%s</p>' % blurb +
             '<h2>Are other people having problems with %s?</h2>' % n +
             '<div class="sp-card" id="sp-reports"><div class="sp-rhead"><b id="sp-rtotal">Problem reports</b><span id="sp-rlevel" class="sp-level"></span></div>'

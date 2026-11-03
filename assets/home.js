@@ -215,7 +215,9 @@
   }
   function repBox(host) {
     var box = $('#rep-box'); if (!box) return;
-    if (!host) { box.hidden = true; repHost = null; return; }
+    var lh = $('#lv-home');
+    if (!host) { box.hidden = true; repHost = null; if (lh) { lh.hidden = true; if (window.SUD_LIVE) SUD_LIVE.clear(); } return; }
+    if (lh && window.SUD_LIVE && host !== repHost) SUD_LIVE.mount(lh, host);
     if (host === repHost) return;
     repHost = host; box.hidden = false; $('#rb-pick').hidden = true; $('#rb-msg').textContent = '';
     $('#rb-title').textContent = 'Problems reported for ' + host; $('#rb-level').textContent = '';

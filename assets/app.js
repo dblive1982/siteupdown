@@ -69,9 +69,19 @@
       if (extra.date) extra.date.textContent = rep.range === '24h' ? 'Today, ' + td : fmtDay(first, { day: 'numeric', month: 'short', year: rep.range === '1y' ? 'numeric' : undefined }) + ' to ' + fmtDay(last, { day: 'numeric', month: 'short', year: rep.range === '1y' ? 'numeric' : undefined });
       if (extra.axis) { var sp = extra.axis.children; sp[0].textContent = rep.range === '24h' ? '24 hours ago' : fmtDay(first, { day: 'numeric', month: 'short' }); sp[1].textContent = rep.range === '24h' ? 'Now' : 'Today'; }
     }
-    if (kindsEl) {
-      var k = rep.kinds || {};
-      kindsEl.innerHTML = K.filter(function (x) { return k[x]; }).map(function (x) { return '<span class="kd"><i class="kdot s-' + x + '"></i>' + k[x] + ' ' + S.REPKIND[x] + '</span>'; }).join('');
+    if (kindsEl) {     // what people are reporting: a ring with a percentage for each problem type
+      var k = rep.kinds || {}, used = K.filter(function (x) { return k[x]; }), tot = used.reduce(function (a, x) { return a + k[x]; }, 0);
+      if (!tot) { kindsEl.innerHTML = ''; }
+      else {
+        var C = 2 * Math.PI * 40, off = 0, arcs = used.map(function (x) {
+          var len = C * k[x] / tot, el = '<circle class="dn-seg s-' + x + '" cx="50" cy="50" r="40" stroke-dasharray="' + len.toFixed(2) + ' ' + (C - len).toFixed(2) + '" stroke-dashoffset="' + (-off).toFixed(2) + '"/>';
+          off += len; return el;
+        }).join('');
+        var top = used.reduce(function (m, x) { return k[x] > k[m] ? x : m; }, used[0]);
+        kindsEl.innerHTML = '<div class="dn"><svg viewBox="0 0 100 100" role="img" aria-label="Share of each type of problem reported"><g transform="rotate(-90 50 50)">' + arcs + '</g><text x="50" y="48" text-anchor="middle" class="dn-n">' + tot + '</text><text x="50" y="62" text-anchor="middle" class="dn-l">' + (tot === 1 ? 'report' : 'reports') + '</text></svg><ul class="dn-leg">' +
+          used.map(function (x) { return '<li><i class="kdot s-' + x + '"></i><span>' + S.REPKIND[x] + '</span><b>' + Math.round(100 * k[x] / tot) + '%</b></li>'; }).join('') + '</ul></div>' +
+          '<p class="dn-top">Most reported: <b>' + S.REPKIND[top] + '</b> (' + Math.round(100 * k[top] / tot) + '% of reports).</p>';
+      }
     }
   };
   /* Range tabs (24 hours / 7 days / 30 days / 1 year). */

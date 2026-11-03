@@ -50,6 +50,7 @@ $pub = [];
 foreach (top_sites() as $s) $pub[$s[0]] = 1;
 foreach (gaming_sites() as $s) $pub[$s[0]] = 1;
 foreach (site_pages() as $h0 => $sp0) { $pub[$h0] = 1; foreach ($sp0['app'] ?? [] as $ap) $pub[$ap[1]] = 1; }
+foreach ($pdo->query('SELECT host FROM tracked_hosts')->fetchAll() as $r) $pub[$r['host']] = 1;     // other sites people have looked at lately
 $pl = array_values(array_filter(array_keys($pub), fn($h) => !isset($watched[$h]) && ($st[$h] ?? '') < gmdate('Y-m-d H:i:s', time() - 270)));
 usort($pl, fn($a, $b) => strcmp($st[$a] ?? '', $st[$b] ?? ''));
 foreach (array_slice($pl, 0, $pubBatch) as $h) { if (time() - $t0 > 52) break; $probe($h); }
@@ -93,6 +94,8 @@ if (!$lastSweep || $lastSweep < gmdate('Y-m-d H:i:s', time() - 3600)) {
 }
 // Housekeeping (about every ten minutes): drop old feed rows and expired share links.
 if ((int)gmdate('i') % 10 === 3) {
+$pdo->prepare('DELETE FROM tracked_hosts WHERE last_seen < ?')->execute([gmdate('Y-m-d H:i:s', time() - 7 * 86400)]);
+$pdo->prepare('DELETE FROM live_viewer WHERE ts < ?')->execute([time() - 3600]);
 // Daily record for the 12-month view: first run back-fills what site_log still holds, later runs refresh today and yesterday.
 try {
     require_once __DIR__ . '/_daily.php';

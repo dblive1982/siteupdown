@@ -10,9 +10,28 @@ const LIVE_MAX_HOSTS = 12;     // sites sampled at the same moment, to protect t
 const LIVE_BACKOFF = 120;      // seconds to leave a site alone if it seems to be refusing our checks
 const LIVE_KEEP = 900;         // seconds of samples kept
 $host = strtolower(trim((string)($_GET['host'] ?? '')));
-if (!isset(site_pages()[$host])) out(404, ['error' => 'Live graph is not available for that site.']);
+$listed = isset(site_pages()[$host]);
+if (!$listed) {     // any other public website people have checked
+    $t = parse_target($host);
+    if (!$t || filter_var($t[0], FILTER_VALIDATE_IP) || $t[0] !== $host) out(404, ['error' => 'Live graph is not available for that site.']);
+}
 $pdo = db();
 $now = time();
+// One live graph per visitor at a time: the newest one wins ("take"), an older tab is told to stop.
+$vid = preg_match('/^[a-f0-9]{16,40}$/', (string)($_GET['vid'] ?? '')) ? $_GET['vid'] : '';
+$me = hash('sha256', client_hash() . '|' . $vid);     // per browser, so people sharing one network address do not bump each other
+$vw = $pdo->prepare('SELECT host, ts FROM live_viewer WHERE viewer=?'); $vw->execute([$me]); $vw = $vw->fetch();
+if ($vw && $vw['host'] !== $host && (int)$vw['ts'] > $now - 40 && empty($_GET['take'])) out(409, ['error' => 'busy', 'other' => $vw['host']]);
+if (!$vw || $vw['host'] !== $host) {
+    if (!$listed) throttle('live_new', 30, 10);       // starting a live graph for a new, unlisted site
+    if (!$listed) note_attempt('live_new');
+}
+$pdo->prepare('DELETE FROM live_viewer WHERE viewer=?')->execute([$me]);
+$pdo->prepare('INSERT INTO live_viewer (viewer, host, ts) VALUES (?,?,?)')->execute([$me, $host, $now]);
+if (!$listed) {     // remember it so the five-minute checks (and the 24h / 7d / 12-month history) start for it too
+    $pdo->prepare('DELETE FROM tracked_hosts WHERE host=?')->execute([$host]);
+    if ((int)$pdo->query('SELECT COUNT(*) FROM tracked_hosts')->fetchColumn() < 400) $pdo->prepare('INSERT INTO tracked_hosts (host, last_seen) VALUES (?,?)')->execute([$host, sql_now()]);
+}
 $last = $pdo->prepare('SELECT MAX(ts) FROM live_samples WHERE host=?'); $last->execute([$host]); $lastTs = (int)$last->fetchColumn();
 $fresh = ($now - $lastTs) < LIVE_EVERY;
 $probed = false;
