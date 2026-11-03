@@ -37,6 +37,15 @@
   var RANGES = { '24h': 'the last 24 hours', '7d': 'the last 7 days', '30d': 'the last 30 days', '1y': 'the last year' };
   S.repRangeText = function (r) { return RANGES[r] || RANGES['24h']; };
   function fmtDay(d, o) { return d.toLocaleDateString([], Object.assign({ timeZone: 'UTC' }, o)); }
+  /* Shown when our automated check could not get a clear answer: be honest, and let the visitor try the site themselves. */
+  S.cantSure = function (el, host, show) {
+    if (!el) return;
+    if (!show) { el.hidden = true; el.innerHTML = ''; return; }
+    var safe = /^[a-z0-9.-]+$/i.test(host) ? host : '';
+    if (!safe) { el.hidden = true; return; }
+    el.hidden = false;
+    el.innerHTML = '<p><b>We can\u2019t be sure it is down.</b> Our automated check did not get a clear answer, and some sites ignore or block automated checks. Try opening it yourself: if it loads, the site is fine and just blocking us.</p><a class="btn small" href="https://' + safe + '/" target="_blank" rel="noopener noreferrer">Open ' + S.esc(safe) + ' \u2197</a>';
+  };
   S.tz = function () { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) { return ''; } };
   S.repChart = function (chart, detail, kindsEl, rep, extra) {
     var bk = rep.buckets || [], max = Math.max.apply(null, bk.map(function (b) { return b.n; }).concat([3])), K = Object.keys(S.REPKIND), unit = rep.unit || 'hour';

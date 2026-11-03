@@ -55,6 +55,8 @@
     if (!cur) { pill.className = 'sp-pill unsure'; pill.textContent = 'No data yet'; msg.textContent = 'We have not run a scheduled check of ' + host + ' yet. Use the button below to test it now.'; return; }
     var v = cur.verdict;
     $('#sp-status').setAttribute('data-v', v);
+    var cs = $('#sp-cs'); if (!cs) { cs = document.createElement('div'); cs.id = 'sp-cs'; cs.className = 'cantsure'; $('#sp-status').appendChild(cs); }
+    S.cantSure(cs, host, v === 'timeout' || v === 'inconclusive');
     if (v === 'up') {
       pill.className = 'sp-pill up'; pill.textContent = 'Up';
       msg.textContent = busy ? 'We can reach ' + host + ', but many visitors are reporting problems. It may affect the app, logging in or certain regions.'
@@ -63,8 +65,8 @@
       pill.className = 'sp-pill down'; pill.textContent = 'Down';
       msg.textContent = name + ' looks down. Our server got errors on two attempts ' + ago(cur.at) + '.';
     } else if (v === 'timeout') {
-      pill.className = 'sp-pill slow'; pill.textContent = 'Slow or timing out';
-      msg.textContent = 'Our server could not get a timely answer from ' + host + ' ' + ago(cur.at) + '. That can mean it is overloaded or down.';
+      pill.className = 'sp-pill unsure'; pill.textContent = 'No answer';
+      msg.textContent = 'Our server did not get an answer from ' + host + ' ' + ago(cur.at) + '. It may be down, overloaded, or simply ignoring automated checks.';
     } else {
       pill.className = 'sp-pill unsure'; pill.textContent = 'Not sure';
       msg.textContent = 'We could not confirm the status of ' + host + ' ' + ago(cur.at) + '. It may be blocking automated checks, which does not mean it is down.';

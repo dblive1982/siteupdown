@@ -948,3 +948,7 @@ a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--t
 .ro-none{display:block!important;border-left-color:var(--green)!important;color:var(--muted)}
 @media(max-width:560px){.ro-list li{grid-template-columns:1fr}.ro-st{text-align:left}}
 .pill.silent{color:var(--amber)}
+/* honest "cannot be sure" notice */
+.cantsure{margin:14px 0 4px;padding:14px 16px;border:1px solid rgba(245,184,61,.5);border-left:4px solid var(--amber);border-radius:12px;background:rgba(245,184,61,.07)}
+.cantsure p{margin:0 0 10px;line-height:1.5}
+#sp-status .cantsure{margin:14px 0 0}
