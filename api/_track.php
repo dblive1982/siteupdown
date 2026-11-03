@@ -5,9 +5,15 @@ require_once __DIR__ . '/_mail.php';
 require_once __DIR__ . '/_notify.php';
 
 const SUD_FAILS_TO_ALERT = 2; // two failed checks in a row before we say a site is down
-const SUD_TIMEOUTS_TO_ALERT = 4; // timeouts are weaker evidence (some sites quietly ignore automated checks), so four in a row
+
+/** True when independent probes recently reached a site our server could not (so a failed check means "blocked", not "down"). */
+function corroborated_alive_cached(PDO $pdo, string $host): bool {
+    $c = $pdo->prepare('SELECT alive FROM corroboration WHERE host=? AND ts > ?'); $c->execute([$host, time() - 1800]);
+    return (bool)$c->fetchColumn();
+}
 
 function track_result(PDO $pdo, string $host, string $verdict, ?int $ms): void {
+    if (in_array($verdict, ['down', 'timeout'], true) && corroborated_alive_cached($pdo, $host)) $verdict = 'inconclusive';
     $now = sql_now();
     // One history row per host per five minutes (the worst result in that window wins), so one-minute checks do not bloat the history.
     $lg = $pdo->prepare('SELECT ts, verdict FROM site_log WHERE host=? ORDER BY ts DESC LIMIT 1');
@@ -25,7 +31,10 @@ function track_result(PDO $pdo, string $host, string $verdict, ?int $ms): void {
     $st = $s->fetch() ?: ['state' => 'up', 'fails' => 0, 'since' => null];
     if ($bad) {
         $fails = (int)$st['fails'] + 1;
-        if ($st['state'] !== 'down' && $fails >= ($verdict === 'timeout' ? SUD_TIMEOUTS_TO_ALERT : SUD_FAILS_TO_ALERT)) {
+        if ($st['state'] !== 'down' && $fails >= SUD_FAILS_TO_ALERT) {
+            // Before calling it an outage, ask probes in other countries. If any can reach the site, it is blocking us, not down.
+            require_once __DIR__ . '/_gp.php';
+            if (corroborate_alive($host)) { $pdo->prepare('REPLACE INTO alert_state (host, state, fails, since) VALUES (?,?,?,?)')->execute([$host, $st['state'], SUD_FAILS_TO_ALERT - 1, $st['since']]); return; }
             $pdo->prepare('REPLACE INTO alert_state (host, state, fails, since) VALUES (?,?,?,?)')->execute([$host, 'down', $fails, $now]);
             $pdo->prepare('INSERT INTO incidents (host, started_at) VALUES (?,?)')->execute([$host, $now]);
             notify_watchers($pdo, $host, true, $now, null);

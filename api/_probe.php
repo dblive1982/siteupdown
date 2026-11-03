@@ -186,7 +186,35 @@ function http_probe(string $host, string $path, bool $https, bool $thorough, int
  * Full check with the rules we publish on the site:
  *  Up | Confirmed down (server errors on two attempts) | Timeout | Inconclusive (blocked / could not verify)
  */
+/** The address that really answers for $host (for example www.example.com when example.com never replies), or null. */
+function probe_alias_get(string $host): ?string {
+    try {
+        $q = db()->prepare('SELECT alias FROM probe_alias WHERE host=? AND ts > ?'); $q->execute([$host, time() - 7 * 86400]);
+        $a = $q->fetchColumn(); return $a ? (string)$a : null;
+    } catch (Throwable $e) { return null; }
+}
+function probe_alias_set(string $host, string $alias): void {
+    try { $pdo = db(); $pdo->prepare('DELETE FROM probe_alias WHERE host=?')->execute([$host]); $pdo->prepare('INSERT INTO probe_alias (host, alias, ts) VALUES (?,?,?)')->execute([$host, $alias, time()]); } catch (Throwable $e) {}
+}
+
 function check_site(string $host, string $path = '/', bool $thorough = false, bool $quick = false): array {
+    $orig = $host;
+    $alias = probe_alias_get($host);
+    if ($alias) $host = $alias;
+    $r = check_site_once($host, $path, $thorough, $quick);
+    // Some sites only answer on "www." (and some block bare addresses from hosting networks): if the address we were given gets no reply, try the other form once.
+    if ($r['http_code'] === null && in_array($r['err'], ['timeout', 'ssl', null, 'connect'], true) && !filter_var($host, FILTER_VALIDATE_IP)) {
+        $other = str_starts_with($host, 'www.') ? substr($host, 4) : 'www.' . $host;
+        if (substr_count($other, '.') >= 1 && ($alias === null || $other !== $orig)) {
+            $r2 = check_site_once($other, $path, $thorough, $quick);
+            if ($r2['http_code'] !== null) { probe_alias_set($orig, $other); $r = $r2; }
+        }
+    }
+    $r['host'] = $orig;
+    return $r;
+}
+
+function check_site_once(string $host, string $path = '/', bool $thorough = false, bool $quick = false): array {
     $r = http_probe($host, $path, true, $thorough, $quick ? 6 : 8);
     // If HTTPS cannot connect at all, see whether plain HTTP answers.
     if ($r['code'] === null && in_array($r['err'], ['ssl', 'connect'], true)) {

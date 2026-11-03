@@ -33,6 +33,7 @@ function gp_fallback_locations(): array {
 }
 
 function gp_start(string $host): ?string {
+    if (function_exists('probe_alias_get') && ($al = probe_alias_get($host))) $host = $al;     // ask for the address that really answers
     $opts = ['request' => ['method' => 'GET', 'path' => '/'], 'protocol' => 'HTTPS', 'port' => 443];
     foreach ([gp_locations(), gp_fallback_locations()] as $locs) {
         $r = gp_request('POST', '/measurements', ['type' => 'http', 'target' => $host, 'locations' => $locs, 'measurementOptions' => $opts]);
@@ -81,4 +82,28 @@ function combined_verdict(array $server, ?array $reg): array {
     if ($ok === 0 && $responded === 0 && $v !== 'up') return ['key' => 'down-everywhere', 'text' => 'No probe could reach it, and neither could our server. It looks down for everyone, but this is a snapshot, not proof.'];
     if ($ok === 0 && $blocked > 0) return ['key' => 'blocked', 'text' => 'It answered, but it is blocking automated checks, so we cannot tell what a real visitor sees.'];
     return ['key' => 'partial', 'text' => "Reachable from $ok of $tot places. It may be down only in some regions. Check the map to see where it stops."];
+}
+
+/** Before calling a site down: can independent probes in three countries reach it? Cached for 30 minutes per site. True means at least one can, so it is blocking us rather than being down. */
+function corroborate_alive(string $host): bool {
+    $pdo = db(); $orig = $host;
+    $c = $pdo->prepare('SELECT alive, ts FROM corroboration WHERE host=?'); $c->execute([$orig]); $c = $c->fetch();
+    if ($c && (int)$c['ts'] > time() - 1800) return (bool)$c['alive'];
+    if (function_exists('probe_alias_get') && ($al = probe_alias_get($host))) $host = $al;
+    $opts = ['request' => ['method' => 'GET', 'path' => '/'], 'protocol' => 'HTTPS', 'port' => 443];
+    $r = gp_request('POST', '/measurements', ['type' => 'http', 'target' => $host, 'locations' => [['country' => 'US', 'limit' => 1], ['country' => 'GB', 'limit' => 1], ['country' => 'DE', 'limit' => 1]], 'measurementOptions' => $opts]);
+    if (!in_array($r['code'], [200, 202], true) || empty($r['data']['id'])) return false;   // cannot ask: rely on our own evidence
+    $alive = null;
+    for ($i = 0; $i < 6; $i++) {
+        usleep(1200000);
+        $m = gp_request('GET', '/measurements/' . rawurlencode((string)$r['data']['id']));
+        if (($m['data']['status'] ?? '') === 'in-progress') continue;
+        $alive = false;
+        foreach (($m['data']['results'] ?? []) as $x) { $code = (int)($x['result']['statusCode'] ?? 0); if ($code > 0 && $code < 500) $alive = true; }
+        break;
+    }
+    if ($alive === null) return false;
+    $pdo->prepare('DELETE FROM corroboration WHERE host=?')->execute([$orig]);
+    $pdo->prepare('INSERT INTO corroboration (host, alive, ts) VALUES (?,?,?)')->execute([$orig, $alive ? 1 : 0, time()]);
+    return $alive;
 }

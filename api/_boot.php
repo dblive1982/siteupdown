@@ -136,6 +136,17 @@ function ensure_schema(PDO $pdo): void {
         host VARCHAR(253) NOT NULL PRIMARY KEY,
         last_seen DATETIME NOT NULL
     )$cs");
+    // Sites whose bare address never answers but the "www." one does (and the reverse), and whether independent probes could reach a site we could not.
+    $pdo->exec("CREATE TABLE IF NOT EXISTS probe_alias (
+        host VARCHAR(253) NOT NULL PRIMARY KEY,
+        alias VARCHAR(253) NOT NULL,
+        ts BIGINT NOT NULL
+    )$cs");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS corroboration (
+        host VARCHAR(253) NOT NULL PRIMARY KEY,
+        alive TINYINT NOT NULL,
+        ts BIGINT NOT NULL
+    )$cs");
     $pdo->exec("CREATE TABLE IF NOT EXISTS alert_state (
         host VARCHAR(253) NOT NULL PRIMARY KEY,
         state VARCHAR(8) NOT NULL,
