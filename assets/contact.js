@@ -1,7 +1,7 @@
 (function () {
   var f = document.getElementById('cf'); if (!f) return;
   var $ = function (i) { return document.getElementById(i); };
-  var topic = $('cf-topic'), err = $('cf-err'), btn = $('cf-btn');
+  var topic = $('cf-topic'), err = $('cf-err'), btn = $('cf-btn'), btnLabel = btn.textContent;
   var siteTopics = { wrong: 1, issue: 1, addsite: 1, complaint: 1 };
   topic.addEventListener('change', function () { $('cf-siterow').hidden = !siteTopics[topic.value]; });
   // Pre-select a topic from ?topic= and the website from ?site= (used by links elsewhere).
@@ -25,8 +25,8 @@
       .then(function (x) {
         if (x.ok && x.d.ok) { f.hidden = true; $('cf-ok').hidden = false; $('cf-ok').scrollIntoView({ block: 'center' }); return; }
         show(x.d.error || 'Something went wrong. Please try again, or email hello@siteupdown.com.');
-        btn.disabled = false; btn.firstChild.textContent = 'Send message';
+        btn.disabled = false; btn.firstChild.textContent = btnLabel;
       })
-      .catch(function () { show('Could not reach the server. Please try again, or email hello@siteupdown.com.'); btn.disabled = false; btn.firstChild.textContent = 'Send message'; });
+      .catch(function () { show('Could not reach the server. Please try again, or email hello@siteupdown.com.'); btn.disabled = false; btn.firstChild.textContent = btnLabel; });
   });
 })();

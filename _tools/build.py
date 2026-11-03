@@ -79,7 +79,7 @@ def head(title, desc, path, extra_head='', noindex=False):
 '''
 
 def foot(scripts):
-    links = [('Regional map', '/#global-pulse'), ('How it works', '/#how-it-works'), ('Help centre', '/help/'), ('Tools', '/tools/'), ('Is it down?', '/is-it-down/'), ('Speed test', '/speed'), ('Monitor', '/monitor'), ('Account', '/account'), ('About', '/about'), ('Contact', '/contact'), ('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')]
+    links = [('Regional map', '/#global-pulse'), ('How it works', '/#how-it-works'), ('Help centre', '/help/'), ('Tools', '/tools/'), ('Is it down?', '/is-it-down/'), ('Speed test', '/speed'), ('Monitor', '/monitor'), ('Account', '/account'), ('About', '/about'), ('For business', '/business'), ('Contact', '/contact'), ('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')]
     return f'''</main>
 <footer class="site-foot"><div class="wrap">
 <div class="foot-brand">{BRAND}</div>
@@ -453,6 +453,32 @@ def static_pages():
 <p>Regional probes run on the public <a href="https://globalping.io" rel="noopener">Globalping</a> network. Sign-in with Google uses Google&rsquo;s own sign-in service, and the site&rsquo;s fonts (Space Grotesk and JetBrains Mono) are loaded from Google Fonts.</p>
 <h2>Content</h2>
 <p>Site names shown in lists are used only to identify the services being checked.</p>''')
+    prose('business.html', 'For business', 'siteupdown.com for business: planned monitoring for teams and companies, with status pages, more check types and shared alerts. Register your interest.', '/business', '''
+<p class="lead">Free checks for everyone today. A paid plan for businesses is planned, and we would like to build it around what you actually need.</p>
+<h2>What we are planning</h2>
+<ul>
+<li><b>Public status pages</b> for your own customers, showing live uptime for your site.</li>
+<li><b>More check types</b>: website, keyword, port, SSL and domain expiry, from more locations.</li>
+<li><b>Shared team alerts</b> by email, Telegram, Slack and Discord, plus SMS and WhatsApp.</li>
+<li><b>Longer history and reports</b> you can share with clients.</li>
+</ul>
+<p>Nothing here is on sale yet. Today you can already <a href="/monitor">watch sites for free</a> with instant alerts and extra checks. Tell us what a business plan would need and we will email you once, when it is ready.</p>
+<form id="cf" class="cform" novalidate>
+<select id="cf-topic" hidden><option value="business" selected>business</option></select>
+<input id="cf-site" type="hidden" value="">
+<div class="cf-two">
+<div><label for="cf-name">Your name <span class="opt">(optional)</span></label><div class="field"><input id="cf-name" type="text" maxlength="80" autocomplete="name"></div></div>
+<div><label for="cf-email">Your email</label><div class="field"><input id="cf-email" type="email" maxlength="200" autocomplete="email" required></div></div>
+</div>
+<label for="cf-msg">What would you want from a business plan?</label>
+<textarea id="cf-msg" rows="6" maxlength="4000" required placeholder="For example: how many sites you run, what you would monitor, and who needs the alerts."></textarea>
+<div class="cf-hp" aria-hidden="true"><label>Leave this empty <input id="cf-hp" type="text" tabindex="-1" autocomplete="off"></label></div>
+<p id="cf-err" class="cf-err" role="alert" hidden></p>
+<p><button class="btn" type="submit" id="cf-btn"><span>Register interest</span></button></p>
+<p class="note">We only use your email to reply about this. See our <a href="/privacy">privacy policy</a>.</p>
+</form>
+<div id="cf-ok" class="cf-ok" hidden role="status"><h2>Thank you</h2><p>We have your details and will email you once when the business plan is ready.</p></div>
+<script src="/assets/contact.js"></script>''')
     prose('contact.html', 'Contact', 'Get in touch with siteupdown.com: send feedback, report a problem, suggest a site or ask about your data.', '/contact', '''
 <p class="lead">Questions, feedback or something not working? Tell us below and we will reply by email.</p>
 <form id="cf" class="cform" novalidate>
@@ -611,7 +637,7 @@ def help_pages():
                 '<p style="margin-top:20px"><a href="/help/">&larr; All help guides</a></p></div></section>')
         write('help/' + a['slug'] + '.html', h + body + foot('<script src="/assets/app.js"></script>'))
     # sitemap
-    urls = [('/', 'daily', '1.0'), ('/speed', 'monthly', '0.8'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8'), ('/tools/', 'monthly', '0.8')] + [('/tools/' + t['slug'], 'monthly', '0.7') for t in TOOLS] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES] + [('/about', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
+    urls = [('/', 'daily', '1.0'), ('/speed', 'monthly', '0.8'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8'), ('/tools/', 'monthly', '0.8')] + [('/tools/' + t['slug'], 'monthly', '0.7') for t in TOOLS] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES] + [('/about', 'monthly', '0.5'), ('/business', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
     sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join('<url><loc>%s%s</loc><lastmod>2026-11-02</lastmod><changefreq>%s</changefreq><priority>%s</priority></url>\n' % (SITE, u, c, p) for u, c, p in urls) + '</urlset>\n'
     open(os.path.join(ROOT, 'sitemap.xml'), 'w').write(sm)
 
