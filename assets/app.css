@@ -1006,3 +1006,29 @@ a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--t
 
 /* centre the wrapped "All apps & sites" chip under the app chips */
 .app-row .chips{justify-content:center}
+
+/* internet speed test */
+.st-card{text-align:center;padding:22px 18px}
+.st-gauge{position:relative;width:min(300px,78vw);margin:0 auto}
+.st-gauge svg{display:block;width:100%;height:auto}
+.st-track,.st-arc{fill:none;stroke-width:12;stroke-linecap:round}
+.st-track{stroke:var(--line)}
+.st-arc{stroke:var(--green);stroke-dasharray:0 424;transition:stroke-dasharray .25s linear}
+.st-read{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:6px}
+.st-read b{font-family:var(--mono);font-size:clamp(40px,12vw,56px);line-height:1;color:var(--text)}
+.st-read span{font-size:14px;color:var(--muted);margin-top:2px}
+.st-read em{font-style:normal;font-size:13px;color:var(--green);margin-top:8px;min-height:1.2em}
+.st-btn{margin:6px 0 16px}
+.st-btn .btn{min-width:200px}
+.st-btn .btn.stop{background:transparent;color:var(--text);border:1px solid var(--line)}
+.st-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:8px 0 6px}
+.st-t{border:1px solid var(--line);border-radius:10px;padding:10px 6px;background:var(--card2,var(--card))}
+.st-t i{display:block;font-style:normal;font-size:12px;color:var(--muted);margin-bottom:4px}
+.st-t b{font-family:var(--mono);font-size:15px;color:var(--muted);overflow-wrap:anywhere}
+.st-t.on b{color:var(--text)}
+.st-card .note{margin:6px 0}
+.st-use{display:grid;gap:8px;margin:10px 0 18px}
+.st-u{display:flex;justify-content:space-between;gap:12px;border:1px solid var(--line);border-radius:10px;padding:10px 14px;background:var(--card)}
+.st-u b{font-family:var(--mono);font-size:13px}
+.st-u.s2 b{color:var(--green)}.st-u.s1 b{color:var(--amber)}.st-u.s0 b{color:var(--red)}
+@media (max-width:560px){.st-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}

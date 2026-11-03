@@ -80,7 +80,7 @@ def head(title, desc, path, extra_head='', noindex=False):
 '''
 
 def foot(scripts):
-    links = [('Regional map', '/#global-pulse'), ('How it works', '/#how-it-works'), ('How we check', '/how-we-check'), ('FAQ', '/faq'), ('Help centre', '/help/'), ('Tools', '/tools/'), ('Is it down?', '/is-it-down/'), ('Speed test', '/speed'), ('Monitor', '/monitor'), ('Account', '/account'), ('About', '/about'), ('For business', '/business'), ('Contact', '/contact'), ('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')]
+    links = [('Regional map', '/#global-pulse'), ('How it works', '/#how-it-works'), ('How we check', '/how-we-check'), ('FAQ', '/faq'), ('Help centre', '/help/'), ('Tools', '/tools/'), ('Is it down?', '/is-it-down/'), ('Internet speed test', '/internet-speed-test'), ('Website speed test', '/speed'), ('Monitor', '/monitor'), ('Account', '/account'), ('About', '/about'), ('For business', '/business'), ('Contact', '/contact'), ('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')]
     return f'''</main>
 <footer class="site-foot"><div class="wrap">
 <div class="foot-brand">{BRAND}</div>
@@ -99,7 +99,7 @@ def foot(scripts):
 import hashlib, re as _re
 def _ver():
     h = hashlib.md5()
-    for n in ('app.css', 'app.js', 'home.js', 'pages.js', 'worldmap.js', 'live.js', 'sitepage.js', 'tools.js', 'sla.js'):
+    for n in ('app.css', 'app.js', 'home.js', 'pages.js', 'worldmap.js', 'live.js', 'sitepage.js', 'tools.js', 'sla.js', 'speedtest.js'):
         try: h.update(open(os.path.join(ROOT, 'assets', n), 'rb').read())
         except OSError: pass
     return h.hexdigest()[:8]
@@ -134,7 +134,7 @@ def write(name, content):
     if name.endswith('.html'):
         content = _svgicons(content)
         v = _ver()
-        content = _re.sub(r'(/assets/(?:app\.css|app\.js|home\.js|pages\.js|worldmap\.js|live\.js|sitepage\.js|tools\.js|sla\.js))(?=")', r'\1?v=' + v, content)
+        content = _re.sub(r'(/assets/(?:app\.css|app\.js|home\.js|pages\.js|worldmap\.js|live\.js|sitepage\.js|tools\.js|sla\.js|speedtest\.js))(?=")', r'\1?v=' + v, content)
     with open(os.path.join(ROOT, name), 'w', encoding='utf-8') as f:
         f.write(content)
     print('wrote', name, len(content), 'bytes')
@@ -501,6 +501,7 @@ def static_pages():
 <h2>Acceptable use</h2>
 <p>Please do not use the checker to attack, overload or probe other people&rsquo;s systems. We limit how often one visitor can run checks, and we only fetch public web addresses on the standard web ports.</p>
 <h2>Third parties</h2>
+<p>The internet speed test sends test data between your browser and Cloudflare\'s public speed-test servers, so Cloudflare sees your address as it would for any website you visit. We do not store your speed results.</p>
 <p>Regional probes run on the public <a href="https://globalping.io" rel="noopener">Globalping</a> network. Sign-in with Google uses Google&rsquo;s own sign-in service, and the site&rsquo;s fonts (Space Grotesk and JetBrains Mono) are loaded from Google Fonts.</p>
 <h2>Content</h2>
 <p>Site names shown in lists are used only to identify the services being checked.</p>''')
@@ -695,7 +696,7 @@ def help_pages():
                 '<p style="margin-top:20px"><a href="/help/">&larr; All help guides</a></p></div></section>')
         write('help/' + a['slug'] + '.html', h + body + foot('<script src="/assets/app.js"></script>'))
     # sitemap
-    urls = [('/', 'daily', '1.0'), ('/speed', 'monthly', '0.8'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8'), ('/tools/', 'monthly', '0.8')] + [('/tools/' + t['slug'], 'monthly', '0.7') for t in TOOLS] + [('/tools/uptime-sla-calculator', 'monthly', '0.7'), ('/how-we-check', 'monthly', '0.6'), ('/faq', 'monthly', '0.6')] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES if n not in HIDDEN] + [('/about', 'monthly', '0.5'), ('/business', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
+    urls = [('/', 'daily', '1.0'), ('/speed', 'monthly', '0.8'), ('/internet-speed-test', 'monthly', '0.8'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8'), ('/tools/', 'monthly', '0.8')] + [('/tools/' + t['slug'], 'monthly', '0.7') for t in TOOLS] + [('/tools/uptime-sla-calculator', 'monthly', '0.7'), ('/how-we-check', 'monthly', '0.6'), ('/faq', 'monthly', '0.6')] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES if n not in HIDDEN] + [('/about', 'monthly', '0.5'), ('/business', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
     sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join('<url><loc>%s%s</loc><lastmod>2026-11-02</lastmod><changefreq>%s</changefreq><priority>%s</priority></url>\n' % (SITE, u, c, p) for u, c, p in urls) + '</urlset>\n'
     open(os.path.join(ROOT, 'sitemap.xml'), 'w').write(sm)
 
@@ -706,6 +707,7 @@ def tools_pages():
     # hub
     cards = ''.join('<a class="tool" href="/tools/%s"><span class="ti">%s</span><h3>%s</h3><p>%s</p><span class="tgo">Open the tool &rarr;</span></a>' % (t['slug'], t['icon'], html.escape(t['name']), t['short']) for t in TOOLS)
     extra_cards = ('<a class="tool" href="/"><span class="ti">&#128269;</span><h3>Is it down?</h3><p>Check any website from our server and fifteen places around the world.</p><span class="tgo">Open the checker &rarr;</span></a>'
+                   '<a class="tool" href="/internet-speed-test"><span class="ti">&#128246;</span><h3>Internet speed test</h3><p>Measure your download, upload, ping and jitter.</p><span class="tgo">Test your connection &rarr;</span></a>'
                    '<a class="tool" href="/speed"><span class="ti">&#9889;</span><h3>Website speed test</h3><p>See how fast a page loads and where the time goes.</p><span class="tgo">Test a site &rarr;</span></a>'
                    '<a class="tool" href="/tools/uptime-sla-calculator"><span class="ti">&#128208;</span><h3>Uptime and SLA calculator</h3><p>Turn an uptime percentage into the downtime it allows, or the reverse.</p><span class="tgo">Open the calculator &rarr;</span></a>'
                    '<a class="tool" href="/monitor"><span class="ti">&#128276;</span><h3>Monitor and alerts</h3><p>Watch your sites and get an email when one goes down.</p><span class="tgo">Open Monitor &rarr;</span></a>')
@@ -770,5 +772,35 @@ def sla_page():
             '<p style="margin-top:20px"><a href="/tools/">&larr; All tools</a></p></div></section>')
     write('tools/uptime-sla-calculator.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/sla.js"></script>'))
 
+def internet_speed_page():
+    path = '/internet-speed-test'
+    faq = [('How does the speed test work?', 'Your browser downloads and uploads test data to Cloudflare\'s public speed-test servers and times it. It also sends many tiny requests to measure ping and jitter. Nothing is installed.'),
+           ('How much data does it use?', 'Usually 50 to 300 MB, more on a very fast connection. Avoid running it on a limited mobile data plan.'),
+           ('Why is my result lower than what I pay for?', 'Wi-Fi, an old router, other devices using the connection, a VPN and a busy evening network all lower the result. For the most accurate number, use a cable and close other apps.'),
+           ('What are ping and jitter?', 'Ping is how long a message takes to reach a server and return, in milliseconds. Jitter is how much that time varies. Low numbers matter most for gaming and video calls.'),
+           ('What is a good speed?', 'About 10 Mbps is enough for HD video, 25 Mbps for 4K, and 5 Mbps down with 2 Mbps up for video calls. For several people at once, aim for 50 Mbps or more.'),
+           ('Does a slow connection mean a website is down?', 'No. If one site will not load but others do, check it with our <a href="/">website checker</a>. If everything is slow, the problem is your connection.')]
+    ld = {"@context": "https://schema.org", "@graph": [
+        {"@type": "WebApplication", "name": "Internet speed test", "url": SITE + path, "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "GBP"}},
+        {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": _re.sub('<[^>]+>', '', a)}} for q, a in faq]}]}
+    h = head('Internet speed test — check your download, upload and ping | siteupdown.com', 'Free internet speed test: measure your download speed, upload speed, ping and jitter in about 20 seconds. No app and no sign-up.', path, '<script type="application/ld+json">' + _json.dumps(ld) + '</script>').replace('{BODYATTR}', '')
+    body = ('<section class="page"><div class="wrap prose toolpage" data-tool="speedtest"><nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/tools/">Tools</a> / Internet speed test</nav>'
+            '<h1 style="margin:14px 0 8px">Internet speed test<span class="dot">.</span></h1>'
+            '<p class="lead">How fast is your connection right now? Press start and we measure download, upload, ping and jitter in about 20 seconds.</p>'
+            '<div class="sp-card st-card"><div class="st-gauge"><svg viewBox="0 0 200 200" aria-hidden="true"><path class="st-track" d="M36.4 163.6 A90 90 0 1 1 163.6 163.6"/><path id="st-arc" class="st-arc" d="M36.4 163.6 A90 90 0 1 1 163.6 163.6"/></svg>'
+            '<div class="st-read" aria-live="polite"><b id="st-num">0</b><span id="st-unit">Mbps</span><em id="st-phase">Ready</em></div></div>'
+            '<div class="st-btn"><button class="btn" id="st-go" type="button"><span>Start test</span></button></div>'
+            '<p class="tool-err" id="st-err" role="alert" hidden></p>'
+            '<div class="st-grid"><div class="st-t"><i>Download</i><b id="st-dl">&ndash;</b></div><div class="st-t"><i>Upload</i><b id="st-ul">&ndash;</b></div><div class="st-t"><i>Ping</i><b id="st-ping">&ndash;</b></div><div class="st-t"><i>Jitter</i><b id="st-jit">&ndash;</b></div></div>'
+            '<p class="note" id="st-conn"></p><p class="note" id="st-used"></p><p class="note" id="st-last"></p></div>'
+            '<div id="st-good" hidden></div>'
+            '<p class="note">The test uses roughly 50 to 300 MB of data, so avoid it on a limited mobile plan. It runs between your browser and Cloudflare\'s public speed-test network. We do not store your result or your address. Results depend on your device, Wi-Fi and what else is using your connection.</p>'
+            '<h2>Getting an accurate result</h2><ul><li>Use a cable if you can, or stand near the router.</li><li>Close streaming, downloads and other tabs first.</li><li>Turn off a VPN, which adds its own delay.</li><li>Run it two or three times and compare. Speeds vary from minute to minute.</li></ul>'
+            '<h2>Questions</h2><div class="faq">' + ''.join('<details><summary>%s</summary><p>%s</p></details>' % (html.escape(q), a) for q, a in faq) + '</div>'
+            '<h2>More free tools</h2><ul><li><a href="/">Is it down? website checker</a></li><li><a href="/speed">Website speed test</a></li>' + ''.join('<li><a href="/tools/%s">%s</a></li>' % (o['slug'], html.escape(o['name'])) for o in TOOLS) + '</ul>'
+            '<p style="margin-top:20px"><a href="/tools/">&larr; All tools</a></p></div></section>')
+    write('internet-speed-test.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/speedtest.js"></script>'))
+
+
 if __name__ == '__main__':
-    home(); login(); account(); monitor(); speed(); status(); static_pages(); help_pages(); tools_pages(); sla_page(); site_pages_build()
+    home(); login(); account(); monitor(); speed(); status(); static_pages(); help_pages(); tools_pages(); sla_page(); internet_speed_page(); site_pages_build()
