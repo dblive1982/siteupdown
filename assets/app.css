@@ -817,8 +817,8 @@ a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--t
 .sp-chart .bar{border:0;padding:0;display:flex;flex-direction:column-reverse;overflow:hidden;cursor:pointer;background:var(--line);min-width:4px}
 .sp-chart .bar:focus-visible,.sp-chart .bar:hover{outline:2px solid var(--text);outline-offset:1px}
 .sp-chart .bar.has{background:transparent}
-.seg{display:block;min-height:3px}
-.seg.s-site,.kdot.s-site{background:#ff5a5f}.seg.s-login,.kdot.s-login{background:#f5b83d}.seg.s-app,.kdot.s-app{background:#9a8cf7}.seg.s-slow,.kdot.s-slow{background:#4aa8ff}.seg{border-radius:0}.sp-chart .bar{border-radius:3px}
+.rseg{display:block;min-height:3px}
+.rseg.s-site,.kdot.s-site{background:#ff5a5f}.rseg.s-login,.kdot.s-login{background:#f5b83d}.rseg.s-app,.kdot.s-app{background:#9a8cf7}.rseg.s-slow,.kdot.s-slow{background:#4aa8ff}.rseg{border-radius:0}.sp-chart .bar{border-radius:3px}
 .sp-rdetail{margin:10px 0 0;font-size:13.5px;color:var(--muted);min-height:1.3em}
 .sp-kinds .kd{display:inline-flex;align-items:center;gap:7px}
 .sp-kinds .kdot{width:9px;height:9px;border-radius:50%;display:inline-block}
@@ -845,4 +845,4 @@ a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--t
 .sp-rpick p.sp-rsendrow{margin:18px 0 0}
 .sp-rmsg{margin-top:14px}
 .sp-chart .bar{justify-content:flex-start;align-content:flex-start;gap:0}
-.sp-chart .bar .seg{flex:none;width:100%;min-height:3px}
+.sp-chart .bar .rseg{flex:none;width:100%;min-height:3px}

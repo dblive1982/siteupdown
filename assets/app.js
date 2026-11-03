@@ -52,9 +52,9 @@
       return when(b) + ': ' + n + (n === 1 ? ' report' : ' reports') + ' (' + parts.join(', ') + ').';
     }
     chart.innerHTML = bk.map(function (b, i) {
-      var segs = K.map(function (k) { var c = b.k[k] || 0; return c ? '<i class="seg s-' + k + '" style="height:' + (100 * c / b.n) + '%"></i>' : ''; }).join('');
+      var segs = K.map(function (k) { var c = b.k[k] || 0; return c ? '<i class="rseg s-' + k + '" style="height:' + (100 * c / b.n) + '%"></i>' : ''; }).join('');
       var h = b.n ? Math.max(16, Math.round(100 * b.n / max)) : 0;
-      return '<button type="button" class="bar' + (b.n ? ' has' : '') + '" data-i="' + i + '" aria-label="' + S.esc(sentence(i)) + '"' + (b.n ? ' style="height:' + h + '%"' : '') + '>' + segs + '</button>';
+      return '<div tabindex="0" role="img" class="bar' + (b.n ? ' has' : '') + '" data-i="' + i + '" aria-label="' + S.esc(sentence(i)) + '"' + (b.n ? ' style="height:' + h + '%"' : '') + '>' + segs + '</div>';
     }).join('');
     var peak = bk.reduce(function (m, b, i) { return b.n > (bk[m] ? bk[m].n : 0) ? i : m; }, -1);
     var dflt = peak >= 0 && bk[peak].n ? 'Busiest ' + unit + ': ' + sentence(peak) : 'Tap or hover a bar to see what was reported.';
