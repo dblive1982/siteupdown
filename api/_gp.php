@@ -142,6 +142,11 @@ function gp_world_sweep(PDO $pdo, array $hosts, int $deadline): ?string {
     $order = $hosts; usort($order, fn($a, $b) => ($seen[$a] ?? 0) <=> ($seen[$b] ?? 0));
     $host = $order[0] ?? null; if (!$host) return null;
     $set('*world-last', time());
+    // If this site's measurement fails, send it to the back of the queue so one bad site can never hold up the others.
+    $skip = function () use ($pdo, $host) {
+        $pdo->prepare('INSERT IGNORE INTO world_checks (host, data, ts) VALUES (?,?,?)')->execute([$host, '', time()]);
+        $pdo->prepare('UPDATE world_checks SET ts=? WHERE host=?')->execute([time(), $host]);
+    };
     $target = (function_exists('probe_alias_get') && ($al = probe_alias_get($host))) ? $al : $host;
     $opts = ['request' => ['method' => 'GET', 'path' => '/'], 'protocol' => 'HTTPS', 'port' => 443];
     $id = null;
@@ -150,7 +155,7 @@ function gp_world_sweep(PDO $pdo, array $hosts, int $deadline): ?string {
         if (in_array($r['code'], [200, 202], true) && !empty($r['data']['id'])) { $id = (string)$r['data']['id']; break; }
         if ($r['code'] === 429) { $set('*gp-backoff', time() + min(3600, max(120, (int)($GLOBALS['gp_limited'] ?? 600)))); return null; }
     }
-    if (!$id) return null;
+    if (!$id) { $skip(); return null; }
     $sum = null;
     for ($i = 0; $i < 12 && time() < $deadline; $i++) {
         sleep(1);
@@ -159,7 +164,7 @@ function gp_world_sweep(PDO $pdo, array $hosts, int $deadline): ?string {
         if (($m['data']['status'] ?? '') === 'in-progress') continue;
         $sum = gp_summarise($m['data']); break;
     }
-    if (!$sum || empty($sum['done']) || !$sum['total']) return null;
+    if (!$sum || empty($sum['done']) || !$sum['total']) { $skip(); return null; }
     $sum['measured_at'] = iso(gmdate('Y-m-d H:i:s'));
     $pdo->prepare('REPLACE INTO world_checks (host, data, ts) VALUES (?,?,?)')->execute([$host, json_encode($sum), time()]);
     return $host;
