@@ -4,6 +4,7 @@
 require __DIR__ . '/_boot.php';
 require __DIR__ . '/_probe.php';
 require __DIR__ . '/_gp.php';
+require __DIR__ . '/_sitepages.php';
 $pdo = db();
 
 function load_share(PDO $pdo, string $id): array {
@@ -43,5 +44,10 @@ if ($sum['done']) {
     $sum['measured_at'] = iso(gmdate('Y-m-d H:i:s'));
     $d['regional'] = $sum;
     save_share($pdo, $id, $d);
+    // A fresh live check of a site we list becomes that site's worldwide snapshot, so its status page shows the same 15 results.
+    $h = strtolower($host);
+    if ($sum['total'] > 0 && isset(site_pages()[$h])) {
+        try { $pdo->prepare('REPLACE INTO world_checks (host, data, ts) VALUES (?,?,?)')->execute([$h, json_encode($sum), time()]); } catch (Throwable $e) {}
+    }
 }
 out(200, ['regional' => $sum, 'verdict' => combined_verdict($d['server'], $sum)]);
