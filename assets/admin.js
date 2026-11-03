@@ -7,8 +7,34 @@
 
   function box(html) { root.innerHTML = html; }
   function notFound() { box('<div class="center"><span class="eyebrow"><i></i>Error 404</span><h1 style="margin:14px 0">Not found<span class="dot">.</span></h1><p class="lead">We checked everywhere. This page is down for everyone.</p></div>'); }
-  function fail(e) { if (e.status === 401) location.replace('/login?next=' + encodeURIComponent('/admin')); else if (e.status === 404) notFound(); else if (e.status === 403) start(); else box('<p class="cf-err">' + esc(e.message) + '</p>'); }
+  function fail(e) { if (e.status === 401) signin(); else if (e.status === 404) notFound(); else if (e.status === 403) start(); else box('<p class="cf-err">' + esc(e.message) + '</p>'); }
 
+  function signin() {
+    box('<div class="adm-lock"><h1>Admin<span class="dot">.</span></h1><p class="lead">Sign in with your admin account to continue.</p>'
+      + '<div id="a-g" hidden><div id="gbtn"></div><p class="note">or use your email</p></div>'
+      + '<form id="a-si"><label for="a-em">Email</label><div class="field"><input id="a-em" type="email" autocomplete="email" required></div>'
+      + '<label for="a-pw">Password</label><div class="field"><input id="a-pw" type="password" autocomplete="current-password" required></div>'
+      + '<p id="a-err" class="cf-err" role="alert" hidden></p><p><button class="btn" type="submit"><span>Sign in</span></button></p></form></div>');
+    var err = document.getElementById('a-err');
+    function bad(e) { err.textContent = e.message; err.hidden = false; }
+    document.getElementById('a-si').addEventListener('submit', function (ev) {
+      ev.preventDefault(); err.hidden = true;
+      S.api('login.php', { email: document.getElementById('a-em').value, password: document.getElementById('a-pw').value }).then(function () { S.store.set('sud-in', '1'); location.reload(); }).catch(bad);
+    });
+    S.onReady(function (u) {
+      if (u) { start(); return; }
+      if (!S.google) return;
+      var g = document.createElement('script'); g.src = 'https://accounts.google.com/gsi/client'; g.async = true;
+      g.onload = function () {
+        window.google.accounts.id.initialize({ client_id: S.google, ux_mode: 'popup', callback: function (r) {
+          S.api('google.php', { credential: r.credential }).then(function () { S.store.set('sud-in', '1'); location.reload(); }).catch(bad);
+        } });
+        document.getElementById('a-g').hidden = false;
+        window.google.accounts.id.renderButton(document.getElementById('gbtn'), { type: 'standard', theme: 'outline', size: 'large', text: 'continue_with', shape: 'pill', width: 280 });
+      };
+      document.head.appendChild(g);
+    });
+  }
   function start() {
     S.api('admin.php?a=status').then(function (j) { if (j.unlocked) shell(); else lock(j); }).catch(fail);
   }
