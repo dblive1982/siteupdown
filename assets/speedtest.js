@@ -34,11 +34,20 @@
     var times = [], i = 0;
     function one() {
       if (cancelled) return Promise.resolve();
-      var s = performance.now();
-      return fetch(B + '/__down?bytes=0&r=' + Math.random(), { cache: 'no-store', signal: ctrl.signal }).then(function (r) {
+      var s = performance.now(), url = B + '/__down?bytes=0&r=' + Math.random();
+      return fetch(url, { cache: 'no-store', signal: ctrl.signal }).then(function (r) {
         return r.arrayBuffer();
       }).then(function () {
         var d = performance.now() - s;
+        try {
+          var e = performance.getEntriesByName(url).pop();
+          if (e && e.requestStart > 0 && e.responseStart > e.requestStart) {
+            var net = e.responseStart - e.requestStart, st = 0;
+            (e.serverTiming || []).forEach(function (t) { if (t.name === 'cfRequestDuration') st = t.duration; });
+            if (net - st > 0 && net - st < d) d = net - st;
+          }
+          performance.clearResourceTimings();
+        } catch (x) {}
         if (i++ > 0) { times.push(d); tile('st-ping', Math.round(median(times)) + ' ms', true); gauge(median(times), 'ms', 'Measuring latency'); }
         if (i <= n) return one();
       });
@@ -157,8 +166,9 @@
       if (m.asOrganization) bits.push(String(m.asOrganization));
       var place = [m.city, m.country].filter(Boolean).join(', ');
       if (place) bits.push(place);
+      var c = m.colo, srv = c && typeof c === 'object' ? (c.city || c.iata || '') : (c || '');
       var s = bits.join(' · ');
-      if (s) $('st-conn').textContent = 'Your connection: ' + s + (m.colo ? ' · tested against the ' + m.colo + ' server' : '');
+      if (s) $('st-conn').textContent = 'Your connection: ' + s + (srv ? ' · tested against the ' + srv + ' server' : '');
     }).catch(function () {});
   }
 
