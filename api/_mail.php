@@ -16,19 +16,19 @@ function sud_email_render(string $heading, string $paraHtml, string $paraText, s
     }
     $chip = '';
     $stripe = '#39b54a';
-    if ($tone === 'down') { $stripe = '#e5484d'; $chip = '<p style="margin:0 0 12px"><span style="display:inline-block;background:#fde8e8;color:#a61b1f;font-size:12px;font-weight:700;letter-spacing:1.5px;padding:5px 12px;border-radius:99px;' . $F . '">&#9679; LOOKS DOWN</span></p>'; }
-    if ($tone === 'warn') { $stripe = '#f0a020'; $chip = '<p style="margin:0 0 12px"><span style="display:inline-block;background:#fff1d6;color:#8a5a00;font-size:12px;font-weight:700;letter-spacing:1.5px;padding:5px 12px;border-radius:99px;' . $F . '">&#9679; HEADS UP</span></p>'; }
-    if ($tone === 'up') { $chip = '<p style="margin:0 0 12px"><span style="display:inline-block;background:#e3f5e7;color:#1d7a2e;font-size:12px;font-weight:700;letter-spacing:1.5px;padding:5px 12px;border-radius:99px;' . $F . '">&#9679; BACK UP</span></p>'; }
+    if ($tone === 'down') { $stripe = '#e5484d'; $chip = '<p style="margin:0 0 12px"><span style="display:inline-block;background:#4a1a24;color:#ff9ea1;font-size:12px;font-weight:700;letter-spacing:1.5px;padding:5px 12px;border-radius:99px;' . $F . '">&#9679; LOOKS DOWN</span></p>'; }
+    if ($tone === 'warn') { $stripe = '#f0a020'; $chip = '<p style="margin:0 0 12px"><span style="display:inline-block;background:#4a3410;color:#ffcb6b;font-size:12px;font-weight:700;letter-spacing:1.5px;padding:5px 12px;border-radius:99px;' . $F . '">&#9679; HEADS UP</span></p>'; }
+    if ($tone === 'up') { $chip = '<p style="margin:0 0 12px"><span style="display:inline-block;background:#14391f;color:#8be69c;font-size:12px;font-weight:700;letter-spacing:1.5px;padding:5px 12px;border-radius:99px;' . $F . '">&#9679; BACK UP</span></p>'; }
     $link = fn(string $t, string $href) => '<a href="' . $site . $href . '" style="color:#b9aee0;text-decoration:underline">' . $t . '</a>';
-    $html = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"><title>' . $h . '</title></head>'
-        . '<body style="margin:0;padding:0;background:#eeeaf5">'
-        . '<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#eeeaf5">' . $h . ' &middot; siteupdown.com</div>'
-        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#eeeaf5" style="background:#eeeaf5"><tr><td align="center" style="padding:26px 12px">'
+    $html = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><meta name="supported-color-schemes" content="light dark"><title>' . $h . '</title></head>'
+        . '<body style="margin:0;padding:0;background:#0d011c">'
+        . '<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#0d011c">' . $h . ' &middot; siteupdown.com</div>'
+        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#0d011c" style="background:#0d011c"><tr><td align="center" style="padding:26px 12px">'
         . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:580px">'
         . '<tr><td align="center" bgcolor="#130228" style="background:#130228;border-radius:16px 16px 0 0;border-bottom:4px solid ' . $stripe . ';padding:26px 12px 22px">'
         . '<a href="' . $site . '/" style="text-decoration:none"><img src="' . $site . '/assets/logo-full-dark.png" width="150" height="62" alt="siteupdown.com" style="display:block;border:0;outline:none;width:150px;height:62px;color:#f0f2f6;font-size:20px;font-weight:700;' . $F . '"></a></td></tr>'
-        . '<tr><td bgcolor="#ffffff" style="background:#ffffff;border-left:1px solid #ddd6ee;border-right:1px solid #ddd6ee;padding:32px 28px 30px;' . $F . ';color:#1b1230;font-size:16px;line-height:1.65">'
-        . $chip . '<h1 style="margin:0 0 14px;font-size:25px;line-height:1.25;color:#130228;' . $F . '">' . $h . '</h1>' . $paraHtml . $btn
+        . '<tr><td bgcolor="#1d0a38" style="background:#1d0a38;border-left:1px solid #34205a;border-right:1px solid #34205a;padding:32px 28px 30px;' . $F . ';color:#e6e1f5;font-size:16px;line-height:1.65">'
+        . $chip . '<h1 style="margin:0 0 14px;font-size:25px;line-height:1.25;color:#ffffff;' . $F . '">' . $h . '</h1>' . $paraHtml . $btn
         . '</td></tr>'
         . '<tr><td align="center" bgcolor="#130228" style="background:#130228;border-radius:0 0 16px 16px;padding:22px 18px;' . $F . ';font-size:13px;line-height:1.7;color:#a79bd0">'
         . '<span style="color:#f0f2f6;font-weight:700">Is it down &mdash; or just you?</span><br>'
@@ -100,7 +100,7 @@ function sud_welcome_parts(string $email, string $via = ''): array {
     $html = '<p style="margin:0 0 6px">Your free siteupdown.com account is ready.</p>';
     $text = "Your free siteupdown.com account is ready.\n";
     foreach ($items as [$h, $t]) {
-        $html .= '<h2 style="margin:20px 0 4px;font-size:18px;color:#130228">' . $h . '</h2><p style="margin:0">' . $t . '</p>';
+        $html .= '<h2 style="margin:20px 0 4px;font-size:18px;color:#ffffff">' . $h . '</h2><p style="margin:0">' . $t . '</p>';
         $text .= "\n" . $h . "\n" . $t . "\n";
     }
     $html .= '<p style="margin:22px 0 0;font-size:14px">You signed up' . $via . ' using ' . $e . '. If that was not you, you can ignore this message.</p>';
