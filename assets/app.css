@@ -1003,3 +1003,6 @@ a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--t
 .hgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
 @media(max-width:700px){.hgrid{grid-template-columns:minmax(0,1fr)}}
 .hcat{min-width:0;overflow-wrap:anywhere}
+
+/* centre the wrapped "All apps & sites" chip under the app chips */
+.app-row .chips{justify-content:center}
