@@ -157,10 +157,21 @@
       var n = data.length, i = Math.round(f * (n - 1)), p = data[i]; if (p) q('detail').textContent = p.label;
       /* thin white bar that snaps to the sample under the pointer (wrap here is the graph's own rectangle) */
       var lw = box.querySelector('.lv-wrap').getBoundingClientRect(), xf = n < 2 ? 0.5 : (PAD + (W - PAD * 2) * i / (n - 1)) / W;
-      cursor.style.left = (wrap.left - lw.left + xf * wrap.width).toFixed(1) + 'px'; cursor.style.display = 'block';
+      var px = wrap.left - lw.left + xf * wrap.width;
+      cursor.style.left = px.toFixed(1) + 'px'; cursor.style.display = 'block';
+      /* floating card with the reading under the bar */
+      if (p) {
+        var k = p.label.lastIndexOf(': '), when = k > 0 ? p.label.slice(0, k) : p.label, val = k > 0 ? p.label.slice(k + 2) : '';
+        var vs = data.map(function (d) { return d.ms; }).filter(function (v) { return v != null; }), avg = vs.length ? vs.reduce(function (a, b) { return a + b; }, 0) / vs.length : null, rel = '';
+        if (p.ms != null && avg) { var dv = Math.round((p.ms - avg) / avg * 100); rel = Math.abs(dv) < 8 ? 'about average' : (dv > 0 ? dv + '% slower than average' : Math.abs(dv) + '% faster than average'); }
+        var stx = { up: 'Up', down: 'Down', slow: 'Slow', none: 'No data' }[p.c] || '';
+        tip.innerHTML = '<span class="lt-when">' + when.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</span><b>' + val.replace(/&/g, '&amp;').replace(/</g, '&lt;') + '</b>' + (stx ? '<span class="lt-st ' + p.c + '">' + stx + '</span>' : '') + (rel ? '<span class="lt-rel">' + rel + '</span>' : '');
+        tip.className = 'lv-tip' + (xf > 0.6 ? ' l' : ''); tip.style.left = px.toFixed(1) + 'px'; tip.style.display = 'block';
+      }
     }
     var wrap = box.querySelector('.lv-wrap'), cursor = document.createElement('div'); cursor.className = 'lv-cursor'; cursor.setAttribute('aria-hidden', 'true'); wrap.appendChild(cursor);
-    function hideCursor() { cursor.style.display = 'none'; }
+    var tip = document.createElement('div'); tip.className = 'lv-tip'; tip.setAttribute('aria-hidden', 'true'); wrap.appendChild(tip);
+    function hideCursor() { cursor.style.display = 'none'; tip.style.display = 'none'; }
     wrap.addEventListener('mousemove', tipAt); wrap.addEventListener('click', tipAt); wrap.addEventListener('touchmove', tipAt, { passive: true }); wrap.addEventListener('touchstart', tipAt, { passive: true });
     wrap.addEventListener('mouseleave', hideCursor); wrap.addEventListener('touchend', function () { setTimeout(hideCursor, 1500); });
     function vis() { if (!document.hidden && mode === 'live' && !stopped) poll(); }
