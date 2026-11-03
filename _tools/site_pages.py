@@ -558,7 +558,13 @@ CORE = 78     # the first 78 entries of SITES are the core list (checked every f
 
 # Only the first CORE sites are live for now. The full list is kept in EXTENDED_SITES, ready to bring back later.
 EXTENDED_SITES = SITES[CORE:]
-SITES = SITES[:CORE]
+# Batch 1 of the extended list (no banking, betting, payments, government or health sites).
+BATCH = ['Max', 'Paramount+', 'Crunchyroll', 'Plex', 'SoundCloud', 'Deezer', 'Kick', 'Tubi',
+         'Threads', 'Tumblr', 'Quora', 'Signal', 'Imgur', 'Medium',
+         'Claude', 'Gemini', 'Perplexity', 'Microsoft Copilot', 'Midjourney', 'DeepSeek', 'Grok',
+         'DuckDuckGo', 'Proton Mail', 'Google Maps', 'Google Meet',
+         'Vercel', 'Netlify', 'GitLab', 'Docker', 'npm', 'Wix', 'Asana', 'Microsoft 365']
+SITES = SITES[:CORE] + [x for x in EXTENDED_SITES if x[0] in BATCH]
 
 KIND_LABELS = [
     ('site', 'Website will not load'),
