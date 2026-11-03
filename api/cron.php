@@ -95,7 +95,9 @@ if (!$lastSweep || $lastSweep < gmdate('Y-m-d H:i:s', time() - 3600)) {
 if ((int)gmdate('i') % 10 === 3) {
 $pdo->prepare('DELETE FROM checks WHERE checked_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - 3 * 86400)]);
 $pdo->prepare('DELETE FROM site_log WHERE ts < ?')->execute([gmdate('Y-m-d H:i:s', time() - 35 * 86400)]);
-$pdo->prepare('DELETE FROM reports WHERE ts < ?')->execute([gmdate('Y-m-d H:i:s', time() - 35 * 86400)]);
+// Problem reports are kept for three years; the one-way address hash is only needed for the 30-minute duplicate check, so it is wiped after two days.
+$pdo->prepare('DELETE FROM reports WHERE ts < ?')->execute([gmdate('Y-m-d H:i:s', time() - 1095 * 86400)]);
+$pdo->prepare("UPDATE reports SET ip_hash='' WHERE ts < ? AND ip_hash <> ''")->execute([gmdate('Y-m-d H:i:s', time() - 2 * 86400)]);
 $pdo->prepare('DELETE FROM incidents WHERE started_at < ? AND ended_at IS NOT NULL')->execute([gmdate('Y-m-d H:i:s', time() - 95 * 86400)]);
 $pdo->prepare('DELETE FROM shares WHERE created_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - 30 * 86400)]);
 $pdo->prepare('DELETE FROM resets WHERE expires_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - 86400)]);

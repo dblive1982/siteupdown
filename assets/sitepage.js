@@ -86,19 +86,19 @@
   }).catch(function () { headline(); });
 
   var kindName = { site: 'website not loading', login: 'cannot log in', app: 'app not working', slow: 'very slow' };
+  var range = '24h', getRange = S.repRanges($('#sp-ranges'), function (r) { range = r; loadReports(); });
   function renderReports() {
-    var hours = rep.hours || new Array(24).fill(0), max = Math.max.apply(null, hours.concat([3]));
-    S.repChart($('#sp-chart'), $('#sp-detail'), $('#sp-kinds'), rep);
-    var total = rep.total || 0;
+    S.repChart($('#sp-chart'), $('#sp-detail'), $('#sp-kinds'), rep, { date: $('#sp-date'), axis: document.querySelector('#sp-reports .sp-axis') });
+    var total = rep.total || 0, rt = S.repRangeText(rep.range);
     $('#sp-chart').classList.toggle('empty', !total);
-    $('#sp-rtotal').textContent = total ? total + (total === 1 ? ' problem report' : ' problem reports') + ' in the last 24 hours' : 'No problem reports in the last 24 hours';
+    $('#sp-rtotal').textContent = total ? total + (total === 1 ? ' problem report' : ' problem reports') + ' in ' + rt : 'No problem reports in ' + rt;
     var L = $('#sp-rlevel');
     L.className = 'sp-level ' + rep.level;
     L.textContent = rep.level === 'high' ? 'Many more than usual' : rep.level === 'raised' ? 'More than usual' : rep.level === 'low' ? 'Normal levels' : '';
     headline();
   }
   function loadReports() {
-    getJSON('/api/reports.php?host=' + encodeURIComponent(host)).then(function (r) { if (r.ok) { rep = r.j; renderReports(); } }).catch(function () {});
+    getJSON('/api/reports.php?host=' + encodeURIComponent(host) + '&range=' + range).then(function (r) { if (r.ok) { rep = r.j; renderReports(); } }).catch(function () {});
   }
   loadReports();
 

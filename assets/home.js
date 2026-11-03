@@ -202,21 +202,25 @@
 
   /* ---------- report a problem with the site just checked ---------- */
   var repHost = null, REPKIND = { site: 'website not loading', login: 'cannot log in', app: 'app not working', slow: 'very slow' };
+  var getRange = null;
+  function repLoad(host) {
+    var range = getRange ? getRange() : '24h';
+    fetch('/api/reports.php?host=' + encodeURIComponent(host) + '&range=' + range).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      if (!j || host !== repHost) return;
+      var total = j.total || 0, rt = S.repRangeText(range);
+      $('#rb-title').textContent = total ? total + (total === 1 ? ' problem report' : ' problem reports') + ' for ' + host + ' in ' + rt : 'No problem reports for ' + host + ' in ' + rt;
+      var L = $('#rb-level'); L.className = 'sp-level ' + j.level; L.textContent = j.level === 'high' ? 'Many more than usual' : j.level === 'raised' ? 'More than usual' : '';
+      S.repChart($('#rb-chart'), $('#rb-detail'), $('#rb-kinds'), j, { date: $('#rb-date'), axis: $('#rb-axis') });
+    }).catch(function () {});
+  }
   function repBox(host) {
     var box = $('#rep-box'); if (!box) return;
     if (!host) { box.hidden = true; repHost = null; return; }
     if (host === repHost) return;
     repHost = host; box.hidden = false; $('#rb-pick').hidden = true; $('#rb-msg').textContent = '';
-    $('#rb-title').textContent = 'Problems reported for ' + host; $('#rb-level').textContent = ''; $('#rb-chart').hidden = true;
-    fetch('/api/reports.php?host=' + encodeURIComponent(host)).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
-      if (!j || host !== repHost) return;
-      var total = j.total || 0, hours = j.hours || [], max = Math.max.apply(null, hours.concat([3]));
-      $('#rb-title').textContent = total ? total + (total === 1 ? ' problem report' : ' problem reports') + ' for ' + host + ' in the last 24 hours' : 'No problem reports for ' + host + ' in the last 24 hours';
-      var L = $('#rb-level'); L.className = 'sp-level ' + j.level; L.textContent = j.level === 'high' ? 'Many more than usual' : j.level === 'raised' ? 'More than usual' : '';
-      var ch = $('#rb-chart'); ch.hidden = !total; $('#rb-axis').hidden = !total; $('#rb-detail').hidden = true;
-      if (total) { $('#rb-detail').textContent = 'Tap or hover a bar to see what was reported that hour.'; $('#rb-detail').hidden = false; }
-      S.repChart(ch, $('#rb-detail'), $('#rb-kinds'), j);
-    }).catch(function () {});
+    $('#rb-title').textContent = 'Problems reported for ' + host; $('#rb-level').textContent = '';
+    if (!getRange) getRange = S.repRanges($('#rb-ranges'), function () { if (repHost) repLoad(repHost); });
+    repLoad(host);
   }
   (function () {
     var btn = $('#rb-btn'); if (!btn) return;

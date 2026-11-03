@@ -27,29 +27,47 @@ if (!isset($sites[$host])) {
 }
 $name = $sites[$host]['name'] ?? $host;
 
+$range = (string)($_GET['range'] ?? '24h');
+if (!in_array($range, ['24h', '7d', '30d', '1y'], true)) $range = '24h';
+$K = ['site', 'login', 'app', 'slow'];
+$empty = fn() => ['site' => 0, 'login' => 0, 'app' => 0, 'slow' => 0];
 $since = $now - 24 * 3600;
-$q = $pdo->prepare('SELECT kind, ts FROM reports WHERE host=? AND ts > ? ORDER BY ts');
-$q->execute([$host, gmdate('Y-m-d H:i:s', $since)]);
-$bars = array_fill(0, 24, 0);
-$hk = array_fill(0, 24, ['site' => 0, 'login' => 0, 'app' => 0, 'slow' => 0]);
-$kinds = ['site' => 0, 'login' => 0, 'app' => 0, 'slow' => 0];
-$total = 0; $last3 = 0; $last = null;
-foreach ($q->fetchAll() as $r) {
-    $t = strtotime($r['ts'] . ' UTC');
-    $i = min(23, max(0, (int)floor(($t - $since) / 3600)));
-    $bars[$i]++; $total++;
-    if (isset($hk[$i][$r['kind']])) $hk[$i][$r['kind']]++;
-    if (isset($kinds[$r['kind']])) $kinds[$r['kind']]++;
-    if ($t > $now - 3 * 3600) $last3++;
-    $last = $r['ts'];
+// Buckets for the chosen range: hourly for 24h, daily for 7d and 30d, weekly for 1y (UTC).
+$buckets = []; $unit = 'hour';
+if ($range === '24h') {
+    $b0 = (int)(floor($now / 3600) * 3600) - 23 * 3600;
+    for ($i = 0; $i < 24; $i++) $buckets[gmdate('Y-m-d H', $b0 + $i * 3600)] = ['t' => gmdate('Y-m-d\TH:00:00\Z', $b0 + $i * 3600), 'n' => 0, 'k' => $empty()];
+    $from = $b0; $fmt = 13;
+} else {
+    $unit = $range === '1y' ? 'week' : 'day';
+    $days = $range === '7d' ? 7 : ($range === '30d' ? 30 : 364);
+    $d0 = (int)(floor($now / 86400) * 86400) - ($days - 1) * 86400;
+    if ($range === '1y') { for ($i = 0; $i < 52; $i++) { $t = $d0 + $i * 7 * 86400; $buckets['w' . $i] = ['t' => gmdate('Y-m-d\T00:00:00\Z', $t), 'n' => 0, 'k' => $empty(), 's' => $t]; } }
+    else for ($i = 0; $i < $days; $i++) $buckets[gmdate('Y-m-d', $d0 + $i * 86400)] = ['t' => gmdate('Y-m-d\T00:00:00\Z', $d0 + $i * 86400), 'n' => 0, 'k' => $empty()];
+    $from = $d0; $fmt = 10;
 }
-// What is normal for this site: the average number of reports per hour over the previous 6 days.
+$q = $pdo->prepare("SELECT substr(ts,1,$fmt) AS d, kind, COUNT(*) AS n FROM reports WHERE host=? AND ts >= ? GROUP BY substr(ts,1,$fmt), kind");
+$q->execute([$host, gmdate('Y-m-d H:i:s', $from)]);
+$total = 0; $kinds = $empty();
+foreach ($q->fetchAll() as $r) {
+    $key = $r['d'];
+    if ($range === '1y') { $ts = strtotime($r['d'] . ' UTC'); $key = 'w' . min(51, max(0, (int)floor(($ts - $d0) / (7 * 86400)))); }
+    if (!isset($buckets[$key]) || !in_array($r['kind'], $K, true)) continue;
+    $c = (int)$r['n'];
+    $buckets[$key]['n'] += $c; $buckets[$key]['k'][$r['kind']] += $c; $total += $c; $kinds[$r['kind']] += $c;
+}
+foreach ($buckets as &$bk) unset($bk['s']); unset($bk);
+// Last three hours and what is normal for this site (average per hour over the previous 6 days) drive the "more than usual" label.
+$l3 = $pdo->prepare('SELECT COUNT(*), MAX(ts) FROM reports WHERE host=? AND ts > ?');
+$l3->execute([$host, gmdate('Y-m-d H:i:s', $now - 3 * 3600)]);
+[$last3, $lastTs] = array_map(fn($v) => $v, $l3->fetch(PDO::FETCH_NUM)); $last3 = (int)$last3;
 $b = $pdo->prepare('SELECT COUNT(*) FROM reports WHERE host=? AND ts > ? AND ts <= ?');
 $b->execute([$host, gmdate('Y-m-d H:i:s', $now - 7 * 86400), gmdate('Y-m-d H:i:s', $since)]);
 $base = round(((int)$b->fetchColumn()) / (6 * 24), 2);
+$t24 = $pdo->prepare('SELECT COUNT(*) FROM reports WHERE host=? AND ts > ?'); $t24->execute([$host, gmdate('Y-m-d H:i:s', $since)]); $total24 = (int)$t24->fetchColumn();
 $level = 'none';
-if ($total > 0) $level = 'low';
+if ($total24 > 0) $level = 'low';
 if ($last3 >= 12 && $last3 > 4 * $base * 3) $level = 'high';
 elseif ($last3 >= 5 && $last3 > 2 * $base * 3) $level = 'raised';
-out(200, ['host' => $host, 'name' => $name, 'page' => $sites[$host]['page'] ?? null, 'hours' => $bars, 'hk' => $hk, 'total' => $total, 'kinds' => $kinds,
-          'last3h' => $last3, 'usual_per_hour' => $base, 'level' => $level, 'last' => iso($last), 'start' => gmdate('Y-m-d\TH:i:s\Z', $since)]);
+out(200, ['host' => $host, 'name' => $name, 'page' => $sites[$host]['page'] ?? null, 'range' => $range, 'unit' => $unit, 'buckets' => array_values($buckets),
+          'total' => $total, 'total24' => $total24, 'kinds' => $kinds, 'last3h' => $last3, 'usual_per_hour' => $base, 'level' => $level, 'last' => iso($lastTs), 'now' => gmdate('Y-m-d\TH:i:s\Z', $now)]);

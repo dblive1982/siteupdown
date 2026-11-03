@@ -162,7 +162,7 @@ function ensure_schema(PDO $pdo): void {
         checked_at DATETIME NULL,
         created_at DATETIME NOT NULL
     )$cs");
-    // Visitor problem reports for the "Is X down?" pages (pruned after 35 days).
+    // Visitor problem reports for the "Is X down?" pages (kept three years).
     $pdo->exec("CREATE TABLE IF NOT EXISTS reports (
         id $id,
         host VARCHAR(253) NOT NULL,

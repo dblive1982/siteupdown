@@ -34,27 +34,56 @@
 
   /* Problem-report helpers shared by the home page and the "Is X down?" pages. */
   S.REPKIND = { site: 'website not loading', login: 'cannot log in', app: 'app not working', slow: 'very slow' };
-  S.repChart = function (chart, detail, kindsEl, rep) {
-    var hours = rep.hours || [], hk = rep.hk || [], max = Math.max.apply(null, hours.concat([3])), K = Object.keys(S.REPKIND);
-    function sentence(i) {
-      var t = new Date(new Date(rep.start).getTime() + i * 3600000), n = hours[i] || 0;
-      var tm = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      if (!n) return 'Around ' + tm + ': no reports.';
-      var parts = K.filter(function (k) { return hk[i] && hk[i][k]; }).map(function (k) { return hk[i][k] + ' ' + S.REPKIND[k]; });
-      return 'Around ' + tm + ': ' + n + (n === 1 ? ' report' : ' reports') + (parts.length ? ' (' + parts.join(', ') + ')' : '') + '.';
+  var RANGES = { '24h': 'the last 24 hours', '7d': 'the last 7 days', '30d': 'the last 30 days', '1y': 'the last year' };
+  S.repRangeText = function (r) { return RANGES[r] || RANGES['24h']; };
+  function fmtDay(d, o) { return d.toLocaleDateString([], Object.assign({ timeZone: 'UTC' }, o)); }
+  S.repChart = function (chart, detail, kindsEl, rep, extra) {
+    var bk = rep.buckets || [], max = Math.max.apply(null, bk.map(function (b) { return b.n; }).concat([3])), K = Object.keys(S.REPKIND), unit = rep.unit || 'hour';
+    function when(b) {
+      var d = new Date(b.t);
+      if (unit === 'hour') return d.toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' }) + ', ' + d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      if (unit === 'week') return 'Week of ' + fmtDay(d, { day: 'numeric', month: 'short', year: 'numeric' });
+      return fmtDay(d, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
     }
-    chart.innerHTML = hours.map(function (n, i) {
-      var segs = K.map(function (k) { var c = hk[i] && hk[i][k] || 0; return c ? '<i class="seg s-' + k + '" style="flex:' + c + '"></i>' : ''; }).join('');
-      return '<button type="button" class="bar' + (n ? ' has' : '') + '" data-i="' + i + '" aria-label="' + S.esc(sentence(i)) + '" style="height:' + Math.max(6, Math.round(100 * n / max)) + '%">' + segs + '</button>';
+    function sentence(i) {
+      var b = bk[i], n = b.n;
+      if (!n) return when(b) + ': no reports.';
+      var parts = K.filter(function (k) { return b.k[k]; }).map(function (k) { return b.k[k] + ' ' + S.REPKIND[k]; });
+      return when(b) + ': ' + n + (n === 1 ? ' report' : ' reports') + ' (' + parts.join(', ') + ').';
+    }
+    chart.innerHTML = bk.map(function (b, i) {
+      var segs = K.map(function (k) { var c = b.k[k] || 0; return c ? '<i class="seg s-' + k + '" style="height:' + (100 * c / b.n) + '%"></i>' : ''; }).join('');
+      var h = b.n ? Math.max(16, Math.round(100 * b.n / max)) : 0;
+      return '<button type="button" class="bar' + (b.n ? ' has' : '') + '" data-i="' + i + '" aria-label="' + S.esc(sentence(i)) + '"' + (b.n ? ' style="height:' + h + '%"' : '') + '>' + segs + '</button>';
     }).join('');
+    var peak = bk.reduce(function (m, b, i) { return b.n > (bk[m] ? bk[m].n : 0) ? i : m; }, -1);
+    var dflt = peak >= 0 && bk[peak].n ? 'Busiest ' + unit + ': ' + sentence(peak) : 'Tap or hover a bar to see what was reported.';
     if (detail) {
-      var show = function (e) { var b = e.target.closest('.bar'); if (!b) return; detail.hidden = false; detail.textContent = sentence(+b.getAttribute('data-i')); };
-      chart.onmouseover = show; chart.onclick = show; chart.onfocusin = show;
+      detail.hidden = false; detail.textContent = dflt;
+      var show = function (e) { var b = e.target.closest('.bar'); if (!b) return; detail.textContent = sentence(+b.getAttribute('data-i')); };
+      chart.onmouseover = show; chart.onclick = show; chart.onfocusin = show; chart.onmouseleave = function () { detail.textContent = dflt; };
+    }
+    if (extra) {
+      var first = new Date(bk[0].t), last = new Date(bk[bk.length - 1].t), today = new Date();
+      var td = today.toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short' });
+      if (extra.date) extra.date.textContent = rep.range === '24h' ? 'Today, ' + td : fmtDay(first, { day: 'numeric', month: 'short', year: rep.range === '1y' ? 'numeric' : undefined }) + ' to ' + fmtDay(last, { day: 'numeric', month: 'short', year: rep.range === '1y' ? 'numeric' : undefined });
+      if (extra.axis) { var sp = extra.axis.children; sp[0].textContent = rep.range === '24h' ? '24 hours ago' : fmtDay(first, { day: 'numeric', month: 'short' }); sp[1].textContent = rep.range === '24h' ? 'Now' : 'Today'; }
     }
     if (kindsEl) {
       var k = rep.kinds || {};
       kindsEl.innerHTML = K.filter(function (x) { return k[x]; }).map(function (x) { return '<span class="kd"><i class="kdot s-' + x + '"></i>' + k[x] + ' ' + S.REPKIND[x] + '</span>'; }).join('');
     }
+  };
+  /* Range tabs (24 hours / 7 days / 30 days / 1 year). */
+  S.repRanges = function (el, onChange) {
+    var cur = '24h';
+    el.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-range]'); if (!b || b.getAttribute('data-range') === cur) return;
+      cur = b.getAttribute('data-range');
+      Array.prototype.forEach.call(el.querySelectorAll('[data-range]'), function (x) { var on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-pressed', on); });
+      onChange(cur);
+    });
+    return function () { return cur; };
   };
   /* Multi-select picker: toggle problems, then Send. onSend(kinds[]) is called. */
   S.repPicker = function (pick, onSend) {

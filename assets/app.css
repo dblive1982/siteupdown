@@ -827,3 +827,22 @@ a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--t
 .sp-rsendrow{margin:12px 0 0}
 .rsend[disabled]{opacity:.45;cursor:not-allowed}
 .sp-axis{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:6px}
+/* report chart: range tabs, date heading, taller bars, spacing */
+.sp-ranges{display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 12px}
+.sp-ranges .rg{font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:7px 12px;cursor:pointer}
+.sp-ranges .rg.on{background:var(--green);color:var(--green-ink);border-color:var(--green)}
+.sp-rdate{font-weight:700;font-size:15px;color:var(--text);margin:0 0 10px}
+.sp-chart{height:120px;gap:3px;align-items:flex-end}
+.sp-chart.small{height:88px;margin:4px 0 0}
+.sp-chart .bar{min-width:3px;background:transparent;position:relative}
+.sp-chart .bar:not(.has)::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;border-radius:2px;background:var(--line)}
+.sp-chart .bar.has{border-radius:3px 3px 0 0}
+.sp-axis{margin-top:8px}
+.sp-rdetail{margin:12px 0 0;min-height:2.6em;line-height:1.4}
+.sp-kinds{margin-top:14px}
+.sp-report{margin-top:22px}
+.sp-rpick .sp-rbtns{margin-bottom:6px}
+.sp-rpick p.sp-rsendrow{margin:18px 0 0}
+.sp-rmsg{margin-top:14px}
+.sp-chart .bar{justify-content:flex-start;align-content:flex-start;gap:0}
+.sp-chart .bar .seg{flex:none;width:100%;min-height:3px}
