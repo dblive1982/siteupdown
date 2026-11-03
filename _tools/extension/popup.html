@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>siteupdown.com</title>
+<link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<header><img src="icons/icon48.png" width="28" height="28" alt=""><b>siteupdown<span>.com</span></b></header>
+<main>
+  <p class="host" id="host">Checking…</p>
+  <div class="result" id="result" data-v="pending">
+    <span class="dot" aria-hidden="true"></span>
+    <div><strong id="title">Checking…</strong><p id="detail"></p></div>
+  </div>
+  <div class="actions">
+    <button type="button" id="again" class="btn ghost">Check again</button>
+    <button type="button" id="watch" class="btn" hidden>Add to watchlist</button>
+    <a id="report" class="btn ghost" target="_blank" rel="noopener" hidden>Full report</a>
+  </div>
+  <p class="msg" id="msg" role="status"></p>
+  <form id="form" novalidate>
+    <label for="addr">Check another site</label>
+    <div class="row"><input id="addr" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="example.com" maxlength="253"><button class="btn" type="submit">Check</button></div>
+  </form>
+</main>
+<footer><span id="who"></span><a id="monitor" target="_blank" rel="noopener">My watchlist</a></footer>
+<script src="popup.js"></script>
+</body>
+</html>

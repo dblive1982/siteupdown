@@ -124,7 +124,7 @@
     var timer;
     S.onReady(function (u) {
       if (!u) { $('#m-out').hidden = false; return; }
-      $('#m-in').hidden = false; load(); loadCh(); loadXc(); timer = setInterval(function () { if (!document.hidden) load(); }, 60000);
+      $('#m-in').hidden = false; load(); loadCh(); loadXc(); try { var ad = new URLSearchParams(location.search).get('add'); if (ad) { $('#m-input').value = ad.slice(0, 253); $('#m-input').focus(); } } catch (e) {} timer = setInterval(function () { if (!document.hidden) load(); }, 60000);
     });
     function draw(j) {
       var L = $('#m-list');

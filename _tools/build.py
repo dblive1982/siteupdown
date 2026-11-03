@@ -424,6 +424,10 @@ def static_pages():
 <p>Share links keep a copy of the result so it can be shown to whoever you send it to. They expire after 30 days.</p>
 <h2>Accounts</h2>
 <p>Signing in is optional. If you create an account (with email and password, or with Google) we store your email address, display name and a hashed password (we never see or store your password itself). While you are signed in we also save your checks and your watchlist, and they are private to you. You can reset your data or delete your account at any time from the Account page; deleting removes everything saved with it.</p>
+<h2>Extra checks</h2>
+<p>If you add an extra check (a word that must appear on a page, or a port that must answer), we store the website address, the word or port, and the latest result, so we can check it every minute and email you if it fails. You can remove a check at any time on the Monitor page, and deleting your account removes them all.</p>
+<h2>Browser extension</h2>
+<p>The siteupdown.com browser extension reads the address of the tab you are on only when you click its toolbar button. It sends just the website name (for example example.com, never the full page address, search terms or page content) to siteupdown.com so we can check whether the site is up. It does not read or store your browsing history, and it does not run in the background. If you are signed in to siteupdown.com in the same browser, the extension uses that sign-in to add a site to your watchlist when you ask it to. Nothing is sold or shared for advertising.</p>
 <h2>Alert channels</h2>
 <p>If you connect Telegram, Slack or Discord alerts, we store the Telegram chat number or the webhook address you give us, so we can send you a short message when a site on your watchlist goes down or comes back up. These messages pass through Telegram, Slack or Discord, which have their own privacy policies. You can remove a channel at any time on the Monitor page, send /stop to our Telegram bot, or delete your account to remove them all.</p>
 <p>If you sign in with Google, Google tells us your name and verified email address. We do not get access to anything else in your Google account.</p>
