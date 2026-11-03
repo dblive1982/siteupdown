@@ -767,3 +767,14 @@ a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--t
 @media(max-width:600px){.tool-form .btn{width:100%}.grade-card{flex-direction:column;align-items:flex-start}}
 
 .tools-more{text-align:center;margin-top:22px}
+
+/* Light theme = the email look: lavender page, white cards, dark purple header and footer with a green line */
+:root[data-theme=light]{--bg:#eeeaf5;--bg2:#e4ddf2;--card:#ffffff;--card2:#f7f4fc;--line:#d5cde8;--text:#1b1230;--muted:#5f5480;--green:#2f9e41;--green-ink:#ffffff;--green-soft:rgba(47,158,65,.12);--hl:#26843a;--dot:rgba(70,40,140,.09);--hard:#d6cbee;--glow:rgba(57,181,74,.08)}
+:root[data-theme=light] .site-head,:root[data-theme=light] .site-foot{--bg:#130228;--bg2:#1f0c3d;--card:#1d0a38;--card2:#1d0a38;--line:#3a2766;--text:#f0f2f6;--muted:#b9aee0;--green:#39b54a;--green-ink:#0b1a10;--hl:#52cc62;--green-soft:rgba(57,181,74,.16);background:#130228;color:#f0f2f6}
+:root[data-theme=light] .site-head{border-bottom:4px solid #39b54a;backdrop-filter:none}
+:root[data-theme=light] .site-foot{border-top:0;margin-top:40px}
+:root[data-theme=light] .site-head .lf-d,:root[data-theme=light] .site-foot .lf-d{display:block}
+:root[data-theme=light] .site-head .lf-l,:root[data-theme=light] .site-foot .lf-l{display:none}
+:root[data-theme=light] .btn:not(.ghost){background:#39b54a;color:#0b1a10;border-color:#39b54a}
+:root[data-theme=light] .btn:not(.ghost):hover{background:#44c455}
+:root[data-theme=light] .site-head .btn.ghost,:root[data-theme=light] .site-foot .btn.ghost{color:#f0f2f6}
