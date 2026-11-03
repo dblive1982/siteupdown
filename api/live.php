@@ -5,8 +5,9 @@
 require __DIR__ . '/_boot.php';
 require __DIR__ . '/_sitepages.php';
 require __DIR__ . '/_probe.php';
-const LIVE_EVERY = 5;          // seconds between samples of one site (raise or lower here)
+const LIVE_EVERY = 10;         // seconds between samples of one site (raise or lower here)
 const LIVE_MAX_HOSTS = 12;     // sites sampled at the same moment, to protect the server
+const LIVE_BACKOFF = 120;      // seconds to leave a site alone if it seems to be refusing our checks
 const LIVE_KEEP = 900;         // seconds of samples kept
 $host = strtolower(trim((string)($_GET['host'] ?? '')));
 if (!isset(site_pages()[$host])) out(404, ['error' => 'Live graph is not available for that site.']);
@@ -26,7 +27,9 @@ if (!$fresh) {
             $r = check_site($host, '/', false, true);
             $pdo->prepare('INSERT INTO live_samples (host, ts, ms, verdict, code) VALUES (?,?,?,?,?)')->execute([$host, time(), $r['ms'] ?? null, $r['verdict'], $r['http_code'] ?? ($r['code'] ?? null)]);
             $pdo->prepare('DELETE FROM live_samples WHERE host=? AND ts < ?')->execute([$host, time() - LIVE_KEEP]);
-            $pdo->prepare('UPDATE live_lock SET until_ts=? WHERE host=?')->execute([time() + LIVE_EVERY - 1, $host]);
+            $code = (int)($r['http_code'] ?? ($r['code'] ?? 0));
+            $blocked = $r['verdict'] === 'inconclusive' || $code === 403 || $code === 429;     // back off so we are never a nuisance
+            $pdo->prepare('UPDATE live_lock SET until_ts=? WHERE host=?')->execute([time() + ($blocked ? LIVE_BACKOFF : LIVE_EVERY - 1), $host]);
             $probed = true;
         }
     }

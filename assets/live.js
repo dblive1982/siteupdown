@@ -5,7 +5,7 @@
   var host = root.getAttribute('data-host');
   var card = document.getElementById('sp-live'), svg = document.getElementById('lv-svg'), strip = document.getElementById('lv-strip');
   var $ = function (i) { return document.getElementById(i); };
-  var mode = 'live', samples = [], every = 5, timer = 0, started = Date.now(), data = null, stopped = false, W = 600, H = 170, PAD = 14;
+  var mode = 'live', samples = [], every = 10, timer = 0, started = Date.now(), data = null, stopped = false, W = 600, H = 170, PAD = 14;
   var COL = { up: '#39b54a', down: '#ff5a5f', slow: '#f5b83d', none: '#6b7c73' };
 
   function cls(v) { return v === 'up' ? 'up' : (v === 'down' ? 'down' : (v === 'none' ? 'none' : 'slow')); }
@@ -39,7 +39,7 @@
 
   /* ---- live mode ---- */
   function renderLive() {
-    var win = samples.slice(-60);
+    var win = samples.slice(-30);
     if (!win.length) return;
     draw(win.map(function (s) { return { ms: s.ms, c: s.v === 'up' ? 'up' : (s.v === 'down' ? 'down' : 'slow'), label: clock(s.t) + ': ' + (s.ms != null ? s.ms + ' ms' : 'no answer') + (s.c ? ' (HTTP ' + s.c + ')' : '') }; }), 'sample');
     var last = win[win.length - 1], vals = win.map(function (s) { return s.ms; }).filter(function (x) { return x != null; });
@@ -55,26 +55,74 @@
     if (Date.now() - started > 15 * 60 * 1000) { stopped = true; $('lv-sub').textContent = 'Paused to save resources. Tap Live to resume.'; return; }
     fetch('/api/live.php?host=' + encodeURIComponent(host), { credentials: 'same-origin' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
       if (!j) { card.hidden = true; return; }
-      card.hidden = false; every = j.every || 5; samples = j.samples || [];
+      card.hidden = false; every = j.every || 10; samples = j.samples || [];
       if (mode === 'live') renderLive();
       var age = samples.length ? j.now - samples[samples.length - 1].t : every;
-      timer = setTimeout(poll, Math.max(1000, (every - age) * 1000 + 300));
+      timer = setTimeout(poll, age >= every ? 3000 : Math.max(1000, (every - age) * 1000 + 300));
     }).catch(function () { timer = setTimeout(poll, 8000); });
   }
 
   /* ---- history ---- */
+  function dur(sec) {
+    sec = Math.max(0, Math.round(sec)); if (sec < 90) return sec + ' sec';
+    var m = Math.round(sec / 60); if (m < 90) return m + ' min';
+    var h = Math.floor(m / 60), r = m % 60; if (h < 48) return h + ' h' + (r ? ' ' + r + ' min' : '');
+    return Math.floor(h / 24) + ' days ' + (h % 24) + ' h';
+  }
+  function when(iso) { return new Date(iso).toLocaleString([], { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); }
+  function plural(n, w) { return n + ' ' + w + (n === 1 ? '' : 's'); }
+  var cache = null;
   function history(range) {
     fetch('/api/uptime.php?host=' + encodeURIComponent(host) + '&range=' + range).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
       if (!j || mode !== range) { if (!j) { $('lv-sub').textContent = 'No history for this site yet.'; svg.innerHTML = ''; strip.innerHTML = ''; } return; }
       var pts = j.series.map(function (s) {
-        var d = new Date(s.t), lab = d.toLocaleString([], range === '24h' ? { weekday: 'short', hour: '2-digit', minute: '2-digit' } : { weekday: 'short', day: 'numeric', month: 'short' });
-        return { ms: s.ms, c: s.state === 'up' ? 'up' : (s.state === 'down' ? 'down' : (s.state === 'partial' ? 'slow' : 'none')), label: lab + ': ' + (s.state === 'none' ? 'no data' : (s.ms != null ? s.ms + ' ms' : s.state)) };
+        var d = new Date(s.t), lab;
+        if (range === '1y') {
+          lab = d.toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' }) + ': ' + (s.pct != null ? s.pct + '% up' : 'no data') + (s.outages ? ' · ' + plural(s.outages, 'outage') : '') + (s.down_s ? ' · down about ' + dur(s.down_s) : '') + (s.ms != null ? ' · ' + s.ms + ' ms average' : '');
+        } else {
+          lab = d.toLocaleString([], range === '24h' || range === '48h' ? { weekday: 'short', hour: '2-digit', minute: '2-digit' } : { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit' });
+          lab += ': ' + (s.state === 'none' ? 'no data' : (s.ms != null ? s.ms + ' ms' : s.state));
+        }
+        return { ms: s.ms, c: s.state === 'up' ? 'up' : (s.state === 'down' ? 'down' : (s.state === 'partial' ? 'slow' : 'none')), label: lab };
       });
+      if (!pts.length) { $('lv-sub').textContent = 'The 12-month record starts building today. Check back tomorrow.'; $('lv-ms').textContent = '\u2014'; svg.innerHTML = ''; strip.innerHTML = ''; return; }
       draw(pts, 'bucket');
       var u = j.uptime[range];
-      setNow({ ms: j.avg_ms }, 'average' + (j.min_ms != null ? ' · fastest ' + j.min_ms + ' ms · slowest ' + j.max_ms + ' ms' : '') + (u != null ? ' · uptime ' + u + '%' : ''));
+      if (range === '1y') {
+        $('lv-ms').textContent = j.year.uptime != null ? j.year.uptime + '% up' : '\u2014';
+        $('lv-sub').textContent = 'over ' + plural(j.year.days, 'day') + ' recorded \u00b7 ' + plural(j.year.outages, 'outage') + (j.year.down_s ? ' \u00b7 about ' + dur(j.year.down_s) + ' down in total' : '') + ' \u00b7 graph shows average speed per day';
+        $('lv-a1').textContent = j.year.days >= 360 ? '12 months ago' : j.year.days + ' days ago';
+      } else {
+        setNow({ ms: j.avg_ms }, 'average' + (j.min_ms != null ? ' \u00b7 fastest ' + j.min_ms + ' ms \u00b7 slowest ' + j.max_ms + ' ms' : '') + (u != null ? ' \u00b7 uptime ' + u + '%' : ''));
+        $('lv-a1').textContent = { '24h': '24 hours ago', '48h': '48 hours ago', '7d': '7 days ago' }[range] || '';
+      }
       pill(j.current.verdict === 'up' ? 'up' : (j.current.verdict === 'down' ? 'down' : 'slow'));
-      $('lv-a1').textContent = { '24h': '24 hours ago', '7d': '7 days ago', '30d': '30 days ago' }[range]; $('lv-a2').textContent = 'Now';
+      $('lv-a2').textContent = 'Now';
+    }).catch(function () {});
+  }
+
+  /* ---- written outage summary (last 7 days) ---- */
+  function outages() {
+    var box = $('sp-outages'); if (!box) return;
+    fetch('/api/uptime.php?host=' + encodeURIComponent(host) + '&range=7d').then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      if (!j) return;
+      box.hidden = false;
+      var body = $('so-body'); body.textContent = '';
+      var rec = j.recent || [];
+      $('so-sum').textContent = rec.length ? plural(rec.length, 'outage') + ' \u00b7 ' + dur(j.recent_down_s) + ' down' : 'All clear';
+      if (!rec.length) { var p = document.createElement('p'); p.className = 'so-clear'; p.textContent = 'No outages recorded in the last 7 days. We have not seen ' + host + ' go down.'; body.appendChild(p); }
+      else {
+        var ul = document.createElement('ul'); ul.className = 'so-list';
+        rec.forEach(function (o) {
+          var li = document.createElement('li'); li.className = o.ended ? '' : 'on';
+          var t = document.createElement('b'); t.textContent = o.ended ? when(o.started) + ' \u2192 ' + new Date(o.ended).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'Since ' + when(o.started);
+          var d = document.createElement('span'); d.textContent = o.ended ? 'Down for about ' + dur(o.seconds) : 'Still down \u2014 ' + dur(o.seconds) + ' so far';
+          li.appendChild(t); li.appendChild(d); ul.appendChild(li);
+        });
+        body.appendChild(ul);
+      }
+      var y = j.year;
+      $('so-year').textContent = y && y.days ? 'Last 12 months (recorded since ' + new Date(y.since + 'T12:00:00Z').toLocaleDateString([], { day: 'numeric', month: 'short', year: 'numeric' }) + '): ' + (y.uptime != null ? y.uptime + '% up, ' : '') + plural(y.outages, 'outage') + (y.down_s ? ', about ' + dur(y.down_s) + ' down in total.' : '.') : '';
     }).catch(function () {});
   }
 
@@ -94,5 +142,5 @@
   }
   var wrap = document.querySelector('.lv-wrap'); wrap.addEventListener('mousemove', tipAt); wrap.addEventListener('click', tipAt); wrap.addEventListener('touchmove', tipAt, { passive: true });
   document.addEventListener('visibilitychange', function () { if (!document.hidden && mode === 'live' && !stopped) poll(); });
-  poll();
+  poll(); outages();
 })();

@@ -114,6 +114,18 @@ function ensure_schema(PDO $pdo): void {
         started_at DATETIME NOT NULL,
         ended_at DATETIME NULL
     )$cs");
+    // One row per site per day, kept long-term (the 12-month record). Rolled up from site_log and incidents by the cron job.
+    $pdo->exec("CREATE TABLE IF NOT EXISTS site_daily (
+        host VARCHAR(253) NOT NULL,
+        day CHAR(10) NOT NULL,
+        up_n INT NOT NULL DEFAULT 0,
+        bad_n INT NOT NULL DEFAULT 0,
+        ms_sum BIGINT NOT NULL DEFAULT 0,
+        ms_n INT NOT NULL DEFAULT 0,
+        outages INT NOT NULL DEFAULT 0,
+        down_s INT NOT NULL DEFAULT 0,
+        PRIMARY KEY (host, day)
+    )$cs");
     $pdo->exec("CREATE TABLE IF NOT EXISTS alert_state (
         host VARCHAR(253) NOT NULL PRIMARY KEY,
         state VARCHAR(8) NOT NULL,

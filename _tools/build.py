@@ -589,12 +589,14 @@ def site_pages_build():
             ('<div class="sp-card" id="sp-app" hidden><div class="sp-rhead"><b>%s app servers</b><span class="sp-level">Servers the app uses</span></div><ul class="sp-svc" id="sp-svc"></ul>'
              '<p class="note">These are the servers the %s app talks to. If they answer, the servers are reachable, but that does not prove everything inside the app is working, such as messages, feeds or logins. For in-app problems, see what other visitors are reporting below.</p></div>' % (n, n) if name in SP.APPS else '') +
             '<div class="sp-card live-card" id="sp-live" hidden><div class="sp-rhead"><b>Response time</b><span class="sp-pill up" id="lv-pill">Live</span></div>'
-            '<div class="sp-ranges" id="lv-ranges" role="group" aria-label="Graph range"><button type="button" class="rg on" data-range="live" aria-pressed="true">Live</button><button type="button" class="rg" data-range="24h" aria-pressed="false">24 hours</button><button type="button" class="rg" data-range="7d" aria-pressed="false">7 days</button><button type="button" class="rg" data-range="30d" aria-pressed="false">30 days</button></div>'
+            '<div class="sp-ranges" id="lv-ranges" role="group" aria-label="Graph range"><button type="button" class="rg on" data-range="live" aria-pressed="true">Live</button><button type="button" class="rg" data-range="24h" aria-pressed="false">24 hours</button><button type="button" class="rg" data-range="48h" aria-pressed="false">48 hours</button><button type="button" class="rg" data-range="7d" aria-pressed="false">7 days</button><button type="button" class="rg" data-range="1y" aria-pressed="false">12 months</button></div>'
             '<div class="lv-now"><b id="lv-ms">&mdash;</b><span id="lv-sub">Waiting for the first sample&hellip;</span></div>'
             '<div class="lv-wrap"><svg id="lv-svg" viewBox="0 0 600 170" preserveAspectRatio="none" role="img" aria-label="Response time graph"></svg><div class="lv-tip" id="lv-tip" hidden></div></div>'
             '<div class="lv-strip" id="lv-strip" aria-hidden="true"></div>'
             '<div class="sp-axis"><span id="lv-a1">5 minutes ago</span><span id="lv-a2">Now</span></div>'
             '<p class="sp-rdetail" id="lv-detail">Tap or hover the graph for a time.</p></div>' +
+            '<div class="sp-card" id="sp-outages" hidden><div class="sp-rhead"><b>Outages in the last 7 days</b><span class="sp-level" id="so-sum"></span></div><div id="so-body"></div>'
+            '<p class="note" id="so-year"></p><p class="note">Times are shown in your own time zone. A site counts as down after two failed checks in a row, so start times can be a few minutes late and lengths are approximate.</p></div>' +
             '<p class="lead" style="margin-top:22px">%s</p>' % blurb +
             '<h2>Are other people having problems with %s?</h2>' % n +
             '<div class="sp-card" id="sp-reports"><div class="sp-rhead"><b id="sp-rtotal">Problem reports</b><span id="sp-rlevel" class="sp-level"></span></div>'
