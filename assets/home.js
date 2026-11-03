@@ -380,7 +380,9 @@
     function ago(iso) { var m = Math.max(0, Math.round((Date.now() - new Date(iso)) / 60000)); if (m < 2) return 'just now'; if (m < 90) return m + ' min ago'; var h = Math.round(m / 60); return h < 48 ? h + ' h ago' : Math.round(h / 24) + ' days ago'; }
     fetch('/api/outages.php?n=5').then(function (r) { return r.json(); }).then(function (j) {
       ul.textContent = '';
-      if (!j.items || !j.items.length) { var li = document.createElement('li'); li.className = 'ro-none'; li.textContent = 'No outages recorded in the last 7 days. All quiet.'; ul.appendChild(li); return; }
+      var live = (j.items || []).filter(function (o) { return !o.ended; }).length;
+      $('#ro-lead').textContent = live ? live + (live === 1 ? ' popular site is' : ' popular sites are') + ' down right now. Sites that came back in the last 24 hours are listed underneath.' : 'Nothing we watch is down right now. Sites that had an outage and came back in the last 24 hours are listed underneath.';
+      if (!j.items || !j.items.length) { var li = document.createElement('li'); li.className = 'ro-none'; li.textContent = 'No outages right now, and none in the last 24 hours. All quiet.'; ul.appendChild(li); return; }
       j.items.forEach(function (o) {
         var li = document.createElement('li'); li.className = o.ended ? 'ro-end' : 'ro-on';
         var a = document.createElement(o.page ? 'a' : 'span'); if (o.page) a.href = o.page; a.className = 'ro-name'; a.textContent = o.name;
@@ -390,7 +392,7 @@
       });
     }).catch(function () { ul.innerHTML = '<li class="ro-none">Could not load recent outages.</li>'; });
   }
-  setTimeout(loadOutages, 300); setInterval(loadOutages, 120000);
+  setTimeout(loadOutages, 300); setInterval(loadOutages, 60000);
   function loadTop() {
     fetch('/api/top.php').then(function (r) { return r.json(); }).then(function (j) {
       topItems = j.items || []; drawTop();
