@@ -196,6 +196,13 @@ function ensure_schema(PDO $pdo): void {
         added_at DATETIME NOT NULL,
         UNIQUE (user_id, host)
     )$cs");
+    // Admin area: a record of what was done and when.
+    $pdo->exec("CREATE TABLE IF NOT EXISTS admin_log (
+        id $id,
+        ts DATETIME NOT NULL,
+        action VARCHAR(40) NOT NULL,
+        detail VARCHAR(255) NOT NULL
+    )$cs");
     foreach ([
         'CREATE INDEX IF NOT EXISTS i_att ON attempts (ip_hash, kind, ts)',
         'CREATE INDEX IF NOT EXISTS i_chk ON checks (checked_at)',

@@ -3,6 +3,7 @@ Allow: /
 Disallow: /api/
 Disallow: /login
 Disallow: /account
+Disallow: /admin
 Disallow: /s/
 
 # Google AdSense reviewer
