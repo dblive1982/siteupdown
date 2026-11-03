@@ -35,7 +35,7 @@
     if (p.ms != null) {
       var cmp = '';
       if (med && st !== 'none') { var r = p.ms / med; cmp = r >= 1.5 ? ' <i>' + (Math.round(r * 10) / 10) + 'x slower than typical</i>' : r <= 0.67 ? ' <i>' + (Math.round(med / p.ms * 10) / 10) + 'x faster than typical</i>' : ' <i>about typical</i>'; }
-      rows += '<div class="tp-r"><span>Response</span><b>' + p.ms + ' ms' + cmp + '</b></div>';
+      rows += '<div class="tp-r"><span>Response</span><b>' + p.ms + ' ms</b></div>' + (cmp ? '<div class="tp-c">' + cmp.replace(/<\/?i>/g, '').trim() + '</div>' : '');
     }
     return '<div class="tp-h ' + st + '"><i></i>' + LBL[st] + '</div><div class="tp-t">' + esc(cname(p)) + '</div><div class="tp-s">' + esc(CONT[p.continent] || p.continent || '') + '</div>'
       + '<div class="tp-e">' + EXPLAIN[st] + '</div>' + rows;

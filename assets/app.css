@@ -810,3 +810,4 @@ a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--t
 @media(max-width:560px){.tip{width:min(210px,calc(100vw - 56px));padding:10px 12px}.tip .tp-t{font-size:14px}.tip .tp-e{margin:6px 0 7px;padding:6px 0}}
 .tip .tp-r b{white-space:nowrap}.tip .tp-r i{white-space:nowrap;font-size:11px}
 .tip .tp-r:first-of-type b{white-space:normal}
+.tip .tp-c{text-align:right;color:var(--muted);font-size:12px;padding:0 0 2px;line-height:1.3}
