@@ -148,7 +148,8 @@ def home():
     h = h.replace('{BODYATTR}', ' data-page="home"')
     report_kinds = ''.join('<button type="button" class="rk" data-kind="%s">%s</button>' % (k, l) for k, l in SP.KIND_LABELS)
     order = ['social', 'video', 'gaming', 'ai', 'finance', 'payments', 'trading', 'shopping', 'delivery', 'news', 'government', 'health', 'betting', 'telecom', 'travel', 'search', 'work']
-    topchips = '<button class="chip" type="button" data-cat="" aria-pressed="true">Popular</button>' + ''.join('<button class="chip" type="button" data-cat="%s" aria-pressed="false">%s</button>' % (k, html.escape(SP.CATS[k][0].replace(' and ', ' &amp; ').replace('&amp;', '&'))) for k in order if k in SP.CATS)
+    short = {'social': 'Social', 'video': 'Streaming', 'gaming': 'Gaming', 'ai': 'AI', 'finance': 'Banks', 'payments': 'Payments', 'trading': 'Trading & crypto', 'shopping': 'Shopping', 'delivery': 'Delivery', 'news': 'News', 'government': 'Government', 'health': 'Health', 'betting': 'Betting', 'telecom': 'Broadband & mobile', 'travel': 'Travel', 'search': 'Search & email', 'work': 'Work & cloud'}
+    topchips = '<button class="chip" type="button" data-cat="" aria-pressed="true">Popular</button>' + ''.join('<button class="chip" type="button" data-cat="%s" aria-pressed="false" data-full="%s">%s</button>' % (k, html.escape(SP.CATS[k][0]), html.escape(short[k])) for k in order if k in SP.CATS)
     share_btns = ''.join(f'<button class="sb{" wide" if k=="copy" else ""}" type="button" data-share="{k}" title="{t}" aria-label="{t}"{" hidden" if k=="native" else ""}>{i}{("<span>"+t+"</span>") if k=="copy" else ""}</button>' for k, t, i in [('copy', 'Copy link', I_LINK), ('x', 'Share on X', I_X), ('fb', 'Share on Facebook', I_FB), ('wa', 'Share on WhatsApp', I_WA), ('native', 'More share options', I_SHARE)])
     body = f'''
 <section class="hero"><div class="wrap">
@@ -219,7 +220,7 @@ def home():
 <p class="lead">A rolling sweep of the sites people ask about most. Every line is a real request from this server — a red entry is one that answered with an error or not at all.</p></div>
 <div class="pc-actions col"><div class="seg2"><button type="button" data-f="all" aria-pressed="true">All sites</button><button type="button" data-f="issues" aria-pressed="false" id="f-issues">Issues</button></div>
 <span class="fine" id="top-count"></span><button class="btn small ghost" type="button" id="top-refresh">{I_REFRESH}Refresh</button></div></div>
-<div class="chips" id="top-cats" role="group" aria-label="Website categories">{topchips}</div>
+<p class="fine cat-lab">Browse by category</p><div class="chips cat-chips" id="top-cats" role="group" aria-label="Website categories">{topchips}</div>
 <div class="rows" id="top-grid"><div class="skeleton">Sweeping the watchlist…</div></div>
 <p class="fine" id="top-updated" style="margin-top:14px">A snapshot, not continuous uptime monitoring.</p>
 <p class="fine" id="top-more" hidden></p>

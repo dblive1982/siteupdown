@@ -952,3 +952,10 @@ a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--t
 .cantsure{margin:14px 0 4px;padding:14px 16px;border:1px solid rgba(245,184,61,.5);border-left:4px solid var(--amber);border-radius:12px;background:rgba(245,184,61,.07)}
 .cantsure p{margin:0 0 10px;line-height:1.5}
 #sp-status .cantsure{margin:14px 0 0}
+
+/* top websites: compact category chips and tidy header actions */
+.cat-lab{margin:18px 0 8px;text-transform:uppercase;letter-spacing:.08em;font-size:12px}
+.cat-chips{gap:8px;margin-bottom:14px}
+.cat-chips .chip{padding:7px 12px;font-size:12.5px;border-radius:999px}
+.cat-chips .chip[aria-pressed=true]{background:var(--green);color:#04130a;border-color:var(--green)}
+#top-sites .pc-actions.col{flex-direction:row;flex-wrap:wrap;align-items:center;gap:10px}

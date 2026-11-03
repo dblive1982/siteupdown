@@ -376,7 +376,7 @@
     var shown = topCat && topFilter === 'all' ? items.slice(0, topLimit) : items;
     g.innerHTML = items.length ? shown.map(function (x) { return siteCard(x); }).join('') : '<div class="skeleton">' + (topFilter === 'all' ? 'Sweeping the watchlist…' : 'No issues right now. Every site we have checked is responding.') + '</div>';
     var mo = $('#top-more'); if (!mo) return;
-    if (topCat && items.length > shown.length) { mo.hidden = false; mo.innerHTML = '<button class="btn small ghost" type="button" id="top-showall">Show all ' + items.length + ' ' + esc(topLabel) + ' sites</button> <a class="fine" href="/is-it-down/#' + esc(topCat) + '">or open the full list</a>'; }
+    if (topCat && items.length > shown.length) { mo.hidden = false; mo.innerHTML = '<button class="btn small ghost" type="button" id="top-showall">Show all ' + items.length + ' sites in this category</button> <a class="fine" href="/is-it-down/#' + esc(topCat) + '">or open the full list</a>'; }
     else if (topCat) { mo.hidden = false; mo.innerHTML = '<a class="fine" href="/is-it-down/#' + esc(topCat) + '">Open the full ' + esc(topLabel) + ' list</a>'; }
     else { mo.hidden = false; mo.innerHTML = '<a class="fine" href="/is-it-down/">Browse every site by category</a>'; }
   }
@@ -443,7 +443,7 @@
     S.$$('[data-f]').forEach(function (b) { b.addEventListener('click', function () { topFilter = b.getAttribute('data-f'); S.$$('[data-f]').forEach(function (x) { x.setAttribute('aria-pressed', x === b); }); drawTop(); }); });
     var tc = $('#top-cats'); if (tc) tc.addEventListener('click', function (e) {
       var b = e.target.closest('[data-cat]'); if (!b) return;
-      topCat = b.getAttribute('data-cat'); topLabel = b.textContent; topLimit = 12;
+      topCat = b.getAttribute('data-cat'); topLabel = (b.getAttribute('data-full') || b.textContent).toLowerCase(); topLimit = 12;
       S.$$('#top-cats [data-cat]').forEach(function (x) { x.setAttribute('aria-pressed', x === b); });
       $('#top-grid').innerHTML = '<div class="skeleton">Loading&hellip;</div>'; loadTop();
     });
