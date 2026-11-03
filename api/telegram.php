@@ -7,8 +7,9 @@ $tg = tg_config();
 $cfg = config() ?: [];
 if ($tg['token'] === '') out(404, ['error' => 'Not configured.']);
 
-if (isset($_GET['setup'])) {
-    if (empty($cfg['cron_key']) || !hash_equals((string)$cfg['cron_key'], (string)($_GET['key'] ?? ''))) out(403, ['error' => 'Forbidden.']);
+$cliSetup = PHP_SAPI === 'cli' && (($argv[1] ?? '') === 'setup');
+if ($cliSetup || isset($_GET['setup'])) {
+    if (!$cliSetup && (empty($cfg['cron_key']) || !hash_equals((string)$cfg['cron_key'], (string)($_GET['key'] ?? '')))) out(403, ['error' => 'Forbidden.']);
     $site = rtrim((string)($cfg['site'] ?? 'https://siteupdown.com'), '/');
     $code = notify_post('https://api.telegram.org/bot' . $tg['token'] . '/setWebhook', ['url' => $site . '/api/telegram.php', 'secret_token' => $tg['secret'], 'allowed_updates' => ['message']]);
     out(200, ['webhook_set' => $code === 200, 'http' => $code]);
