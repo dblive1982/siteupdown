@@ -1011,8 +1011,8 @@ a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--t
 
 @media(max-width:560px){
   .app-row{flex-direction:column;gap:12px}
-  .app-row .chips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;gap:8px}
-  .app-row .chips .chip{justify-content:center;align-items:center;text-align:center;width:100%;font-size:12.5px;padding:10px 6px;line-height:1.25}
-  .app-row .chips .chip .ne{margin:0 0 0 4px!important;flex:0 0 auto}.app-row .chips .chip:last-child{flex-wrap:wrap}
+  .app-row .chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:10px}
+  .app-row .chips .chip{justify-content:center;text-align:center;width:100%}
+  .app-row .chips .chip:last-child{grid-column:1/-1}
 }
 @media(max-width:420px){.try-row:not(.app-row) .chips{flex-wrap:nowrap;gap:6px}.try-row:not(.app-row) .chip{font-size:12px;padding:10px 7px;gap:4px}}
