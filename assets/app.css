@@ -778,3 +778,28 @@ a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--t
 :root[data-theme=light] .btn:not(.ghost){background:#39b54a;color:#0b1a10;border-color:#39b54a}
 :root[data-theme=light] .btn:not(.ghost):hover{background:#44c455}
 :root[data-theme=light] .site-head .btn.ghost,:root[data-theme=light] .site-foot .btn.ghost{color:#f0f2f6}
+
+/* clearer map and richer marker popups */
+.map-land{opacity:.5}
+:root[data-theme=light] .map-land{fill:#2f9e41;opacity:.55}
+.mk{stroke:var(--card);stroke-width:2.2;cursor:pointer}
+.mk.none{stroke:var(--grey);stroke-width:2.4;fill:var(--card)}
+.mk-hit{fill:transparent;cursor:pointer}
+.pr{outline:none}.pr:hover .mk,.pr:focus-visible .mk{r:11;stroke-width:3}
+.pr:focus-visible .mk{stroke:var(--text)}
+.tip{white-space:normal;width:250px;padding:12px 14px;font-family:var(--sans);font-size:13px;line-height:1.4;text-align:left;transform:translate(-50%,-112%);box-shadow:0 12px 32px rgba(0,0,0,.35);border-radius:12px}
+.tip.l{transform:translate(-100%,-112%)}.tip.r{transform:translate(0,-112%)}
+.tip.b{transform:translate(-50%,16px)}.tip.b.l{transform:translate(-100%,16px)}.tip.b.r{transform:translate(0,16px)}
+.tip .tp-h{display:flex;align-items:center;gap:7px;font-family:var(--mono);font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;font-weight:700}
+.tip .tp-h i{width:9px;height:9px;border-radius:50%;background:var(--grey)}
+.tip .tp-h.ok{color:var(--hl)}.tip .tp-h.ok i{background:var(--green)}
+.tip .tp-h.blocked{color:var(--amber)}.tip .tp-h.blocked i{background:var(--amber)}
+.tip .tp-h.error{color:var(--red)}.tip .tp-h.error i{background:var(--red)}
+.tip .tp-t{margin-top:7px;font-size:15px;font-weight:700;color:var(--text)}
+.tip .tp-s{color:var(--muted);font-size:12.5px}
+.tip .tp-e{margin:8px 0 9px;padding:8px 0;border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);color:var(--muted);font-size:12.5px}
+.tip .tp-r{display:flex;justify-content:space-between;gap:12px;padding:2px 0;font-size:12.5px}
+.tip .tp-r span{color:var(--muted)}.tip .tp-r b{font-weight:600;text-align:right;color:var(--text);word-break:break-all}
+.tip .tp-r i{display:block;font-style:normal;font-weight:400;color:var(--muted);font-size:11.5px}
+@media(max-width:560px){.tip{width:220px}}
+.map-card{overflow:visible}.tip{z-index:20}

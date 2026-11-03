@@ -12,7 +12,7 @@
   function px(lon, lat) { return [(lon + 180) / 360 * W, (84 - lat) / 142 * (W * 142 / 360)]; }
   function drawLand() {
     if (!MAP || !svg) return;
-    var cell = W * MAP.cell / 360, s = cell * 0.62, o = (cell - s) / 2, p = '';
+    var cell = W * MAP.cell / 360, s = cell * 0.72, o = (cell - s) / 2, p = '';
     MAP.runs.forEach(function (runs, r) {
       runs.forEach(function (run) { for (var c = run[0]; c < run[0] + run[1]; c++) p += 'M' + (c * cell + o).toFixed(1) + ' ' + (r * cell + o).toFixed(1) + 'h' + s.toFixed(1) + 'v' + s.toFixed(1) + 'h-' + s.toFixed(1) + 'z'; });
     });
@@ -26,24 +26,47 @@
     MX: 'Mexico', AR: 'Argentina', CL: 'Chile', CO: 'Colombia', PE: 'Peru' };
   function cname(p) { var n = CN[p.country] || p.country || 'Unknown'; return (p.city ? p.city + ', ' : '') + n; }
   var LBL = { ok: 'Responded', blocked: 'Blocked', error: 'Server error', none: 'No connection' };
+  var CONT = { EU: 'Europe', AS: 'Asia', NA: 'North America', SA: 'South America', AF: 'Africa', OC: 'Oceania', AN: 'Antarctica' };
+  var EXPLAIN = { ok: 'This location reached the site normally.', blocked: 'The site refused this location\u2019s automated request. That is usually bot protection, not an outage.', error: 'The site answered here with a server error.', none: 'This location got no answer from the site.' };
+  var HTTPN = { 200: 'OK', 201: 'Created', 204: 'No content', 301: 'Moved permanently', 302: 'Redirect', 304: 'Not modified', 307: 'Redirect', 308: 'Redirect', 400: 'Bad request', 401: 'Login required', 403: 'Forbidden', 404: 'Not found', 429: 'Too many requests', 500: 'Server error', 502: 'Bad gateway', 503: 'Unavailable', 504: 'Gateway timeout' };
+  function tipHtml(p, st, i, med) {
+    var rows = '<div class="tp-r"><span>Checking</span><b>' + esc(state.host || 'this site') + '</b></div>';
+    rows += '<div class="tp-r"><span>HTTP</span><b>' + (p.code ? p.code + (HTTPN[p.code] ? ' ' + esc(HTTPN[p.code]) : '') : 'No reply') + '</b></div>';
+    if (p.ms != null) {
+      var cmp = '';
+      if (med && st !== 'none') { var d = Math.round((p.ms - med) / med * 100); cmp = Math.abs(d) < 8 ? ' <i>about average</i>' : ' <i>' + Math.abs(d) + '% ' + (d < 0 ? 'faster' : 'slower') + ' than median</i>'; }
+      rows += '<div class="tp-r"><span>Response</span><b>' + p.ms + ' ms' + cmp + '</b></div>';
+    }
+    return '<div class="tp-h ' + st + '"><i></i>' + LBL[st] + '</div><div class="tp-t">' + esc(cname(p)) + '</div><div class="tp-s">' + esc(CONT[p.continent] || p.continent || '') + '</div>'
+      + '<div class="tp-e">' + EXPLAIN[st] + '</div>' + rows;
+  }
   function drawProbes(probes) {
     var g = $('#markers'); if (!g) return;
-    var out = '';
+    var out = '', ms = probes.filter(function (p) { return p.ms != null && p.state !== 'none'; }).map(function (p) { return p.ms; }).sort(function (a, b) { return a - b; });
+    var med = ms.length ? ms[Math.floor(ms.length / 2)] : null;
     probes.forEach(function (p, i) {
       if (p.lat == null || p.lon == null) return;
       var xy = px(p.lon, p.lat), st = p.state || 'none';
-      var tx = esc(cname(p)) + ' · ' + LBL[st] + (p.code ? ' (' + p.code + ')' : '') + (p.ms != null ? ' · ' + p.ms + ' ms' : '');
-      out += '<g class="pr" tabindex="0" role="img" aria-label="' + tx + '" data-i="' + i + '" data-x="' + (xy[0] / W * 100).toFixed(2) + '" data-y="' + (xy[1] / H * 100).toFixed(2) + '" data-t="' + tx + '">'
-        + '<circle class="mk-ring ' + st + '" cx="' + xy[0].toFixed(1) + '" cy="' + xy[1].toFixed(1) + '" r="7"/>'
-        + '<circle class="mk ' + st + '" cx="' + xy[0].toFixed(1) + '" cy="' + xy[1].toFixed(1) + '" r="7"/></g>';
+      var tx = cname(p) + ', ' + LBL[st] + (p.code ? ' (HTTP ' + p.code + ')' : '') + (p.ms != null ? ', ' + p.ms + ' milliseconds' : '');
+      out += '<g class="pr" tabindex="0" role="img" aria-label="' + esc(tx) + '" data-i="' + i + '" data-x="' + (xy[0] / W * 100).toFixed(2) + '" data-y="' + (xy[1] / H * 100).toFixed(2) + '">'
+        + '<circle class="mk-ring ' + st + '" cx="' + xy[0].toFixed(1) + '" cy="' + xy[1].toFixed(1) + '" r="8"/>'
+        + '<circle class="mk-hit" cx="' + xy[0].toFixed(1) + '" cy="' + xy[1].toFixed(1) + '" r="20"/>'
+        + '<circle class="mk ' + st + '" cx="' + xy[0].toFixed(1) + '" cy="' + xy[1].toFixed(1) + '" r="8"/></g>';
     });
     g.innerHTML = out;
     S.$$('.pr', g).forEach(function (n) {
-      var show = function () { tip.textContent = n.getAttribute('data-t'); tip.style.left = n.getAttribute('data-x') + '%'; tip.style.top = n.getAttribute('data-y') + '%'; tip.hidden = false; };
-      n.addEventListener('mouseenter', show); n.addEventListener('focus', show); n.addEventListener('click', show);
+      var p = probes[+n.getAttribute('data-i')], st = p.state || 'none';
+      var show = function () {
+        var x = +n.getAttribute('data-x'), y = +n.getAttribute('data-y');
+        tip.innerHTML = tipHtml(p, st, +n.getAttribute('data-i'), med);
+        tip.className = 'tip' + (x > 62 ? ' l' : x < 38 ? ' r' : '') + (y < 42 ? ' b' : '');
+        tip.style.left = x + '%'; tip.style.top = y + '%'; tip.hidden = false;
+      };
+      n.addEventListener('mouseenter', show); n.addEventListener('focus', show); n.addEventListener('click', function (e) { e.stopPropagation(); show(); });
       n.addEventListener('mouseleave', function () { tip.hidden = true; }); n.addEventListener('blur', function () { tip.hidden = true; });
     });
   }
+  document.addEventListener('click', function () { if (tip) tip.hidden = true; });
   function mapMsg(t) { var m = $('#map-empty'); if (!m) return; m.hidden = !t; if (t) m.firstElementChild.textContent = t; }
 
 
