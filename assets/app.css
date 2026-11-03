@@ -952,7 +952,3 @@ a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--t
 .cantsure{margin:14px 0 4px;padding:14px 16px;border:1px solid rgba(245,184,61,.5);border-left:4px solid var(--amber);border-radius:12px;background:rgba(245,184,61,.07)}
 .cantsure p{margin:0 0 10px;line-height:1.5}
 #sp-status .cantsure{margin:14px 0 0}
-.cs-ask{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px}.cs-ask span{color:var(--muted);font-size:14px}
-.cs-r{margin:8px 0 0!important;font-size:13.5px;color:var(--muted)}
-.cantsure[data-call="down"]{border-color:rgba(255,90,95,.5);border-left-color:var(--red);background:rgba(255,90,95,.07)}
-.cantsure[data-call="working"]{border-color:rgba(57,181,74,.5);border-left-color:var(--green);background:rgba(57,181,74,.07)}
