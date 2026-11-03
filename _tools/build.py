@@ -147,7 +147,7 @@ def home():
     h = head('siteupdown.com — Is the website down, or just you?', 'Paste any website address to see if it is down for everyone or only for you. We check from our server and from twelve probes in different countries, at the same time.', '/', jsonld)
     h = h.replace('{BODYATTR}', ' data-page="home"')
     report_kinds = ''.join('<button type="button" class="rk" data-kind="%s">%s</button>' % (k, l) for k, l in SP.KIND_LABELS)
-    order = ['social', 'video', 'gaming', 'ai', 'finance', 'payments', 'trading', 'shopping', 'delivery', 'news', 'government', 'health', 'betting', 'telecom', 'travel', 'search', 'work']
+    order = [k for k in ['social', 'video', 'gaming', 'ai', 'finance', 'payments', 'trading', 'shopping', 'delivery', 'news', 'government', 'health', 'betting', 'telecom', 'travel', 'search', 'work'] if sum(1 for _, _, c, _ in SP.SITES if c == k) >= 4]
     short = {'social': 'Social', 'video': 'Streaming', 'gaming': 'Gaming', 'ai': 'AI', 'finance': 'Banks', 'payments': 'Payments', 'trading': 'Trading & crypto', 'shopping': 'Shopping', 'delivery': 'Delivery', 'news': 'News', 'government': 'Government', 'health': 'Health', 'betting': 'Betting', 'telecom': 'Broadband & mobile', 'travel': 'Travel', 'search': 'Search & email', 'work': 'Work & cloud'}
     topchips = '<button class="chip" type="button" data-cat="" aria-pressed="true">Popular</button>' + ''.join('<button class="chip" type="button" data-cat="%s" aria-pressed="false" data-full="%s">%s</button>' % (k, html.escape(SP.CATS[k][0]), html.escape(short[k])) for k in order if k in SP.CATS)
     share_btns = ''.join(f'<button class="sb{" wide" if k=="copy" else ""}" type="button" data-share="{k}" title="{t}" aria-label="{t}"{" hidden" if k=="native" else ""}>{i}{("<span>"+t+"</span>") if k=="copy" else ""}</button>' for k, t, i in [('copy', 'Copy link', I_LINK), ('x', 'Share on X', I_X), ('fb', 'Share on Facebook', I_FB), ('wa', 'Share on WhatsApp', I_WA), ('native', 'More share options', I_SHARE)])
@@ -567,6 +567,8 @@ def static_pages():
 
 # ---------------------------------------------------------------- "Is X down?" pages
 import site_pages as SP
+SENS = {'finance', 'payments', 'trading', 'government', 'betting'}      # banks, payments, trading, government, betting
+HIDDEN = {n for n, _, c, _ in SP.SITES[SP.CORE:] if c in SENS}       # extended pages in those categories: kept, but not offered to search engines or listed publicly
 
 def tile(name, host):
     return ''  # letter tiles removed; the name speaks for itself
@@ -599,7 +601,7 @@ def site_pages_build():
                 {"@type": "ListItem", "position": 3, "name": 'Is %s down?' % name, "item": SITE + path}]},
             {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faqs]}]}
         extra = '<script type="application/ld+json">' + _json.dumps(ld) + '</script>'
-        h = head(title + ' — siteupdown.com', desc, path, extra).replace('{BODYATTR}', '')
+        h = head(title + ' — siteupdown.com', desc, path, extra, noindex=(name in HIDDEN)).replace('{BODYATTR}', '')
         same = [(n2, SP.page_path(n2)) for n2, h2, c2, _ in SP.SITES if c2 == cat and n2 != name][:8]
         rel = ''.join('<li><a href="%s">Is %s down?</a></li>' % (pth, html.escape(n2)) for n2, pth in same)
         tipsli = ''.join('<li>%s</li>' % t for t in tips)
@@ -634,7 +636,8 @@ def site_pages_build():
     groups = ''
     order = ['social', 'video', 'gaming', 'ai', 'finance', 'payments', 'trading', 'shopping', 'delivery', 'news', 'government', 'health', 'betting', 'telecom', 'travel', 'search', 'work']
     for cat in order:
-        items = [(n, h, p) for n, h, c, p in SP.SITES if c == cat]
+        items = [(n, h, p) for n, h, c, p in SP.SITES if c == cat and n not in HIDDEN]
+        if not items: continue
         li = ''.join('<li data-host="%s" data-name="%s"><i class="dot-s"></i>%s<a href="%s">%s</a><span class="rep"></span></li>' % (html.escape(h), html.escape(n.lower()), tile(n, h), SP.page_path(n), html.escape(n) + (' <em class="apptag">App</em>' if n in SP.APPS else '')) for n, h, p in items)
         groups += '<section class="dgroup" id="%s"><h2>%s</h2><ul>%s</ul></section>' % (cat, html.escape(SP.CATS[cat][0]), li)
     ld = '<script type="application/ld+json">' + _json.dumps({"@context": "https://schema.org", "@type": "CollectionPage", "name": "Is it down? Status of popular websites", "url": SITE + "/is-it-down/"}) + '</script>'
@@ -689,7 +692,7 @@ def help_pages():
                 '<p style="margin-top:20px"><a href="/help/">&larr; All help guides</a></p></div></section>')
         write('help/' + a['slug'] + '.html', h + body + foot('<script src="/assets/app.js"></script>'))
     # sitemap
-    urls = [('/', 'daily', '1.0'), ('/speed', 'monthly', '0.8'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8'), ('/tools/', 'monthly', '0.8')] + [('/tools/' + t['slug'], 'monthly', '0.7') for t in TOOLS] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES] + [('/about', 'monthly', '0.5'), ('/business', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
+    urls = [('/', 'daily', '1.0'), ('/speed', 'monthly', '0.8'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8'), ('/tools/', 'monthly', '0.8')] + [('/tools/' + t['slug'], 'monthly', '0.7') for t in TOOLS] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES if n not in HIDDEN] + [('/about', 'monthly', '0.5'), ('/business', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
     sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join('<url><loc>%s%s</loc><lastmod>2026-11-02</lastmod><changefreq>%s</changefreq><priority>%s</priority></url>\n' % (SITE, u, c, p) for u, c, p in urls) + '</urlset>\n'
     open(os.path.join(ROOT, 'sitemap.xml'), 'w').write(sm)
 

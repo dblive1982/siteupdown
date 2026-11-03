@@ -556,6 +556,10 @@ def page_path(name):
 
 CORE = 78     # the first 78 entries of SITES are the core list (checked every few minutes); the rest are the extended list
 
+# Only the first CORE sites are live for now. The full list is kept in EXTENDED_SITES, ready to bring back later.
+EXTENDED_SITES = SITES[CORE:]
+SITES = SITES[:CORE]
+
 KIND_LABELS = [
     ('site', 'Website will not load'),
     ('login', 'Cannot log in'),
