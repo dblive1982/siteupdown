@@ -12,7 +12,7 @@ function sud_email_render(string $heading, string $paraHtml, string $paraText, s
     if ($btnText !== '' && $btnUrl !== '') {
         $u = htmlspecialchars($btnUrl, ENT_QUOTES, 'UTF-8');
         $t = htmlspecialchars($btnText, ENT_QUOTES, 'UTF-8');
-        $btn = '<table role="presentation" cellpadding="0" cellspacing="0" style="margin:28px 0 6px"><tr><td bgcolor="#39b54a" style="border-radius:8px"><a href="' . $u . '" style="display:inline-block;background:#39b54a;color:#0b1a10;text-decoration:none;font-weight:700;font-size:16px;padding:14px 30px;border-radius:8px;' . $F . '">' . $t . '</a></td></tr></table>';
+        $btn = '<table role="presentation" cellpadding="0" cellspacing="0" style="margin:28px 0 6px"><tr><td bgcolor="#39b54a" class="btn-td" style="border-radius:8px"><a class="btn-a" href="' . $u . '" style="display:inline-block;background:#39b54a;color:#0b1a10;text-decoration:none;font-weight:700;font-size:16px;padding:14px 30px;border-radius:8px;' . $F . '">' . $t . '</a></td></tr></table>';
     }
     $chip = '';
     $stripe = '#39b54a';
@@ -20,17 +20,19 @@ function sud_email_render(string $heading, string $paraHtml, string $paraText, s
     if ($tone === 'warn') { $stripe = '#f0a020'; $chip = '<p style="margin:0 0 12px"><span style="display:inline-block;background:#fff1d6;color:#8a5a00;font-size:12px;font-weight:700;letter-spacing:1.5px;padding:5px 12px;border-radius:99px;' . $F . '">&#9679; HEADS UP</span></p>'; }
     if ($tone === 'up') { $chip = '<p style="margin:0 0 12px"><span style="display:inline-block;background:#e3f5e7;color:#1d7a2e;font-size:12px;font-weight:700;letter-spacing:1.5px;padding:5px 12px;border-radius:99px;' . $F . '">&#9679; BACK UP</span></p>'; }
     $link = fn(string $t, string $href) => '<a href="' . $site . $href . '" style="color:#b9aee0;text-decoration:underline">' . $t . '</a>';
-    $html = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"><title>' . $h . '</title></head>'
-        . '<body style="margin:0;padding:0;background:#eeeaf5">'
+    $html = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light dark"><meta name="supported-color-schemes" content="light dark"><style>:root{color-scheme:light dark;supported-color-schemes:light dark}
+@media (prefers-color-scheme:dark){.bg-out{background:#0d011c!important}.bg-dk{background:#130228!important}.bg-card{background:#1d0a38!important;border-color:#34205a!important}.t-main,.t-main p,.t-main li,.t-main b,.t-main td{color:#e6e1f5!important}.t-h{color:#ffffff!important}.btn-td{background:#39b54a!important}.btn-a{background:#39b54a!important;color:#0b1a10!important}}
+[data-ogsb] .bg-out,[data-ogsb].bg-out{background:#0d011c!important}[data-ogsb] .bg-dk{background:#130228!important}[data-ogsb] .bg-card{background:#1d0a38!important}[data-ogsc] .t-main,[data-ogsc] .t-main p,[data-ogsc] .t-main b{color:#e6e1f5!important}[data-ogsc] .t-h{color:#ffffff!important}[data-ogsb] .btn-td{background:#39b54a!important}[data-ogsb] .btn-a{background:#39b54a!important}[data-ogsc] .btn-a{color:#0b1a10!important}</style><title>' . $h . '</title></head>'
+        . '<body class="bg-out" style="margin:0;padding:0;background:#eeeaf5">'
         . '<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#eeeaf5">' . $h . ' &middot; siteupdown.com</div>'
-        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#eeeaf5" style="background:#eeeaf5"><tr><td align="center" style="padding:26px 12px">'
+        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#eeeaf5" class="bg-out" style="background:#eeeaf5"><tr><td align="center" class="bg-out" style="padding:26px 12px">'
         . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:580px">'
-        . '<tr><td align="center" bgcolor="#130228" style="background:#130228;border-radius:16px 16px 0 0;border-bottom:4px solid ' . $stripe . ';padding:26px 12px 22px">'
+        . '<tr><td align="center" bgcolor="#130228" class="bg-dk" style="background:#130228;border-radius:16px 16px 0 0;border-bottom:4px solid ' . $stripe . ';padding:26px 12px 22px">'
         . '<a href="' . $site . '/" style="text-decoration:none"><img src="' . $site . '/assets/logo-full-dark.png" width="150" height="62" alt="siteupdown.com" style="display:block;border:0;outline:none;width:150px;height:62px;color:#f0f2f6;font-size:20px;font-weight:700;' . $F . '"></a></td></tr>'
-        . '<tr><td bgcolor="#ffffff" style="background:#ffffff;border-left:1px solid #ddd6ee;border-right:1px solid #ddd6ee;padding:32px 28px 30px;' . $F . ';color:#1b1230;font-size:16px;line-height:1.65">'
-        . $chip . '<h1 style="margin:0 0 14px;font-size:25px;line-height:1.25;color:#130228;' . $F . '">' . $h . '</h1>' . $paraHtml . $btn
+        . '<tr><td bgcolor="#ffffff" class="bg-card t-main" style="background:#ffffff;border-left:1px solid #ddd6ee;border-right:1px solid #ddd6ee;padding:32px 28px 30px;' . $F . ';color:#1b1230;font-size:16px;line-height:1.65">'
+        . $chip . '<h1 class="t-h" style="margin:0 0 14px;font-size:25px;line-height:1.25;color:#130228;' . $F . '">' . $h . '</h1>' . $paraHtml . $btn
         . '</td></tr>'
-        . '<tr><td align="center" bgcolor="#130228" style="background:#130228;border-radius:0 0 16px 16px;padding:22px 18px;' . $F . ';font-size:13px;line-height:1.7;color:#a79bd0">'
+        . '<tr><td align="center" bgcolor="#130228" class="bg-dk" style="background:#130228;border-radius:0 0 16px 16px;padding:22px 18px;' . $F . ';font-size:13px;line-height:1.7;color:#a79bd0">'
         . '<span style="color:#f0f2f6;font-weight:700">Is it down &mdash; or just you?</span><br>'
         . $link('Monitor', '/monitor') . ' &nbsp;&middot;&nbsp; ' . $link('Help', '/help/') . ' &nbsp;&middot;&nbsp; ' . $link('Privacy', '/privacy') . ' &nbsp;&middot;&nbsp; ' . $link('Contact', '/contact')
         . '<br><span style="color:#8a7fb3">You are getting this because you have a siteupdown.com account or used our contact form.</span></td></tr>'
