@@ -155,12 +155,10 @@
       if (!data || !data.length) return;
       var wrap = svg.getBoundingClientRect(), cx = (e.touches ? e.touches[0].clientX : e.clientX), f = Math.min(1, Math.max(0, (cx - wrap.left) / wrap.width));
       var n = data.length, i = Math.round(f * (n - 1)), p = data[i]; if (p) q('detail').textContent = p.label;
-      /* thin white bar that snaps to the sample under the pointer */
-      var wr = wrap.getBoundingClientRect(), xf = n < 2 ? 0.5 : (PAD + (W - PAD * 2) * i / (n - 1)) / W;
-      cursor.style.left = (wrap_off(wr, wrap_svg(wrap)) + xf * wrap.querySelector('svg').getBoundingClientRect().width).toFixed(1) + 'px'; cursor.style.display = 'block';
+      /* thin white bar that snaps to the sample under the pointer (wrap here is the graph's own rectangle) */
+      var lw = box.querySelector('.lv-wrap').getBoundingClientRect(), xf = n < 2 ? 0.5 : (PAD + (W - PAD * 2) * i / (n - 1)) / W;
+      cursor.style.left = (wrap.left - lw.left + xf * wrap.width).toFixed(1) + 'px'; cursor.style.display = 'block';
     }
-    function wrap_svg(w) { return w.querySelector('svg').getBoundingClientRect(); }
-    function wrap_off(wr, sr) { return sr.left - wr.left; }
     var wrap = box.querySelector('.lv-wrap'), cursor = document.createElement('div'); cursor.className = 'lv-cursor'; cursor.setAttribute('aria-hidden', 'true'); wrap.appendChild(cursor);
     function hideCursor() { cursor.style.display = 'none'; }
     wrap.addEventListener('mousemove', tipAt); wrap.addEventListener('click', tipAt); wrap.addEventListener('touchmove', tipAt, { passive: true }); wrap.addEventListener('touchstart', tipAt, { passive: true });
