@@ -938,3 +938,12 @@ a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--t
 .hs-dot.down{background:var(--red)}.hs-dot.slow{background:var(--amber)}
 @keyframes hspulse{70%{box-shadow:0 0 0 8px rgba(57,181,74,0)}100%{box-shadow:0 0 0 0 rgba(57,181,74,0)}}
 @media(prefers-reduced-motion:reduce){.hs-dot{animation:none}}
+/* recent outages */
+.ro-list{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:8px}
+.ro-list li{display:grid;grid-template-columns:1fr auto;gap:2px 12px;padding:12px 14px;border:1px solid var(--line);border-left:3px solid var(--green);border-radius:10px}
+.ro-list li.ro-on{border-left-color:var(--red);background:rgba(255,90,95,.08)}
+.ro-list li.ro-end{border-left-color:var(--amber)}
+.ro-name{font-weight:650;color:var(--text)}.ro-list a.ro-name{text-decoration:none}.ro-list a.ro-name:hover{text-decoration:underline}
+.ro-st{text-align:right;font-size:14px}.ro-list small{grid-column:1/-1;color:var(--muted)}
+.ro-none{display:block!important;border-left-color:var(--green)!important;color:var(--muted)}
+@media(max-width:560px){.ro-list li{grid-template-columns:1fr}.ro-st{text-align:left}}

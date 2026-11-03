@@ -374,6 +374,23 @@
     $('#top-count').textContent = got.length ? (got.length - bad) + '/' + got.length + ' answering' : '';
     g.innerHTML = items.length ? items.map(function (x) { return siteCard(x); }).join('') : '<div class="skeleton">' + (topFilter === 'all' ? 'Sweeping the watchlist…' : 'No issues right now. Every site we have checked is responding.') + '</div>';
   }
+  function loadOutages() {
+    var ul = $('#ro-list'); if (!ul) return;
+    function dur(sec) { var m = Math.round(sec / 60); if (m < 2) return 'under 2 min'; if (m < 90) return m + ' min'; var h = Math.floor(m / 60); if (h < 48) return h + ' h' + (m % 60 ? ' ' + (m % 60) + ' min' : ''); return Math.floor(h / 24) + ' days'; }
+    function ago(iso) { var m = Math.max(0, Math.round((Date.now() - new Date(iso)) / 60000)); if (m < 2) return 'just now'; if (m < 90) return m + ' min ago'; var h = Math.round(m / 60); return h < 48 ? h + ' h ago' : Math.round(h / 24) + ' days ago'; }
+    fetch('/api/outages.php?n=5').then(function (r) { return r.json(); }).then(function (j) {
+      ul.textContent = '';
+      if (!j.items || !j.items.length) { var li = document.createElement('li'); li.className = 'ro-none'; li.textContent = 'No outages recorded in the last 7 days. All quiet.'; ul.appendChild(li); return; }
+      j.items.forEach(function (o) {
+        var li = document.createElement('li'); li.className = o.ended ? 'ro-end' : 'ro-on';
+        var a = document.createElement(o.page ? 'a' : 'span'); if (o.page) a.href = o.page; a.className = 'ro-name'; a.textContent = o.name;
+        var st = document.createElement('span'); st.className = 'ro-st'; st.textContent = o.ended ? 'Back up \u00b7 was down about ' + dur(o.seconds) : 'Down now \u00b7 ' + dur(o.seconds) + ' so far';
+        var t = document.createElement('small'); t.textContent = o.ended ? 'Started ' + ago(o.started) : 'Since ' + new Date(o.started).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        li.appendChild(a); li.appendChild(st); li.appendChild(t); ul.appendChild(li);
+      });
+    }).catch(function () { ul.innerHTML = '<li class="ro-none">Could not load recent outages.</li>'; });
+  }
+  setTimeout(loadOutages, 300); setInterval(loadOutages, 120000);
   function loadTop() {
     fetch('/api/top.php').then(function (r) { return r.json(); }).then(function (j) {
       topItems = j.items || []; drawTop();

@@ -204,6 +204,13 @@ def home():
 <div class="card more-det" id="more-det" hidden><h3>Technical details</h3><p class="fine">Certificate, DNS and what we saw when we fetched the page.</p><div id="ssl" hidden></div><div id="dns" hidden></div><div class="facts" id="facts" hidden></div></div>
 </div></section>
 
+<section id="recent-outages"><div class="wrap"><div class="card toplist">
+<div class="pc-head"><div><span class="eyebrow"><i></i>Last 7 days</span><h2>Recent outages<span class="dot">.</span></h2>
+<p class="lead">The latest outages we have seen across popular sites, with the one still going shown first.</p></div></div>
+<ul class="ro-list" id="ro-list"><li class="skeleton">Loading&hellip;</li></ul>
+<p class="fine" style="margin-top:14px">A site counts as down after two failed checks in a row, so times are approximate and shown in your time zone.</p>
+</div></div></section>
+
 <section id="top-sites"><div class="wrap"><div class="card toplist">
 <div class="pc-head"><div><span class="eyebrow"><i></i>Watchlist · real requests</span><h2>Top websites<span class="dot">.</span></h2>
 <p class="lead">A rolling sweep of the sites people ask about most. Every line is a real request from this server — a red entry is one that answered with an error or not at all.</p></div>
