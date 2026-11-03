@@ -196,6 +196,18 @@ function ensure_schema(PDO $pdo): void {
         added_at DATETIME NOT NULL,
         UNIQUE (user_id, host)
     )$cs");
+    // Live graph on the "Is X down?" pages: a few minutes of quick samples, shared by everyone looking at the same site.
+    $pdo->exec("CREATE TABLE IF NOT EXISTS live_samples (
+        host VARCHAR(253) NOT NULL,
+        ts BIGINT NOT NULL,
+        ms INT NULL,
+        verdict VARCHAR(16) NOT NULL,
+        code SMALLINT NULL
+    )$cs");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS live_lock (
+        host VARCHAR(253) NOT NULL PRIMARY KEY,
+        until_ts BIGINT NOT NULL
+    )$cs");
     // Admin area: a record of what was done and when.
     $pdo->exec("CREATE TABLE IF NOT EXISTS admin_log (
         id $id,
@@ -205,6 +217,7 @@ function ensure_schema(PDO $pdo): void {
     )$cs");
     foreach ([
         'CREATE INDEX IF NOT EXISTS i_att ON attempts (ip_hash, kind, ts)',
+        'CREATE INDEX IF NOT EXISTS i_live ON live_samples (host, ts)',
         'CREATE INDEX IF NOT EXISTS i_chk ON checks (checked_at)',
         'CREATE INDEX IF NOT EXISTS i_sc ON saved_checks (user_id, checked_at)',
         'CREATE INDEX IF NOT EXISTS i_log ON site_log (host, ts)',
@@ -217,7 +230,7 @@ function ensure_schema(PDO $pdo): void {
     if (!$lite) {
         foreach ([
             ['attempts', 'i_att', '(ip_hash, kind, ts)'], ['checks', 'i_chk', '(checked_at)'], ['saved_checks', 'i_sc', '(user_id, checked_at)'],
-            ['site_log', 'i_log', '(host, ts)'], ['incidents', 'i_inc', '(host, started_at)'], ['reports', 'i_rep', '(host, ts)'],
+            ['site_log', 'i_log', '(host, ts)'], ['incidents', 'i_inc', '(host, started_at)'], ['reports', 'i_rep', '(host, ts)'], ['live_samples', 'i_live', '(host, ts)'],
         ] as [$t, $n, $cols]) {
             try { $pdo->exec("CREATE INDEX $n ON $t $cols"); } catch (Throwable $e) { /* already exists */ }
         }

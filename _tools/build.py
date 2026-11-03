@@ -588,6 +588,13 @@ def site_pages_build():
             '<div class="sp-stats" id="sp-stats"></div><noscript><p>Turn on JavaScript to see the live status.</p></noscript></div>' +
             ('<div class="sp-card" id="sp-app" hidden><div class="sp-rhead"><b>%s app servers</b><span class="sp-level">Servers the app uses</span></div><ul class="sp-svc" id="sp-svc"></ul>'
              '<p class="note">These are the servers the %s app talks to. If they answer, the servers are reachable, but that does not prove everything inside the app is working, such as messages, feeds or logins. For in-app problems, see what other visitors are reporting below.</p></div>' % (n, n) if name in SP.APPS else '') +
+            '<div class="sp-card live-card" id="sp-live" hidden><div class="sp-rhead"><b>Response time</b><span class="sp-pill up" id="lv-pill">Live</span></div>'
+            '<div class="sp-ranges" id="lv-ranges" role="group" aria-label="Graph range"><button type="button" class="rg on" data-range="live" aria-pressed="true">Live</button><button type="button" class="rg" data-range="24h" aria-pressed="false">24 hours</button><button type="button" class="rg" data-range="7d" aria-pressed="false">7 days</button><button type="button" class="rg" data-range="30d" aria-pressed="false">30 days</button></div>'
+            '<div class="lv-now"><b id="lv-ms">&mdash;</b><span id="lv-sub">Waiting for the first sample&hellip;</span></div>'
+            '<div class="lv-wrap"><svg id="lv-svg" viewBox="0 0 600 170" preserveAspectRatio="none" role="img" aria-label="Response time graph"></svg><div class="lv-tip" id="lv-tip" hidden></div></div>'
+            '<div class="lv-strip" id="lv-strip" aria-hidden="true"></div>'
+            '<div class="sp-axis"><span id="lv-a1">5 minutes ago</span><span id="lv-a2">Now</span></div>'
+            '<p class="sp-rdetail" id="lv-detail">Tap or hover the graph for a time.</p></div>' +
             '<p class="lead" style="margin-top:22px">%s</p>' % blurb +
             '<h2>Are other people having problems with %s?</h2>' % n +
             '<div class="sp-card" id="sp-reports"><div class="sp-rhead"><b id="sp-rtotal">Problem reports</b><span id="sp-rlevel" class="sp-level"></span></div>'
@@ -604,7 +611,7 @@ def site_pages_build():
             '<h2>Other %s checks</h2><ul>%s</ul>' % (html.escape(catname.lower()), rel) +
             '<p class="note">Category: %s. siteupdown.com is independent and is not affiliated with %s.</p>' % (html.escape(catname), n) +
             '<p style="margin-top:20px"><a href="/is-it-down/">&larr; All site status pages</a></p></div></section>')
-        write(path.lstrip('/') + '.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/sitepage.js"></script>'))
+        write(path.lstrip('/') + '.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/sitepage.js"></script><script src="/assets/live.js"></script>'))
     # directory
     groups = ''
     order = ['social', 'video', 'search', 'work', 'shopping', 'news', 'gaming']
@@ -620,7 +627,7 @@ def site_pages_build():
             '<label class="sr" for="sp-find">Find a site</label><input id="sp-find" class="sp-find" type="search" placeholder="Find a site, e.g. Netflix" autocomplete="off">'
             + groups +
             '<p>Not listed? <a href="/">Check any website</a> from twelve places.</p></div></section>')
-    write('is-it-down/index.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/sitepage.js"></script>'))
+    write('is-it-down/index.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/sitepage.js"></script><script src="/assets/live.js"></script>'))
 
 # ---------------------------------------------------------------- help centre
 import json as _json
