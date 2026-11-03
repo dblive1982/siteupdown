@@ -982,5 +982,5 @@ a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--t
 .lv-tip b{display:block;font-size:20px;line-height:1.2;margin:2px 0 4px}
 .lv-tip .lt-st{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-right:8px}
 .lv-tip .lt-st.up{color:var(--green)}.lv-tip .lt-st.down{color:var(--red)}.lv-tip .lt-st.slow{color:var(--amber)}.lv-tip .lt-st.none{color:var(--grey)}
-.lv-tip .lt-rel{color:var(--muted);font-size:12px}
+.lv-tip .lt-rel{display:block;margin-top:3px;color:var(--muted);font-size:12px}
 @media(max-width:560px){.lv-tip{min-width:110px;max-width:160px;padding:7px 10px;font-size:12px}.lv-tip b{font-size:17px}}
