@@ -28,13 +28,13 @@
   var LBL = { ok: 'Responded', blocked: 'Blocked', error: 'Server error', none: 'No connection' };
   var CONT = { EU: 'Europe', AS: 'Asia', NA: 'North America', SA: 'South America', AF: 'Africa', OC: 'Oceania', AN: 'Antarctica' };
   var EXPLAIN = { ok: 'This location reached the site normally.', blocked: 'The site refused this location\u2019s automated request. That is usually bot protection, not an outage.', error: 'The site answered here with a server error.', none: 'This location got no answer from the site.' };
-  var HTTPN = { 200: 'OK', 201: 'Created', 204: 'No content', 301: 'Moved permanently', 302: 'Redirect', 304: 'Not modified', 307: 'Redirect', 308: 'Redirect', 400: 'Bad request', 401: 'Login required', 403: 'Forbidden', 404: 'Not found', 429: 'Too many requests', 500: 'Server error', 502: 'Bad gateway', 503: 'Unavailable', 504: 'Gateway timeout' };
+  var HTTPN = { 200: 'OK', 201: 'Created', 204: 'No content', 301: 'Redirect', 302: 'Redirect', 304: 'Not modified', 307: 'Redirect', 308: 'Redirect', 400: 'Bad request', 401: 'Login required', 403: 'Forbidden', 404: 'Not found', 429: 'Too many requests', 500: 'Server error', 502: 'Bad gateway', 503: 'Unavailable', 504: 'Gateway timeout' };
   function tipHtml(p, st, i, med) {
     var rows = '<div class="tp-r"><span>Checking</span><b>' + esc(state.host || 'this site') + '</b></div>';
     rows += '<div class="tp-r"><span>HTTP</span><b>' + (p.code ? p.code + (HTTPN[p.code] ? ' ' + esc(HTTPN[p.code]) : '') : 'No reply') + '</b></div>';
     if (p.ms != null) {
       var cmp = '';
-      if (med && st !== 'none') { var d = Math.round((p.ms - med) / med * 100); cmp = Math.abs(d) < 8 ? ' <i>about average</i>' : ' <i>' + Math.abs(d) + '% ' + (d < 0 ? 'faster' : 'slower') + ' than median</i>'; }
+      if (med && st !== 'none') { var r = p.ms / med; cmp = r >= 1.5 ? ' <i>' + (Math.round(r * 10) / 10) + 'x slower than typical</i>' : r <= 0.67 ? ' <i>' + (Math.round(med / p.ms * 10) / 10) + 'x faster than typical</i>' : ' <i>about typical</i>'; }
       rows += '<div class="tp-r"><span>Response</span><b>' + p.ms + ' ms' + cmp + '</b></div>';
     }
     return '<div class="tp-h ' + st + '"><i></i>' + LBL[st] + '</div><div class="tp-t">' + esc(cname(p)) + '</div><div class="tp-s">' + esc(CONT[p.continent] || p.continent || '') + '</div>'
