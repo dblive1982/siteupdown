@@ -1,27 +1,47 @@
 <?php
-// Branded HTML emails (with a plain-text copy): welcome and password reset.
+// Branded HTML emails (with a plain-text copy): welcome, password reset, alerts and contact form.
 declare(strict_types=1);
 
-function sud_email(string $to, string $subject, string $heading, string $paraHtml, string $paraText, string $btnText = '', string $btnUrl = '', string $replyTo = ''): void {
+/** Builds the branded HTML and plain-text bodies. $tone: '' | 'down' | 'up' adds a coloured status chip. */
+function sud_email_render(string $heading, string $paraHtml, string $paraText, string $btnText = '', string $btnUrl = '', string $tone = ''): array {
     $c = config() ?: [];
     $site = rtrim($c['site'] ?? 'https://siteupdown.com', '/');
-    $from = $c['mail_from'] ?? 'noreply@siteupdown.com';
     $h = htmlspecialchars($heading, ENT_QUOTES, 'UTF-8');
+    $F = "font-family:Poppins,'Helvetica Neue',Arial,Helvetica,sans-serif";
     $btn = '';
     if ($btnText !== '' && $btnUrl !== '') {
         $u = htmlspecialchars($btnUrl, ENT_QUOTES, 'UTF-8');
         $t = htmlspecialchars($btnText, ENT_QUOTES, 'UTF-8');
-        $btn = '<p style="margin:26px 0 6px"><a href="' . $u . '" style="display:inline-block;background:#0dc04e;color:#04120a;text-decoration:none;font-weight:700;font-size:16px;padding:13px 28px;border-radius:6px;font-family:Arial,Helvetica,sans-serif">' . $t . '</a></p>';
+        $btn = '<table role="presentation" cellpadding="0" cellspacing="0" style="margin:28px 0 6px"><tr><td bgcolor="#39b54a" style="border-radius:8px"><a href="' . $u . '" style="display:inline-block;background:#39b54a;color:#0b1a10;text-decoration:none;font-weight:700;font-size:16px;padding:14px 30px;border-radius:8px;' . $F . '">' . $t . '</a></td></tr></table>';
     }
-    $html = '<!doctype html><html><head><meta charset="utf-8"><meta name="color-scheme" content="light only"></head><body style="margin:0;padding:0;background:#eef3ef">'
-        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#eef3ef"><tr><td align="center" style="padding:24px 12px">'
-        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px">'
-        . '<tr><td align="center" style="background:#07120d;border-radius:14px 14px 0 0;padding:24px 12px;font-family:Courier New,monospace;font-size:22px;letter-spacing:2px;color:#0dc04e;font-weight:700">SITEUPDOWN.COM</td></tr>'
-        . '<tr><td style="background:#ffffff;border:1px solid #d5e0d8;border-top:0;border-radius:0 0 14px 14px;padding:28px 26px;font-family:Arial,Helvetica,sans-serif;color:#14201a;font-size:16px;line-height:1.6">'
-        . '<h1 style="margin:0 0 14px;font-size:24px;line-height:1.2;color:#14201a">' . $h . '</h1>' . $paraHtml . $btn
-        . '</td></tr><tr><td align="center" style="padding:16px 8px;font-family:Arial,Helvetica,sans-serif;font-size:13px;color:#5b6b61">siteupdown.com &middot; Less refreshing. More knowing.</td></tr>'
+    $chip = '';
+    $stripe = '#39b54a';
+    if ($tone === 'down') { $stripe = '#e5484d'; $chip = '<p style="margin:0 0 12px"><span style="display:inline-block;background:#fde8e8;color:#a61b1f;font-size:12px;font-weight:700;letter-spacing:1.5px;padding:5px 12px;border-radius:99px;' . $F . '">&#9679; LOOKS DOWN</span></p>'; }
+    if ($tone === 'up') { $chip = '<p style="margin:0 0 12px"><span style="display:inline-block;background:#e3f5e7;color:#1d7a2e;font-size:12px;font-weight:700;letter-spacing:1.5px;padding:5px 12px;border-radius:99px;' . $F . '">&#9679; BACK UP</span></p>'; }
+    $link = fn(string $t, string $href) => '<a href="' . $site . $href . '" style="color:#b9aee0;text-decoration:underline">' . $t . '</a>';
+    $html = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta name="supported-color-schemes" content="light"><title>' . $h . '</title></head>'
+        . '<body style="margin:0;padding:0;background:#eeeaf5">'
+        . '<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#eeeaf5">' . $h . ' &middot; siteupdown.com</div>'
+        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#eeeaf5" style="background:#eeeaf5"><tr><td align="center" style="padding:26px 12px">'
+        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:580px">'
+        . '<tr><td align="center" bgcolor="#130228" style="background:#130228;border-radius:16px 16px 0 0;border-bottom:4px solid ' . $stripe . ';padding:26px 12px 22px">'
+        . '<a href="' . $site . '/" style="text-decoration:none"><img src="' . $site . '/assets/logo-full-dark.png" width="150" height="62" alt="siteupdown.com" style="display:block;border:0;outline:none;width:150px;height:62px;color:#f0f2f6;font-size:20px;font-weight:700;' . $F . '"></a></td></tr>'
+        . '<tr><td bgcolor="#ffffff" style="background:#ffffff;border-left:1px solid #ddd6ee;border-right:1px solid #ddd6ee;padding:32px 28px 30px;' . $F . ';color:#1b1230;font-size:16px;line-height:1.65">'
+        . $chip . '<h1 style="margin:0 0 14px;font-size:25px;line-height:1.25;color:#130228;' . $F . '">' . $h . '</h1>' . $paraHtml . $btn
+        . '</td></tr>'
+        . '<tr><td align="center" bgcolor="#130228" style="background:#130228;border-radius:0 0 16px 16px;padding:22px 18px;' . $F . ';font-size:13px;line-height:1.7;color:#a79bd0">'
+        . '<span style="color:#f0f2f6;font-weight:700">Is it down &mdash; or just you?</span><br>'
+        . $link('Monitor', '/monitor') . ' &nbsp;&middot;&nbsp; ' . $link('Help', '/help/') . ' &nbsp;&middot;&nbsp; ' . $link('Privacy', '/privacy') . ' &nbsp;&middot;&nbsp; ' . $link('Contact', '/contact')
+        . '<br><span style="color:#8a7fb3">You are getting this because you have a siteupdown.com account or used our contact form.</span></td></tr>'
         . '</table></td></tr></table></body></html>';
-    $text = $heading . "\n\n" . $paraText . ($btnUrl !== '' ? "\n\n" . $btnText . ": " . $btnUrl : '') . "\n\n-- siteupdown.com, " . $site . "\n";
+    $text = $heading . "\n\n" . $paraText . ($btnUrl !== '' ? "\n\n" . $btnText . ": " . $btnUrl : '') . "\n\n--\nsiteupdown.com - Is it down, or just you?\n" . $site . "\nMonitor: $site/monitor  Help: $site/help/  Contact: $site/contact\n";
+    return [$html, $text];
+}
+
+function sud_email(string $to, string $subject, string $heading, string $paraHtml, string $paraText, string $btnText = '', string $btnUrl = '', string $replyTo = '', string $tone = ''): void {
+    $c = config() ?: [];
+    $from = $c['mail_from'] ?? 'noreply@siteupdown.com';
+    [$html, $text] = sud_email_render($heading, $paraHtml, $paraText, $btnText, $btnUrl, $tone);
     $b = 'sud' . bin2hex(random_bytes(8));
     $body = "--$b\r\nContent-Type: text/plain; charset=utf-8\r\nContent-Transfer-Encoding: base64\r\n\r\n" . chunk_split(base64_encode($text), 76, "\r\n")
         . "--$b\r\nContent-Type: text/html; charset=utf-8\r\nContent-Transfer-Encoding: base64\r\n\r\n" . chunk_split(base64_encode($html), 76, "\r\n") . "--$b--";
@@ -71,14 +91,15 @@ function sud_smtp(array $c, string $from, string $to, string $data): bool {
 function sud_welcome_parts(string $email, string $via = ''): array {
     $e = htmlspecialchars($email, ENT_QUOTES, 'UTF-8');
     $items = [
+        ['Your own watchlist', 'Add the sites you care about on the Monitor page and see at a glance which are up and which are having a bad day.'],
+        ['Instant alerts', 'We email you when a site goes down and when it is back. You can also connect Telegram, Slack or Discord for a message on your phone.'],
         ['Your checks, saved', 'Every check you run while signed in is saved to your account, so you can look back or run it again in one tap.'],
-        ['Your own watchlist', 'Add the sites you care about and see at a glance which are up and which are having a bad day.'],
-        ['Still free, still no spam', 'The checker works for everyone without an account. We only email you for things like password resets.'],
+        ['Still free, still no spam', 'The checker works for everyone without an account. We only email you about things you asked for, like alerts and password resets.'],
     ];
     $html = '<p style="margin:0 0 6px">Your free siteupdown.com account is ready.</p>';
     $text = "Your free siteupdown.com account is ready.\n";
     foreach ($items as [$h, $t]) {
-        $html .= '<h2 style="margin:20px 0 4px;font-size:18px;color:#14201a">' . $h . '</h2><p style="margin:0">' . $t . '</p>';
+        $html .= '<h2 style="margin:20px 0 4px;font-size:18px;color:#130228">' . $h . '</h2><p style="margin:0">' . $t . '</p>';
         $text .= "\n" . $h . "\n" . $t . "\n";
     }
     $html .= '<p style="margin:22px 0 0;font-size:14px">You signed up' . $via . ' using ' . $e . '. If that was not you, you can ignore this message.</p>';

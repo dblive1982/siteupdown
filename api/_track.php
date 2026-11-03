@@ -54,7 +54,7 @@ function notify_watchers(PDO $pdo, string $host, bool $down, string $now, ?strin
             sud_email($u['email'], $host . ' looks down', $host . ' looks down',
                 "<p>Hi $name,</p><p>We could not reach <b>$h</b> on two checks in a row, so we think it is down. We will email you again as soon as it answers.</p>",
                 "Hi {$u['name']},\n\nWe could not reach $host on two checks in a row, so we think it is down. We will email you again as soon as it answers.",
-                'See live status', $page);
+                'See live status', $page, '', 'down');
             push_user($pdo, (int)$u['id'], "\u{1F534} $host looks down. We could not reach it on two checks in a row.", $page);
         } else {
             $for = $since ? human_span(max(0, strtotime($now . ' UTC') - strtotime($since . ' UTC'))) : '';
@@ -62,7 +62,7 @@ function notify_watchers(PDO $pdo, string $host, bool $down, string $now, ?strin
             sud_email($u['email'], $host . ' is back up', $host . ' is back up',
                 "<p>Hi $name,</p><p>Good news: <b>$h</b> is answering again.$ex</p>",
                 "Hi {$u['name']},\n\nGood news: $host is answering again.$ex",
-                'See live status', $page);
+                'See live status', $page, '', 'up');
             push_user($pdo, (int)$u['id'], "\u{1F7E2} $host is back up." . $ex, $page);
         }
     }
