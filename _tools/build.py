@@ -102,8 +102,33 @@ def _ver():
         try: h.update(open(os.path.join(ROOT, 'assets', n), 'rb').read())
         except OSError: pass
     return h.hexdigest()[:8]
+import html as _html
+_ICO = {
+ '\u26a1': '<path d="M13 2 4 14h7l-1 8 9-12h-7z"/>',
+ '\U0001F514': '<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/>',
+ '\U0001F512': '<rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/>',
+ '\U0001F4C8': '<path d="m3 17 6-6 4 4 8-8"/><path d="M15 7h6v6"/>',
+ '\U0001F9ED': '<circle cx="12" cy="12" r="10"/><path d="m16 8-2 6-6 2 2-6z"/>',
+ '\U0001F6E0': '<path d="M14.7 6.3a4 4 0 0 0-5 5L3 18l3 3 6.7-6.7a4 4 0 0 0 5-5l-3 3-2.4-.6-.6-2.4z"/>',
+ '\U0001F4DA': '<path d="M4 4h5v16H4zM9 4h5v16H9z"/><path d="m14 6 5-1 2 15-5 1z"/>',
+ '\U0001F310': '<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20"/>',
+ '\U0001F4CB': '<rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12h6M9 16h6"/>',
+ '\U0001F4C5': '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
+ '\u2709': '<rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/>',
+ '\U0001F916': '<rect x="4" y="8" width="16" height="12" rx="3"/><path d="M12 4v4M9 14h.01M15 14h.01M9 18h6"/>',
+ '\U0001F6E1': '<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/>',
+}
+_ICO['\u21aa'] = '<path d="M5 12h11l-4-4M16 12l-4 4"/><path d="M19 5v14"/>'
+_ICO['\U0001F50D'] = '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>'
+def _svgicons(c):
+    def r(m):
+        e = _html.unescape(m.group(1)).rstrip('\ufe0f')
+        return '<span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">%s</svg></span>' % _ICO[e] if e in _ICO else m.group(0)
+    return _re.sub(r'<span class="ti">([^<]{1,9})</span>', r, c)
+
 def write(name, content):
     if name.endswith('.html'):
+        content = _svgicons(content)
         v = _ver()
         content = _re.sub(r'(/assets/(?:app\.css|app\.js|home\.js|pages\.js|worldmap\.js))(?=")', r'\1?v=' + v, content)
     with open(os.path.join(ROOT, name), 'w', encoding='utf-8') as f:
