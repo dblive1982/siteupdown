@@ -114,7 +114,7 @@ ARTICLES = [
 'body': '''
 <p class="lead">When a page will not load, the cause is either the website, your connection, or something in between. This checklist narrows it down in a few minutes, starting with the quickest checks.</p>
 <h2>1. Is it down for everyone?</h2>
-<p><a href="/">Paste the address into the checker.</a> We load it from our own server and from twelve probes in different countries. If they can all reach it, the site is up and the problem is on your side. If most fail, the site is down and you can stop troubleshooting.</p>
+<p><a href="/">Paste the address into the checker.</a> We load it from our own server and from fifteen probes in different countries. If they can all reach it, the site is up and the problem is on your side. If most fail, the site is down and you can stop troubleshooting.</p>
 <h2>2. Check the address</h2>
 <p>Look for typos, a missing <code>.com</code>, or <code>http://</code> where the site needs <code>https://</code>.</p>
 <h2>3. Try another site</h2>
@@ -194,7 +194,7 @@ ARTICLES = [
 <li>Switch to a public DNS server such as <code>1.1.1.1</code> or <code>8.8.8.8</code>.</li>
 <li>If the site moved very recently, the change may not have reached every network yet. See <a href="/help/dns-propagation">what DNS propagation is</a>.</li>
 </ul>
-<p>Not sure the problem is yours? <a href="/">Check the site from twelve places</a> first.</p>'''
+<p>Not sure the problem is yours? <a href="/">Check the site from fifteen places</a> first.</p>'''
 },
 {
 'slug': 'ssl-certificate-errors', 'cat': 'owners',
@@ -346,14 +346,14 @@ ARTICLES = [
 {
 'slug': 'how-our-checks-work', 'cat': 'checks',
 'title': 'How siteupdown.com checks a website, and what the verdicts mean',
-'desc': 'How our website status checker works: the server check, the twelve regional probes, and what Up, Down, Timeout and Inconclusive each mean.',
+'desc': 'How our website status checker works: the server check, the fifteen regional probes, and what Up, Down, Timeout and Inconclusive each mean.',
 'related': ['down-for-some-people-not-others', 'uptime-percentages-explained', 'http-status-codes-explained'],
 'body': '''
 <p class="lead">We would rather tell you &ldquo;not sure&rdquo; than be wrong. This page explains exactly what happens when you press Check, and what each verdict does and does not prove.</p>
 <h2>The server check</h2>
 <p>First, our own server looks up the site&rsquo;s address, connects to it and requests the page, as a browser would. We record the HTTP status code, the response time, the redirects followed on the way, and the details of the SSL certificate. We only contact public web addresses on the standard web ports, and we refuse private or internal addresses, so the checker cannot be used to probe someone&rsquo;s private network.</p>
 <h2>The regional probes</h2>
-<p>Then twelve probes on the public Globalping network, in different countries, request the same address at nearly the same moment. This shows whether a site is reachable from everywhere, or only from some places.</p>
+<p>Then fifteen probes on the public Globalping network, in different countries, request the same address at nearly the same moment. This shows whether a site is reachable from everywhere, or only from some places.</p>
 <h2>What the verdicts mean</h2>
 <ul>
 <li><b>Up.</b> The site answered normally. Any response that is not a server error or a block counts, so even a 404 page means the server is alive.</li>

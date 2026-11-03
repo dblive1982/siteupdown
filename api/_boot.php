@@ -147,6 +147,11 @@ function ensure_schema(PDO $pdo): void {
         alive TINYINT NOT NULL,
         ts BIGINT NOT NULL
     )$cs");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS world_checks (
+        host VARCHAR(253) NOT NULL PRIMARY KEY,
+        data MEDIUMTEXT NOT NULL,
+        ts BIGINT NOT NULL
+    )$cs");
     $pdo->exec("CREATE TABLE IF NOT EXISTS alert_state (
         host VARCHAR(253) NOT NULL PRIMARY KEY,
         state VARCHAR(8) NOT NULL,

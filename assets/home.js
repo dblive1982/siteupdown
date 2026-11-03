@@ -339,7 +339,7 @@
     var box = $('#share'); if (!box) return;
     box.addEventListener('click', function (e) {
       var b = e.target.closest('[data-share]'); if (!b || !state.share) return;
-      var url = location.origin + '/s/' + state.share, text = state.host + ' — is it down or just me? Checked from 12 places worldwide.';
+      var url = location.origin + '/s/' + state.share, text = state.host + ' — is it down or just me? Checked from 15 places worldwide.';
       var k = b.getAttribute('data-share');
       if (k === 'copy') { (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(function () { S.toast('Link copied'); }, function () { window.prompt('Copy this link', url); }); }
       else if (k === 'native') { navigator.share({ title: 'siteupdown.com', text: text, url: url }).catch(function () { /* cancelled */ }); }

@@ -237,7 +237,7 @@
       h += '<h3 class="sh3">Recent outages</h3>';
       h += j.incidents.length ? '<div class="inc">' + j.incidents.map(function (i) { return '<div><b>' + (i.ended ? 'Down for ' + esc(dur(i.seconds)) : 'Down now · ' + esc(dur(i.seconds)) + ' so far') + '</b><small>' + esc(S.when(i.started)) + (i.ended ? ' → ' + esc(S.when(i.ended)) : '') + '</small></div>'; }).join('') + '</div>' : '<p class="note">No outages recorded. ✔</p>';
       if (j.ssl && j.ssl.days != null) h += '<p class="note" style="margin-top:14px">SSL certificate: <b>' + esc(j.ssl.status === 'valid' || j.ssl.status === 'expiring' ? 'valid, expires in ' + j.ssl.days + ' days' : j.ssl.status) + '</b></p>';
-      h += '<div class="row-actions" style="margin-top:18px"><a class="btn small" href="/?q=' + encodeURIComponent(host) + '"><span>Check from 12 places</span></a><button class="btn small ghost" id="st-copy" type="button">Copy this link</button></div>';
+      h += '<div class="row-actions" style="margin-top:18px"><a class="btn small" href="/?q=' + encodeURIComponent(host) + '"><span>Check from 15 places</span></a><button class="btn small ghost" id="st-copy" type="button">Copy this link</button></div>';
       $('#st-body').innerHTML = h;
     }
     function lineChart(series) {
@@ -278,7 +278,7 @@
       h += '<div class="stat-row" style="margin-top:20px"><div class="stat"><span class="k">Page size</span><b>' + kb(j.size) + '</b></div><div class="stat"><span class="k">Sent compressed</span><b>' + (j.encoding ? esc(j.encoding) + (j.wire ? ' · ' + kb(j.wire) : '') : 'No') + '</b></div><div class="stat"><span class="k">Protocol</span><b>' + esc(j.version || '—') + (j.https ? '' : ' · no HTTPS') + '</b></div><div class="stat"><span class="k">Redirects</span><b>' + j.redirects + '</b></div></div>';
       h += '<p class="note">The page links <b>' + j.resources.scripts + '</b> scripts, <b>' + j.resources.styles + '</b> stylesheets and <b>' + j.resources.images + '</b> images (counted in the HTML). ' + (j.cache.cache_control ? 'Cache-Control: <b>' + esc(j.cache.cache_control) + '</b>.' : 'No Cache-Control header.') + '</p>';
       h += '<h3 class="sh3">What to improve</h3><ul class="tips">' + j.tips.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ul>';
-      h += '<p class="fine" style="margin-top:14px">This tests the page document from our server, not every file it loads, and one location only. For a view from 12 places, run a <a href="/?q=' + encodeURIComponent(j.host) + '">worldwide check</a>.</p>';
+      h += '<p class="fine" style="margin-top:14px">This tests the page document from our server, not every file it loads, and one location only. For a view from 15 places, run a <a href="/?q=' + encodeURIComponent(j.host) + '">worldwide check</a>.</p>';
       o.innerHTML = h;
     }
     if (q) { $('#sp-input').value = q; run(q); }

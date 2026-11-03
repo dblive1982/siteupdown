@@ -80,7 +80,7 @@ def head(title, desc, path, extra_head='', noindex=False):
 '''
 
 def foot(scripts):
-    links = [('Regional map', '/#global-pulse'), ('How it works', '/#how-it-works'), ('Help centre', '/help/'), ('Tools', '/tools/'), ('Is it down?', '/is-it-down/'), ('Speed test', '/speed'), ('Monitor', '/monitor'), ('Account', '/account'), ('About', '/about'), ('For business', '/business'), ('Contact', '/contact'), ('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')]
+    links = [('Regional map', '/#global-pulse'), ('How it works', '/#how-it-works'), ('How we check', '/how-we-check'), ('FAQ', '/faq'), ('Help centre', '/help/'), ('Tools', '/tools/'), ('Is it down?', '/is-it-down/'), ('Speed test', '/speed'), ('Monitor', '/monitor'), ('Account', '/account'), ('About', '/about'), ('For business', '/business'), ('Contact', '/contact'), ('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')]
     return f'''</main>
 <footer class="site-foot"><div class="wrap">
 <div class="foot-brand">{BRAND}</div>
@@ -99,7 +99,7 @@ def foot(scripts):
 import hashlib, re as _re
 def _ver():
     h = hashlib.md5()
-    for n in ('app.css', 'app.js', 'home.js', 'pages.js', 'worldmap.js', 'live.js', 'sitepage.js'):
+    for n in ('app.css', 'app.js', 'home.js', 'pages.js', 'worldmap.js', 'live.js', 'sitepage.js', 'tools.js', 'sla.js'):
         try: h.update(open(os.path.join(ROOT, 'assets', n), 'rb').read())
         except OSError: pass
     return h.hexdigest()[:8]
@@ -120,6 +120,9 @@ _ICO = {
  '\U0001F6E1': '<path d="M12 3 4 6v6c0 5 3.5 8 8 9 4.5-1 8-4 8-9V6z"/><path d="m9 12 2 2 4-4"/>',
 }
 _ICO['\u21aa'] = '<path d="M5 12h11l-4-4M16 12l-4 4"/><path d="M19 5v14"/>'
+_ICO['\U0001F4E1'] = '<path d="M5 19a9 9 0 0 1 0-12"/><path d="M8.5 15.5a4.5 4.5 0 0 1 0-5"/><circle cx="12" cy="12.5" r="1.5"/><path d="M15.5 15.5a4.5 4.5 0 0 0 0-5"/><path d="M19 19a9 9 0 0 0 0-12"/>'
+_ICO['\U0001F5FA'] = '<path d="m3 6 6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/>'
+_ICO['\U0001F4D0'] = '<path d="M4 20 20 4v16z"/><path d="M8 20v-3M12 20v-6M16 20v-9"/>'
 _ICO['\U0001F50D'] = '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>'
 def _svgicons(c):
     def r(m):
@@ -131,7 +134,7 @@ def write(name, content):
     if name.endswith('.html'):
         content = _svgicons(content)
         v = _ver()
-        content = _re.sub(r'(/assets/(?:app\.css|app\.js|home\.js|pages\.js|worldmap\.js|live\.js|sitepage\.js))(?=")', r'\1?v=' + v, content)
+        content = _re.sub(r'(/assets/(?:app\.css|app\.js|home\.js|pages\.js|worldmap\.js|live\.js|sitepage\.js|tools\.js|sla\.js))(?=")', r'\1?v=' + v, content)
     with open(os.path.join(ROOT, name), 'w', encoding='utf-8') as f:
         f.write(content)
     print('wrote', name, len(content), 'bytes')
@@ -144,8 +147,8 @@ def ad(label, text):
     return f'<aside class="ad" aria-label="Advertisement"><small>{label}</small><span>{text}</span></aside>'
 
 def home():
-    jsonld = '<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebSite", "@id": "https://siteupdown.com/#website", "name": "siteupdown.com", "url": "https://siteupdown.com/", "description": "Check whether a website is down for everyone or just you, with probes in twelve places around the world.", "inLanguage": "en-GB"}, {"@type": "Organization", "@id": "https://siteupdown.com/#org", "name": "siteupdown.com", "url": "https://siteupdown.com/", "logo": "https://siteupdown.com/android-chrome-512.png", "email": "hello@siteupdown.com"}, {"@type": "WebApplication", "name": "siteupdown.com website checker", "url": "https://siteupdown.com/", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "GBP"}}]}</script>\n<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I know if a website is down for everyone or just me?", "acceptedAnswer": {"@type": "Answer", "text": "Paste the address into the checker. We load it from our own server and from twelve probes in different countries at the same moment. If every probe reaches it, the site is up and the problem is probably on your side (your network, DNS, browser or device). If most fail, it is down for everyone."}}, {"@type": "Question", "name": "Why does it say Timeout or Inconclusive instead of Down?", "acceptedAnswer": {"@type": "Answer", "text": "A slow or blocked response is not proof that a site is down. We only call a site Confirmed down when the server returns errors on two attempts. Timeouts and blocked requests are reported as such so you are never told something we cannot be sure of."}}, {"@type": "Question", "name": "Is siteupdown.com free to use?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The checker, speed test and status pages are free and need no sign-up. A free account lets you keep a watchlist of up to 25 sites, see their uptime history and get an email when one goes down or comes back."}}, {"@type": "Question", "name": "How does the website speed test work?", "acceptedAnswer": {"@type": "Answer", "text": "It loads the page three times from our server and reports the median. You see how long finding the server, connecting, securing the connection, waiting and downloading each took, plus page size, compression, protocol and a grade with plain-English tips."}}, {"@type": "Question", "name": "Can I check an SSL certificate or a domain\'s expiry date?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Every check shows the SSL certificate (who issued it, when it expires, whether it covers the address) as well as DNS records, redirects and the domain registration expiry date."}}, {"@type": "Question", "name": "How often are monitored sites checked?", "acceptedAnswer": {"@type": "Answer", "text": "Sites on a watchlist are re-checked about every minute. A site is only reported as down after two failed checks in a row, which avoids false alarms."}}]}</script>'
-    h = head('siteupdown.com — Is the website down, or just you?', 'Paste any website address to see if it is down for everyone or only for you. We check from our server and from twelve probes in different countries, at the same time.', '/', jsonld)
+    jsonld = '<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebSite", "@id": "https://siteupdown.com/#website", "name": "siteupdown.com", "url": "https://siteupdown.com/", "description": "Check whether a website is down for everyone or just you, with probes in fifteen places around the world.", "inLanguage": "en-GB"}, {"@type": "Organization", "@id": "https://siteupdown.com/#org", "name": "siteupdown.com", "url": "https://siteupdown.com/", "logo": "https://siteupdown.com/android-chrome-512.png", "email": "hello@siteupdown.com"}, {"@type": "WebApplication", "name": "siteupdown.com website checker", "url": "https://siteupdown.com/", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "GBP"}}]}</script>\n<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I know if a website is down for everyone or just me?", "acceptedAnswer": {"@type": "Answer", "text": "Paste the address into the checker. We load it from our own server and from fifteen probes in different countries at the same moment. If every probe reaches it, the site is up and the problem is probably on your side (your network, DNS, browser or device). If most fail, it is down for everyone."}}, {"@type": "Question", "name": "Why does it say Timeout or Inconclusive instead of Down?", "acceptedAnswer": {"@type": "Answer", "text": "A slow or blocked response is not proof that a site is down. We only call a site Confirmed down when the server returns errors on two attempts. Timeouts and blocked requests are reported as such so you are never told something we cannot be sure of."}}, {"@type": "Question", "name": "Is siteupdown.com free to use?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The checker, speed test and status pages are free and need no sign-up. A free account lets you keep a watchlist of up to 25 sites, see their uptime history and get an email when one goes down or comes back."}}, {"@type": "Question", "name": "How does the website speed test work?", "acceptedAnswer": {"@type": "Answer", "text": "It loads the page three times from our server and reports the median. You see how long finding the server, connecting, securing the connection, waiting and downloading each took, plus page size, compression, protocol and a grade with plain-English tips."}}, {"@type": "Question", "name": "Can I check an SSL certificate or a domain\'s expiry date?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Every check shows the SSL certificate (who issued it, when it expires, whether it covers the address) as well as DNS records, redirects and the domain registration expiry date."}}, {"@type": "Question", "name": "How often are monitored sites checked?", "acceptedAnswer": {"@type": "Answer", "text": "Sites on a watchlist are re-checked about every minute. A site is only reported as down after two failed checks in a row, which avoids false alarms."}}]}</script>'
+    h = head('siteupdown.com — Is the website down, or just you?', 'Paste any website address to see if it is down for everyone or only for you. We check from our server and from fifteen probes in different countries, at the same time.', '/', jsonld)
     h = h.replace('{BODYATTR}', ' data-page="home"')
     report_kinds = ''.join('<button type="button" class="rk" data-kind="%s">%s</button>' % (k, l) for k, l in SP.KIND_LABELS)
     order = [k for k in ['social', 'video', 'gaming', 'ai', 'finance', 'payments', 'trading', 'shopping', 'delivery', 'news', 'government', 'health', 'betting', 'telecom', 'travel', 'search', 'work'] if sum(1 for _, _, c, _ in SP.SITES if c == k) >= 4]
@@ -173,7 +176,7 @@ def home():
 <div class="try-row app-row"><span class="eyebrow">Checking an app?</span><div class="chips">
 <a class="chip" href="/is-whatsapp-down">WhatsApp</a><a class="chip" href="/is-instagram-down">Instagram</a><a class="chip" href="/is-spotify-down">Spotify</a><a class="chip" href="/is-roblox-down">Roblox</a><a class="chip" href="/is-it-down/">All apps &amp; sites<span class="ne">→</span></a>
 </div></div>
-<p class="rule-note"><span>One server check, twelve regional probes. No sign-up, no guesswork.</span></p>
+<p class="rule-note"><span>One server check, fifteen regional probes. No sign-up, no guesswork.</span></p>
 </div></section>
 
 <section id="global-pulse"><div class="wrap">
@@ -203,7 +206,7 @@ def home():
 
 <div class="charts" id="charts">
 <div class="card chart"><h3>Response time by region</h3><p class="fine">Lower is faster. Colour shows the outcome. The two-letter codes are countries: hover or tap one for its name.</p><div id="ch-bars" class="ch-empty">Run a check to see this chart.</div></div>
-<div class="card chart"><h3>Probe outcomes</h3><p class="fine">How the twelve probes fared.</p><div id="ch-donut" class="ch-empty">Run a check to see this chart.</div></div>
+<div class="card chart"><h3>Probe outcomes</h3><p class="fine">How the fifteen probes fared.</p><div id="ch-donut" class="ch-empty">Run a check to see this chart.</div></div>
 <div class="card chart"><h3>Speed range</h3><p class="fine">Our server against the worldwide spread.</p><div id="ch-range" class="ch-empty">Run a check to see this chart.</div></div>
 </div>
 <div class="card more-det" id="more-det" hidden><h3>Technical details</h3><p class="fine">Certificate, DNS and what we saw when we fetched the page.</p><div id="ssl" hidden></div><div id="dns" hidden></div><div class="facts" id="facts" hidden></div></div>
@@ -275,7 +278,7 @@ def home():
 <section id="faq"><div class="wrap">
 <div class="sec-head"><span class="eyebrow"><i></i>Questions</span><h2>Frequently asked questions<span class="dot">.</span></h2></div>
 <div class="faq">
-<details><summary>How do I know if a website is down for everyone or just me?</summary><p>Paste the address into the checker. We load it from our own server and from twelve probes in different countries at the same moment. If every probe reaches it, the site is up and the problem is probably on your side (your network, DNS, browser or device). If most fail, it is down for everyone.</p></details>
+<details><summary>How do I know if a website is down for everyone or just me?</summary><p>Paste the address into the checker. We load it from our own server and from fifteen probes in different countries at the same moment. If every probe reaches it, the site is up and the problem is probably on your side (your network, DNS, browser or device). If most fail, it is down for everyone.</p></details>
 <details><summary>Why does it say Timeout or Inconclusive instead of Down?</summary><p>A slow or blocked response is not proof that a site is down. We only call a site Confirmed down when the server returns errors on two attempts. Timeouts and blocked requests are reported as such so you are never told something we cannot be sure of.</p></details>
 <details><summary>Is siteupdown.com free to use?</summary><p>Yes. The checker, speed test and status pages are free and need no sign-up. A free account lets you keep a watchlist of up to 25 sites, see their uptime history and get an email, a Telegram message or a Slack or Discord message when one goes down or comes back.</p></details>
 <details><summary>How does the website speed test work?</summary><p>It loads the page three times from our server and reports the median. You see how long finding the server, connecting, securing the connection, waiting and downloading each took, plus page size, compression, protocol and a grade with plain-English tips.</p></details>
@@ -448,14 +451,14 @@ def static_pages():
     prose('about.html', 'About', 'About siteupdown.com: a free, independent website status, speed and uptime checker.', '/about', '''
 <p class="lead">siteupdown.com answers one question quickly: is this website down for everyone, or is it just you?</p>
 <h2>What we do</h2>
-<p>When a page will not load, it is hard to tell whether the site is broken or something on your side is. You paste the address, and we load it from our own server and from twelve probes in different countries at the same moment. If every probe reaches it, the site is up and the problem is probably your network, DNS, browser or device. If most fail, it is down for everyone.</p>
+<p>When a page will not load, it is hard to tell whether the site is broken or something on your side is. You paste the address, and we load it from our own server and from fifteen probes in different countries at the same moment. If every probe reaches it, the site is up and the problem is probably your network, DNS, browser or device. If most fail, it is down for everyone.</p>
 <h2>More than a status check</h2>
 <p>Every check also shows the SSL certificate, DNS records, redirects and the domain&rsquo;s registration expiry. The <a href="/speed">speed test</a> times where a page&rsquo;s load goes. With a free account you can keep a <a href="/monitor">watchlist</a>, see uptime history and get an email when a site goes down or comes back, and each monitored site has a public status page.</p>
 <h2>How we check, and how we try to be fair</h2>
 <p>We would rather say &ldquo;not sure&rdquo; than be wrong. Here is what happens when you check a site:</p>
 <ul>
 <li><b>Our own server</b> asks the site for its page. If the address gets no reply, we also try the other form (with or without &ldquo;www&rdquo;), because some sites only answer on one.</li>
-<li><b>Twelve probes</b> in different countries ask the same thing at the same moment, so you can see whether it is down for everyone or only in some places.</li>
+<li><b>Fifteen probes</b> in different countries ask the same thing at the same moment, so you can see whether it is down for everyone or only in some places.</li>
 <li><b>We call a site down only on real evidence</b>, such as repeated server errors, or a site that was answering and then stops. Before we record an outage we ask probes in other countries as well, and if any of them can reach it, it is not counted as down.</li>
 <li><b>Silence is not proof.</b> Some large sites quietly ignore automated checks. When nothing answers and we have not seen the site working lately, we say &ldquo;no answer&rdquo; and &ldquo;we can&rsquo;t be sure&rdquo;, and give you a link to try the site yourself, instead of showing a false red alert.</li>
 <li><b>We use honest checks.</b> Our checker says who it is, and we do not disguise it as a browser to get past a site&rsquo;s protection.</li>
@@ -463,8 +466,8 @@ def static_pages():
 <p>The live graph samples a site about every ten seconds while someone is watching it, and we keep daily records so you can see the last 24 hours, 7 days and 12 months, with a written summary of recent outages. Problem reports from visitors show what real people are seeing, and every result is a snapshot of one moment, which we say so.</p>
 <h2>Independent</h2>
 <p>siteupdown.com is not affiliated with the websites, games or services it checks. Regional probes run on the public <a href="https://globalping.io" rel="noopener">Globalping</a> network. The site is supported by advertising, so it stays free to use.</p>
-<h2>Get in touch</h2>
-<p>Found a bug or want a site added to the lists? <a href="/contact">Contact us</a>.</p>''')
+''' + __import__('pages_extra').ABOUT_MORE)
+    __import__('pages_extra').build(prose, head, write, foot, html, _json, _re)
     prose('privacy.html', 'Privacy', 'How siteupdown.com handles checks, accounts, cookies and your data.', '/privacy', '''
 <p>We keep this short and plain. siteupdown.com checks whether websites are reachable. We collect as little as we can to do that.</p>
 <h2>Website checks</h2>
@@ -482,7 +485,7 @@ def static_pages():
 <h2>Problem reports</h2>
 <p>After a check, and on the &ldquo;Is it down?&rdquo; pages, you can report a problem with a site. A report stores the site, the type of problem, the time, and a one-way hash of your network address, which is used only to limit repeat reports and is erased after two days. The report itself (site, type, time and the country you are in, worked out from your network or your device&rsquo;s time zone, with nothing that identifies you) is kept for up to three years so the report history can be shown. We do not ask for your name or email address for reports, and reports are shown only as anonymous counts.</p>
 <h2>Cookies and storage</h2>
-<p>We use essential storage to run the site: your theme, your cookie choice, your recent searches (kept on your device) and a sign-in cookie if you are signed in. Analytics and advertising cookies are optional and off until you allow them in &ldquo;Cookie settings&rdquo;. No advertising script is connected at the moment.</p>
+<p>We use essential storage to run the site: your theme, your cookie choice, your recent searches (kept on your device) and a sign-in cookie if you are signed in. Analytics and advertising cookies are optional and off until you allow them in &ldquo;Cookie settings&rdquo;. Google&rsquo;s advertising script is only loaded if you allow advertising cookies.</p>
 <h2>Advertising</h2>
 <p>siteupdown.com is supported by advertising. Third-party vendors, including Google, may use cookies to serve ads based on a visitor&rsquo;s previous visits to this and other websites. Google&rsquo;s use of advertising cookies enables it and its partners to serve ads based on visits to this site and/or other sites on the internet. Advertising cookies are only used if you allow them in our cookie choices. You can opt out of personalised advertising at <a href="https://www.google.com/settings/ads" rel="noopener">Google Ads Settings</a>, or at <a href="https://www.aboutads.info" rel="noopener">aboutads.info</a>.</p>
 <h2>Technical logs</h2>
@@ -624,7 +627,8 @@ def site_pages_build():
             '<p class="note">Reports are anonymous and unverified, and each visitor can report each problem once every 30 minutes. They show how many people say they are affected, not why.</p></div>'
             '<h2>If %s is not loading for you</h2><ul>%s</ul>' % (n, tipsli) +
             '<p>Still stuck? Work through our <a href="/help/website-not-loading-checklist">website not loading checklist</a>, or read <a href="/help/down-for-some-people-not-others">why a site can be down for some people and not others</a>.</p>'
-            '<h2>Check %s from twelve places</h2><p>This page shows our latest scheduled check. To test %s right now from our server and from twelve countries, run a live check.</p>' % (n, hh) +
+            '<div class="sp-card" id="sp-world" hidden><div class="sp-rhead"><b>Seen from around the world</b><span class="sp-level" id="sp-wwhen"></span></div><p id="sp-wsum" class="note"></p><div class="rt-wrap"><table class="rt" id="sp-wtab"><thead><tr><th>Place</th><th>Result</th><th>Time</th></tr></thead><tbody></tbody></table></div><p class="note">A snapshot from probes on the public Globalping network, refreshed every few hours. It shows whether the site answers from other countries, not what every visitor sees.</p></div>' +
+            '<h2>Check %s from fifteen places</h2><p>This page shows our latest scheduled check. To test %s right now from our server and from fifteen countries, run a live check.</p>' % (n, hh) +
             '<p><a class="btn" href="/?q=%s"><span>Check %s now</span></a> <a class="btn ghost" href="/status/%s"><span>Full status page</span></a></p>' % (hh, n, hh) +
             '<h2>Questions about %s</h2><div class="faq">%s</div>' % (n, faqh) +
             '<h2>Other %s checks</h2><ul>%s</ul>' % (html.escape(catname.lower()), rel) +
@@ -646,7 +650,7 @@ def site_pages_build():
             '<div class="sp-card" id="sp-top" hidden><b>Most reported right now</b><ul id="sp-toplist"></ul></div>'
             '<label class="sr" for="sp-find">Find a site</label><input id="sp-find" class="sp-find" type="search" placeholder="Find a site, e.g. Netflix" autocomplete="off">'
             + groups +
-            '<p>Not listed? <a href="/">Check any website</a> from twelve places.</p></div></section>')
+            '<p>Not listed? <a href="/">Check any website</a> from fifteen places.</p></div></section>')
     write('is-it-down/index.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/sitepage.js"></script><script src="/assets/live.js"></script>'))
 
 # ---------------------------------------------------------------- help centre
@@ -685,13 +689,13 @@ def help_pages():
         body = ('<section class="page"><div class="wrap prose article">'
                 '<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/help/">Help centre</a> / ' + html.escape(catname[a['cat']]) + '</nav>'
                 '<h1 style="margin:14px 0 20px">' + html.escape(a['title']) + '</h1>' + a['body'] +
-                '<div class="cta-box"><b>Check a website now</b><p>Is it down for everyone, or just you? Paste an address and we test it from twelve places.</p><a class="btn" href="/"><span>Open the checker</span></a></div>'
+                '<div class="cta-box"><b>Check a website now</b><p>Is it down for everyone, or just you? Paste an address and we test it from fifteen places.</p><a class="btn" href="/"><span>Open the checker</span></a></div>'
                 '<h2>Related guides</h2><ul>' + rel + '</ul>'
                 '<p class="note">Last updated 2 November 2026. Written by the siteupdown.com team. <a href="/contact">Spotted a mistake?</a></p>'
                 '<p style="margin-top:20px"><a href="/help/">&larr; All help guides</a></p></div></section>')
         write('help/' + a['slug'] + '.html', h + body + foot('<script src="/assets/app.js"></script>'))
     # sitemap
-    urls = [('/', 'daily', '1.0'), ('/speed', 'monthly', '0.8'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8'), ('/tools/', 'monthly', '0.8')] + [('/tools/' + t['slug'], 'monthly', '0.7') for t in TOOLS] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES if n not in HIDDEN] + [('/about', 'monthly', '0.5'), ('/business', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
+    urls = [('/', 'daily', '1.0'), ('/speed', 'monthly', '0.8'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8'), ('/tools/', 'monthly', '0.8')] + [('/tools/' + t['slug'], 'monthly', '0.7') for t in TOOLS] + [('/tools/uptime-sla-calculator', 'monthly', '0.7'), ('/how-we-check', 'monthly', '0.6'), ('/faq', 'monthly', '0.6')] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES if n not in HIDDEN] + [('/about', 'monthly', '0.5'), ('/business', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
     sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join('<url><loc>%s%s</loc><lastmod>2026-11-02</lastmod><changefreq>%s</changefreq><priority>%s</priority></url>\n' % (SITE, u, c, p) for u, c, p in urls) + '</urlset>\n'
     open(os.path.join(ROOT, 'sitemap.xml'), 'w').write(sm)
 
@@ -701,8 +705,9 @@ def tools_pages():
     os.makedirs(os.path.join(ROOT, 'tools'), exist_ok=True)
     # hub
     cards = ''.join('<a class="tool" href="/tools/%s"><span class="ti">%s</span><h3>%s</h3><p>%s</p><span class="tgo">Open the tool &rarr;</span></a>' % (t['slug'], t['icon'], html.escape(t['name']), t['short']) for t in TOOLS)
-    extra_cards = ('<a class="tool" href="/"><span class="ti">&#128269;</span><h3>Is it down?</h3><p>Check any website from our server and twelve places around the world.</p><span class="tgo">Open the checker &rarr;</span></a>'
+    extra_cards = ('<a class="tool" href="/"><span class="ti">&#128269;</span><h3>Is it down?</h3><p>Check any website from our server and fifteen places around the world.</p><span class="tgo">Open the checker &rarr;</span></a>'
                    '<a class="tool" href="/speed"><span class="ti">&#9889;</span><h3>Website speed test</h3><p>See how fast a page loads and where the time goes.</p><span class="tgo">Test a site &rarr;</span></a>'
+                   '<a class="tool" href="/tools/uptime-sla-calculator"><span class="ti">&#128208;</span><h3>Uptime and SLA calculator</h3><p>Turn an uptime percentage into the downtime it allows, or the reverse.</p><span class="tgo">Open the calculator &rarr;</span></a>'
                    '<a class="tool" href="/monitor"><span class="ti">&#128276;</span><h3>Monitor and alerts</h3><p>Watch your sites and get an email when one goes down.</p><span class="tgo">Open Monitor &rarr;</span></a>')
     ld = '<script type="application/ld+json">' + _json.dumps({"@context": "https://schema.org", "@type": "CollectionPage", "name": "Free website tools", "url": SITE + "/tools/"}) + '</script>'
     h = head('Free website tools: DNS, SSL, headers, redirects and more — siteupdown.com', 'Free website tools: DNS lookup, SSL certificate checker, HTTP header checker, redirect checker, WHOIS and domain expiry, MX lookup, robots.txt and security headers checks.', '/tools/', ld).replace('{BODYATTR}', '')
@@ -731,6 +736,7 @@ def tools_pages():
                 '<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/tools/">Tools</a> / %s</nav>' % html.escape(t['name']) +
                 '<h1 style="margin:14px 0 14px">%s</h1>' % html.escape(t['h1']) +
                 '<form class="tool-form" id="tf" novalidate><div class="field"><input id="ti" type="text" inputmode="url" placeholder="%s" autocapitalize="none" autocorrect="off" spellcheck="false" aria-label="Website address"></div>' % t['ph'] +
+                ('<select id="tq" class="tool-sel" aria-label="Record type">' + ''.join('<option value="%s">%s</option>' % o for o in t['sel']) + '</select>' if t.get('sel') else '') +
                 '<button class="btn" type="submit" id="tb"><span>%s</span></button></form>' % t['btn'] +
                 '<p class="tool-err" id="te" role="alert" hidden></p><div class="tool-out" id="tout" aria-live="polite"></div>' +
                 ''.join('<p>%s</p>' % x for x in t['intro']) +
@@ -742,5 +748,27 @@ def tools_pages():
                 '<p style="margin-top:20px"><a href="/tools/">&larr; All tools</a></p></div></section>')
         write('tools/' + t['slug'] + '.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/tools.js"></script>'))
 
+def sla_page():
+    path = '/tools/uptime-sla-calculator'
+    faq = [('What does 99.9% uptime mean?', 'It allows about 8 hours 46 minutes of downtime a year, or 43 minutes a month. This is often called "three nines".'),
+           ('Is 99.99% much better than 99.9%?', 'It is ten times stricter: about 52 minutes a year instead of nearly 9 hours. Each extra nine usually costs far more to achieve.'),
+           ('Does planned maintenance count as downtime?', 'It depends on the agreement. Many service level agreements exclude announced maintenance, so read the small print.')]
+    ld = {"@context": "https://schema.org", "@graph": [
+        {"@type": "WebApplication", "name": "Uptime and SLA calculator", "url": SITE + path, "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "GBP"}},
+        {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": a}} for q, a in faq]}]}
+    h = head('Uptime and SLA calculator — how much downtime is 99.9%? | siteupdown.com', 'Free uptime calculator: see how much downtime a 99%, 99.9% or 99.99% uptime guarantee allows per day, week, month and year, or work out your uptime from minutes of downtime.', path, '<script type="application/ld+json">' + _json.dumps(ld) + '</script>').replace('{BODYATTR}', '')
+    body = ('<section class="page"><div class="wrap prose toolpage" data-tool="sla"><nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/tools/">Tools</a> / Uptime and SLA calculator</nav>'
+            '<h1 style="margin:14px 0 14px">Uptime and SLA calculator</h1>'
+            '<div class="sp-card"><label for="sla-pct"><b>Uptime percentage</b></label><div class="tool-form"><div class="field"><input id="sla-pct" type="text" inputmode="decimal" value="99.9" aria-label="Uptime percentage"></div><span class="note" style="align-self:center">%</span></div>'
+            '<div id="sla-out" aria-live="polite"></div></div>'
+            '<div class="sp-card"><label for="sla-min"><b>Or: how much downtime did you have?</b></label><div class="tool-form"><div class="field"><input id="sla-min" type="text" inputmode="decimal" placeholder="Minutes of downtime" aria-label="Minutes of downtime"></div>'
+            '<select id="sla-per" class="tool-sel" aria-label="Over this period"><option value="1440">in a day</option><option value="10080">in a week</option><option value="43200" selected>in a 30-day month</option><option value="525600">in a year</option></select></div><div id="sla-out2" aria-live="polite"></div></div>'
+            '<h2>What the usual targets allow</h2><div class="rt-wrap"><table class="rt"><thead><tr><th>Uptime</th><th>Per day</th><th>Per month (30 days)</th><th>Per year</th></tr></thead><tbody id="sla-tab"></tbody></table></div>'
+            '<p>Uptime is the share of time a service was working. The rest is downtime. Providers often promise a figure such as 99.9% in a service level agreement (SLA), and this page shows what that figure really allows. For how we measure uptime on this site, see <a href="/help/uptime-percentages-explained">uptime percentages explained</a>.</p>'
+            '<h2>Questions</h2><div class="faq">' + ''.join('<details><summary>%s</summary><p>%s</p></details>' % (html.escape(q), html.escape(a)) for q, a in faq) + '</div>'
+            '<h2>More free tools</h2><ul>' + ''.join('<li><a href="/tools/%s">%s</a></li>' % (o['slug'], html.escape(o['name'])) for o in TOOLS) + '</ul>'
+            '<p style="margin-top:20px"><a href="/tools/">&larr; All tools</a></p></div></section>')
+    write('tools/uptime-sla-calculator.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/sla.js"></script>'))
+
 if __name__ == '__main__':
-    home(); login(); account(); monitor(); speed(); status(); static_pages(); help_pages(); tools_pages(); site_pages_build()
+    home(); login(); account(); monitor(); speed(); status(); static_pages(); help_pages(); tools_pages(); sla_page(); site_pages_build()

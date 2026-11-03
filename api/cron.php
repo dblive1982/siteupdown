@@ -98,6 +98,8 @@ if (!$lastSweep || $lastSweep < gmdate('Y-m-d H:i:s', time() - 3600)) {
         $k++;
     }
 }
+// 6) Worldwide sweep: one public page from fifteen places, at a pace set by the Globalping allowance (see gp_world_sweep).
+if (time() - $t0 < 40) { require_once __DIR__ . '/_gp.php'; try { gp_world_sweep($pdo, array_keys(site_pages()), $t0 + 52); } catch (Throwable $e) {} }
 // Housekeeping (about every ten minutes): drop old feed rows and expired share links.
 if ((int)gmdate('i') % 10 === 3) {
 $pdo->prepare('DELETE FROM tracked_hosts WHERE last_seen < ?')->execute([gmdate('Y-m-d H:i:s', time() - 7 * 86400)]);

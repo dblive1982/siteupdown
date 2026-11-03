@@ -15,17 +15,30 @@ function gp_request(string $method, string $path, ?array $body = null): array {
         CURLOPT_CUSTOMREQUEST => $method, CURLOPT_HTTPHEADER => $h,
     ]);
     if ($body !== null) curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($body));
+    $hdr = [];
+    curl_setopt($ch, CURLOPT_HEADERFUNCTION, function ($ch, $line) use (&$hdr) {
+        if (preg_match('/^(x-ratelimit-remaining|x-credits-remaining|x-ratelimit-reset):\s*(\d+)/i', $line, $m)) $hdr[strtolower($m[1])] = (int)$m[2];
+        return strlen($line);
+    });
     $raw = curl_exec($ch);
     $code = (int)curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
     curl_close($ch);
+    $left = $hdr['x-credits-remaining'] ?? $hdr['x-ratelimit-remaining'] ?? null;
+    if ($left !== null) $GLOBALS['gp_left'] = $left;           // how many probe-tests we have left this hour
+    if ($code === 429) $GLOBALS['gp_limited'] = $hdr['x-ratelimit-reset'] ?? 600;
     $d = is_string($raw) ? json_decode($raw, true) : null;
     return ['code' => $code, 'data' => is_array($d) ? $d : []];
 }
+/** Probe-tests left this hour as last reported by Globalping (null if unknown). */
+function gp_left(): ?int { return isset($GLOBALS['gp_left']) ? (int)$GLOBALS['gp_left'] : null; }
 
-/** The twelve places we ask. If a country has no probe free, we fall back to continents. */
+/** The fifteen places we ask. If a country has no free probe we fall back to the original twelve, then to continents. */
+const GP_COUNTRIES = ['US', 'CA', 'MX', 'BR', 'AR', 'GB', 'DE', 'FR', 'ZA', 'AE', 'IN', 'SG', 'JP', 'KR', 'AU'];
 function gp_locations(): array {
-    $countries = ['US', 'CA', 'BR', 'GB', 'DE', 'FR', 'ZA', 'AE', 'IN', 'JP', 'SG', 'AU'];
-    return array_map(fn($c) => ['country' => $c, 'limit' => 1], $countries);
+    return array_map(fn($c) => ['country' => $c, 'limit' => 1], GP_COUNTRIES);
+}
+function gp_locations_basic(): array {
+    return array_map(fn($c) => ['country' => $c, 'limit' => 1], ['US', 'CA', 'BR', 'GB', 'DE', 'FR', 'ZA', 'AE', 'IN', 'JP', 'SG', 'AU']);
 }
 function gp_fallback_locations(): array {
     return [['continent' => 'NA', 'limit' => 2], ['continent' => 'SA', 'limit' => 1], ['continent' => 'EU', 'limit' => 3],
@@ -35,7 +48,7 @@ function gp_fallback_locations(): array {
 function gp_start(string $host): ?string {
     if (function_exists('probe_alias_get') && ($al = probe_alias_get($host))) $host = $al;     // ask for the address that really answers
     $opts = ['request' => ['method' => 'GET', 'path' => '/'], 'protocol' => 'HTTPS', 'port' => 443];
-    foreach ([gp_locations(), gp_fallback_locations()] as $locs) {
+    foreach ([gp_locations(), gp_locations_basic(), gp_fallback_locations()] as $locs) {
         $r = gp_request('POST', '/measurements', ['type' => 'http', 'target' => $host, 'locations' => $locs, 'measurementOptions' => $opts]);
         if (in_array($r['code'], [200, 202], true) && !empty($r['data']['id'])) return (string)$r['data']['id'];
         if ($r['code'] === 429) return null; // rate limited: do not hammer
@@ -108,4 +121,46 @@ function corroborate_alive(string $host): bool {
     $pdo->prepare('DELETE FROM corroboration WHERE host=?')->execute([$orig]);
     $pdo->prepare('INSERT INTO corroboration (host, alive, ts) VALUES (?,?,?)')->execute([$orig, $alive ? 1 : 0, time()]);
     return $alive;
+}
+
+/**
+ * Background worldwide sweep: every so often, measure ONE public page from all fifteen places and keep the answer,
+ * so each "Is it down?" page can show a regional picture without anyone pressing a button.
+ * Budget-aware: slow without a Globalping token, faster with one, and it stops when credits run low or Globalping says 429.
+ */
+function gp_world_sweep(PDO $pdo, array $hosts, int $deadline): ?string {
+    $c = config() ?: [];
+    $get = function (string $k) use ($pdo) { $q = $pdo->prepare('SELECT ts FROM corroboration WHERE host=?'); $q->execute([$k]); $v = $q->fetchColumn(); return $v === false ? 0 : (int)$v; };
+    $set = function (string $k, int $v) use ($pdo) { $pdo->prepare('DELETE FROM corroboration WHERE host=?')->execute([$k]); $pdo->prepare('INSERT INTO corroboration (host, alive, ts) VALUES (?,?,?)')->execute([$k, 0, $v]); };
+    if ($get('*gp-backoff') > time()) return null;
+    $every = (int)($c['world_every'] ?? (!empty($c['globalping_token']) ? 150 : 600));
+    if ($every <= 0 || time() - $get('*world-last') < $every) return null;
+    $left = $get('*gp-left');                                   // remembered between runs
+    if ($left && $left < (int)($c['world_reserve'] ?? 80) && $get('*gp-left-at') > time() - 3600) return null;   // keep credits for visitors
+    $seen = [];
+    foreach ($pdo->query('SELECT host, ts FROM world_checks')->fetchAll() as $r) $seen[$r['host']] = (int)$r['ts'];
+    $order = $hosts; usort($order, fn($a, $b) => ($seen[$a] ?? 0) <=> ($seen[$b] ?? 0));
+    $host = $order[0] ?? null; if (!$host) return null;
+    $set('*world-last', time());
+    $target = (function_exists('probe_alias_get') && ($al = probe_alias_get($host))) ? $al : $host;
+    $opts = ['request' => ['method' => 'GET', 'path' => '/'], 'protocol' => 'HTTPS', 'port' => 443];
+    $id = null;
+    foreach ([gp_locations(), gp_locations_basic()] as $locs) {
+        $r = gp_request('POST', '/measurements', ['type' => 'http', 'target' => $target, 'locations' => $locs, 'measurementOptions' => $opts]);
+        if (in_array($r['code'], [200, 202], true) && !empty($r['data']['id'])) { $id = (string)$r['data']['id']; break; }
+        if ($r['code'] === 429) { $set('*gp-backoff', time() + min(3600, max(120, (int)($GLOBALS['gp_limited'] ?? 600)))); return null; }
+    }
+    if (!$id) return null;
+    $sum = null;
+    for ($i = 0; $i < 12 && time() < $deadline; $i++) {
+        sleep(1);
+        $m = gp_request('GET', '/measurements/' . rawurlencode($id));
+        if (gp_left() !== null) { $set('*gp-left', gp_left()); $set('*gp-left-at', time()); }
+        if (($m['data']['status'] ?? '') === 'in-progress') continue;
+        $sum = gp_summarise($m['data']); break;
+    }
+    if (!$sum || empty($sum['done']) || !$sum['total']) return null;
+    $sum['measured_at'] = iso(gmdate('Y-m-d H:i:s'));
+    $pdo->prepare('REPLACE INTO world_checks (host, data, ts) VALUES (?,?,?)')->execute([$host, json_encode($sum), time()]);
+    return $host;
 }

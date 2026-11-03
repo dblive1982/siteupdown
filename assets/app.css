@@ -959,3 +959,7 @@ a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--t
 .cat-chips .chip{padding:7px 12px;font-size:12.5px;border-radius:999px}
 .cat-chips .chip[aria-pressed=true]{background:var(--green);color:#04130a;border-color:var(--green)}
 #top-sites .pc-actions.col{flex-direction:row;flex-wrap:wrap;align-items:center;gap:10px}
+
+/* worldwide tool controls */
+.tool-sel{font:inherit;padding:12px 10px;border-radius:10px;border:1px solid var(--line,#2a3140);background:var(--card,transparent);color:inherit;min-height:48px}
+.tool-form .tool-sel{margin-right:8px}

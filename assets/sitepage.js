@@ -87,6 +87,21 @@
     headline();
   }).catch(function () { headline(); });
 
+  /* Latest worldwide snapshot from the background sweep, if there is one */
+  getJSON('/api/world.php?host=' + encodeURIComponent(host)).then(function (r) {
+    var w = r.ok && r.j.world; if (!w || !w.probes || !w.probes.length) return;
+    var dn = null; try { dn = new Intl.DisplayNames(['en'], { type: 'region' }); } catch (z) {}
+    var LBL = { ok: ['up', 'Reached'], error: ['down', 'Server error'], blocked: ['unsure', 'Blocked our check'], none: ['slow', 'No answer'] };
+    var rows = w.probes.slice().sort(function (a, b) { return (a.country || '').localeCompare(b.country || ''); }).map(function (p) {
+      var l = LBL[p.state] || LBL.none, nm = p.country ? (dn ? (dn.of(p.country) || p.country) : p.country) : (p.continent || '');
+      return '<tr><td data-l="Place">' + esc(nm) + (p.city ? ' <span class="sp-ms">' + esc(p.city) + '</span>' : '') + '</td><td data-l="Result"><span class="sp-pill ' + l[0] + '">' + l[1] + (p.code ? ' ' + p.code : '') + '</span></td><td data-l="Time">' + (p.ms != null && p.state !== 'none' ? p.ms + ' ms' : '') + '</td></tr>';
+    });
+    $('#sp-wtab tbody').innerHTML = rows.join('');
+    $('#sp-wsum').textContent = w.reachable + ' of ' + w.total + ' places reached ' + host + (w.median_ms ? ', typical time ' + w.median_ms + ' ms' : '') + '.';
+    if (w.measured_at) $('#sp-wwhen').textContent = ago(w.measured_at);
+    $('#sp-world').hidden = false;
+  }).catch(function () {});
+
   var kindName = { site: 'website not loading', login: 'cannot log in', app: 'app not working', slow: 'very slow' };
   var range = '24h', getRange = S.repRanges($('#sp-ranges'), function (r) { range = r; loadReports(); });
   function renderReports() {

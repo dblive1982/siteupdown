@@ -104,6 +104,61 @@
     }
   };
 
+  /* ------------ worldwide tools (Globalping): start, then poll and fill in as probes answer ------------ */
+  var GP = { ping: 'ping', dnsworld: 'dns', trace: 'trace' };
+  var dn = null; try { dn = new Intl.DisplayNames(['en'], { type: 'region' }); } catch (z) {}
+  function place(p) { var n = p.country ? (dn ? (dn.of(p.country) || p.country) : p.country) : ''; return e(n) + (p.city ? ' <span class="sp-ms">' + e(p.city) + '</span>' : ''); }
+  var W = {
+    ping: function (rs, done) {
+      var ok = rs.filter(function (r) { return r.ok; }), av = ok.map(function (r) { return r.avg; }).sort(function (a, b) { return a - b; });
+      var h = '<div class="sp-card"><b>' + (done ? ok.length + ' of ' + rs.length + ' places answered' : 'Waiting for probes…') + '</b>' + (av.length ? '<p class="note">Fastest ' + av[0] + ' ms, slowest ' + av[av.length - 1] + ' ms, middle ' + av[Math.floor(av.length / 2)] + ' ms.</p>' : '') + '</div>';
+      return h + table(['Place', 'Average', 'Min / max', 'Loss'], rs.map(function (r) {
+        return [place(r), r.ok ? '<b>' + r.avg + ' ms</b>' : pill('slow', done ? 'No answer' : 'Waiting'), r.ok ? r.min + ' / ' + r.max + ' ms' : '', r.loss != null && r.ok ? (r.loss > 0 ? pill('down', r.loss + '%') : '0%') : ''];
+      }));
+    },
+    dnsworld: function (rs, done) {
+      var groups = {}, order = [];
+      rs.forEach(function (r) { if (!r.ok || !r.answers.length) return; var k = r.answers.map(function (a) { return a.value; }).sort().join('|'); if (!groups[k]) { groups[k] = 0; order.push(k); } groups[k]++; });
+      var same = order.length === 1;
+      var h = '<div class="sp-card"><div class="sp-rhead"><b>' + (done ? (order.length === 0 ? 'No answers' : same ? 'Same answer everywhere' : order.length + ' different answers') : 'Waiting for probes…') + '</b>' + (done && order.length ? pill(same ? 'up' : 'slow', same ? 'Fully spread' : 'Still spreading') : '') + '</div>' +
+        (done && !same && order.length ? '<p class="note">Some networks may still hold an older record. Check again after the TTL has passed.</p>' : '') + '</div>';
+      return h + table(['Place', 'Answer', 'TTL'], rs.map(function (r) {
+        return [place(r), r.ok && r.answers.length ? r.answers.map(function (a) { return '<code>' + e(a.value) + '</code>'; }).join('<br>') : pill('slow', done ? 'No answer' : 'Waiting'), r.ok && r.answers.length && r.answers[0].ttl != null ? dur(r.answers[0].ttl) : ''];
+      }));
+    },
+    trace: function (rs, done) {
+      var h = '<div class="sp-card"><b>' + (done ? 'Trace finished' : 'Tracing…') + '</b></div>';
+      rs.forEach(function (r) {
+        h += '<h3>From ' + place(r) + '</h3>';
+        if (!r.ok || !r.hops || !r.hops.length) { h += '<p class="note">' + (done ? 'No path returned from this place.' : 'Waiting…') + '</p>'; return; }
+        h += table(['Hop', 'Host', 'Time'], r.hops.map(function (x, i) { return [i + 1, x.host ? '<code>' + e(x.host) + '</code>' : '<span class="note">no reply</span>', x.ms != null ? x.ms + ' ms' : '']; }));
+      });
+      return h;
+    }
+  };
+  function runGP(addr) {
+    show(''); addr = (addr || '').trim();
+    if (!addr) { show('Please enter a website address like example.com.'); input.focus(); return; }
+    btn.disabled = true; out.innerHTML = '<p class="note">Starting the worldwide check&hellip;</p>';
+    var qt = document.getElementById('tq');
+    fetch('/api/gptool.php', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-SUD': '1' }, body: JSON.stringify({ tool: GP[tool], address: addr, qtype: qt ? qt.value : undefined }) })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j }; }); })
+      .then(function (x) {
+        if (!x.ok) { btn.disabled = false; out.innerHTML = ''; show(x.j.error || 'Something went wrong. Please try again.'); return; }
+        if (x.j.error) { btn.disabled = false; out.innerHTML = '<div class="sp-card"><b>' + e(x.j.host) + '</b><p>' + e(x.j.error) + '</p></div>'; return; }
+        try { history.replaceState(null, '', location.pathname + '?q=' + encodeURIComponent(addr)); } catch (z) {}
+        var n = 0;
+        (function poll() {
+          fetch('/api/gptool.php?tool=' + GP[tool] + '&id=' + encodeURIComponent(x.j.id)).then(function (r) { return r.json(); }).then(function (j) {
+            n++;
+            if (j.results && j.results.length) out.innerHTML = W[tool](j.results, !!j.done);
+            if (j.done || n > 30) { btn.disabled = false; if (!j.results || !j.results.length) out.innerHTML = '<div class="sp-card"><p>No results came back. Please try again in a minute.</p></div>'; }
+            else setTimeout(poll, 1500);
+          }).catch(function () { btn.disabled = false; show('Could not reach the server. Please try again.'); });
+        })();
+      }).catch(function () { btn.disabled = false; out.innerHTML = ''; show('Could not reach the server. Please try again.'); });
+  }
+
   function show(m) { err.textContent = m; err.hidden = !m; }
   function run(addr) {
     show(''); addr = (addr || '').trim();
@@ -120,6 +175,7 @@
       })
       .catch(function () { btn.disabled = false; out.innerHTML = ''; show('Could not reach the server. Please try again.'); });
   }
-  form.addEventListener('submit', function (ev) { ev.preventDefault(); run(input.value); });
-  try { var q = new URLSearchParams(location.search).get('q'); if (q) { input.value = q.slice(0, 300); run(q); } } catch (z) {}
+  var go = GP[tool] ? runGP : run;
+  form.addEventListener('submit', function (ev) { ev.preventDefault(); go(input.value); });
+  try { var q = new URLSearchParams(location.search).get('q'); if (q) { input.value = q.slice(0, 300); go(q); } } catch (z) {}
 })();
