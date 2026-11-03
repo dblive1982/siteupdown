@@ -395,6 +395,329 @@ ARTICLES = [
 <h2>What it means for site owners</h2>
 <p>If visitors in one country report problems and your own tests are fine, check your CDN&rsquo;s status page, your firewall rules, and any country blocks. Monitoring from several regions, as our worldwide check does, catches these problems that a single-location monitor misses.</p>'''
 },
+{
+'slug': 'error-403-forbidden', 'cat': 'errors',
+'title': 'What does a 403 Forbidden error mean?',
+'desc': 'A 403 means the website understood your request but refused it. Here are the common causes, from blocked networks and VPNs to permissions, and what you can try.',
+'related': ['http-status-codes-explained', 'down-for-some-people-not-others', 'website-not-loading-checklist'],
+'body': '''
+<p class="lead">A <code>403 Forbidden</code> error means the server is working and received your request, but it has decided not to let you have the page. That is different from a 404, where the page does not exist, and from a 5xx error, where the server itself is struggling.</p>
+<h2>Common causes</h2>
+<ul>
+<li><b>You are not allowed to see that page.</b> Some pages are for signed-in users, staff or members only.</li>
+<li><b>Your network or country is blocked.</b> Websites sometimes refuse traffic from certain countries, hosting providers, VPNs or shared networks that have caused trouble before.</li>
+<li><b>A security filter flagged the request.</b> Firewalls and bot protection can block a visitor who looks like an automated program. A browser with unusual settings, extensions or a very old version can trigger this.</li>
+<li><b>Wrong permissions on the server.</b> If you run the site, a file or folder may be set so the web server cannot read it. This is a very common cause for new sites.</li>
+<li><b>A missing index file.</b> If a folder has no default page and directory listing is switched off, many servers answer 403.</li>
+</ul>
+<h2>What visitors can try</h2>
+<ol>
+<li>Reload the page, then check the address for typing mistakes.</li>
+<li>Sign in if the page belongs to an account area.</li>
+<li>Turn off any VPN or proxy and try again. Then try mobile data instead of Wi-Fi.</li>
+<li><a href="/help/clear-browser-cache-and-cookies">Clear the site&rsquo;s cookies and cache</a>, which can remove a stale login that causes the refusal.</li>
+<li>If the page works for other people, it is probably something about your network. Contact the site&rsquo;s support and tell them roughly when it happened.</li>
+</ol>
+<h2>What site owners should check</h2>
+<ul>
+<li>File permissions: folders are usually 755 and files 644.</li>
+<li>That the folder has an index file such as <code>index.html</code> or <code>index.php</code>.</li>
+<li>Firewall, security plugin and CDN rules that might be blocking legitimate visitors or tools.</li>
+<li>Any country or IP blocks you have set up.</li>
+</ul>
+<h2>403 and uptime checks</h2>
+<p>Many large websites answer automated checks with a 403 on purpose, even when they work perfectly for people. When our server gets a 403 we do not call the site down. We report that it blocks automated checks, because a refusal is not an outage. See <a href="/help/sites-that-block-automated-checks">Why some sites block automated checks</a>.</p>
+'''
+},
+{
+'slug': 'error-429-too-many-requests', 'cat': 'errors',
+'title': 'What does a 429 Too Many Requests error mean?',
+'desc': 'A 429 error means you, or the network you share, sent too many requests too quickly. Learn why it happens and how long to wait.',
+'related': ['http-status-codes-explained', 'error-403-forbidden', 'down-for-some-people-not-others'],
+'body': '''
+<p class="lead">A <code>429 Too Many Requests</code> error is the website asking you to slow down. It is a deliberate limit, not a breakage. Servers use these limits, called rate limits, to stay fast for everyone and to stop abuse.</p>
+<h2>Why you might see it</h2>
+<ul>
+<li><b>You refreshed or clicked very quickly.</b> Repeated reloads can reach the limit within seconds.</li>
+<li><b>You share a network.</b> Offices, schools, mobile networks and VPNs put many people behind one address, so their combined traffic can hit the limit even when you have done little.</li>
+<li><b>A browser extension or app is making extra requests</b> in the background.</li>
+<li><b>An automated tool or script is calling the site</b> too often.</li>
+<li><b>The site is under heavy load</b> and has tightened its limits temporarily.</li>
+</ul>
+<h2>What to do</h2>
+<ol>
+<li>Wait a few minutes without reloading. Some sites say how long in a <code>Retry-After</code> message.</li>
+<li>Close extra tabs and pause any extensions that interact with the site.</li>
+<li>Switch from a VPN or shared network to your own connection, or the other way round.</li>
+<li>Try again later. Limits usually reset within minutes or an hour.</li>
+</ol>
+<h2>If you run the site or write the tool</h2>
+<p>Slow your requests down, spread them out, and respect the <code>Retry-After</code> header. If real visitors are being limited, raise the limit or give known users a higher one. Rate limits that are too tight look like an outage to visitors.</p>
+<h2>How we treat 429 answers</h2>
+<p>A 429 from our checking server does not mean a site is down. It means the site declined to answer us at that moment, so we mark the result as inconclusive rather than reporting an outage.</p>
+'''
+},
+{
+'slug': 'dns-probe-finished-nxdomain', 'cat': 'fix',
+'title': 'Fix &ldquo;server not found&rdquo; and DNS_PROBE_FINISHED_NXDOMAIN',
+'desc': 'What the DNS errors in Chrome, Edge, Firefox and Safari mean, and a step-by-step way to fix them on your device, your router or the website itself.',
+'related': ['flush-dns-cache', 'dns-propagation', 'website-not-loading-checklist'],
+'body': '''
+<p class="lead">Messages such as <code>DNS_PROBE_FINISHED_NXDOMAIN</code>, &ldquo;Server not found&rdquo; and &ldquo;We can&rsquo;t find that site&rdquo; all mean the same thing: your device could not turn the website&rsquo;s name into an address. The website may be fine. The lookup failed.</p>
+<h2>Why a lookup fails</h2>
+<ul>
+<li>The address was typed wrongly.</li>
+<li>The domain has expired or has not been set up yet.</li>
+<li>Your device or router has a stale or broken DNS cache.</li>
+<li>Your internet provider&rsquo;s DNS server is having trouble.</li>
+<li>A VPN, security tool or parental filter is intercepting the lookup.</li>
+</ul>
+<h2>Fixes, in the order to try them</h2>
+<ol>
+<li><b>Check the spelling</b> of the address, including the ending such as .com or .co.uk.</li>
+<li><b>Run a check on siteupdown.com.</b> If our probes reach the site, the problem is on your side. If none do, the site&rsquo;s DNS or hosting is the problem.</li>
+<li><b>Try another network.</b> Switch from Wi-Fi to mobile data. If it works, your router or provider is the issue.</li>
+<li><b>Restart your router</b> and wait two minutes.</li>
+<li><b><a href="/help/flush-dns-cache">Flush your DNS cache.</a></b></li>
+<li><b>Change your DNS server</b> to a public one in your network settings, then try again.</li>
+<li><b>Turn off VPNs and filters</b> for a minute to see whether they are the cause.</li>
+</ol>
+<h2>If the website is yours</h2>
+<p>Check that the domain has not expired, the nameservers are correct, and the right A or CNAME record exists. Remember that changes can take a while to spread, as explained in <a href="/help/dns-propagation">DNS propagation</a>.</p>
+'''
+},
+{
+'slug': 'works-on-mobile-data-not-wifi', 'cat': 'fix',
+'title': 'A website works on mobile data but not on Wi-Fi: why and how to fix it',
+'desc': 'When a site loads on your phone&rsquo;s data but not on your home or office Wi-Fi, the problem is almost always your network. Here are the usual causes and fixes.',
+'related': ['website-not-loading-checklist', 'dns-probe-finished-nxdomain', 'down-for-some-people-not-others'],
+'body': '''
+<p class="lead">If a website loads on mobile data but not on Wi-Fi, you have already learned the most useful fact: the site is up, and the fault is somewhere between your device and the internet on that Wi-Fi network.</p>
+<h2>The usual causes</h2>
+<ul>
+<li><b>A stale DNS cache on the router.</b> The router remembers an old address for the site.</li>
+<li><b>Your provider&rsquo;s DNS or routing.</b> Some providers have problems reaching particular sites.</li>
+<li><b>Filtering.</b> Parental controls, network-level ad blockers or security services may block the site.</li>
+<li><b>IPv6 trouble.</b> Some networks hand out IPv6 addresses that do not work properly with certain sites.</li>
+<li><b>A wrong clock or a captive-portal login</b> on public Wi-Fi.</li>
+</ul>
+<h2>What to try</h2>
+<ol>
+<li>Restart the router and wait a couple of minutes.</li>
+<li>Disconnect and reconnect your device to the Wi-Fi.</li>
+<li><a href="/help/flush-dns-cache">Flush the DNS cache</a> on your device.</li>
+<li>Switch your DNS server to a public one in the router or device settings.</li>
+<li>Check whether a filter, VPN or security app is blocking the site.</li>
+<li>On public Wi-Fi, open a plain website to trigger the sign-in page.</li>
+<li>If nothing helps, contact your internet provider and tell them which site and the time you tried.</li>
+</ol>
+<h2>Prove it is not the site</h2>
+<p>Run the address through the <a href="/">checker</a>. If the probes around the world reach the site, you can tell your provider or network admin with confidence that the site works elsewhere.</p>
+'''
+},
+{
+'slug': 'clear-browser-cache-and-cookies', 'cat': 'fix',
+'title': 'How to clear the cache and cookies for one website',
+'desc': 'Clearing the cache and cookies for a single site can fix pages that look broken, keep redirecting or refuse to log in. Steps for Chrome, Edge, Firefox and Safari.',
+'related': ['website-not-loading-checklist', 'error-403-forbidden', 'flush-dns-cache'],
+'body': '''
+<p class="lead">Your browser keeps copies of pages and small files, called the cache, plus cookies that remember who you are. When they go stale they can cause pages that look broken, endless redirects and sign-in problems, even when the website is working.</p>
+<h2>The quick test first</h2>
+<p>Open the site in a private or incognito window. If it works there, the cause is something saved in your normal browser: the cache, cookies or an extension.</p>
+<h2>Clear it for one site</h2>
+<ul>
+<li><b>Chrome and Edge:</b> click the icon to the left of the address, choose <i>Cookies and site data</i> or <i>Site settings</i>, then <i>Clear data</i>.</li>
+<li><b>Firefox:</b> click the padlock, choose <i>Clear cookies and site data</i>.</li>
+<li><b>Safari on Mac:</b> Settings, Privacy, <i>Manage Website Data</i>, search for the site and remove it.</li>
+<li><b>iPhone and iPad:</b> Settings, Safari, Advanced, <i>Website Data</i>, search for the site and remove it.</li>
+<li><b>Android Chrome:</b> tap the menu, Settings, Site settings, All sites, find the site and clear its data.</li>
+</ul>
+<h2>A hard refresh</h2>
+<p>On a computer, press <b>Ctrl+Shift+R</b> (or <b>Cmd+Shift+R</b> on a Mac) to reload the page and ignore the saved copy.</p>
+<h2>What you lose</h2>
+<p>Clearing a site&rsquo;s cookies signs you out and removes saved preferences for that site only. Other sites are not touched.</p>
+<h2>If it still fails</h2>
+<p>Turn off extensions one by one, then use the <a href="/help/website-not-loading-checklist">website not loading checklist</a>. Running the address through our <a href="/">checker</a> tells you whether the site is down for everyone.</p>
+'''
+},
+{
+'slug': 'sites-that-block-automated-checks', 'cat': 'checks',
+'title': 'Why some sites block automated checks, and what we say when that happens',
+'desc': 'Many big websites refuse requests from monitoring tools. Here is why, how it shows up as a 403, 429 or timeout, and how siteupdown.com avoids calling those sites down.',
+'related': ['how-our-checks-work', 'error-403-forbidden', 'down-for-some-people-not-others'],
+'body': '''
+<p class="lead">A site that loads perfectly for you can still refuse to answer a checking tool. This is one of the main reasons uptime checkers disagree with each other, and it is why we are careful about the word &ldquo;down&rdquo;.</p>
+<h2>Why sites do this</h2>
+<ul>
+<li><b>Bot protection.</b> Security services look for traffic from data centres and block anything that does not look like a normal person with a normal browser.</li>
+<li><b>Scraping and abuse.</b> Sites protect their content and prices from copying.</li>
+<li><b>Rate limits.</b> Too many requests from one address earn a refusal.</li>
+<li><b>Country or network rules.</b> Some sites only answer certain regions.</li>
+</ul>
+<h2>What it looks like to us</h2>
+<ul>
+<li>A <code>403</code>, <code>429</code> or similar refusal.</li>
+<li>A page that never answers, which shows as a timeout.</li>
+<li>A challenge page instead of the real page.</li>
+</ul>
+<h2>What we do about it</h2>
+<ol>
+<li>A site is only called <b>down</b> after it returns a server error twice. A refusal is not an error of that kind.</li>
+<li>Refusals and timeouts are labelled <b>blocked</b>, <b>no answer</b> or <b>inconclusive</b>, never down.</li>
+<li>If our server cannot reach a site but probes in other countries can, we say so.</li>
+<li>If we cannot be sure, we say we cannot be sure, and give you a link to open the site yourself.</li>
+</ol>
+<h2>What you can do</h2>
+<p>Open the site in your own browser. If it loads, it is up for you. If it does not, try the <a href="/help/website-not-loading-checklist">checklist</a> and look at the site&rsquo;s official status page or social account, which are the most reliable sources during a large outage.</p>
+<p>We do not disguise our checks as a browser. Being open about what we are is part of how we keep our results honest.</p>
+'''
+},
+{
+'slug': 'is-it-down-or-just-me', 'cat': 'checks',
+'title': 'How to tell if a website is down for everyone or just you',
+'desc': 'A simple four-step method to work out whether a site is down for everyone or only for you, using a checker, another network, another device and the site&rsquo;s own status page.',
+'related': ['website-not-loading-checklist', 'down-for-some-people-not-others', 'how-our-checks-work'],
+'body': '''
+<p class="lead">When a page will not load, the first question is whose problem it is. These four steps answer it in about a minute.</p>
+<h2>Step 1: ask a checker</h2>
+<p>Enter the address into the <a href="/">siteupdown.com checker</a>. We load it from our own server and from probes in several countries at the same time. If most of them reach the site, it is up and the problem is likely on your side. If most fail, it is down for everyone.</p>
+<h2>Step 2: change your network</h2>
+<p>Turn off Wi-Fi and try on mobile data, or the other way round. If it loads on one but not the other, your network or provider is the cause.</p>
+<h2>Step 3: change your device or browser</h2>
+<p>Try another browser, a private window or another device. If that works, the cause is your browser&rsquo;s saved data or an extension. See <a href="/help/clear-browser-cache-and-cookies">how to clear it</a>.</p>
+<h2>Step 4: check the source</h2>
+<p>Large services have an official status page or a social media account that announces problems. These are the best source during a big outage, and they are often updated before any checker notices.</p>
+<h2>Reading the results</h2>
+<ul>
+<li><b>Up for everyone:</b> every probe reached it. Look at your own connection.</li>
+<li><b>Reachable from some places:</b> a regional problem. Your region may be affected.</li>
+<li><b>Down for everyone:</b> nothing reaches it. Wait and try again later.</li>
+<li><b>Blocking automated checks or no answer:</b> the site may be fine but refuses tools. Open it in your browser to be sure.</li>
+</ul>
+'''
+},
+{
+'slug': 'why-big-websites-go-down', 'cat': 'owners',
+'title': 'Why big websites go down: cloud, CDN and DNS failures',
+'desc': 'Even huge services have outages. The usual causes are configuration mistakes, overloaded servers, cloud and CDN failures and DNS problems. Here is how they work and why they spread.',
+'related': ['server-errors-500-502-503-504', 'dns-propagation', 'uptime-percentages-explained'],
+'body': '''
+<p class="lead">Large websites are run by experienced teams on very reliable systems, and they still go down. When they do, the cause is usually one of a small number of things.</p>
+<h2>Common causes</h2>
+<ul>
+<li><b>A configuration change.</b> The most common cause by far. A setting pushed to many servers at once can break them all.</li>
+<li><b>A software update or release.</b> A new version with a hidden bug can cause errors that only appear under real traffic.</li>
+<li><b>Overload.</b> A sudden surge in visitors, such as a major event or a promotion, can exceed what the servers can handle.</li>
+<li><b>A cloud provider fault.</b> Many sites rely on the same cloud platforms. When one region has trouble, every service that depends on it can be affected together.</li>
+<li><b>A CDN problem.</b> Content delivery networks sit between visitors and websites. If one fails, thousands of sites can show errors at once.</li>
+<li><b>DNS failures.</b> If the system that turns names into addresses fails, the site can be perfectly healthy and still unreachable.</li>
+<li><b>Expired certificates or domains.</b> A simple lapse can make a site unavailable until it is renewed.</li>
+</ul>
+<h2>Why one fault affects so many sites</h2>
+<p>Modern sites share infrastructure. A single failing component, such as a login service, a database or a DNS provider, can sit underneath many different websites and apps. That is why unrelated sites sometimes go down in the same hour.</p>
+<h2>What you can do as a visitor</h2>
+<ul>
+<li>Check whether other sites that use the same provider are also affected.</li>
+<li>Read the service&rsquo;s official status page for updates.</li>
+<li>Avoid repeating actions such as payments or form submissions during an outage.</li>
+</ul>
+<h2>What you can do as an owner</h2>
+<p>Monitor from several locations, keep certificates and domains renewing automatically, and avoid depending on a single provider for everything. See <a href="/help/uptime-percentages-explained">uptime percentages explained</a> for what different levels mean in practice.</p>
+'''
+},
+{
+'slug': 'what-is-a-good-response-time', 'cat': 'owners',
+'title': 'What is a good website response time?',
+'desc': 'What response time means, which numbers are good, average or slow, and what usually makes a site respond slowly. Written for site owners and curious visitors.',
+'related': ['speed-up-your-website', 'uptime-percentages-explained', 'how-our-checks-work'],
+'body': '''
+<p class="lead">Response time is how long a website takes to start answering after you ask for a page. It is measured in milliseconds, where 1,000 ms is one second. It is not the same as total page load time, which also includes images, scripts and rendering.</p>
+<h2>Rough guide</h2>
+<ul>
+<li><b>Under 200 ms:</b> very fast. The server answers almost at once.</li>
+<li><b>200 to 500 ms:</b> good for most sites.</li>
+<li><b>500 ms to 1 second:</b> acceptable, but noticeable on a slow connection.</li>
+<li><b>Over 1 second:</b> slow. Visitors begin to notice, and some leave.</li>
+</ul>
+<p>These figures are rules of thumb. A very busy checkout page or a search engine has different needs from a simple blog.</p>
+<h2>Why the number changes</h2>
+<ul>
+<li><b>Distance.</b> A visitor on the other side of the world takes longer to reach a single server than one nearby. That is why we show response times from several regions.</li>
+<li><b>Server load.</b> A busy server answers more slowly.</li>
+<li><b>Page generation.</b> Sites that build each page from a database take longer than sites that serve saved pages.</li>
+<li><b>Connection setup.</b> Finding the server, connecting and securing the link all add time before any content arrives.</li>
+<li><b>Your own connection.</b> Weak Wi-Fi and mobile signal add delay that has nothing to do with the site.</li>
+</ul>
+<h2>How to improve it</h2>
+<p>Use caching, a CDN, compressed responses and a fast host. The <a href="/help/speed-up-your-website">speed-up guide</a> goes through the changes that make the biggest difference.</p>
+<h2>How we measure it</h2>
+<p>Our live graph shows the response time of our own checks, which include network travel. A single slow reading is normal. Look at the average over a day or a week.</p>
+'''
+},
+{
+'slug': 'what-to-do-when-an-app-or-service-is-down', 'cat': 'fix',
+'title': 'What to do when an app or online service stops working',
+'desc': 'A calm checklist for when a popular app or service is not working: confirm whether it is an outage, avoid common mistakes, and know when to try again.',
+'related': ['is-it-down-or-just-me', 'why-big-websites-go-down', 'website-not-loading-checklist'],
+'body': '''
+<p class="lead">When an app that you use every day stops working, it helps to work out quickly whether the fault is yours or the service&rsquo;s. This keeps you from wasting time on fixes that cannot help.</p>
+<h2>1. Confirm it is an outage</h2>
+<p>Use the <a href="/">checker</a> or the service&rsquo;s page on this site. Then see whether the website works while the app does not, or the other way round. Outages often affect only one of them.</p>
+<h2>2. Look at the official source</h2>
+<p>Most services run a status page or a support account on social media. They announce problems and say when they are fixed.</p>
+<h2>3. Do not make things worse</h2>
+<ul>
+<li>Do not reinstall the app or reset your device unless the service says to.</li>
+<li>Do not change your password just because a sign-in fails during an outage.</li>
+<li>Do not repeat orders, payments or messages that seem stuck. Check your history first, because the first attempt may have gone through.</li>
+<li>Be careful with emails or messages claiming to fix an outage. Scammers use outages as cover.</li>
+</ul>
+<h2>4. Simple things worth one try</h2>
+<ol>
+<li>Close the app completely and reopen it.</li>
+<li>Switch between Wi-Fi and mobile data.</li>
+<li>Update the app to the latest version.</li>
+<li>Restart your device.</li>
+</ol>
+<h2>5. Wait, then try again</h2>
+<p>If the service is down for everyone, only the service can fix it. Most outages are over within an hour or two. If yours continues after the service reports it fixed, contact its support and mention your device, your network and the time.</p>
+'''
+},
+{
+'slug': 'how-to-monitor-your-own-website', 'cat': 'owners',
+'title': 'How to monitor your own website: what to check and how often',
+'desc': 'A practical guide for site owners: what to monitor, how often to check, how to avoid false alarms and what to do when an alert arrives.',
+'related': ['uptime-percentages-explained', 'ssl-certificate-errors', 'domain-name-expiry'],
+'body': '''
+<p class="lead">The worst way to learn that your website is down is from a customer. A little monitoring tells you first. This guide covers what is worth watching and how to keep alerts useful.</p>
+<h2>What to monitor</h2>
+<ul>
+<li><b>Availability.</b> Does the home page answer with a success code?</li>
+<li><b>Response time.</b> A slowdown often comes before an outage.</li>
+<li><b>Your important pages.</b> Check the login, checkout or contact page as well as the home page, since they can fail separately.</li>
+<li><b>SSL certificate expiry.</b> An expired certificate makes browsers warn visitors away. See <a href="/help/ssl-certificate-errors">SSL certificate errors</a>.</li>
+<li><b>Domain expiry.</b> Losing a domain takes everything offline. See <a href="/help/domain-name-expiry">domain name expiry</a>.</li>
+</ul>
+<h2>How often</h2>
+<p>Every minute catches short outages. Every five minutes is enough for most small sites. Checking less often than that risks missing a problem entirely.</p>
+<h2>Avoid false alarms</h2>
+<ul>
+<li>Require two failures in a row before alerting, which filters out one-off blips.</li>
+<li>Check from more than one location so a local network problem does not look like an outage.</li>
+<li>Do not alert on a slow response alone. Alert on errors, then track slowness separately.</li>
+</ul>
+<h2>When an alert arrives</h2>
+<ol>
+<li>Confirm with a second check and a different network.</li>
+<li>Check recent changes, such as a new release, a plugin update or a settings change.</li>
+<li>Look at your host&rsquo;s status page and your CDN or DNS provider.</li>
+<li>Write down the start and end time so you can measure uptime later.</li>
+</ol>
+<h2>Using siteupdown.com</h2>
+<p>A free account lets you add sites to a watchlist, see their uptime history and receive an email when one goes down and when it recovers.</p>
+'''
+},
+
 ]
 
 BY_SLUG = {a['slug']: a for a in ARTICLES}
