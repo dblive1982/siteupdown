@@ -10,7 +10,11 @@ foreach ($pdo->query('SELECT host, verdict, http_code, ms, checked_at FROM site_
 $cert = [];
 foreach ($pdo->query('SELECT host, status, days_left FROM site_cert')->fetchAll() as $r) $cert[$r['host']] = $r;
 $items = []; $latest = null;
-foreach (top_sites() as [$host, $name]) {
+$cat = preg_replace('/[^a-z]/', '', strtolower((string)($_GET['cat'] ?? '')));
+$list = [];
+if ($cat !== '') { foreach ($pg as $h0 => $p0) if (($p0['cat'] ?? '') === $cat) $list[] = [$h0, $p0['name']]; }
+else $list = top_sites();
+foreach ($list as [$host, $name]) {
     $r = $st[$host] ?? null;
     if ($r && (!$latest || $r['checked_at'] > $latest)) $latest = $r['checked_at'];
     $items[] = ['host' => $host, 'name' => $name, 'page' => $pg[$host]['page'] ?? null, 'verdict' => $r['verdict'] ?? null, 'code' => isset($r['http_code']) ? (int)$r['http_code'] : null,
@@ -18,4 +22,4 @@ foreach (top_sites() as [$host, $name]) {
                 'ssl' => $cert[$host]['status'] ?? null, 'ssl_days' => isset($cert[$host]['days_left']) ? (int)$cert[$host]['days_left'] : null];
 }
 header('Cache-Control: public, max-age=30');
-out(200, ['items' => $items, 'updated' => $latest ? iso($latest) : null]);
+out(200, ['cat' => $cat, 'items' => $items, 'updated' => $latest ? iso($latest) : null]);

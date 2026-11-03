@@ -366,14 +366,19 @@
       + '<div class="rr"><span class="code">' + right + '</span>' + sslTag(x)
       + '<button class="go" type="button" data-h="' + esc(x.host) + '" aria-label="Check ' + esc(x.name) + '" title="Check ' + esc(x.name) + '">↗</button></div></div>';
   }
-  var topItems = [], topFilter = 'all';
+  var topItems = [], topFilter = 'all', topCat = '', topLimit = 12, topLabel = '';
   function drawTop() {
     var g = $('#top-grid');
     var items = topItems.filter(function (x) { return topFilter === 'all' || (x.verdict && x.verdict !== 'up'); });
     var bad = topItems.filter(function (x) { return x.verdict && x.verdict !== 'up'; }).length, got = topItems.filter(function (x) { return x.verdict; });
     $('#f-issues').textContent = 'Issues (' + bad + ')';
     $('#top-count').textContent = got.length ? (got.length - bad) + '/' + got.length + ' answering' : '';
-    g.innerHTML = items.length ? items.map(function (x) { return siteCard(x); }).join('') : '<div class="skeleton">' + (topFilter === 'all' ? 'Sweeping the watchlist…' : 'No issues right now. Every site we have checked is responding.') + '</div>';
+    var shown = topCat && topFilter === 'all' ? items.slice(0, topLimit) : items;
+    g.innerHTML = items.length ? shown.map(function (x) { return siteCard(x); }).join('') : '<div class="skeleton">' + (topFilter === 'all' ? 'Sweeping the watchlist…' : 'No issues right now. Every site we have checked is responding.') + '</div>';
+    var mo = $('#top-more'); if (!mo) return;
+    if (topCat && items.length > shown.length) { mo.hidden = false; mo.innerHTML = '<button class="btn small ghost" type="button" id="top-showall">Show all ' + items.length + ' ' + esc(topLabel) + ' sites</button> <a class="fine" href="/is-it-down/#' + esc(topCat) + '">or open the full list</a>'; }
+    else if (topCat) { mo.hidden = false; mo.innerHTML = '<a class="fine" href="/is-it-down/#' + esc(topCat) + '">Open the full ' + esc(topLabel) + ' list</a>'; }
+    else { mo.hidden = false; mo.innerHTML = '<a class="fine" href="/is-it-down/">Browse every site by category</a>'; }
   }
   function loadOutages() {
     var ul = $('#ro-list'); if (!ul) return;
@@ -395,7 +400,7 @@
   }
   setTimeout(loadOutages, 300); setInterval(loadOutages, 60000);
   function loadTop() {
-    fetch('/api/top.php').then(function (r) { return r.json(); }).then(function (j) {
+    fetch('/api/top.php' + (topCat ? '?cat=' + encodeURIComponent(topCat) : '')).then(function (r) { return r.json(); }).then(function (j) {
       topItems = j.items || []; drawTop();
       $('#top-updated').textContent = j.updated ? 'A snapshot, not continuous uptime monitoring. Last sweep ' + S.ago(j.updated) + '.' : 'The first sweep is on its way.';
     }).catch(function () { $('#top-grid').innerHTML = '<div class="skeleton">Could not load the watchlist. Please refresh.</div>'; });
@@ -436,6 +441,13 @@
       S.api('watch.php', { action: 'add', address: state.host }).then(function () { S.toast(state.host + ' added to your watchlist'); }).catch(function (e) { S.toast(e.message, true); });
     });
     S.$$('[data-f]').forEach(function (b) { b.addEventListener('click', function () { topFilter = b.getAttribute('data-f'); S.$$('[data-f]').forEach(function (x) { x.setAttribute('aria-pressed', x === b); }); drawTop(); }); });
+    var tc = $('#top-cats'); if (tc) tc.addEventListener('click', function (e) {
+      var b = e.target.closest('[data-cat]'); if (!b) return;
+      topCat = b.getAttribute('data-cat'); topLabel = b.textContent; topLimit = 12;
+      S.$$('#top-cats [data-cat]').forEach(function (x) { x.setAttribute('aria-pressed', x === b); });
+      $('#top-grid').innerHTML = '<div class="skeleton">Loading&hellip;</div>'; loadTop();
+    });
+    document.addEventListener('click', function (e) { if (e.target.closest('#top-showall')) { topLimit = 9999; drawTop(); } });
     var rf = $('#top-refresh'); if (rf) rf.addEventListener('click', function () { loadTop(); });
     $('#g-q').addEventListener('input', function (e) { clearTimeout(gtimer); gtimer = setTimeout(function () { gq = e.target.value.trim(); gpage = 1; loadGaming(); }, 250); });
     $('#g-cats').addEventListener('click', function (e) { var c = e.target.closest('[data-c]'); if (c) { gcat = c.getAttribute('data-c'); gpage = 1; loadGaming(); } });

@@ -47,13 +47,17 @@ $xr = $pdo->prepare('SELECT * FROM extra_checks WHERE checked_at IS NULL OR chec
 $xr->execute([gmdate('Y-m-d H:i:s', time() - 55)]);
 foreach ($xr->fetchAll() as $row) { if (time() - $t0 > 48) break; xcheck_track($pdo, $row, xcheck_run($row)); $nx++; }
 // 3) Public pages (top sites, games, apps): about every five minutes, a few per run, while there is time left.
-$pubBatch = (int)($c['cron_batch'] ?? 8);
+$pubBatch = (int)($c['cron_batch'] ?? 24);
 $pub = [];
 foreach (top_sites() as $s) $pub[$s[0]] = 1;
 foreach (gaming_sites() as $s) $pub[$s[0]] = 1;
 foreach (site_pages() as $h0 => $sp0) { $pub[$h0] = 1; foreach ($sp0['app'] ?? [] as $ap) $pub[$ap[1]] = 1; }
 foreach ($pdo->query('SELECT host FROM tracked_hosts')->fetchAll() as $r) $pub[$r['host']] = 1;     // other sites people have looked at lately
-$pl = array_values(array_filter(array_keys($pub), fn($h) => !isset($watched[$h]) && ($st[$h] ?? '') < gmdate('Y-m-d H:i:s', time() - 270)));
+// Popular pages are re-checked about every 5 minutes; the extended list (tier 2) about every 30 minutes, so a 24-hour report still has ~48 checks.
+$ext = [];
+foreach (site_pages() as $h0 => $sp0) if ((int)($sp0['t'] ?? 0) === 2) $ext[$h0] = 1;
+$cutCore = gmdate('Y-m-d H:i:s', time() - 270); $cutExt = gmdate('Y-m-d H:i:s', time() - 1750);
+$pl = array_values(array_filter(array_keys($pub), fn($h) => !isset($watched[$h]) && ($st[$h] ?? '') < (isset($ext[$h]) ? $cutExt : $cutCore)));
 usort($pl, fn($a, $b) => strcmp($st[$a] ?? '', $st[$b] ?? ''));
 foreach (array_slice($pl, 0, $pubBatch) as $h) { if (time() - $t0 > 52) break; $probe($h); }
 // 4) Certificates: each host once a day, a few per run (public pages and every watched site).

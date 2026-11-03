@@ -147,6 +147,8 @@ def home():
     h = head('siteupdown.com — Is the website down, or just you?', 'Paste any website address to see if it is down for everyone or only for you. We check from our server and from twelve probes in different countries, at the same time.', '/', jsonld)
     h = h.replace('{BODYATTR}', ' data-page="home"')
     report_kinds = ''.join('<button type="button" class="rk" data-kind="%s">%s</button>' % (k, l) for k, l in SP.KIND_LABELS)
+    order = ['social', 'video', 'gaming', 'finance', 'shopping', 'news', 'government', 'telecom', 'travel', 'search', 'work']
+    topchips = '<button class="chip" type="button" data-cat="" aria-pressed="true">Popular</button>' + ''.join('<button class="chip" type="button" data-cat="%s" aria-pressed="false">%s</button>' % (k, html.escape(SP.CATS[k][0].replace(' and ', ' &amp; ').replace('&amp;', '&'))) for k in order if k in SP.CATS)
     share_btns = ''.join(f'<button class="sb{" wide" if k=="copy" else ""}" type="button" data-share="{k}" title="{t}" aria-label="{t}"{" hidden" if k=="native" else ""}>{i}{("<span>"+t+"</span>") if k=="copy" else ""}</button>' for k, t, i in [('copy', 'Copy link', I_LINK), ('x', 'Share on X', I_X), ('fb', 'Share on Facebook', I_FB), ('wa', 'Share on WhatsApp', I_WA), ('native', 'More share options', I_SHARE)])
     body = f'''
 <section class="hero"><div class="wrap">
@@ -217,8 +219,10 @@ def home():
 <p class="lead">A rolling sweep of the sites people ask about most. Every line is a real request from this server — a red entry is one that answered with an error or not at all.</p></div>
 <div class="pc-actions col"><div class="seg2"><button type="button" data-f="all" aria-pressed="true">All sites</button><button type="button" data-f="issues" aria-pressed="false" id="f-issues">Issues</button></div>
 <span class="fine" id="top-count"></span><button class="btn small ghost" type="button" id="top-refresh">{I_REFRESH}Refresh</button></div></div>
+<div class="chips" id="top-cats" role="group" aria-label="Website categories">{topchips}</div>
 <div class="rows" id="top-grid"><div class="skeleton">Sweeping the watchlist…</div></div>
 <p class="fine" id="top-updated" style="margin-top:14px">A snapshot, not continuous uptime monitoring.</p>
+<p class="fine" id="top-more" hidden></p>
 </div></div></section>
 
 <section id="online-gaming"><div class="wrap">
@@ -573,7 +577,7 @@ def site_pages_build():
     assert len(slugs) == len(set(slugs)), 'duplicate slug in SITES'
     # the list the PHP side reads (api/_ files are blocked from the web by .htaccess)
     with open(os.path.join(ROOT, 'api', '_sitepages.json'), 'w') as f:
-        _json.dump({h: dict({'name': n, 'page': SP.page_path(n), 'cat': c}, **({'app': [list(x) for x in SP.APPS[n]]} if n in SP.APPS else {})) for n, h, c, _ in SP.SITES}, f, separators=(',', ':'))
+        _json.dump({h: dict({'name': n, 'page': SP.page_path(n), 'cat': c}, **({'t': 2} if i >= SP.CORE else {}), **({'app': [list(x) for x in SP.APPS[n]]} if n in SP.APPS else {})) for i, (n, h, c, _) in enumerate(SP.SITES)}, f, separators=(',', ':'))
     kinds = ''.join('<button type="button" class="rk" data-kind="%s">%s</button>' % (k, l) for k, l in SP.KIND_LABELS)
     for name, host, cat, blurb in SP.SITES:
         n = html.escape(name); hh = html.escape(host)
@@ -627,11 +631,11 @@ def site_pages_build():
         write(path.lstrip('/') + '.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/sitepage.js"></script><script src="/assets/live.js"></script>'))
     # directory
     groups = ''
-    order = ['social', 'video', 'search', 'work', 'shopping', 'news', 'gaming']
+    order = ['social', 'video', 'gaming', 'finance', 'shopping', 'news', 'government', 'telecom', 'travel', 'search', 'work']
     for cat in order:
         items = [(n, h, p) for n, h, c, p in SP.SITES if c == cat]
         li = ''.join('<li data-host="%s" data-name="%s"><i class="dot-s"></i>%s<a href="%s">%s</a><span class="rep"></span></li>' % (html.escape(h), html.escape(n.lower()), tile(n, h), SP.page_path(n), html.escape(n) + (' <em class="apptag">App</em>' if n in SP.APPS else '')) for n, h, p in items)
-        groups += '<section class="dgroup"><h2>%s</h2><ul>%s</ul></section>' % (html.escape(SP.CATS[cat][0]), li)
+        groups += '<section class="dgroup" id="%s"><h2>%s</h2><ul>%s</ul></section>' % (cat, html.escape(SP.CATS[cat][0]), li)
     ld = '<script type="application/ld+json">' + _json.dumps({"@context": "https://schema.org", "@type": "CollectionPage", "name": "Is it down? Status of popular websites", "url": SITE + "/is-it-down/"}) + '</script>'
     h = head('Is it down? Live status of popular websites — siteupdown.com', 'Live status for popular websites, apps and games, checked every few minutes from our servers, with problem reports from other visitors.', '/is-it-down/', ld).replace('{BODYATTR}', '')
     body = ('<section class="page"><div class="wrap prose sitedir" data-sp="dir"><span class="eyebrow"><i></i>siteupdown.com</span><h1 style="margin:14px 0 12px">Is it down<span class="dot">?</span></h1>'
