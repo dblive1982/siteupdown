@@ -80,7 +80,7 @@ def head(title, desc, path, extra_head='', noindex=False):
 '''
 
 def foot(scripts):
-    links = [('Regional map', '/#global-pulse'), ('How it works', '/#how-it-works'), ('How we check', '/how-we-check'), ('FAQ', '/faq'), ('Help centre', '/help/'), ('Tools', '/tools/'), ('Is it down?', '/is-it-down/'), ('Internet speed test', '/internet-speed-test'), ('Website speed test', '/speed'), ('Monitor', '/monitor'), ('Account', '/account'), ('About', '/about'), ('For business', '/business'), ('Contact', '/contact'), ('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')]
+    links = [('Regional map', '/#global-pulse'), ('How it works', '/#how-it-works'), ('How we check', '/how-we-check'), ('FAQ', '/faq'), ('Help centre', '/help/'), ('Tools', '/tools/'), ('Is it down?', '/is-it-down/'), ('Heat map', '/heat-map'), ('Internet speed test', '/internet-speed-test'), ('Website speed test', '/speed'), ('Monitor', '/monitor'), ('Account', '/account'), ('About', '/about'), ('For business', '/business'), ('Contact', '/contact'), ('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')]
     return f'''</main>
 <footer class="site-foot"><div class="wrap">
 <div class="foot-brand">{BRAND}</div>
@@ -99,7 +99,7 @@ def foot(scripts):
 import hashlib, re as _re
 def _ver():
     h = hashlib.md5()
-    for n in ('app.css', 'app.js', 'home.js', 'pages.js', 'worldmap.js', 'live.js', 'sitepage.js', 'tools.js', 'sla.js', 'speedtest.js'):
+    for n in ('app.css', 'app.js', 'home.js', 'pages.js', 'worldmap.js', 'live.js', 'sitepage.js', 'tools.js', 'sla.js', 'speedtest.js', 'heatmap.js'):
         try: h.update(open(os.path.join(ROOT, 'assets', n), 'rb').read())
         except OSError: pass
     return h.hexdigest()[:8]
@@ -134,7 +134,7 @@ def write(name, content):
     if name.endswith('.html'):
         content = _svgicons(content)
         v = _ver()
-        content = _re.sub(r'(/assets/(?:app\.css|app\.js|home\.js|pages\.js|worldmap\.js|live\.js|sitepage\.js|tools\.js|sla\.js|speedtest\.js))(?=")', r'\1?v=' + v, content)
+        content = _re.sub(r'(/assets/(?:app\.css|app\.js|home\.js|pages\.js|worldmap\.js|live\.js|sitepage\.js|tools\.js|sla\.js|speedtest\.js|heatmap\.js))(?=")', r'\1?v=' + v, content)
     with open(os.path.join(ROOT, name), 'w', encoding='utf-8') as f:
         f.write(content)
     print('wrote', name, len(content), 'bytes')
@@ -696,7 +696,7 @@ def help_pages():
                 '<p style="margin-top:20px"><a href="/help/">&larr; All help guides</a></p></div></section>')
         write('help/' + a['slug'] + '.html', h + body + foot('<script src="/assets/app.js"></script>'))
     # sitemap
-    urls = [('/', 'daily', '1.0'), ('/speed', 'monthly', '0.8'), ('/internet-speed-test', 'monthly', '0.8'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8'), ('/tools/', 'monthly', '0.8')] + [('/tools/' + t['slug'], 'monthly', '0.7') for t in TOOLS] + [('/tools/uptime-sla-calculator', 'monthly', '0.7'), ('/how-we-check', 'monthly', '0.6'), ('/faq', 'monthly', '0.6')] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES if n not in HIDDEN] + [('/about', 'monthly', '0.5'), ('/business', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
+    urls = [('/', 'daily', '1.0'), ('/speed', 'monthly', '0.8'), ('/internet-speed-test', 'monthly', '0.8'), ('/heat-map', 'daily', '0.7'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8'), ('/tools/', 'monthly', '0.8')] + [('/tools/' + t['slug'], 'monthly', '0.7') for t in TOOLS] + [('/tools/uptime-sla-calculator', 'monthly', '0.7'), ('/how-we-check', 'monthly', '0.6'), ('/faq', 'monthly', '0.6')] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES if n not in HIDDEN] + [('/about', 'monthly', '0.5'), ('/business', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
     sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join('<url><loc>%s%s</loc><lastmod>2026-11-02</lastmod><changefreq>%s</changefreq><priority>%s</priority></url>\n' % (SITE, u, c, p) for u, c, p in urls) + '</urlset>\n'
     open(os.path.join(ROOT, 'sitemap.xml'), 'w').write(sm)
 
@@ -707,6 +707,7 @@ def tools_pages():
     # hub
     cards = ''.join('<a class="tool" href="/tools/%s"><span class="ti">%s</span><h3>%s</h3><p>%s</p><span class="tgo">Open the tool &rarr;</span></a>' % (t['slug'], t['icon'], html.escape(t['name']), t['short']) for t in TOOLS)
     extra_cards = ('<a class="tool" href="/"><span class="ti">&#128269;</span><h3>Is it down?</h3><p>Check any website from our server and fifteen places around the world.</p><span class="tgo">Open the checker &rarr;</span></a>'
+                   '<a class="tool" href="/heat-map"><span class="ti">&#127758;</span><h3>Global heat map</h3><p>See where in the world websites are reachable right now.</p><span class="tgo">Open the map &rarr;</span></a>'
                    '<a class="tool" href="/internet-speed-test"><span class="ti">&#128246;</span><h3>Internet speed test</h3><p>Measure your download, upload, ping and jitter.</p><span class="tgo">Test your connection &rarr;</span></a>'
                    '<a class="tool" href="/speed"><span class="ti">&#9889;</span><h3>Website speed test</h3><p>See how fast a page loads and where the time goes.</p><span class="tgo">Test a site &rarr;</span></a>'
                    '<a class="tool" href="/tools/uptime-sla-calculator"><span class="ti">&#128208;</span><h3>Uptime and SLA calculator</h3><p>Turn an uptime percentage into the downtime it allows, or the reverse.</p><span class="tgo">Open the calculator &rarr;</span></a>'
@@ -802,5 +803,20 @@ def internet_speed_page():
     write('internet-speed-test.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/speedtest.js"></script>'))
 
 
+def heatmap_page():
+    path = '/heat-map'
+    h = head('Global website heat map — where sites are reachable | siteupdown.com', 'A live world heat map showing how reachable popular websites and apps are from 15 places around the world, and how fast they respond.', path).replace('{BODYATTR}', '')
+    body = ('<section class="page"><div class="wrap prose toolpage"><nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / Heat map</nav>'
+            '<h1 style="margin:14px 0 8px">Global heat map<span class="dot">.</span></h1>'
+            '<p class="lead">Where in the world are websites and apps reachable right now? Each glow shows how the sites we watch look from that place.</p>'
+            '<div class="sp-card"><div class="hm-tabs" role="group" aria-label="Map layer"><button type="button" class="btn small" data-hm="reach" aria-pressed="true"><span>Reachability</span></button><button type="button" class="btn small" data-hm="speed" aria-pressed="false"><span>Response time</span></button></div>'
+            '<div class="sp-wmap"><svg id="hm-svg" role="img" aria-label="World heat map of website reachability" preserveAspectRatio="xMidYMid meet"></svg></div><div class="hm-leg" id="hm-leg"></div><p class="note" id="hm-sum">Loading the map&hellip;</p>'
+            '<div class="rt-wrap"><table class="rt"><thead><tr><th>Place</th><th>Sites reached</th><th>Typical time</th></tr></thead><tbody id="hm-tab"></tbody></table></div></div>'
+            '<div id="hm-sites"></div>'
+            '<h2>How to read this map</h2><ul><li>Green means almost every site we watch answered from that place. Amber and red mean more of them did not.</li><li>A whole place turning red can point to a problem with a network or country, not just one website.</li><li>Some sites deliberately block automated checks from certain countries, so a lower figure is a hint, not proof of an outage.</li><li>The data comes from probes on the public <a href="https://globalping.io" rel="noopener">Globalping</a> network, refreshed through the day. Read <a href="/how-we-check">how we check</a> for the details.</li></ul>'
+            '<p style="margin-top:20px"><a href="/">&larr; Back to the website checker</a></p></div></section>')
+    write('heat-map.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/worldmap.js"></script><script src="/assets/heatmap.js"></script>'))
+
+
 if __name__ == '__main__':
-    home(); login(); account(); monitor(); speed(); status(); static_pages(); help_pages(); tools_pages(); sla_page(); internet_speed_page(); site_pages_build()
+    home(); login(); account(); monitor(); speed(); status(); static_pages(); help_pages(); tools_pages(); sla_page(); internet_speed_page(); heatmap_page(); site_pages_build()

@@ -37,9 +37,9 @@ RewriteCond %{THE_REQUEST} \s/+(is-[a-z0-9-]+-down)\.html[\s?]
 RewriteRule ^(is-[a-z0-9-]+-down)\.html$ /$1 [R=301,L]
 
 # Clean URLs.
-RewriteRule ^(login|account|monitor|speed|internet-speed-test|about|privacy|legal|business|admin|contact)/?$ /$1.html [L]
-RewriteCond %{THE_REQUEST} \s/+(login|account|monitor|speed|internet-speed-test|about|privacy|legal|business|admin|contact|index)\.html[\s?]
-RewriteRule ^(login|account|monitor|speed|internet-speed-test|about|privacy|legal|business|admin|contact|index)\.html$ /$1 [R=301,L]
+RewriteRule ^(login|account|monitor|speed|internet-speed-test|heat-map|about|privacy|legal|business|admin|contact)/?$ /$1.html [L]
+RewriteCond %{THE_REQUEST} \s/+(login|account|monitor|speed|internet-speed-test|heat-map|about|privacy|legal|business|admin|contact|index)\.html[\s?]
+RewriteRule ^(login|account|monitor|speed|internet-speed-test|heat-map|about|privacy|legal|business|admin|contact|index)\.html$ /$1 [R=301,L]
 RewriteRule ^index$ / [R=301,L]
 
 ErrorDocument 404 /404.html
