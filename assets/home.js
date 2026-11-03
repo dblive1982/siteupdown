@@ -118,7 +118,11 @@
     var sl = $('#speed-link'); if (sl) { sl.hidden = !(o.again && o.host); if (o.host) sl.href = '/speed?q=' + encodeURIComponent(o.host); }
     var os = $('#open-site'); if (os) { os.hidden = !(o.again && o.host); if (o.host) os.href = 'https://' + o.host + '/'; }
     $('#run-again').hidden = !o.again;
-    repBox(o.again && o.host ? o.host : null);
+    var hh = o.again && o.host ? o.host : null;
+    if (hh !== HS.host) HS = { host: hh, ms: null, v: null, series: [], up24: null, rep: null, reach: null, total: null };
+    if (hh && o.reach) { var m = /^(\d+)\/(\d+)$/.exec(o.reach); if (m && +m[2] > 0 && o.status === 'Complete') { HS.reach = +m[1]; HS.total = +m[2]; } }
+    hsRender();
+    repBox(hh);
     $('#wl-add').hidden = !o.again;
     $('#share').hidden = !o.share;
     $('#pulse-status').textContent = o.status || 'Standby';
@@ -201,6 +205,35 @@
   }
 
 
+  /* ---------- headline summary under the verdict: moves with the live graph ---------- */
+  var HS = { host: null, ms: null, v: null, series: [], up24: null, rep: null, reach: null, total: null };
+  function hsRender() {
+    var box = $('#hsum'); if (!box) return;
+    if (!HS.host) { box.hidden = true; return; }
+    box.hidden = false;
+    $('#hs-ms').textContent = HS.ms != null ? HS.ms + ' ms' : '\u2014';
+    $('#hs-up').textContent = HS.up24 != null ? HS.up24 + '%' : 'new';
+    $('#hs-rep').textContent = HS.rep != null ? String(HS.rep) : '\u2014';
+    $('#hs-pr').textContent = HS.reach != null ? HS.reach + '/' + HS.total : '\u2014';
+    var dot = box.querySelector('.hs-dot'); dot.className = 'hs-dot ' + (HS.v === 'down' ? 'down' : (HS.v && HS.v !== 'up' ? 'slow' : 'up'));
+    var vals = HS.series.filter(function (x) { return x != null; });
+    if (vals.length > 1) { var mx = Math.max.apply(null, vals.concat([50])), n = HS.series.length; $('#hs-spark').innerHTML = '<polyline fill="none" stroke="#39b54a" stroke-width="1.6" vector-effect="non-scaling-stroke" points="' + HS.series.map(function (x, i) { return x == null ? '' : (60 * i / Math.max(1, n - 1)).toFixed(1) + ',' + (16 - 14 * x / mx).toFixed(1); }).filter(Boolean).join(' ') + '"/>'; }
+    var s = HS.host;
+    if (HS.v === 'down' || HS.v === 'timeout') s += ' is not answering right now.';
+    else if (HS.v === 'inconclusive') s += ': our quick check could not get a clear answer just now (the site may be blocking automated checks).';
+    else if (HS.v && HS.v !== 'up') s += ' is answering, but slowly' + (HS.ms != null ? ' (' + HS.ms + ' ms)' : '') + '.';
+    else s += ' is up' + (HS.ms != null ? ' and answering in ' + HS.ms + ' ms right now' : '') + '.';
+    if (HS.reach != null && HS.total) s += ' ' + (HS.reach === HS.total ? 'All ' + HS.total + ' regions' : HS.reach + ' of ' + HS.total + ' regions') + ' reached it.';
+    if (HS.rep != null) s += HS.rep === 0 ? ' Nobody has reported a problem in the last 3 hours.' : ' ' + HS.rep + (HS.rep === 1 ? ' person has' : ' people have') + ' reported a problem in the last 3 hours.';
+    $('#hs-line').textContent = s;
+  }
+  document.addEventListener('sud-live', function (e) {
+    var d = e.detail; if (!d || d.host !== HS.host) return;
+    if (d.kind === 'sample') { HS.ms = d.ms; HS.v = d.v; HS.series = d.series || []; }
+    else if (d.kind === 'hist') HS.up24 = d.uptime24;
+    hsRender();
+  });
+
   /* ---------- report a problem with the site just checked ---------- */
   var repHost = null, REPKIND = { site: 'website not loading', login: 'cannot log in', app: 'app not working', slow: 'very slow' };
   var getRange = null;
@@ -210,6 +243,7 @@
       if (!j || host !== repHost) return;
       var total = j.total || 0, rt = S.repRangeText(range);
       $('#rb-title').textContent = total ? total + (total === 1 ? ' problem report' : ' problem reports') + ' for ' + host + ' in ' + rt : 'No problem reports for ' + host + ' in ' + rt;
+      HS.rep = j.last3h; hsRender();
       var L = $('#rb-level'); L.className = 'sp-level ' + j.level; L.textContent = j.level === 'high' ? 'Many more than usual' : j.level === 'raised' ? 'More than usual' : '';
       S.repChart($('#rb-chart'), $('#rb-detail'), $('#rb-kinds'), j, { date: $('#rb-date'), axis: $('#rb-axis') });
     }).catch(function () {});

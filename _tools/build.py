@@ -184,6 +184,7 @@ def home():
 <div class="cell"><span class="k">Median response</span><b id="s-med">—</b><small>across responding probes</small></div>
 <div class="cell"><span class="k">Measured at</span><b id="s-at">—</b><small>Not run yet</small></div>
 </div>
+<div class="hsum" id="hsum" hidden aria-live="polite"><p class="hs-line" id="hs-line"></p><div class="hs-chips"><span class="hs-c"><i class="hs-dot"></i><b id="hs-ms">&mdash;</b><small>live response</small><svg id="hs-spark" viewBox="0 0 60 18" preserveAspectRatio="none" aria-hidden="true"></svg></span><span class="hs-c"><b id="hs-up">&mdash;</b><small>up, last 24 hours</small></span><span class="hs-c"><b id="hs-rep">&mdash;</b><small>reports, last 3 hours</small></span><span class="hs-c"><b id="hs-pr">&mdash;</b><small>regions reached</small></span></div></div>
 <div class="map-card"><div class="map-wrap" id="map"><svg id="map-svg" role="img" aria-label="World map of probe results" preserveAspectRatio="xMidYMid meet"></svg>
 <div class="map-empty" id="map-empty"><span>No regional run yet. Check a website and the map lights up.</span></div><div class="tip" id="tip" hidden></div></div>
 <div class="legend" aria-label="Map legend"><span><i style="background:var(--green)"></i>Responded</span><span><i style="background:var(--amber)"></i>Blocked</span><span><i style="background:var(--red)"></i>Server error</span><span><i style="border:2px solid var(--grey)"></i>No connection</span></div>

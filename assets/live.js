@@ -49,6 +49,7 @@
       svg.innerHTML = out;
       strip.innerHTML = pts.map(function (p) { return '<i class="' + p.c + '"></i>'; }).join('');
     }
+    function emit(d) { d.host = host; try { document.dispatchEvent(new CustomEvent('sud-live', { detail: d })); } catch (e) {} }
     function clear() { svg.innerHTML = ''; strip.innerHTML = ''; data = null; }
     function setNow(big, sub) { q('ms').textContent = big; q('sub').textContent = sub; }
     function pill(v) {
@@ -66,6 +67,7 @@
       var avg = vals.length ? Math.round(vals.reduce(function (a, b) { return a + b; }, 0) / vals.length) : null;
       setNow(last.ms != null ? last.ms + ' ms' : '—', 'Updated ' + clock(last.t) + (avg != null ? ' · average ' + avg + ' ms · fastest ' + Math.min.apply(null, vals) + ' · slowest ' + Math.max.apply(null, vals) : ''));
       pill(last.v);
+      emit({ kind: 'sample', ms: last.ms, v: last.v, avg: avg, t: last.t, series: win.map(function (x) { return x.ms; }) });
       q('a1').textContent = Math.max(1, Math.round((win[win.length - 1].t - win[0].t) / 60)) + ' min ago'; q('a2').textContent = 'Now';
     }
     function poll() {
@@ -119,6 +121,7 @@
         var body = q('obody'); body.textContent = '';
         var p;
         if (!j) { q('osum').textContent = 'Just started'; p = document.createElement('p'); p.className = 'so-clear'; p.textContent = 'We have only just started watching ' + host + ', so there is no outage record yet. Anything we see from now on will be listed here.'; body.appendChild(p); q('oyear').textContent = ''; return; }
+        emit({ kind: 'hist', uptime24: j.uptime && j.uptime['24h'], uptime7: j.uptime && j.uptime['7d'], outages7: (j.recent || []).length, down7: j.recent_down_s || 0 });
         var rec = j.recent || [];
         q('osum').textContent = rec.length ? plural(rec.length, 'outage') + ' · ' + dur(j.recent_down_s) + ' down' : 'All clear';
         if (!rec.length) { p = document.createElement('p'); p.className = 'so-clear'; p.textContent = 'No outages recorded in the last 7 days. We have not seen ' + host + ' go down.'; body.appendChild(p); }
