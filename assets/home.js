@@ -132,8 +132,7 @@
     var f = '';
     if (r.http_code) f += '<div>Server check: <b>HTTP ' + esc(r.http_code) + '</b> in <b>' + esc(S.ms(r.ms)) + '</b>' + (r.redirected ? ' (after a redirect)' : '') + '</div>';
     if (r.note) f += '<div>' + esc(r.note) + '</div>';
-    if (r.title) f += '<div>Title: <b>' + esc(r.title) + '</b></div>';
-    (r.headings || []).forEach(function (h) { f += '<div>' + esc(h) + '</div>'; });
+    // The checked page's own title and headings are deliberately not shown: they can be copied from scam sites.
     if (r.server) f += '<div>Server: <b>' + esc(r.server) + '</b></div>';
     if (r.chain && r.chain.length > 1) f += '<div>Redirects: ' + r.chain.map(function (c) { return '<b>' + esc(c.url.replace(/^https?:\/\//, '')) + '</b> <small>(' + esc(c.code) + ')</small>'; }).join(' → ') + '</div>';
     var x = r.extra;
