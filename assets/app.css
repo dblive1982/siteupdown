@@ -883,3 +883,14 @@ a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--t
 .adm-search .field{min-width:0}.adm-search .btn{flex:none}
 .adm-table table{min-width:620px}
 .adm-mail{word-break:normal;overflow-wrap:anywhere}
+.adm-manage{margin-top:8px}
+.adm-act{margin:14px 0 0;padding-top:12px;border-top:1px dashed var(--line);max-width:560px}
+.adm-act h3{margin:0 0 8px;font-size:15px;color:var(--text)}
+.adm-act textarea{width:100%;margin-top:8px}
+.adm-btns{display:flex;gap:8px;flex-wrap:wrap}
+.adm-res{color:var(--text);min-height:1.2em}
+.adm-det td{color:var(--text)}
+.adm-detin{position:sticky;left:14px;width:min(560px,calc(100vw - 72px))}
+.adm-detin .field,.adm-detin textarea{max-width:100%}
+.adm-btns .btn{white-space:normal}
+.adm-act textarea{background:var(--bg2);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:12px;font:inherit;box-sizing:border-box}

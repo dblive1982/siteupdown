@@ -30,7 +30,7 @@
 
   function shell() {
     box('<div class="adm"><aside class="adm-nav"><b class="adm-brand">Admin</b>'
-      + '<button type="button" data-t="overview" class="on">Overview</button><button type="button" data-t="users">Users</button>'
+      + '<button type="button" data-t="overview" class="on">Overview</button><button type="button" data-t="users">Users</button><button type="button" data-t="data">Data &amp; export</button><button type="button" data-t="log">Activity log</button>'
       + '<button type="button" data-t="lock" class="adm-lockbtn">Lock admin</button></aside><div class="adm-main" id="adm-main"></div></div>');
     root.querySelector('.adm-nav').addEventListener('click', function (e) {
       var b = e.target.closest('button'); if (!b) return;
@@ -41,7 +41,7 @@
     });
     view();
   }
-  function view() { var m = document.getElementById('adm-main'); m.innerHTML = '<p class="lead">Loading&hellip;</p>'; (tab === 'users' ? users : overview)(m); }
+  function view() { var m = document.getElementById('adm-main'); m.innerHTML = '<p class="lead">Loading&hellip;</p>'; ({ users: users, data: dataTab, log: logTab }[tab] || overview)(m); }
   var n = function (v) { return Number(v || 0).toLocaleString(); };
 
   function chart(title, ser, cls) {
@@ -81,7 +81,7 @@
       S.api('admin.php?a=users&q=' + encodeURIComponent(q) + '&page=' + page).then(function (j) {
         var pages = Math.max(1, Math.ceil(j.total / j.per));
         var rows = j.users.map(function (u) {
-          return '<tr data-id="' + u.id + '"><td><b>' + esc(u.name) + '</b><br><span class="adm-mail">' + esc(u.email) + '</span></td><td>' + esc(S.when(u.created)) + '</td><td>' + esc(u.last ? S.ago(u.last) : 'never') + '</td>'
+          return '<tr data-id="' + u.id + '" data-email="' + esc(u.email) + '" data-name="' + esc(u.name) + '"><td><b>' + esc(u.name) + '</b><br><span class="adm-mail">' + esc(u.email) + '</span><br><button type="button" class="btn small ghost adm-manage"><span>Manage / email</span></button></td><td>' + esc(S.when(u.created)) + '</td><td>' + esc(u.last ? S.ago(u.last) : 'never') + '</td>'
             + '<td>' + u.watching + '</td><td>' + u.channels + '</td><td>' + (u.google ? 'Google' : '') + (u.google && u.pw ? ' + ' : '') + (u.pw ? 'Password' : '') + '</td></tr><tr class="adm-det" id="d' + u.id + '" hidden><td colspan="6"></td></tr>';
         }).join('');
         m.querySelector('#u-body').innerHTML = rows || '<tr><td colspan="6">No users found.</td></tr>';
@@ -96,15 +96,55 @@
     m.querySelector('#u-prev').addEventListener('click', function () { page--; load(); });
     m.querySelector('#u-next').addEventListener('click', function () { page++; load(); });
     m.querySelector('#u-body').addEventListener('click', function (e) {
-      var tr = e.target.closest('tr[data-id]'); if (!tr) return; var d = document.getElementById('d' + tr.getAttribute('data-id'));
+      var tr = e.target.closest('tr[data-id]'); if (!tr) return; var id = tr.getAttribute('data-id'), d = document.getElementById('d' + id);
       if (!d.hidden) { d.hidden = true; return; }
       d.hidden = false; var td = d.firstChild; td.textContent = 'Loading…';
-      S.api('admin.php?a=user&id=' + tr.getAttribute('data-id')).then(function (j) {
-        td.innerHTML = '<b>Watchlist</b>: ' + (j.watchlist.length ? j.watchlist.map(function (w) { return esc(w.host); }).join(', ') : 'none')
-          + '<br><b>Alert channels</b>: ' + (j.channels.length ? j.channels.map(function (c) { return esc(c.kind + (c.label ? ' (' + c.label + ')' : '')); }).join(', ') : 'none');
+      S.api('admin.php?a=user&id=' + id).then(function (j) {
+        td.innerHTML = '<div class="adm-detin"><p><b>Watchlist</b>: ' + (j.watchlist.length ? j.watchlist.map(function (w) { return esc(w.host); }).join(', ') : 'none')
+          + '<br><b>Alert channels</b>: ' + (j.channels.length ? j.channels.map(function (c) { return esc(c.kind + (c.label ? ' (' + c.label + ')' : '')); }).join(', ') : 'none') + '</p>'
+          + '<div class="adm-act"><h3>Email ' + esc(tr.getAttribute('data-name')) + '</h3><div class="field"><input class="e-sub" maxlength="120" placeholder="Subject"></div>'
+          + '<textarea class="e-msg" rows="5" maxlength="5000" placeholder="Your message"></textarea>'
+          + '<p><button type="button" class="btn small e-send"><span>Send email</span></button> <span class="adm-res e-res" role="status"></span></p></div>'
+          + '<div class="adm-act"><h3>Reset or remove</h3><p class="note">Type RESET to clear part of this user&rsquo;s data. To delete the account, type their email address.</p>'
+          + '<div class="field"><input class="r-conf" placeholder="RESET or their email"></div><p class="adm-btns">'
+          + '<button type="button" class="btn small ghost r-do" data-w="watchlist"><span>Clear watchlist</span></button>'
+          + '<button type="button" class="btn small ghost r-do" data-w="channels"><span>Clear alert channels</span></button>'
+          + '<button type="button" class="btn small ghost r-do" data-w="saved"><span>Clear saved checks</span></button>'
+          + '<button type="button" class="btn small ghost r-del"><span>Delete account</span></button></p><p class="adm-res r-res" role="status"></p></div></div>';
+        td.onclick = function (ev) {
+          ev.stopPropagation(); var t = ev.target.closest('button'); if (!t) return;
+          var er = td.querySelector('.e-res'), rr = td.querySelector('.r-res'), conf = td.querySelector('.r-conf').value;
+          if (t.classList.contains('e-send')) {
+            er.textContent = 'Sending…';
+            S.api('admin.php', { a: 'email', id: +id, subject: td.querySelector('.e-sub').value, message: td.querySelector('.e-msg').value }).then(function (r) { er.textContent = r.message; td.querySelector('.e-msg').value = ''; }).catch(function (x) { er.textContent = x.message; });
+          } else if (t.classList.contains('r-do')) {
+            S.api('admin.php', { a: 'user_clear', id: +id, what: t.getAttribute('data-w'), confirm: conf }).then(function (r) { rr.textContent = r.message; }).catch(function (x) { rr.textContent = x.message; });
+          } else if (t.classList.contains('r-del')) {
+            S.api('admin.php', { a: 'user_delete', id: +id, confirm: conf }).then(function (r) { rr.textContent = r.message; load(); }).catch(function (x) { rr.textContent = x.message; });
+          }
+        };
       }).catch(function (er) { td.textContent = er.message; });
     });
     load();
+  }
+  function dataTab(m) {
+    m.innerHTML = '<h1>Data &amp; export<span class="dot">.</span></h1>'
+      + '<div class="sp-card"><div class="sp-rhead"><b>Export</b></div><p class="note">Download a CSV file you can open in Excel or Google Sheets.</p><p class="adm-btns"><a class="btn small" href="/api/admin.php?a=export&what=users"><span>Users (CSV)</span></a><a class="btn small" href="/api/admin.php?a=export&what=reports"><span>Problem reports (CSV)</span></a></p></div>'
+      + '<div class="sp-card" style="margin-top:14px"><div class="sp-rhead"><b>Reset site data</b></div><p class="note">This cannot be undone. Leave the website empty to apply it to <b>every</b> site, or enter one (for example google.com). Type RESET to confirm.</p>'
+      + '<div class="cf-two"><div><label for="x-host">Website <span class="opt">(optional)</span></label><div class="field"><input id="x-host" placeholder="google.com" autocapitalize="none" spellcheck="false"></div></div>'
+      + '<div><label for="x-conf">Confirm</label><div class="field"><input id="x-conf" placeholder="RESET"></div></div></div>'
+      + '<p class="adm-btns"><button type="button" class="btn small ghost x-do" data-w="reports"><span>Reset problem reports</span></button><button type="button" class="btn small ghost x-do" data-w="history"><span>Reset uptime history &amp; outages</span></button><button type="button" class="btn small ghost x-do" data-w="checks"><span>Clear recent checks feed</span></button></p><p class="adm-res" id="x-res" role="status"></p></div>';
+    m.querySelectorAll('.sp-card')[1].addEventListener('click', function (e) {
+      var t = e.target.closest('.x-do'); if (!t) return;
+      var r = m.querySelector('#x-res'); r.textContent = 'Working…';
+      S.api('admin.php', { a: 'reset', what: t.getAttribute('data-w'), host: m.querySelector('#x-host').value, confirm: m.querySelector('#x-conf').value }).then(function (j) { r.textContent = j.message; }).catch(function (x) { r.textContent = x.message; });
+    });
+  }
+  function logTab(m) {
+    S.api('admin.php?a=log').then(function (j) {
+      m.innerHTML = '<h1>Activity log<span class="dot">.</span></h1><div class="adm-table"><table><thead><tr><th>When</th><th>Action</th><th>Detail</th></tr></thead><tbody>'
+        + (j.log.length ? j.log.map(function (x) { return '<tr><td>' + esc(S.when(x.ts)) + '</td><td>' + esc(x.action) + '</td><td>' + esc(x.detail) + '</td></tr>'; }).join('') : '<tr><td colspan="3">Nothing yet.</td></tr>') + '</tbody></table></div>';
+    }).catch(fail);
   }
   start();
 })();

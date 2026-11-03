@@ -102,4 +102,71 @@ if ($a === 'user') {
     $c = $pdo->prepare('SELECT kind, label, created_at FROM alert_channels WHERE user_id=?'); $c->execute([$id]);
     out(200, ['watchlist' => $w->fetchAll(), 'channels' => $c->fetchAll()]);
 }
+
+// ---------------- stage 2: email a user, reset data, exports, activity log (all need the unlocked admin session) ----------------
+if ($a === 'email') {
+    $in2 = $in; throttle('admmail', 30, 60);
+    $q = $pdo->prepare('SELECT id, name, email FROM users WHERE id=?'); $q->execute([(int)($in2['id'] ?? 0)]); $u = $q->fetch();
+    if (!$u) out(404, ['error' => 'User not found.']);
+    $subj = trim(preg_replace('/\s+/', ' ', (string)($in2['subject'] ?? ''))); $msg = trim(str_replace("\r", '', (string)($in2['message'] ?? '')));
+    if ($subj === '' || mb_strlen($subj) > 120) out(422, ['error' => 'Please add a subject (up to 120 characters).']);
+    if (mb_strlen($msg) < 3 || mb_strlen($msg) > 5000) out(422, ['error' => 'Please write a message (up to 5000 characters).']);
+    note_attempt('admmail');
+    $e = fn($v) => htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
+    $html = '<p style="margin:0 0 12px">Hi ' . $e($u['name']) . ',</p><p style="margin:0;white-space:pre-wrap">' . $e($msg) . '</p>';
+    sud_email($u['email'], $subj, $subj, $html, "Hi {$u['name']},\n\n$msg\n", '', '', $me['email']);
+    admin_log('email', 'to user #' . $u['id'] . ': ' . $subj);
+    out(200, ['ok' => true, 'message' => 'Email sent to ' . $u['email'] . '.']);
+}
+if ($a === 'user_clear') {                                     // empty one part of a user's data
+    $id = (int)($in['id'] ?? 0); $what = (string)($in['what'] ?? '');
+    $tables = ['watchlist' => 'watchlist', 'saved' => 'saved_checks', 'channels' => 'alert_channels'];
+    if (!isset($tables[$what]) || $id <= 0) out(422, ['error' => 'Nothing to clear.']);
+    if (($in['confirm'] ?? '') !== 'RESET') out(422, ['error' => 'Type RESET to confirm.']);
+    $d = $pdo->prepare('DELETE FROM ' . $tables[$what] . ' WHERE user_id=?'); $d->execute([$id]);
+    admin_log('user_clear', $what . ' of user #' . $id . ' (' . $d->rowCount() . ' rows)');
+    out(200, ['ok' => true, 'message' => 'Cleared ' . $d->rowCount() . ' items.']);
+}
+if ($a === 'user_delete') {
+    $id = (int)($in['id'] ?? 0);
+    $q = $pdo->prepare('SELECT id, email FROM users WHERE id=?'); $q->execute([$id]); $u = $q->fetch();
+    if (!$u) out(404, ['error' => 'User not found.']);
+    if ((int)$u['id'] === (int)$me['id'] || in_array(clean_email($u['email']), $admins, true)) out(422, ['error' => 'The admin account cannot be deleted here.']);
+    if (clean_email((string)($in['confirm'] ?? '')) !== clean_email($u['email'])) out(422, ['error' => 'Type the user\'s email address to confirm.']);
+    foreach (['watchlist', 'saved_checks', 'alert_channels', 'extra_checks', 'tg_links', 'resets'] as $t) { try { $pdo->prepare("DELETE FROM $t WHERE user_id=?")->execute([$id]); } catch (Throwable $x) {} }
+    $pdo->prepare('DELETE FROM users WHERE id=?')->execute([$id]);
+    admin_log('user_delete', 'user #' . $id . ' ' . $u['email']);
+    out(200, ['ok' => true, 'message' => 'Account deleted.']);
+}
+if ($a === 'reset') {                                          // site data: reports / history of one host or everything
+    $what = (string)($in['what'] ?? ''); $host = strtolower(trim((string)($in['host'] ?? '')));
+    if (($in['confirm'] ?? '') !== 'RESET') out(422, ['error' => 'Type RESET to confirm.']);
+    $n = 0;
+    $del = function (string $t, string $col) use ($pdo, $host, &$n) { $d = $host !== '' ? $pdo->prepare("DELETE FROM $t WHERE $col=?") : $pdo->prepare("DELETE FROM $t"); $d->execute($host !== '' ? [$host] : []); $n += $d->rowCount(); };
+    if ($what === 'reports') $del('reports', 'host');
+    elseif ($what === 'history') { $del('site_log', 'host'); $del('incidents', 'host'); }
+    elseif ($what === 'checks') $del('checks', 'host');
+    else out(422, ['error' => 'Choose what to reset.']);
+    admin_log('reset', $what . ' for ' . ($host !== '' ? $host : 'ALL sites') . ' (' . $n . ' rows)');
+    out(200, ['ok' => true, 'message' => 'Removed ' . $n . ' rows' . ($host !== '' ? ' for ' . $host : ' for all sites') . '.']);
+}
+if ($a === 'export') {
+    $what = (string)($_GET['what'] ?? '');
+    $cell = fn($v) => '"' . str_replace('"', '""', preg_match('/^[=+\-@\t\r]/', (string)$v) ? "'" . $v : (string)$v) . '"';
+    if ($what === 'users') {
+        $hdr = ['id', 'name', 'email', 'created', 'last_login', 'watching', 'channels'];
+        $rows = $pdo->query('SELECT u.id, u.name, u.email, u.created_at, u.last_login, (SELECT COUNT(*) FROM watchlist w WHERE w.user_id=u.id), (SELECT COUNT(*) FROM alert_channels c WHERE c.user_id=u.id) FROM users u ORDER BY u.id')->fetchAll(PDO::FETCH_NUM);
+    } elseif ($what === 'reports') {
+        $hdr = ['host', 'kind', 'time_utc']; $rows = $pdo->query('SELECT host, kind, ts FROM reports ORDER BY ts DESC LIMIT 100000')->fetchAll(PDO::FETCH_NUM);
+    } else out(404, ['error' => 'Not found.']);
+    admin_log('export', $what . ' (' . count($rows) . ' rows)');
+    header('Content-Type: text/csv; charset=utf-8'); header('Content-Disposition: attachment; filename="siteupdown-' . $what . '-' . gmdate('Y-m-d') . '.csv"');
+    echo implode(',', array_map($cell, $hdr)) . "\r\n";
+    foreach ($rows as $r) echo implode(',', array_map($cell, $r)) . "\r\n";
+    exit;
+}
+if ($a === 'log') {
+    $r = $pdo->query('SELECT ts, action, detail FROM admin_log ORDER BY id DESC LIMIT 100')->fetchAll();
+    out(200, ['log' => array_map(fn($x) => ['ts' => iso($x['ts']), 'action' => $x['action'], 'detail' => $x['detail']], $r)]);
+}
 out(404, ['error' => 'Not found.']);
