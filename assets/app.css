@@ -803,3 +803,8 @@ a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--t
 .tip .tp-r i{display:block;font-style:normal;font-weight:400;color:var(--muted);font-size:11.5px}
 @media(max-width:560px){.tip{width:220px}}
 .map-card{overflow:visible}.tip{z-index:20}
+.map-card{overflow-x:clip;overflow-y:visible}
+.tip .tp-r b{word-break:normal;overflow-wrap:anywhere;min-width:0}
+.tip .tp-r span{flex:none}
+.tip .tp-r i{white-space:normal}
+@media(max-width:560px){.tip{width:min(210px,calc(100vw - 56px));padding:10px 12px}.tip .tp-t{font-size:14px}.tip .tp-e{margin:6px 0 7px;padding:6px 0}}
