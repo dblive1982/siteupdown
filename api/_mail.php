@@ -12,7 +12,7 @@ function sud_email_render(string $heading, string $paraHtml, string $paraText, s
     if ($btnText !== '' && $btnUrl !== '') {
         $u = htmlspecialchars($btnUrl, ENT_QUOTES, 'UTF-8');
         $t = htmlspecialchars($btnText, ENT_QUOTES, 'UTF-8');
-        $btn = '<table role="presentation" cellpadding="0" cellspacing="0" style="margin:28px 0 6px"><tr><td bgcolor="#39b54a" class="btn-td" style="border-radius:8px"><a class="btn-a" href="' . $u . '" style="display:inline-block;background:#39b54a;color:#0b1a10;text-decoration:none;font-weight:700;font-size:16px;padding:14px 30px;border-radius:8px;' . $F . '">' . $t . '</a></td></tr></table>';
+        $btn = '<table role="presentation" cellpadding="0" cellspacing="0" style="margin:28px 0 6px"><tr><td bgcolor="#39b54a" class="btn-td" style="border-radius:8px;background-image:linear-gradient(#39b54a,#39b54a)"><a class="btn-a" href="' . $u . '" style="display:inline-block;background:#39b54a;background-image:linear-gradient(#39b54a,#39b54a);color:#0b1a10;-webkit-text-fill-color:#0b1a10;text-decoration:none;font-weight:700;font-size:16px;padding:14px 30px;border-radius:8px;' . $F . '">' . $t . '</a></td></tr></table>';
     }
     $chip = '';
     $stripe = '#39b54a';
@@ -27,12 +27,12 @@ function sud_email_render(string $heading, string $paraHtml, string $paraText, s
         . '<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#eeeaf5">' . $h . ' &middot; siteupdown.com</div>'
         . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#eeeaf5" class="bg-out" style="background:#eeeaf5"><tr><td align="center" class="bg-out" style="padding:26px 12px">'
         . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:580px">'
-        . '<tr><td align="center" bgcolor="#130228" class="bg-dk" style="background:#130228;border-radius:16px 16px 0 0;border-bottom:4px solid ' . $stripe . ';padding:26px 12px 22px">'
+        . '<tr><td align="center" bgcolor="#130228" class="bg-dk" style="background:#130228;background-image:linear-gradient(#130228,#130228);border-radius:16px 16px 0 0;border-bottom:4px solid ' . $stripe . ';padding:26px 12px 22px">'
         . '<a href="' . $site . '/" style="text-decoration:none"><img src="' . $site . '/assets/logo-full-dark.png" width="150" height="62" alt="siteupdown.com" style="display:block;border:0;outline:none;width:150px;height:62px;color:#f0f2f6;font-size:20px;font-weight:700;' . $F . '"></a></td></tr>'
         . '<tr><td bgcolor="#ffffff" class="bg-card t-main" style="background:#ffffff;border-left:1px solid #ddd6ee;border-right:1px solid #ddd6ee;padding:32px 28px 30px;' . $F . ';color:#1b1230;font-size:16px;line-height:1.65">'
         . $chip . '<h1 class="t-h" style="margin:0 0 14px;font-size:25px;line-height:1.25;color:#130228;' . $F . '">' . $h . '</h1>' . $paraHtml . $btn
         . '</td></tr>'
-        . '<tr><td align="center" bgcolor="#130228" class="bg-dk" style="background:#130228;border-radius:0 0 16px 16px;padding:22px 18px;' . $F . ';font-size:13px;line-height:1.7;color:#a79bd0">'
+        . '<tr><td align="center" bgcolor="#130228" class="bg-dk" style="background:#130228;background-image:linear-gradient(#130228,#130228);border-radius:0 0 16px 16px;padding:22px 18px;' . $F . ';font-size:13px;line-height:1.7;color:#a79bd0">'
         . '<span style="color:#f0f2f6;font-weight:700">Is it down &mdash; or just you?</span><br>'
         . $link('Monitor', '/monitor') . ' &nbsp;&middot;&nbsp; ' . $link('Help', '/help/') . ' &nbsp;&middot;&nbsp; ' . $link('Privacy', '/privacy') . ' &nbsp;&middot;&nbsp; ' . $link('Contact', '/contact')
         . '<br><span style="color:#8a7fb3">You are getting this because you have a siteupdown.com account or used our contact form.</span></td></tr>'
