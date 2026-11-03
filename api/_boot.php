@@ -147,6 +147,14 @@ function ensure_schema(PDO $pdo): void {
         alive TINYINT NOT NULL,
         ts BIGINT NOT NULL
     )$cs");
+    // "It opened for me" / "It didn't load" taps from visitors, used to settle sites that ignore our automated checks.
+    $pdo->exec("CREATE TABLE IF NOT EXISTS site_votes (
+        id $id,
+        host VARCHAR(253) NOT NULL,
+        vote VARCHAR(8) NOT NULL,
+        ip_hash CHAR(64) NOT NULL,
+        ts DATETIME NOT NULL
+    )$cs");
     $pdo->exec("CREATE TABLE IF NOT EXISTS alert_state (
         host VARCHAR(253) NOT NULL PRIMARY KEY,
         state VARCHAR(8) NOT NULL,
@@ -254,6 +262,7 @@ function ensure_schema(PDO $pdo): void {
         'CREATE INDEX IF NOT EXISTS i_chk ON checks (checked_at)',
         'CREATE INDEX IF NOT EXISTS i_sc ON saved_checks (user_id, checked_at)',
         'CREATE INDEX IF NOT EXISTS i_log ON site_log (host, ts)',
+        'CREATE INDEX IF NOT EXISTS i_vote ON site_votes (host, ts)',
         'CREATE INDEX IF NOT EXISTS i_inc ON incidents (host, started_at)',
         'CREATE INDEX IF NOT EXISTS i_rep ON reports (host, ts)',
     ] as $q) {
@@ -264,7 +273,7 @@ function ensure_schema(PDO $pdo): void {
     if (!$lite) {
         foreach ([
             ['attempts', 'i_att', '(ip_hash, kind, ts)'], ['checks', 'i_chk', '(checked_at)'], ['saved_checks', 'i_sc', '(user_id, checked_at)'],
-            ['site_log', 'i_log', '(host, ts)'], ['incidents', 'i_inc', '(host, started_at)'], ['reports', 'i_rep', '(host, ts)'], ['live_samples', 'i_live', '(host, ts)'],
+            ['site_log', 'i_log', '(host, ts)'], ['incidents', 'i_inc', '(host, started_at)'], ['reports', 'i_rep', '(host, ts)'], ['live_samples', 'i_live', '(host, ts)'], ['site_votes', 'i_vote', '(host, ts)'],
         ] as [$t, $n, $cols]) {
             try { $pdo->exec("CREATE INDEX $n ON $t $cols"); } catch (Throwable $e) { /* already exists */ }
         }

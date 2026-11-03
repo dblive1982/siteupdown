@@ -40,11 +40,31 @@
   /* Shown when our automated check could not get a clear answer: be honest, and let the visitor try the site themselves. */
   S.cantSure = function (el, host, show) {
     if (!el) return;
-    if (!show) { el.hidden = true; el.innerHTML = ''; return; }
+    if (!show) { el.hidden = true; el.innerHTML = ''; el.removeAttribute('data-call'); return; }
     var safe = /^[a-z0-9.-]+$/i.test(host) ? host : '';
     if (!safe) { el.hidden = true; return; }
-    el.hidden = false;
-    el.innerHTML = '<p><b>We can\u2019t be sure it is down.</b> Our automated check did not get a clear answer, and some sites ignore or block automated checks. Try opening it yourself: if it loads, the site is fine and just blocking us.</p><a class="btn small" href="https://' + safe + '/" target="_blank" rel="noopener noreferrer">Open ' + S.esc(safe) + ' \u2197</a>';
+    if (el.getAttribute('data-host') === safe && !el.hidden) return;     // already showing for this site
+    el.setAttribute('data-host', safe); el.hidden = false; el.removeAttribute('data-call');
+    el.innerHTML = '<p class="cs-t"><b>We can\u2019t be sure it is down.</b> Our automated check did not get a clear answer, and some sites ignore or block automated checks. Try opening it yourself: if it loads, the site is fine and just blocking us.</p>' +
+      '<a class="btn small" href="https://' + S.esc(safe) + '/" target="_blank" rel="noopener noreferrer">Open ' + S.esc(safe) + ' \u2197</a>' +
+      '<div class="cs-ask"><span>Tried it?</span><button type="button" class="chip" data-vote="opened">It opened for me</button><button type="button" class="chip" data-vote="noload">It didn\u2019t load</button></div><p class="cs-r" aria-live="polite"></p>';
+    var t = el.querySelector('.cs-t'), r = el.querySelector('.cs-r');
+    function show2(j) {
+      if (!j) return;
+      el.setAttribute('data-call', j.call || '');
+      if (j.call === 'down') t.innerHTML = '<b>Visitors say it is not loading.</b> ' + j.noload + ' of ' + (j.noload + j.opened) + ' visitors in the last hour could not open ' + S.esc(safe) + ', and our own check got no answer either. It looks genuinely down.';
+      else if (j.call === 'working') t.innerHTML = '<b>It is working for visitors.</b> ' + j.opened + ' of ' + (j.noload + j.opened) + ' visitors in the last hour opened ' + S.esc(safe) + ' fine. It just does not answer our automated checks.';
+      var n = j.opened + j.noload; r.textContent = n ? 'Visitor answers in the last hour: ' + j.opened + ' opened, ' + j.noload + ' did not load.' : '';
+    }
+    fetch('/api/vote.php?host=' + encodeURIComponent(safe)).then(function (x) { return x.ok ? x.json() : null; }).then(show2).catch(function () {});
+    el.onclick = function (e) {
+      var b = e.target.closest('[data-vote]'); if (!b) return;
+      r.textContent = 'Sending\u2026';
+      fetch('/api/vote.php', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-SUD': '1' }, body: JSON.stringify({ host: safe, vote: b.getAttribute('data-vote') }), credentials: 'same-origin' })
+        .then(function (x) { return x.json().then(function (j) { return { ok: x.ok, j: j }; }); })
+        .then(function (x) { if (!x.ok) { r.textContent = x.j.error || 'Sorry, that did not work.'; return; } show2(x.j); r.textContent = 'Thanks \u2014 ' + r.textContent; })
+        .catch(function () { r.textContent = 'Sorry, that did not work.'; });
+    };
   };
   S.tz = function () { try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) { return ''; } };
   S.repChart = function (chart, detail, kindsEl, rep, extra) {

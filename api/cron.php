@@ -96,6 +96,8 @@ if (!$lastSweep || $lastSweep < gmdate('Y-m-d H:i:s', time() - 3600)) {
 }
 // Housekeeping (about every ten minutes): drop old feed rows and expired share links.
 if ((int)gmdate('i') % 10 === 3) {
+$pdo->prepare("UPDATE site_votes SET ip_hash='' WHERE ts < ? AND ip_hash <> ''")->execute([gmdate('Y-m-d H:i:s', time() - 2 * 86400)]);
+$pdo->prepare('DELETE FROM site_votes WHERE ts < ?')->execute([gmdate('Y-m-d H:i:s', time() - 7 * 86400)]);
 $pdo->prepare('DELETE FROM tracked_hosts WHERE last_seen < ?')->execute([gmdate('Y-m-d H:i:s', time() - 7 * 86400)]);
 $pdo->prepare('DELETE FROM live_viewer WHERE ts < ?')->execute([time() - 3600]);
 // One-off clean-up (runs once): callofduty.com was wrongly shown as down because only its www address answers our server.
