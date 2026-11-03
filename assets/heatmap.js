@@ -42,7 +42,7 @@
     var s = Math.max(0, Date.now() / 1000 - ts), m = Math.round(s / 60);
     return m < 90 ? m + ' minutes ago' : Math.round(m / 60) + ' hours ago';
   }
-  fetch('/api/heatmap.php').then(function (r) { return r.json(); }).then(function (j) {
+  function load() { return fetch('/api/heatmap.php').then(function (r) { return r.json(); }).then(function (j) {
     if (!j.places || !j.places.length) { $('hm-sum').textContent = 'The first worldwide results are still being collected. Please check back soon.'; return; }
     data = j; draw();
     $('hm-sum').textContent = 'Based on the latest worldwide check of ' + j.sites_count + ' websites and apps from ' + j.places.length + ' places. Results from ' + ago(j.newest) + ' back to ' + ago(j.oldest) + '.';
@@ -51,7 +51,9 @@
         return '<a href="' + esc(s.page) + '"><span>' + esc(s.name) + '</span><b>' + s.ok + ' of ' + s.total + ' places</b></a>';
       }).join('') + '</div><p class="note">A site that some places cannot reach is not always down. It may block automated checks from those countries.</p>';
     } else $('hm-sites').innerHTML = '<p class="note"><b>Every site we watch was reached from every place in the latest check.</b></p>';
-  }).catch(function () { $('hm-sum').textContent = 'Could not load the map just now.'; });
+  }).catch(function () { if (!data) $('hm-sum').textContent = 'Could not load the map just now.'; }); }
+  load();
+  setInterval(function () { if (!document.hidden) load(); }, 180000);
   document.querySelectorAll('[data-hm]').forEach(function (b) {
     b.addEventListener('click', function () {
       layer = b.getAttribute('data-hm');
