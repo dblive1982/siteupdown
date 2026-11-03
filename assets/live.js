@@ -55,6 +55,7 @@
     function pill(v) {
       var el = q('pill'), c = cls(v);
       if (v === 'timeout' || v === 'inconclusive') { el.className = 'sp-pill unsure'; el.textContent = mode === 'live' ? 'Live · no answer' : 'No answer'; return; }
+      if (v === 'collecting') { el.className = 'sp-pill unsure'; el.textContent = 'Collecting data'; return; }
       el.className = 'sp-pill ' + (c === 'none' ? 'unsure' : c);
       el.textContent = mode === 'live' ? (c === 'up' ? 'Live · up' : c === 'down' ? 'Live · down' : 'Live · slow') : (c === 'up' ? 'Up' : c === 'down' ? 'Down' : 'Mixed');
     }
@@ -110,7 +111,8 @@
           setNow(j.avg_ms != null ? j.avg_ms + ' ms' : '—', 'average' + (j.min_ms != null ? ' · fastest ' + j.min_ms + ' ms · slowest ' + j.max_ms + ' ms' : '') + (u != null ? ' · uptime ' + u + '%' : ''));
           q('a1').textContent = { '24h': '24 hours ago', '7d': '7 days ago' }[range] || '';
         }
-        pill(j.current.verdict === 'up' ? 'up' : (j.current.verdict === 'down' ? 'down' : 'slow'));
+        var got = pts.filter(function (x) { return x.c !== 'none'; }).length, cv = j.current.verdict;
+        if (got < 4) pill('collecting'); else pill(cv === 'timeout' || cv === 'inconclusive' ? cv : (cv === 'up' ? 'up' : (cv === 'down' ? 'down' : 'slow')));
         q('a2').textContent = 'Now';
       }).catch(function () {});
     }
