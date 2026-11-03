@@ -147,7 +147,7 @@ def home():
     h = head('siteupdown.com — Is the website down, or just you?', 'Paste any website address to see if it is down for everyone or only for you. We check from our server and from twelve probes in different countries, at the same time.', '/', jsonld)
     h = h.replace('{BODYATTR}', ' data-page="home"')
     report_kinds = ''.join('<button type="button" class="rk" data-kind="%s">%s</button>' % (k, l) for k, l in SP.KIND_LABELS)
-    order = ['social', 'video', 'gaming', 'finance', 'shopping', 'news', 'government', 'telecom', 'travel', 'search', 'work']
+    order = ['social', 'video', 'gaming', 'ai', 'finance', 'payments', 'trading', 'shopping', 'delivery', 'news', 'government', 'health', 'betting', 'telecom', 'travel', 'search', 'work']
     topchips = '<button class="chip" type="button" data-cat="" aria-pressed="true">Popular</button>' + ''.join('<button class="chip" type="button" data-cat="%s" aria-pressed="false">%s</button>' % (k, html.escape(SP.CATS[k][0].replace(' and ', ' &amp; ').replace('&amp;', '&'))) for k in order if k in SP.CATS)
     share_btns = ''.join(f'<button class="sb{" wide" if k=="copy" else ""}" type="button" data-share="{k}" title="{t}" aria-label="{t}"{" hidden" if k=="native" else ""}>{i}{("<span>"+t+"</span>") if k=="copy" else ""}</button>' for k, t, i in [('copy', 'Copy link', I_LINK), ('x', 'Share on X', I_X), ('fb', 'Share on Facebook', I_FB), ('wa', 'Share on WhatsApp', I_WA), ('native', 'More share options', I_SHARE)])
     body = f'''
@@ -631,7 +631,7 @@ def site_pages_build():
         write(path.lstrip('/') + '.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/sitepage.js"></script><script src="/assets/live.js"></script>'))
     # directory
     groups = ''
-    order = ['social', 'video', 'gaming', 'finance', 'shopping', 'news', 'government', 'telecom', 'travel', 'search', 'work']
+    order = ['social', 'video', 'gaming', 'ai', 'finance', 'payments', 'trading', 'shopping', 'delivery', 'news', 'government', 'health', 'betting', 'telecom', 'travel', 'search', 'work']
     for cat in order:
         items = [(n, h, p) for n, h, c, p in SP.SITES if c == cat]
         li = ''.join('<li data-host="%s" data-name="%s"><i class="dot-s"></i>%s<a href="%s">%s</a><span class="rep"></span></li>' % (html.escape(h), html.escape(n.lower()), tile(n, h), SP.page_path(n), html.escape(n) + (' <em class="apptag">App</em>' if n in SP.APPS else '')) for n, h, p in items)
