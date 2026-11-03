@@ -190,7 +190,7 @@ def home():
 <p class="fine" style="margin-top:10px">Hover or tap a marker for details. Regions without a probe are not claimed. Each run is a snapshot, not continuous monitoring. Probe network: <a href="https://globalping.io" rel="noopener">Globalping</a>.</p></div>
 <div class="details"><div id="ssl" hidden></div><div id="dns" hidden></div><div class="facts" id="facts" hidden></div>
 <div class="row-actions"><button class="btn small ghost" type="button" id="wl-add" hidden>Add to my watchlist</button><a class="btn small ghost" id="open-site" target="_blank" rel="noopener noreferrer" hidden>Open website ↗</a><a class="btn small ghost" id="speed-link" hidden>Test speed ⚡</a></div>
-<div class="sp-card rep-box" id="rep-box" hidden><div class="sp-rhead"><b id="rb-title">Problems reported by visitors</b><span id="rb-level" class="sp-level"></span></div><div class="sp-chart small" id="rb-chart" hidden></div><div class="sp-report"><button type="button" class="btn small ghost" id="rb-btn"><span>Report a problem</span></button><div class="sp-rpick" id="rb-pick" hidden><p>What is going wrong?</p><div class="sp-rbtns">{report_kinds}</div></div><p class="sp-rmsg" id="rb-msg" role="status"></p></div></div>
+<div class="sp-card rep-box" id="rep-box" hidden><div class="sp-rhead"><b id="rb-title">Problems reported by visitors</b><span id="rb-level" class="sp-level"></span></div><div class="sp-chart small" id="rb-chart" hidden></div><div class="sp-axis" id="rb-axis" hidden><span>24 hours ago</span><span>Now</span></div><p class="sp-rdetail" id="rb-detail" hidden></p><div class="sp-kinds" id="rb-kinds"></div><div class="sp-report"><button type="button" class="btn small ghost" id="rb-btn"><span>Report a problem</span></button><div class="sp-rpick" id="rb-pick" hidden><p>What is going wrong? Pick everything that applies.</p><div class="sp-rbtns">{report_kinds}</div><p class="sp-rsendrow"><button type="button" class="btn small rsend" disabled><span>Send report</span></button></p></div><p class="sp-rmsg" id="rb-msg" role="status"></p></div></div>
 <div class="share" id="share" hidden><span class="eyebrow">Share this check</span><div class="sbtns">{share_btns}</div></div></div>
 </div>
 
@@ -563,7 +563,7 @@ def site_pages_build():
         faqs = [
             ('Is %s down right now?' % name, 'Look at the live status box at the top of this page. It shows the result of our latest automatic check of %s, repeated every few minutes. If it says the site is up but things still fail for you, the problem is probably on your side or limited to one feature or region.' % host),
             ('Why is %s not working for me when it works for others?' % name, 'A site can fail for some people and not others because of DNS caching, regional servers, your internet provider, a firewall or VPN, or a problem with your device or app. Our guide on why a website can be down for some people and not others explains how to tell which one it is.'),
-            ('How do I report a problem with %s?' % name, 'Use the report buttons on this page and choose what is going wrong. Reports are anonymous and unverified, and each visitor can report once every 30 minutes. They are shown as a chart so you can see whether other people are having the same problem.'),
+            ('How do I report a problem with %s?' % name, 'Use the report buttons on this page and choose what is going wrong. Reports are anonymous and unverified, and each visitor can report each problem once every 30 minutes. They are shown as a chart so you can see whether other people are having the same problem.'),
             ('How does siteupdown.com check %s?' % name, 'Our server loads %s every few minutes, the way a browser would, and records the response code and how long it took. A site is only called down after two server errors in a row. Our page on how the checks work has the details.' % host),
         ]
         ld = {"@context": "https://schema.org", "@graph": [
@@ -589,11 +589,11 @@ def site_pages_build():
             '<p class="lead" style="margin-top:22px">%s</p>' % blurb +
             '<h2>Are other people having problems with %s?</h2>' % n +
             '<div class="sp-card" id="sp-reports"><div class="sp-rhead"><b id="sp-rtotal">Problem reports</b><span id="sp-rlevel" class="sp-level"></span></div>'
-            '<div class="sp-chart" id="sp-chart" role="img" aria-label="Problem reports per hour over the last 24 hours"></div>'
-            '<div class="sp-axis"><span>24 hours ago</span><span>Now</span></div><div class="sp-kinds" id="sp-kinds"></div>'
+            '<div class="sp-chart" id="sp-chart" role="group" aria-label="Problem reports per hour over the last 24 hours"></div>'
+            '<div class="sp-axis"><span>24 hours ago</span><span>Now</span></div><p class="sp-rdetail" id="sp-detail">Tap or hover a bar to see what was reported that hour.</p><div class="sp-kinds" id="sp-kinds"></div>'
             '<div class="sp-report"><button type="button" class="btn small" id="sp-rbtn"><span>I am having a problem with %s</span></button>' % n +
-            '<div class="sp-rpick" id="sp-rpick" hidden><p>What is going wrong?</p><div class="sp-rbtns">%s</div></div><p class="sp-rmsg" id="sp-rmsg" role="status"></p></div>' % kinds +
-            '<p class="note">Reports are anonymous and unverified, and each visitor can report once every 30 minutes. They show how many people say they are affected, not why.</p></div>'
+            '<div class="sp-rpick" id="sp-rpick" hidden><p>What is going wrong? Pick everything that applies.</p><div class="sp-rbtns">%s</div><p class="sp-rsendrow"><button type="button" class="btn small rsend" disabled><span>Send report</span></button></p></div><p class="sp-rmsg" id="sp-rmsg" role="status"></p></div>' % kinds +
+            '<p class="note">Reports are anonymous and unverified, and each visitor can report each problem once every 30 minutes. They show how many people say they are affected, not why.</p></div>'
             '<h2>If %s is not loading for you</h2><ul>%s</ul>' % (n, tipsli) +
             '<p>Still stuck? Work through our <a href="/help/website-not-loading-checklist">website not loading checklist</a>, or read <a href="/help/down-for-some-people-not-others">why a site can be down for some people and not others</a>.</p>'
             '<h2>Check %s from twelve places</h2><p>This page shows our latest scheduled check. To test %s right now from our server and from twelve countries, run a live check.</p>' % (n, hh) +

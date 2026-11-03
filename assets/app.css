@@ -813,3 +813,17 @@ a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--t
 .tip .tp-c{text-align:right;color:var(--muted);font-size:12px;padding:0 0 2px;line-height:1.3}
 .tool .ti{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--green-soft);color:var(--green)}
 .tool .ti svg{width:24px;height:24px}
+/* problem reports: stacked bars, details, multi-select */
+.sp-chart .bar{border:0;padding:0;display:flex;flex-direction:column-reverse;overflow:hidden;cursor:pointer;background:var(--line);min-width:4px}
+.sp-chart .bar:focus-visible,.sp-chart .bar:hover{outline:2px solid var(--text);outline-offset:1px}
+.sp-chart .bar.has{background:transparent}
+.seg{display:block;min-height:3px}
+.seg.s-site,.kdot.s-site{background:#ff5a5f}.seg.s-login,.kdot.s-login{background:#f5b83d}.seg.s-app,.kdot.s-app{background:#9a8cf7}.seg.s-slow,.kdot.s-slow{background:#4aa8ff}.seg{border-radius:0}.sp-chart .bar{border-radius:3px}
+.sp-rdetail{margin:10px 0 0;font-size:13.5px;color:var(--muted);min-height:1.3em}
+.sp-kinds .kd{display:inline-flex;align-items:center;gap:7px}
+.sp-kinds .kdot{width:9px;height:9px;border-radius:50%;display:inline-block}
+.rk.on{background:var(--green);color:var(--green-ink)}
+.rk.on::before{content:"\2713\00a0"}
+.sp-rsendrow{margin:12px 0 0}
+.rsend[disabled]{opacity:.45;cursor:not-allowed}
+.sp-axis{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:6px}

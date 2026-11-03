@@ -3,6 +3,7 @@
   'use strict';
   var root = document.querySelector('[data-sp]');
   if (!root) return;
+  var S = window.SUD;
   function $(s, r) { return (r || document).querySelector(s); }
   function esc(t) { return String(t == null ? '' : t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function ago(iso) {
@@ -87,20 +88,13 @@
   var kindName = { site: 'website not loading', login: 'cannot log in', app: 'app not working', slow: 'very slow' };
   function renderReports() {
     var hours = rep.hours || new Array(24).fill(0), max = Math.max.apply(null, hours.concat([3]));
-    $('#sp-chart').innerHTML = hours.map(function (n, i) {
-      var t = new Date(new Date(rep.start).getTime() + i * 3600000);
-      var lab = n + (n === 1 ? ' report' : ' reports') + ' around ' + t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      return '<span class="bar' + (n ? ' has' : '') + '" style="height:' + Math.max(4, Math.round(100 * n / max)) + '%" title="' + esc(lab) + '"></span>';
-    }).join('');
+    S.repChart($('#sp-chart'), $('#sp-detail'), $('#sp-kinds'), rep);
     var total = rep.total || 0;
     $('#sp-chart').classList.toggle('empty', !total);
     $('#sp-rtotal').textContent = total ? total + (total === 1 ? ' problem report' : ' problem reports') + ' in the last 24 hours' : 'No problem reports in the last 24 hours';
     var L = $('#sp-rlevel');
     L.className = 'sp-level ' + rep.level;
     L.textContent = rep.level === 'high' ? 'Many more than usual' : rep.level === 'raised' ? 'More than usual' : rep.level === 'low' ? 'Normal levels' : '';
-    var k = rep.kinds || {}, parts = [];
-    Object.keys(kindName).forEach(function (key) { if (k[key]) parts.push('<span>' + k[key] + ' ' + kindName[key] + '</span>'); });
-    $('#sp-kinds').innerHTML = parts.join('');
     headline();
   }
   function loadReports() {
@@ -112,14 +106,13 @@
   var key = 'sud-rep-' + host, last = 0;
   try { last = parseInt(localStorage.getItem(key) || '0', 10) || 0; } catch (e) {}
   btn.addEventListener('click', function () { pick.hidden = !pick.hidden; });
-  pick.addEventListener('click', function (e) {
-    var b = e.target.closest('.rk'); if (!b) return;
+  var picker = S.repPicker(pick, function (kinds) {
     rmsg.textContent = 'Sending…';
-    fetch('/api/report.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ host: host, kind: b.getAttribute('data-kind') }), credentials: 'same-origin' })
+    fetch('/api/report.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ host: host, kinds: kinds }), credentials: 'same-origin' })
       .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (r) {
         rmsg.textContent = r.ok ? r.j.message : (r.j.error || 'Sorry, that did not work. Please try again later.');
-        if (r.ok) { pick.hidden = true; try { localStorage.setItem(key, String(Date.now())); } catch (e) {} loadReports(); }
+        if (r.ok) { pick.hidden = true; picker.reset(); try { localStorage.setItem(key, String(Date.now())); } catch (e) {} loadReports(); }
       }).catch(function () { rmsg.textContent = 'Sorry, that did not work. Please try again later.'; });
   });
 })();

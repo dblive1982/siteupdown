@@ -6,9 +6,10 @@ require __DIR__ . '/_probe.php';
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') out(405, ['error' => 'POST only.']);
 $in = json_decode((string)file_get_contents('php://input'), true);
 $host = strtolower(trim((string)($in['host'] ?? '')));
-$kind = (string)($in['kind'] ?? '');
+$kinds = isset($in['kinds']) && is_array($in['kinds']) ? $in['kinds'] : [(string)($in['kind'] ?? '')];
+$kinds = array_values(array_unique(array_map('strval', $kinds)));
 $sites = site_pages();
-if (!in_array($kind, ['site', 'login', 'app', 'slow'], true)) out(422, ['error' => 'Please pick one of the options.']);
+if (!$kinds || count($kinds) > 4 || array_diff($kinds, ['site', 'login', 'app', 'slow'])) out(422, ['error' => 'Please pick at least one option.']);
 $pdo = db();
 if (!isset($sites[$host])) {
     // Any website, as long as it is a real public address that has been checked here recently.
@@ -24,9 +25,15 @@ if (!isset($sites[$host])) {
 }
 throttle('report', 12, 60);                       // at most 12 reports an hour from one address
 $h = client_hash();
-$dup = $pdo->prepare('SELECT 1 FROM reports WHERE host=? AND ip_hash=? AND ts > ? LIMIT 1');
-$dup->execute([$host, $h, gmdate('Y-m-d H:i:s', time() - 1800)]);
-if ($dup->fetch()) out(200, ['ok' => true, 'duplicate' => true, 'message' => 'Thanks, we already have a report from you in the last 30 minutes.']);
-$pdo->prepare('INSERT INTO reports (host, kind, ip_hash, ts) VALUES (?,?,?,?)')->execute([$host, $kind, $h, sql_now()]);
+$dup = $pdo->prepare('SELECT 1 FROM reports WHERE host=? AND ip_hash=? AND kind=? AND ts > ? LIMIT 1');
+$ins = $pdo->prepare('INSERT INTO reports (host, kind, ip_hash, ts) VALUES (?,?,?,?)');
+$added = 0;
+foreach ($kinds as $kind) {
+    $dup->execute([$host, $h, $kind, gmdate('Y-m-d H:i:s', time() - 1800)]);
+    if ($dup->fetch()) continue;
+    $ins->execute([$host, $kind, $h, sql_now()]);
+    $added++;
+}
+if (!$added) out(200, ['ok' => true, 'duplicate' => true, 'message' => 'Thanks, we already have ' . (count($kinds) > 1 ? 'those reports' : 'that report') . ' from you in the last 30 minutes.']);
 note_attempt('report');
-out(200, ['ok' => true, 'message' => 'Thanks, your report has been added.']);
+out(200, ['ok' => true, 'added' => $added, 'message' => $added > 1 ? 'Thanks, your ' . $added . ' reports have been added.' : 'Thanks, your report has been added.']);

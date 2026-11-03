@@ -31,6 +31,43 @@
   S.ms = function (n) { return n == null ? '—' : (n >= 1000 ? (n / 1000).toFixed(1) + ' s' : n + ' ms'); };
   S.LABEL = { up: 'Up', down: 'Confirmed down', timeout: 'Timeout', inconclusive: 'Inconclusive', pending: 'Checking…', none: 'No data', partial: 'Partly reachable', blocked: 'Blocked', 'down-everywhere': 'Looks down' };
   S.pill = function (v) { v = v || 'pending'; return '<span class="pill ' + S.esc(v) + '">' + S.esc(S.LABEL[v] || v) + '</span>'; };
+
+  /* Problem-report helpers shared by the home page and the "Is X down?" pages. */
+  S.REPKIND = { site: 'website not loading', login: 'cannot log in', app: 'app not working', slow: 'very slow' };
+  S.repChart = function (chart, detail, kindsEl, rep) {
+    var hours = rep.hours || [], hk = rep.hk || [], max = Math.max.apply(null, hours.concat([3])), K = Object.keys(S.REPKIND);
+    function sentence(i) {
+      var t = new Date(new Date(rep.start).getTime() + i * 3600000), n = hours[i] || 0;
+      var tm = t.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      if (!n) return 'Around ' + tm + ': no reports.';
+      var parts = K.filter(function (k) { return hk[i] && hk[i][k]; }).map(function (k) { return hk[i][k] + ' ' + S.REPKIND[k]; });
+      return 'Around ' + tm + ': ' + n + (n === 1 ? ' report' : ' reports') + (parts.length ? ' (' + parts.join(', ') + ')' : '') + '.';
+    }
+    chart.innerHTML = hours.map(function (n, i) {
+      var segs = K.map(function (k) { var c = hk[i] && hk[i][k] || 0; return c ? '<i class="seg s-' + k + '" style="flex:' + c + '"></i>' : ''; }).join('');
+      return '<button type="button" class="bar' + (n ? ' has' : '') + '" data-i="' + i + '" aria-label="' + S.esc(sentence(i)) + '" style="height:' + Math.max(6, Math.round(100 * n / max)) + '%">' + segs + '</button>';
+    }).join('');
+    if (detail) {
+      var show = function (e) { var b = e.target.closest('.bar'); if (!b) return; detail.hidden = false; detail.textContent = sentence(+b.getAttribute('data-i')); };
+      chart.onmouseover = show; chart.onclick = show; chart.onfocusin = show;
+    }
+    if (kindsEl) {
+      var k = rep.kinds || {};
+      kindsEl.innerHTML = K.filter(function (x) { return k[x]; }).map(function (x) { return '<span class="kd"><i class="kdot s-' + x + '"></i>' + k[x] + ' ' + S.REPKIND[x] + '</span>'; }).join('');
+    }
+  };
+  /* Multi-select picker: toggle problems, then Send. onSend(kinds[]) is called. */
+  S.repPicker = function (pick, onSend) {
+    var send = pick.querySelector('.rsend');
+    function sel() { return Array.prototype.map.call(pick.querySelectorAll('.rk.on'), function (b) { return b.getAttribute('data-kind'); }); }
+    function sync() { var n = sel().length; send.disabled = !n; send.firstChild.textContent = n > 1 ? 'Send ' + n + ' reports' : 'Send report'; }
+    pick.addEventListener('click', function (e) {
+      var b = e.target.closest('.rk');
+      if (b) { b.classList.toggle('on'); b.setAttribute('aria-pressed', b.classList.contains('on')); sync(); return; }
+      if (e.target.closest('.rsend') && !send.disabled) onSend(sel());
+    });
+    return { reset: function () { Array.prototype.forEach.call(pick.querySelectorAll('.rk'), function (b) { b.classList.remove('on'); b.setAttribute('aria-pressed', 'false'); }); sync(); } };
+  };
   S.toast = function (msg, bad) {
     var t = d.createElement('div'); t.className = 'toast' + (bad ? ' bad' : ''); t.setAttribute('role', 'status'); t.textContent = msg; d.body.appendChild(t);
     setTimeout(function () { t.remove(); }, 3200);

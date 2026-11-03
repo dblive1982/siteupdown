@@ -31,12 +31,14 @@ $since = $now - 24 * 3600;
 $q = $pdo->prepare('SELECT kind, ts FROM reports WHERE host=? AND ts > ? ORDER BY ts');
 $q->execute([$host, gmdate('Y-m-d H:i:s', $since)]);
 $bars = array_fill(0, 24, 0);
+$hk = array_fill(0, 24, ['site' => 0, 'login' => 0, 'app' => 0, 'slow' => 0]);
 $kinds = ['site' => 0, 'login' => 0, 'app' => 0, 'slow' => 0];
 $total = 0; $last3 = 0; $last = null;
 foreach ($q->fetchAll() as $r) {
     $t = strtotime($r['ts'] . ' UTC');
     $i = min(23, max(0, (int)floor(($t - $since) / 3600)));
     $bars[$i]++; $total++;
+    if (isset($hk[$i][$r['kind']])) $hk[$i][$r['kind']]++;
     if (isset($kinds[$r['kind']])) $kinds[$r['kind']]++;
     if ($t > $now - 3 * 3600) $last3++;
     $last = $r['ts'];
@@ -49,5 +51,5 @@ $level = 'none';
 if ($total > 0) $level = 'low';
 if ($last3 >= 12 && $last3 > 4 * $base * 3) $level = 'high';
 elseif ($last3 >= 5 && $last3 > 2 * $base * 3) $level = 'raised';
-out(200, ['host' => $host, 'name' => $name, 'page' => $sites[$host]['page'] ?? null, 'hours' => $bars, 'total' => $total, 'kinds' => $kinds,
+out(200, ['host' => $host, 'name' => $name, 'page' => $sites[$host]['page'] ?? null, 'hours' => $bars, 'hk' => $hk, 'total' => $total, 'kinds' => $kinds,
           'last3h' => $last3, 'usual_per_hour' => $base, 'level' => $level, 'last' => iso($last), 'start' => gmdate('Y-m-d\TH:i:s\Z', $since)]);

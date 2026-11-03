@@ -213,21 +213,22 @@
       var total = j.total || 0, hours = j.hours || [], max = Math.max.apply(null, hours.concat([3]));
       $('#rb-title').textContent = total ? total + (total === 1 ? ' problem report' : ' problem reports') + ' for ' + host + ' in the last 24 hours' : 'No problem reports for ' + host + ' in the last 24 hours';
       var L = $('#rb-level'); L.className = 'sp-level ' + j.level; L.textContent = j.level === 'high' ? 'Many more than usual' : j.level === 'raised' ? 'More than usual' : '';
-      var ch = $('#rb-chart'); ch.hidden = !total;
-      ch.innerHTML = hours.map(function (n) { return '<span class="bar' + (n ? ' has' : '') + '" style="height:' + Math.max(4, Math.round(100 * n / max)) + '%"></span>'; }).join('');
+      var ch = $('#rb-chart'); ch.hidden = !total; $('#rb-axis').hidden = !total; $('#rb-detail').hidden = true;
+      if (total) { $('#rb-detail').textContent = 'Tap or hover a bar to see what was reported that hour.'; $('#rb-detail').hidden = false; }
+      S.repChart(ch, $('#rb-detail'), $('#rb-kinds'), j);
     }).catch(function () {});
   }
   (function () {
     var btn = $('#rb-btn'); if (!btn) return;
-    btn.addEventListener('click', function () { $('#rb-pick').hidden = !$('#rb-pick').hidden; });
-    $('#rb-pick').addEventListener('click', function (e) {
-      var b = e.target.closest('.rk'); if (!b || !repHost) return;
+    var picker = S.repPicker($('#rb-pick'), function (kinds) {
+      if (!repHost) return;
       var h = repHost, m = $('#rb-msg'); m.textContent = 'Sending…';
-      fetch('/api/report.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ host: h, kind: b.getAttribute('data-kind') }), credentials: 'same-origin' })
+      fetch('/api/report.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ host: h, kinds: kinds }), credentials: 'same-origin' })
         .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
-        .then(function (r) { m.textContent = r.ok ? r.j.message : (r.j.error || 'Sorry, that did not work. Please try again later.'); if (r.ok) { $('#rb-pick').hidden = true; repHost = null; repBox(h); m.textContent = r.j.message; } })
+        .then(function (r) { m.textContent = r.ok ? r.j.message : (r.j.error || 'Sorry, that did not work. Please try again later.'); if (r.ok) { $('#rb-pick').hidden = true; picker.reset(); repHost = null; repBox(h); m.textContent = r.j.message; } })
         .catch(function () { m.textContent = 'Sorry, that did not work. Please try again later.'; });
     });
+    btn.addEventListener('click', function () { $('#rb-pick').hidden = !$('#rb-pick').hidden; });
   })();
 
   /* ---------- run a check ---------- */
