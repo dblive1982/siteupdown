@@ -220,10 +220,8 @@ def home():
 <p class="lead">A rolling sweep of the sites people ask about most. Every line is a real request from this server — a red entry is one that answered with an error or not at all.</p></div>
 <div class="pc-actions col"><div class="seg2"><button type="button" data-f="all" aria-pressed="true">All sites</button><button type="button" data-f="issues" aria-pressed="false" id="f-issues">Issues</button></div>
 <span class="fine" id="top-count"></span><button class="btn small ghost" type="button" id="top-refresh">{I_REFRESH}Refresh</button></div></div>
-<p class="fine cat-lab">Browse by category</p><div class="chips cat-chips" id="top-cats" role="group" aria-label="Website categories">{topchips}</div>
 <div class="rows" id="top-grid"><div class="skeleton">Sweeping the watchlist…</div></div>
 <p class="fine" id="top-updated" style="margin-top:14px">A snapshot, not continuous uptime monitoring.</p>
-<p class="fine" id="top-more" hidden></p>
 </div></div></section>
 
 <section id="online-gaming"><div class="wrap">
