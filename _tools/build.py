@@ -55,6 +55,7 @@ def head(title, desc, path, extra_head='', noindex=False):
 <title>{t}</title>
 <meta name="description" content="{d}">
 {robots}
+<meta name="google-adsense-account" content="ca-pub-6517978259411056">
 <link rel="canonical" href="{canon}">
 <meta property="og:type" content="website"><meta property="og:site_name" content="siteupdown.com">
 <meta property="og:title" content="{t}"><meta property="og:description" content="{d}"><meta property="og:url" content="{canon}">

@@ -142,7 +142,7 @@
   d.addEventListener('DOMContentLoaded', function () {
     applyTheme(theme);
     var b = S.$('#theme'); if (b) b.addEventListener('click', function () { theme = theme === 'dark' ? 'light' : 'dark'; S.store.set('sud-theme', theme); applyTheme(theme); });
-    initAuth(); initCookies(); initEyes();
+    initAuth(); initCookies(); initEyes(); loadAds();
     try { var fl = sessionStorage.getItem('sud-flash'); if (fl) { sessionStorage.removeItem('sud-flash'); S.toast(fl); } } catch (e) { /* ignore */ }
     S.$$('[data-year]').forEach(function (e) { e.textContent = new Date().getFullYear(); });
   });
@@ -203,6 +203,14 @@
     if (q('#c-all')) q('#c-all').onclick = function () { saveConsent(true, true); };
     if (q('#c-save')) q('#c-save').onclick = function () { saveConsent(q('#c-an').checked, q('#c-mk').checked); };
   }
+  /* Google ads: the script is only added once the visitor has accepted advertising cookies. */
+  function loadAds() {
+    var c = S.consent(); if (!c || !c.marketing || S.$('#sud-ads')) return;
+    var s = d.createElement('script'); s.id = 'sud-ads'; s.async = true; s.crossOrigin = 'anonymous';
+    s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6517978259411056';
+    d.head.appendChild(s);
+  }
+  d.addEventListener('sud:consent', loadAds);
   function initEyes() {
         S.$$('.field input[type=password]').forEach(function (inp) {
       var b = document.createElement('button'); b.type = 'button'; b.className = 'eye'; b.setAttribute('aria-label', 'Show password'); b.setAttribute('aria-pressed', 'false'); b.textContent = 'Show';
