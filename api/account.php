@@ -1,6 +1,8 @@
 <?php
 // POST {action: name|password|clear|delete, ...} for the signed-in user.
 require __DIR__ . '/_boot.php';
+require __DIR__ . '/_msg.php';
+require __DIR__ . '/_stripe.php';
 $in = read_post();
 $uid = require_user();
 $pdo = db();
@@ -45,14 +47,19 @@ switch ($a) {
         $pdo->prepare('DELETE FROM saved_checks WHERE user_id=?')->execute([$uid]);
         $pdo->prepare('DELETE FROM watchlist WHERE user_id=?')->execute([$uid]);
         $pdo->prepare('DELETE FROM alert_channels WHERE user_id=?')->execute([$uid]);
+        $pdo->prepare('DELETE FROM phone_verify WHERE user_id=?')->execute([$uid]);
         out(200, ['ok' => true]);
 
     case 'delete':
         throttle('acct', 6, 15);
         if (($in['confirm'] ?? '') !== 'DELETE') out(422, ['error' => 'Type DELETE to confirm.']);
         check_pw($u, $in);
+        // stop billing first: a deleted account must never keep paying
+        $sb = $pdo->prepare('SELECT sub FROM subscriptions WHERE user_id=?'); $sb->execute([$uid]);
+        $subId = (string)$sb->fetchColumn();
+        if ($subId !== '' && msg_can()['billing']) stripe_call('DELETE', '/v1/subscriptions/' . rawurlencode($subId));
         $pdo->beginTransaction();
-        foreach (['resets', 'saved_checks', 'watchlist', 'alert_channels', 'tg_links'] as $t) $pdo->prepare("DELETE FROM $t WHERE user_id=?")->execute([$uid]);
+        foreach (['resets', 'saved_checks', 'watchlist', 'alert_channels', 'tg_links', 'phone_verify', 'msg_usage', 'subscriptions'] as $t) $pdo->prepare("DELETE FROM $t WHERE user_id=?")->execute([$uid]);
         $pdo->prepare('DELETE FROM users WHERE id=?')->execute([$uid]);
         $pdo->commit();
         end_session();

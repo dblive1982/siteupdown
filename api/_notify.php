@@ -31,6 +31,7 @@ function notify_post(string $url, array $body): int {
 
 /** Send one message to one channel row. Returns false when the channel no longer works (blocked bot, deleted webhook). */
 function push_channel(array $ch, string $text, string $link = ''): bool {
+    if ($ch['kind'] === 'sms' || $ch['kind'] === 'whatsapp') { require_once __DIR__ . '/_msg.php'; return push_phone($ch, $text, $link); }
     if ($ch['kind'] === 'telegram') {
         $tg = tg_config();
         if ($tg['token'] === '') return true;
@@ -46,7 +47,7 @@ function push_channel(array $ch, string $text, string $link = ''): bool {
 
 /** Send to every channel a user has connected; drop channels that report they are gone. */
 function push_user(PDO $pdo, int $uid, string $text, string $link = ''): void {
-    $q = $pdo->prepare('SELECT id, kind, target FROM alert_channels WHERE user_id=?');
+    $q = $pdo->prepare('SELECT id, user_id, kind, target FROM alert_channels WHERE user_id=?');
     $q->execute([$uid]);
     foreach ($q->fetchAll() as $ch) {
         if (!push_channel($ch, $text, $link)) $pdo->prepare('DELETE FROM alert_channels WHERE id=?')->execute([$ch['id']]);

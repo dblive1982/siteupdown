@@ -139,6 +139,32 @@ function ensure_schema(PDO $pdo): void {
         user_id $int NOT NULL,
         expires_at DATETIME NOT NULL
     )$cs");
+    // Pro plan (Stripe), verified-number codes and monthly SMS/WhatsApp counts.
+    $pdo->exec("CREATE TABLE IF NOT EXISTS subscriptions (
+        user_id $int NOT NULL PRIMARY KEY,
+        status VARCHAR(20) NOT NULL,
+        customer VARCHAR(64) NULL,
+        sub VARCHAR(64) NULL,
+        period_end DATETIME NULL,
+        updated_at DATETIME NOT NULL
+    )$cs");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS phone_verify (
+        user_id $int NOT NULL,
+        kind VARCHAR(10) NOT NULL,
+        number VARCHAR(20) NOT NULL,
+        code_hash CHAR(64) NOT NULL,
+        expires_at DATETIME NOT NULL,
+        tries TINYINT NOT NULL DEFAULT 0,
+        sent_at DATETIME NOT NULL,
+        PRIMARY KEY (user_id, kind)
+    )$cs");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS msg_usage (
+        user_id $int NOT NULL,
+        ym CHAR(7) NOT NULL,
+        kind VARCHAR(10) NOT NULL,
+        n INT NOT NULL DEFAULT 0,
+        PRIMARY KEY (user_id, ym, kind)
+    )$cs");
     // Visitor problem reports for the "Is X down?" pages (pruned after 35 days).
     $pdo->exec("CREATE TABLE IF NOT EXISTS reports (
         id $id,
