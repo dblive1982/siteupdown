@@ -924,3 +924,4 @@ a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--t
 .cn-l li span{flex:0 0 38%}
 .cn-bar{flex:1;height:8px;border-radius:4px;background:var(--line);overflow:hidden;display:block}
 .cn-bar u{display:block;height:100%;background:var(--green);border-radius:4px;text-decoration:none}
+.more-det{margin-top:18px;padding:20px 22px;display:grid;gap:14px}.more-det h3{margin:0}.more-det .fine{margin:0}

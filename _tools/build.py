@@ -188,7 +188,7 @@ def home():
 <div class="map-empty" id="map-empty"><span>No regional run yet. Check a website and the map lights up.</span></div><div class="tip" id="tip" hidden></div></div>
 <div class="legend" aria-label="Map legend"><span><i style="background:var(--green)"></i>Responded</span><span><i style="background:var(--amber)"></i>Blocked</span><span><i style="background:var(--red)"></i>Server error</span><span><i style="border:2px solid var(--grey)"></i>No connection</span></div>
 <p class="fine" style="margin-top:10px">Hover or tap a marker for details. Regions without a probe are not claimed. Each run is a snapshot, not continuous monitoring. Probe network: <a href="https://globalping.io" rel="noopener">Globalping</a>.</p></div>
-<div class="details"><div id="ssl" hidden></div><div id="dns" hidden></div><div class="facts" id="facts" hidden></div>
+<div class="details">
 <div class="row-actions"><button class="btn small ghost" type="button" id="wl-add" hidden>Add to my watchlist</button><a class="btn small ghost" id="open-site" target="_blank" rel="noopener noreferrer" hidden>Open website ↗</a><a class="btn small ghost" id="speed-link" hidden>Test speed ⚡</a></div>
 <div id="lv-home" hidden></div>
 <div class="sp-card rep-box" id="rep-box" hidden><div class="sp-rhead"><b id="rb-title">Problems reported by visitors</b><span id="rb-level" class="sp-level"></span></div><div class="sp-ranges" id="rb-ranges" role="group" aria-label="Time range"><button type="button" class="rg on" data-range="24h" aria-pressed="true">24 hours</button><button type="button" class="rg" data-range="7d" aria-pressed="false">7 days</button><button type="button" class="rg" data-range="30d" aria-pressed="false">30 days</button><button type="button" class="rg" data-range="1y" aria-pressed="false">1 year</button></div><div class="sp-rdate" id="rb-date"></div><div class="sp-chart small" id="rb-chart"></div><div class="sp-axis" id="rb-axis"><span>24 hours ago</span><span>Now</span></div><p class="sp-rdetail" id="rb-detail"></p><div class="sp-kinds" id="rb-kinds"></div><div class="sp-report"><button type="button" class="btn small ghost" id="rb-btn"><span>Report a problem</span></button><div class="sp-rpick" id="rb-pick" hidden><p>What is going wrong? Pick everything that applies.</p><div class="sp-rbtns">{report_kinds}</div><p class="sp-rsendrow"><button type="button" class="btn small rsend" disabled><span>Send report</span></button></p></div><p class="sp-rmsg" id="rb-msg" role="status"></p></div></div>
@@ -200,6 +200,7 @@ def home():
 <div class="card chart"><h3>Probe outcomes</h3><p class="fine">How the twelve probes fared.</p><div id="ch-donut" class="ch-empty">Run a check to see this chart.</div></div>
 <div class="card chart"><h3>Speed range</h3><p class="fine">Our server against the worldwide spread.</p><div id="ch-range" class="ch-empty">Run a check to see this chart.</div></div>
 </div>
+<div class="card more-det" id="more-det" hidden><h3>Technical details</h3><p class="fine">Certificate, DNS and what we saw when we fetched the page.</p><div id="ssl" hidden></div><div id="dns" hidden></div><div class="facts" id="facts" hidden></div></div>
 </div></section>
 
 <section id="top-sites"><div class="wrap"><div class="card toplist">

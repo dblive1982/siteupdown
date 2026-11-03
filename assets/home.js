@@ -114,6 +114,7 @@
     $('#facts').hidden = !o.facts;
     var ss = $('#ssl'); if (ss) { ss.innerHTML = o.ssl || ''; ss.hidden = !o.ssl; }
     var dd = $('#dns'); if (dd) { dd.innerHTML = o.dns || ''; dd.hidden = !o.dns; }
+    var md = $('#more-det'); if (md) md.hidden = !(o.facts || o.ssl || o.dns);
     var sl = $('#speed-link'); if (sl) { sl.hidden = !(o.again && o.host); if (o.host) sl.href = '/speed?q=' + encodeURIComponent(o.host); }
     var os = $('#open-site'); if (os) { os.hidden = !(o.again && o.host); if (o.host) os.href = 'https://' + o.host + '/'; }
     $('#run-again').hidden = !o.again;
