@@ -79,6 +79,8 @@ function combined_verdict(array $server, ?array $reg): array {
     $blocked = count(array_filter($reg['probes'], fn($x) => $x['state'] === 'blocked'));
     $responded = $ok + $blocked + count(array_filter($reg['probes'], fn($x) => $x['state'] === 'error'));
     if ($ok === $tot) return ['key' => 'up', 'text' => 'Up for everyone we asked. If it fails for you, the problem is likely on your side (network, DNS, browser or device).'];
+    // Total silence (nothing answered anywhere, no error pages either) is not proof of an outage: many large sites quietly ignore automated checks.
+    if ($ok === 0 && $responded === 0 && $v !== 'up' && $v !== 'down') return ['key' => 'silent', 'text' => 'Nothing answered, not our server and not the probes. It may be down, or it may simply ignore automated checks. If it opens for you, it is blocking our checks rather than being down. Reports from other visitors below can help.'];
     if ($ok === 0 && $responded === 0 && $v !== 'up') return ['key' => 'down-everywhere', 'text' => 'No probe could reach it, and neither could our server. It looks down for everyone, but this is a snapshot, not proof.'];
     if ($ok === 0 && $blocked > 0) return ['key' => 'blocked', 'text' => 'It answered, but it is blocking automated checks, so we cannot tell what a real visitor sees.'];
     return ['key' => 'partial', 'text' => "Reachable from $ok of $tot places. It may be down only in some regions. Check the map to see where it stops."];

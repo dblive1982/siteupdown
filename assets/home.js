@@ -5,7 +5,7 @@
   function tile() { return ''; }
   var W = 1000, MAP = window.SUD_MAP, H = Math.round(W * 142 / 360 * 10) / 10;
   var state = { host: '', share: '', timer: null, runId: 0, last: '' };
-  var BIG = { up: 'Up for everyone', partial: 'Reachable from some places', 'down-everywhere': 'Down for everyone', blocked: 'Blocking automated checks', down: 'Confirmed down', timeout: 'Timed out', inconclusive: 'Inconclusive' };
+  var BIG = { up: 'Up for everyone', partial: 'Reachable from some places', 'down-everywhere': 'Down for everyone', blocked: 'Blocking automated checks', silent: 'No answer from anywhere', down: 'Confirmed down', timeout: 'Timed out', inconclusive: 'Inconclusive' };
 
   /* ---------- map ---------- */
   var svg = $('#map-svg'), tip = $('#tip'), mwrap = $('#map');
@@ -219,8 +219,8 @@
     var vals = HS.series.filter(function (x) { return x != null; });
     if (vals.length > 1) { var mx = Math.max.apply(null, vals.concat([50])), n = HS.series.length; $('#hs-spark').innerHTML = '<polyline fill="none" stroke="#39b54a" stroke-width="1.6" vector-effect="non-scaling-stroke" points="' + HS.series.map(function (x, i) { return x == null ? '' : (60 * i / Math.max(1, n - 1)).toFixed(1) + ',' + (16 - 14 * x / mx).toFixed(1); }).filter(Boolean).join(' ') + '"/>'; }
     var s = HS.host;
-    if (HS.v === 'down' || HS.v === 'timeout') s += ' is not answering right now.';
-    else if (HS.v === 'inconclusive') s += ': our quick check could not get a clear answer just now (the site may be blocking automated checks).';
+    if (HS.v === 'down') s += ' is not answering right now.';
+    else if (HS.v === 'inconclusive' || HS.v === 'timeout') s += ' did not answer our quick check just now. It may be down, or it may ignore automated checks.';
     else if (HS.v && HS.v !== 'up') s += ' is answering, but slowly' + (HS.ms != null ? ' (' + HS.ms + ' ms)' : '') + '.';
     else s += ' is up' + (HS.ms != null ? ' and answering in ' + HS.ms + ' ms right now' : '') + '.';
     if (HS.reach != null && HS.total) s += ' ' + (HS.reach === HS.total ? 'All ' + HS.total + ' regions' : HS.reach + ' of ' + HS.total + ' regions') + ' reached it.';

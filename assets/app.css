@@ -947,3 +947,4 @@ a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--t
 .ro-st{text-align:right;font-size:14px}.ro-list small{grid-column:1/-1;color:var(--muted)}
 .ro-none{display:block!important;border-left-color:var(--green)!important;color:var(--muted)}
 @media(max-width:560px){.ro-list li{grid-template-columns:1fr}.ro-st{text-align:left}}
+.pill.silent{color:var(--amber)}

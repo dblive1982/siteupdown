@@ -54,6 +54,7 @@
     function setNow(big, sub) { q('ms').textContent = big; q('sub').textContent = sub; }
     function pill(v) {
       var el = q('pill'), c = cls(v);
+      if (v === 'timeout' || v === 'inconclusive') { el.className = 'sp-pill unsure'; el.textContent = mode === 'live' ? 'Live · no answer' : 'No answer'; return; }
       el.className = 'sp-pill ' + (c === 'none' ? 'unsure' : c);
       el.textContent = mode === 'live' ? (c === 'up' ? 'Live · up' : c === 'down' ? 'Live · down' : 'Live · slow') : (c === 'up' ? 'Up' : c === 'down' ? 'Down' : 'Mixed');
     }

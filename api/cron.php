@@ -29,6 +29,7 @@ $up = $pdo->prepare('REPLACE INTO site_status (host, verdict, http_code, ms, che
 $n = 0;
 $probe = function (string $h) use ($pdo, $up, &$n) {
     $r = check_site($h, '/', false, true);
+    if ($r['verdict'] === 'timeout' && !seen_up_recently($pdo, $h)) { $r['verdict'] = 'inconclusive'; $r['note'] = 'Nothing answered our checks and we have not seen this site answer lately, so we cannot be sure it is down.'; }
     if (in_array($r['verdict'], ['down', 'timeout'], true) && corroborated_alive_cached($pdo, $h)) { $r['verdict'] = 'inconclusive'; $r['note'] = 'The site answers other countries but not our server, so we cannot be sure.'; }
     $up->execute([$h, $r['verdict'], $r['http_code'], $r['ms'], sql_now()]);
     track_result($pdo, $h, $r['verdict'], $r['ms']);
@@ -98,12 +99,12 @@ if ((int)gmdate('i') % 10 === 3) {
 $pdo->prepare('DELETE FROM tracked_hosts WHERE last_seen < ?')->execute([gmdate('Y-m-d H:i:s', time() - 7 * 86400)]);
 $pdo->prepare('DELETE FROM live_viewer WHERE ts < ?')->execute([time() - 3600]);
 // One-off clean-up (runs once): callofduty.com was wrongly shown as down because only its www address answers our server.
-$m1 = $pdo->prepare('SELECT 1 FROM corroboration WHERE host=?'); $m1->execute(['*cleanup-cod-1']);
+$m1 = $pdo->prepare('SELECT 1 FROM corroboration WHERE host=?'); $m1->execute(['*cleanup-cod-2']);
 if (!$m1->fetchColumn()) {
     $pdo->prepare('DELETE FROM incidents WHERE host=?')->execute(['callofduty.com']);
     $pdo->prepare("UPDATE site_log SET verdict='inconclusive' WHERE host=? AND verdict IN ('down','timeout')")->execute(['callofduty.com']);
     $pdo->prepare('DELETE FROM alert_state WHERE host=?')->execute(['callofduty.com']);
-    $pdo->prepare('INSERT INTO corroboration (host, alive, ts) VALUES (?,?,?)')->execute(['*cleanup-cod-1', 0, time()]);
+    $pdo->prepare('INSERT INTO corroboration (host, alive, ts) VALUES (?,?,?)')->execute(['*cleanup-cod-2', 0, time()]);
     $needDailyFix = true;
 }
 // Daily record for the 12-month view: first run back-fills what site_log still holds, later runs refresh today and yesterday.

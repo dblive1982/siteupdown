@@ -12,8 +12,16 @@ function corroborated_alive_cached(PDO $pdo, string $host): bool {
     return (bool)$c->fetchColumn();
 }
 
+/** Has this site answered one of our checks in the last 24 hours? */
+function seen_up_recently(PDO $pdo, string $host): bool {
+    $q = $pdo->prepare("SELECT 1 FROM site_log WHERE host=? AND verdict='up' AND ts > ? LIMIT 1");
+    $q->execute([$host, gmdate('Y-m-d H:i:s', time() - 86400)]);
+    return (bool)$q->fetchColumn();
+}
+
 function track_result(PDO $pdo, string $host, string $verdict, ?int $ms): void {
     if (in_array($verdict, ['down', 'timeout'], true) && corroborated_alive_cached($pdo, $host)) $verdict = 'inconclusive';
+    if ($verdict === 'timeout' && !seen_up_recently($pdo, $host)) $verdict = 'inconclusive';     // silence from a site we have not seen answer lately is not an outage
     $now = sql_now();
     // One history row per host per five minutes (the worst result in that window wins), so one-minute checks do not bloat the history.
     $lg = $pdo->prepare('SELECT ts, verdict FROM site_log WHERE host=? ORDER BY ts DESC LIMIT 1');

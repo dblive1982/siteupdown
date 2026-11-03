@@ -44,7 +44,7 @@ if (!$fresh) {
         $lk->execute([$now + 12, $host, $now]);
         if ($lk->rowCount() === 1) {            // we hold the lock: take the sample
             $r = check_site($host, '/', false, true);
-            $pdo->prepare('INSERT INTO live_samples (host, ts, ms, verdict, code) VALUES (?,?,?,?,?)')->execute([$host, time(), $r['ms'] ?? null, $r['verdict'], $r['http_code'] ?? ($r['code'] ?? null)]);
+            $pdo->prepare('INSERT INTO live_samples (host, ts, ms, verdict, code) VALUES (?,?,?,?,?)')->execute([$host, time(), (($r['http_code'] ?? ($r['code'] ?? null)) !== null) ? ($r['ms'] ?? null) : null, $r['verdict'], $r['http_code'] ?? ($r['code'] ?? null)]);
             $pdo->prepare('DELETE FROM live_samples WHERE host=? AND ts < ?')->execute([$host, time() - LIVE_KEEP]);
             $code = (int)($r['http_code'] ?? ($r['code'] ?? 0));
             $blocked = $r['verdict'] === 'inconclusive' || $code === 403 || $code === 429;     // back off so we are never a nuisance

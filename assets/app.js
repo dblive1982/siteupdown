@@ -29,7 +29,7 @@
   };
   S.when = function (iso) { if (!iso) return '—'; var t = new Date(iso); return t.toLocaleString([], { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }); };
   S.ms = function (n) { return n == null ? '—' : (n >= 1000 ? (n / 1000).toFixed(1) + ' s' : n + ' ms'); };
-  S.LABEL = { up: 'Up', down: 'Confirmed down', timeout: 'Timeout', inconclusive: 'Inconclusive', pending: 'Checking…', none: 'No data', partial: 'Partly reachable', blocked: 'Blocked', 'down-everywhere': 'Looks down' };
+  S.LABEL = { up: 'Up', down: 'Confirmed down', timeout: 'Timeout', inconclusive: 'Inconclusive', pending: 'Checking…', none: 'No data', partial: 'Partly reachable', blocked: 'Blocked', 'down-everywhere': 'Looks down', silent: 'No answer' };
   S.pill = function (v) { v = v || 'pending'; return '<span class="pill ' + S.esc(v) + '">' + S.esc(S.LABEL[v] || v) + '</span>'; };
 
   /* Problem-report helpers shared by the home page and the "Is X down?" pages. */
