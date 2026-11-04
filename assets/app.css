@@ -1062,5 +1062,5 @@ a.icon-btn svg{width:24px;height:24px}
 @media (max-width:640px){.speed-row{flex-direction:column;gap:12px}}
 
 /* new logo: a little taller so the wordmark stays readable */
-.site-head .lf{height:68px;width:auto}.foot-brand .lf{height:60px;width:auto}
-@media(max-width:520px){.site-head .lf{height:50px}.foot-brand .lf{height:48px}}
+.site-head .lf{height:56px;width:auto}.foot-brand .lf{height:60px;width:auto}
+@media(max-width:520px){.site-head .lf{height:42px}.foot-brand .lf{height:48px}}
