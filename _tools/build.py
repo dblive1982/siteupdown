@@ -176,7 +176,7 @@ def home():
 <div class="try-row app-row"><span class="eyebrow">Checking an app?</span><div class="chips">
 <a class="chip" href="/is-whatsapp-down">WhatsApp</a><a class="chip" href="/is-instagram-down">Instagram</a><a class="chip" href="/is-spotify-down">Spotify</a><a class="chip" href="/is-roblox-down">Roblox</a><a class="chip" href="/is-it-down/">All apps &amp; sites<span class="ne">→</span></a>
 </div></div>
-<div class="try-row app-row"><span class="eyebrow">Test your connection</span><div class="chips"><a class="chip" href="/internet-speed-test">Internet speed test<span class="ne">&rarr;</span></a></div></div>
+<div class="try-row app-row speed-row"><span class="eyebrow">Test your connection</span><div class="chips"><a class="chip" href="/internet-speed-test">Internet speed test<span class="ne">&rarr;</span></a></div></div>
 <p class="rule-note"><span>One server check, fifteen regional probes. No sign-up, no guesswork.</span></p>
 </div></section>
 
