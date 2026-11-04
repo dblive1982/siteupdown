@@ -18,7 +18,9 @@ def invader():
     r += '<rect x="3" y="3" width="1" height="1" fill="var(--bg)"/><rect x="7" y="3" width="1" height="1" fill="var(--bg)"/>'
     return '<svg viewBox="0 0 11 8" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">%s</svg>' % r
 INV = invader()
-BRAND = '<img class="lf lf-d" src="/assets/logo-full-dark.png" alt="siteupdown.com" width="116" height="48"><img class="lf lf-l" src="/assets/logo-full-light.png" alt="" width="116" height="48">'
+LOGO = 'robot'   # 'robot' or 'arrow': which logo files in assets/ the header and footer use
+LOGO_ASPECT = {'robot': 2.0, 'arrow': 1.5}[LOGO]
+BRAND = ('<img class="lf lf-d" src="/assets/logo-%s-dark.png" alt="siteupdown.com" width="%d" height="56"><img class="lf lf-l" src="/assets/logo-%s-light.png" alt="" width="%d" height="56">' % (LOGO, round(56 * LOGO_ASPECT), LOGO, round(56 * LOGO_ASPECT)))
 
 def ico(path, extra=''):
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"%s>%s</svg>' % (extra, path)
