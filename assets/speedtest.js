@@ -218,6 +218,10 @@
       end('Try again');
     });
   }
+  var inst = $('st-install'), dp = null;
+  window.addEventListener('beforeinstallprompt', function (e) { e.preventDefault(); dp = e; if (inst) inst.hidden = false; });
+  if (inst) inst.addEventListener('click', function () { if (!dp) return; dp.prompt(); dp.userChoice.then(function () { dp = null; inst.hidden = true; }); });
+  window.addEventListener('appinstalled', function () { if (inst) inst.hidden = true; });
   go.addEventListener('click', run);
   gauge(0, 'Mbps', 'Ready');
   try {
