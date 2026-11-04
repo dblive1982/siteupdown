@@ -72,6 +72,7 @@
       .catch(function (e) { b.disabled = false; say(e.message, true); });
   });
   $('monitor').href = SITE + '/monitor';
+  $('speed').href = SITE + '/internet-speed-test';
 
   function start() {
     var q = (window.chrome && chrome.tabs && chrome.tabs.query) ? chrome.tabs.query({ active: true, currentWindow: true }) : Promise.resolve([]);

@@ -32,3 +32,6 @@ input{flex:1;min-width:0;background:var(--card);border:1px solid var(--line);bor
 input:focus{border-color:var(--green)}
 footer{display:flex;justify-content:space-between;gap:10px;padding:10px 16px;border-top:1px solid var(--line);color:var(--muted);font-size:12px}
 footer a{color:#b9aee0}
+
+.fl{display:flex;gap:14px;flex-wrap:wrap;justify-content:flex-end}
+footer{align-items:center}
