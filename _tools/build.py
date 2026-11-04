@@ -18,7 +18,7 @@ def invader():
     r += '<rect x="3" y="3" width="1" height="1" fill="var(--bg)"/><rect x="7" y="3" width="1" height="1" fill="var(--bg)"/>'
     return '<svg viewBox="0 0 11 8" fill="currentColor" shape-rendering="crispEdges" aria-hidden="true">%s</svg>' % r
 INV = invader()
-LOGO = 'robot'   # 'robot' or 'arrow': which logo files in assets/ the header and footer use
+LOGO = 'arrow'   # 'robot' or 'arrow': which logo files in assets/ the header and footer use
 LOGO_ASPECT = {'robot': 2.0, 'arrow': 1.5}[LOGO]
 BRAND = ('<img class="lf lf-d" src="/assets/logo-%s-dark.png" alt="siteupdown.com" width="%d" height="56"><img class="lf lf-l" src="/assets/logo-%s-light.png" alt="" width="%d" height="56">' % (LOGO, round(56 * LOGO_ASPECT), LOGO, round(56 * LOGO_ASPECT)))
 
