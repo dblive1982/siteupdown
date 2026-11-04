@@ -2,6 +2,7 @@
 // Globalping (https://globalping.io) client: runs the same request from probes around the world.
 declare(strict_types=1);
 
+const GP_HEADERS = ['Accept' => 'text/html,application/xhtml+xml,application/xml;q=0.9,text/plain;q=0.8,*/*;q=0.7', 'Accept-Language' => 'en-GB,en;q=0.9', 'Cache-Control' => 'no-cache', 'Pragma' => 'no-cache'];
 const GP_BASE = 'https://api.globalping.io/v1';
 
 function gp_request(string $method, string $path, ?array $body = null): array {
@@ -47,7 +48,7 @@ function gp_fallback_locations(): array {
 
 function gp_start(string $host): ?string {
     if (function_exists('probe_alias_get') && ($al = probe_alias_get($host))) $host = $al;     // ask for the address that really answers
-    $opts = ['request' => ['method' => 'GET', 'path' => '/'], 'protocol' => 'HTTPS', 'port' => 443];
+    $opts = ['request' => ['method' => 'GET', 'path' => '/', 'headers' => GP_HEADERS], 'protocol' => 'HTTPS', 'port' => 443];
     foreach ([gp_locations(), gp_locations_basic(), gp_fallback_locations()] as $locs) {
         $r = gp_request('POST', '/measurements', ['type' => 'http', 'target' => $host, 'locations' => $locs, 'measurementOptions' => $opts]);
         if (in_array($r['code'], [200, 202], true) && !empty($r['data']['id'])) return (string)$r['data']['id'];
@@ -105,7 +106,7 @@ function corroborate_alive(string $host): bool {
     $c = $pdo->prepare('SELECT alive, ts FROM corroboration WHERE host=?'); $c->execute([$orig]); $c = $c->fetch();
     if ($c && (int)$c['ts'] > time() - 1800) return (bool)$c['alive'];
     if (function_exists('probe_alias_get') && ($al = probe_alias_get($host))) $host = $al;
-    $opts = ['request' => ['method' => 'GET', 'path' => '/'], 'protocol' => 'HTTPS', 'port' => 443];
+    $opts = ['request' => ['method' => 'GET', 'path' => '/', 'headers' => GP_HEADERS], 'protocol' => 'HTTPS', 'port' => 443];
     $r = gp_request('POST', '/measurements', ['type' => 'http', 'target' => $host, 'locations' => [['country' => 'US', 'limit' => 1], ['country' => 'GB', 'limit' => 1], ['country' => 'DE', 'limit' => 1]], 'measurementOptions' => $opts]);
     if (!in_array($r['code'], [200, 202], true) || empty($r['data']['id'])) return false;   // cannot ask: rely on our own evidence
     $alive = null;
@@ -148,7 +149,7 @@ function gp_world_sweep(PDO $pdo, array $hosts, int $deadline): ?string {
         $pdo->prepare('UPDATE world_checks SET ts=? WHERE host=?')->execute([time(), $host]);
     };
     $target = (function_exists('probe_alias_get') && ($al = probe_alias_get($host))) ? $al : $host;
-    $opts = ['request' => ['method' => 'GET', 'path' => '/'], 'protocol' => 'HTTPS', 'port' => 443];
+    $opts = ['request' => ['method' => 'GET', 'path' => '/', 'headers' => GP_HEADERS], 'protocol' => 'HTTPS', 'port' => 443];
     $id = null;
     foreach ([gp_locations(), gp_locations_basic()] as $locs) {
         $r = gp_request('POST', '/measurements', ['type' => 'http', 'target' => $target, 'locations' => $locs, 'measurementOptions' => $opts]);

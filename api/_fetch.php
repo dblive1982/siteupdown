@@ -16,7 +16,7 @@ function sud_get(string $host, string $path, bool $https, int $maxBody = 0, int 
     curl_setopt_array($ch, [
         CURLOPT_RETURNTRANSFER => false, CURLOPT_FOLLOWLOCATION => false, CURLOPT_NOPROXY => '*',
         CURLOPT_CONNECTTIMEOUT => 5, CURLOPT_TIMEOUT => $timeout, CURLOPT_USERAGENT => SUD_UA,
-        CURLOPT_HTTPHEADER => ['Accept: text/html,text/plain,*/*;q=0.8', 'Accept-Language: en'],
+        CURLOPT_HTTPHEADER => ['Accept: text/html,application/xhtml+xml,application/xml;q=0.9,text/plain;q=0.8,*/*;q=0.7', 'Accept-Language: en-GB,en;q=0.9', 'Cache-Control: no-cache', 'Pragma: no-cache'],
         CURLOPT_RESOLVE => [$host . ':' . $port . ':' . $ip],
         CURLOPT_PROTOCOLS => CURLPROTO_HTTP | CURLPROTO_HTTPS, CURLOPT_ENCODING => '',
         CURLOPT_HEADERFUNCTION => function ($c, $line) use (&$headers, &$res) {
