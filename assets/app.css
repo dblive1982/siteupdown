@@ -1092,3 +1092,9 @@ a.icon-btn svg{width:24px;height:24px}
 .ro-sub{font-size:16px;margin:20px 0 4px}
 .sp-code{width:100%;box-sizing:border-box;font-family:var(--mono);font-size:12px;line-height:1.5;color:var(--text);background:var(--bg-2,#0f0a1f);border:1px solid var(--line);border-radius:10px;padding:10px 12px;resize:none}
 .sp-pushrow{margin:12px 0 0;display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+
+.hm-globe{position:relative;width:100%;max-width:560px;margin:6px auto 4px}
+.hm-globe canvas{display:block;width:100%;aspect-ratio:1/1;touch-action:none;cursor:grab;border-radius:50%;outline-offset:4px;-webkit-tap-highlight-color:transparent}
+.hm-globe canvas.grab{cursor:grabbing}
+.hm-tip{position:absolute;transform:translate(-50%,-100%);background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:13px;white-space:nowrap;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+.hm-hint{text-align:center;margin:0 0 8px}

@@ -1,15 +1,27 @@
 /* Global heat map: how the sites we watch look from each of our worldwide probe places. */
 (function () {
   'use strict';
-  var svg = document.getElementById('hm-svg'), M = window.SUD_MAP;
-  if (!svg || !M) return;
+  var cv = document.getElementById('hm-globe'), M = window.SUD_MAP;
+  if (!cv || !M || !cv.getContext) return;
   var $ = function (id) { return document.getElementById(id); };
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
   var dn = null; try { dn = new Intl.DisplayNames(['en'], { type: 'region' }); } catch (e) {}
   var data = null, layer = 'reach';
-  var Wd = 1000, Hd = Math.round(Wd * 142 / 360 * 10) / 10, cell = Wd * M.cell / 360, sz = cell * 0.72, o = (cell - sz) / 2, land = '';
-  M.runs.forEach(function (runs, r) { runs.forEach(function (run) { for (var c = run[0]; c < run[0] + run[1]; c++) land += 'M' + (c * cell + o).toFixed(1) + ' ' + (r * cell + o).toFixed(1) + 'h' + sz.toFixed(1) + 'v' + sz.toFixed(1) + 'h-' + sz.toFixed(1) + 'z'; });
+  var D2R = Math.PI / 180, ctx = cv.getContext('2d'), tip = $('hm-tip');
+  var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Land: the same dot-matrix grid as the flat map, turned into points on a sphere. */
+  var land = [];
+  M.runs.forEach(function (runs, r) {
+    var lat = (M.top - (r + 0.5) * M.cell) * D2R;
+    runs.forEach(function (run) {
+      for (var c = run[0]; c < run[0] + run[1]; c++) {
+        var lon = (-180 + (c + 0.5) * M.cell) * D2R;
+        land.push([Math.sin(lat), Math.cos(lat), lon]);
+      }
+    });
   });
+
   function name(p) { return (p.city ? p.city + ', ' : '') + (p.country ? (dn ? (dn.of(p.country) || p.country) : p.country) : ''); }
   function heat(p) {
     if (layer === 'reach') {
@@ -20,17 +32,132 @@
     if (m == null) return { cls: 'n', val: '–', label: 'No timing' };
     return { cls: m < 400 ? 'g' : m < 900 ? 'a' : 'r', val: m + ' ms', label: 'Typical load time ' + m + ' ms' };
   }
+
+  /* View state: lon0/lat0 is the point facing the viewer. */
+  var lon0 = 10 * D2R, lat0 = 22 * D2R, vLon = 0, vLat = 0;
+  var drag = null, hover = null, W = 0, R = 0, dpr = 1, auto = !reduce, visible = true, raf = 0, lastT = 0, markers = [];
+  var COL = { g: '13,192,78', a: '245,184,61', r: '255,90,95', n: '107,124,115' };
+
+  function size() {
+    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = cv.clientWidth; if (!W) return;
+    cv.width = Math.round(W * dpr); cv.height = Math.round(W * dpr);
+    R = W / 2 - 6; need();
+  }
+  function proj(sl, cl, lon) {
+    var dl = lon - lon0, cd = Math.cos(dl), sc = Math.sin(lat0), cc = Math.cos(lat0);
+    return [cl * Math.sin(dl), cc * sl - sc * cl * cd, sc * sl + cc * cl * cd];
+  }
+  function render() {
+    raf = 0;
+    if (!W) return;
+    var light = document.documentElement.getAttribute('data-theme') === 'light';
+    var c = W / 2, i, p, q;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, W, W);
+    var g = ctx.createRadialGradient(c - R * 0.3, c - R * 0.35, R * 0.1, c, c, R);
+    g.addColorStop(0, light ? 'rgba(47,158,65,.10)' : 'rgba(13,192,78,.10)');
+    g.addColorStop(1, light ? 'rgba(47,158,65,.02)' : 'rgba(13,192,78,.015)');
+    ctx.beginPath(); ctx.arc(c, c, R, 0, 7); ctx.fillStyle = g; ctx.fill();
+    ctx.lineWidth = 1.5; ctx.strokeStyle = light ? 'rgba(47,158,65,.45)' : 'rgba(13,192,78,.35)'; ctx.stroke();
+    /* land dots, brighter toward the centre of the globe */
+    var rgb = light ? '47,158,65' : '13,192,78', base = light ? 0.85 : 0.75, d = Math.max(1.2, R * 0.0105);
+    for (i = 0; i < land.length; i++) {
+      q = land[i]; p = proj(q[0], q[1], q[2]);
+      if (p[2] <= 0.02) continue;
+      ctx.fillStyle = 'rgba(' + rgb + ',' + (base * Math.min(1, 0.25 + p[2] * 0.9)).toFixed(2) + ')';
+      var s = d * (0.55 + 0.45 * p[2]);
+      ctx.fillRect(c + p[0] * R - s / 2, c - p[1] * R - s / 2, s, s);
+    }
+    /* heat glows and place markers */
+    markers = [];
+    if (data) {
+      var list = [];
+      data.places.forEach(function (pl) {
+        if (pl.lat == null || pl.lon == null) return;
+        var a = pl.lat * D2R; p = proj(Math.sin(a), Math.cos(a), pl.lon * D2R);
+        if (p[2] <= 0.04) return;
+        list.push({ pl: pl, x: c + p[0] * R, y: c - p[1] * R, z: p[2], h: heat(pl) });
+      });
+      ctx.globalCompositeOperation = light ? 'source-over' : 'lighter';
+      list.forEach(function (m) {
+        var gr = R * 0.2 * (0.6 + 0.4 * m.z), rg = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, gr), col = COL[m.h.cls];
+        rg.addColorStop(0, 'rgba(' + col + ',' + (light ? 0.55 : 0.75) + ')'); rg.addColorStop(1, 'rgba(' + col + ',0)');
+        ctx.fillStyle = rg; ctx.beginPath(); ctx.arc(m.x, m.y, gr, 0, 7); ctx.fill();
+      });
+      ctx.globalCompositeOperation = 'source-over';
+      list.forEach(function (m) {
+        var col = COL[m.h.cls], rad = 4.2 + 2.2 * m.z, on = hover === m.pl;
+        ctx.beginPath(); ctx.arc(m.x, m.y, on ? rad + 2 : rad, 0, 7);
+        ctx.fillStyle = 'rgb(' + col + ')'; ctx.fill();
+        ctx.lineWidth = on ? 2.5 : 1.5; ctx.strokeStyle = '#fff'; ctx.stroke();
+        markers.push(m);
+      });
+    }
+    if (hover && tip) {
+      var hm = markers.filter(function (m) { return m.pl === hover; })[0];
+      if (hm) { tip.hidden = false; tip.textContent = name(hover) + ': ' + hm.h.label; tip.style.left = Math.min(Math.max(hm.x, 70), W - 70) + 'px'; tip.style.top = (hm.y - 18) + 'px'; }
+      else tip.hidden = true;
+    } else if (tip) tip.hidden = true;
+  }
+  function need() { if (!raf) raf = requestAnimationFrame(frame); }
+  function frame(t) {
+    raf = 0;
+    var dt = Math.min(0.05, (t - (lastT || t)) / 1000); lastT = t;
+    var moving = false;
+    if (!drag) {
+      if (Math.abs(vLon) > 0.00004 || Math.abs(vLat) > 0.00004) { lon0 += vLon * dt * 60; lat0 = clampLat(lat0 + vLat * dt * 60); vLon *= 0.94; vLat *= 0.94; moving = true; }
+      else if (auto && visible && !document.hidden) { lon0 += 0.14 * D2R * dt * 6; moving = true; }
+    }
+    render();
+    if (moving || drag) { raf = requestAnimationFrame(frame); } else lastT = 0;
+  }
+  function clampLat(v) { return Math.max(-80 * D2R, Math.min(80 * D2R, v)); }
+
+  function pick(x, y) {
+    var best = null, bd = 22 * 22;
+    markers.forEach(function (m) { var d = (m.x - x) * (m.x - x) + (m.y - y) * (m.y - y); if (d < bd) { bd = d; best = m.pl; } });
+    return best;
+  }
+  function pos(e) { var b = cv.getBoundingClientRect(); return [e.clientX - b.left, e.clientY - b.top]; }
+  cv.addEventListener('pointerdown', function (e) {
+    var q = pos(e); drag = { x: q[0], y: q[1], moved: 0 }; vLon = vLat = 0; auto = false;
+    try { cv.setPointerCapture(e.pointerId); } catch (x) {}
+    cv.classList.add('grab'); need();
+  });
+  cv.addEventListener('pointermove', function (e) {
+    var q = pos(e);
+    if (drag) {
+      var dx = q[0] - drag.x, dy = q[1] - drag.y; drag.x = q[0]; drag.y = q[1]; drag.moved += Math.abs(dx) + Math.abs(dy);
+      var k = 1 / R / Math.max(0.35, Math.cos(lat0) * 0.4 + 0.6);
+      lon0 -= dx * k; lat0 = clampLat(lat0 + dy * k * 0.9); vLon = -dx * k * 0.5; vLat = dy * k * 0.45;
+      hover = null; need();
+    } else {
+      var h = pick(q[0], q[1]); if (h !== hover) { hover = h; cv.style.cursor = h ? 'pointer' : 'grab'; need(); }
+    }
+  });
+  function end(e) {
+    if (!drag) return;
+    var tap = drag.moved < 6; drag = null; cv.classList.remove('grab');
+    if (tap && e && e.type === 'pointerup') { var q = pos(e), h = pick(q[0], q[1]); hover = h === hover ? null : h; vLon = vLat = 0; }
+    need();
+  }
+  cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
+  cv.addEventListener('pointerleave', function () { if (!drag && hover) { hover = null; need(); } });
+  cv.addEventListener('keydown', function (e) {
+    var st = 8 * D2R, k = e.key;
+    if (k === 'ArrowLeft') lon0 -= st; else if (k === 'ArrowRight') lon0 += st; else if (k === 'ArrowUp') lat0 = clampLat(lat0 + st); else if (k === 'ArrowDown') lat0 = clampLat(lat0 - st); else return;
+    auto = false; e.preventDefault(); need();
+  });
+  if (window.ResizeObserver) new ResizeObserver(size).observe(cv); else window.addEventListener('resize', size);
+  if (window.IntersectionObserver) new IntersectionObserver(function (es) { visible = es[0].isIntersecting; if (visible) need(); }).observe(cv);
+  document.addEventListener('visibilitychange', need);
+  var th = $('theme'); if (th) th.addEventListener('click', function () { setTimeout(need, 30); });
+  size();
+
   function draw() {
     if (!data) return;
-    var glow = '', dots = '';
-    data.places.forEach(function (p) {
-      if (p.lat == null || p.lon == null) return;
-      var x = ((p.lon + 180) / 360 * Wd).toFixed(1), y = ((84 - p.lat) / 142 * Hd).toFixed(1), h = heat(p);
-      glow += '<circle class="hm-glow ' + h.cls + '" cx="' + x + '" cy="' + y + '" r="62"/>';
-      dots += '<g role="img" aria-label="' + esc(name(p) + ': ' + h.label) + '"><title>' + esc(name(p) + ': ' + h.label) + '</title><circle class="mk-hit" cx="' + x + '" cy="' + y + '" r="22"/><circle class="hm-dot ' + h.cls + '" cx="' + x + '" cy="' + y + '" r="6"/></g>';
-    });
-    svg.setAttribute('viewBox', '0 0 ' + Wd + ' ' + Hd);
-    svg.innerHTML = '<defs><filter id="hm-blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="16"/></filter></defs><path class="map-land" d="' + land + '"/><g filter="url(#hm-blur)">' + glow + '</g>' + dots;
+    need();
     var rows = data.places.slice().sort(function (a, b) { return (a.country || '').localeCompare(b.country || ''); }).map(function (p) {
       var h = heat(p);
       return '<tr><td data-l="Place">' + esc(name(p)) + '</td><td data-l="Sites reached"><span class="hm-chip ' + h.cls + '">' + Math.round(p.ok / Math.max(p.n, 1) * 100) + '%</span> <span class="sp-ms">' + p.ok + ' of ' + p.n + '</span></td><td data-l="Typical time">' + (p.median_ms != null ? p.median_ms + ' ms' : '–') + '</td></tr>';
