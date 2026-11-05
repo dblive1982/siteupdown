@@ -5,6 +5,7 @@
 require __DIR__ . '/_boot.php';
 require __DIR__ . '/_sitepages.php';
 require __DIR__ . '/_probe.php';
+require_once __DIR__ . '/_world.php';
 const LIVE_EVERY = 10;         // seconds between samples of one site (raise or lower here)
 const LIVE_MAX_HOSTS = 12;     // sites sampled at the same moment, to protect the server
 const LIVE_BACKOFF = 120;      // seconds to leave a site alone if it seems to be refusing our checks
@@ -44,6 +45,7 @@ if (!$fresh) {
         $lk->execute([$now + 12, $host, $now]);
         if ($lk->rowCount() === 1) {            // we hold the lock: take the sample
             $r = check_site($host, '/', false, true);
+            if ($listed && in_array($r['verdict'], ['inconclusive', 'timeout'], true) && world_says_up($pdo, $host)) $r['verdict'] = 'up';   // blocked from our server, but reached from most of the world
             $pdo->prepare('INSERT INTO live_samples (host, ts, ms, verdict, code) VALUES (?,?,?,?,?)')->execute([$host, time(), (($r['http_code'] ?? ($r['code'] ?? null)) !== null) ? ($r['ms'] ?? null) : null, $r['verdict'], $r['http_code'] ?? ($r['code'] ?? null)]);
             $pdo->prepare('DELETE FROM live_samples WHERE host=? AND ts < ?')->execute([$host, time() - LIVE_KEEP]);
             $code = (int)($r['http_code'] ?? ($r['code'] ?? 0));

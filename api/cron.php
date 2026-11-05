@@ -7,6 +7,7 @@ require __DIR__ . '/_boot.php';
 require __DIR__ . '/_probe.php';
 require __DIR__ . '/_tls.php';
 require __DIR__ . '/_track.php';
+require_once __DIR__ . '/_world.php';
 require __DIR__ . '/_sites.php';
 require __DIR__ . '/_sitepages.php';
 require __DIR__ . '/_xcheck.php';
