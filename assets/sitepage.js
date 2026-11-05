@@ -66,7 +66,7 @@
       pill.className = 'sp-pill down'; pill.textContent = 'Down';
       msg.textContent = name + ' looks down. Our server got errors on two attempts ' + ago(cur.at) + '.';
     } else if (wblk && (v === 'timeout' || v === 'inconclusive')) {
-      pill.className = 'sp-pill unsure'; pill.textContent = 'Blocked';
+      pill.className = 'sp-pill blocked'; pill.textContent = 'Blocked';
       msg.textContent = name + ' \u2014 blocking automated checks. ' + host + ' is answering, but it turns our checks away' + (wblk.code ? ' (error ' + wblk.code + ')' : '') + '. ' + wblk.n + ' of ' + wblk.total + ' places we tried got a reply and were refused, so the site itself is running. Try opening it yourself to be sure.';
     } else if (v === 'timeout') {
       pill.className = 'sp-pill unsure'; pill.textContent = 'No answer';
