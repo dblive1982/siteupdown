@@ -147,6 +147,20 @@ function ensure_schema(PDO $pdo): void {
         alive TINYINT NOT NULL,
         ts BIGINT NOT NULL
     )$cs");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS kv (
+        k VARCHAR(64) NOT NULL PRIMARY KEY,
+        v MEDIUMTEXT NOT NULL
+    )$cs");
+    // Browser notification subscriptions: one row per browser per site it asked to hear about.
+    $pdo->exec("CREATE TABLE IF NOT EXISTS push_subs (
+        hash CHAR(64) NOT NULL PRIMARY KEY,
+        endpoint VARCHAR(1000) NOT NULL,
+        p256dh VARCHAR(120) NOT NULL,
+        auth VARCHAR(40) NOT NULL,
+        host VARCHAR(253) NOT NULL,
+        created DATETIME NOT NULL,
+        INDEX (host)
+    )$cs");
     $pdo->exec("CREATE TABLE IF NOT EXISTS world_blocked (
         host VARCHAR(253) NOT NULL PRIMARY KEY,
         ts BIGINT NOT NULL

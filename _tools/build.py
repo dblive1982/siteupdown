@@ -510,6 +510,7 @@ def static_pages():
 <p>Please do not use the checker to attack, overload or probe other people&rsquo;s systems. We limit how often one visitor can run checks, and we only fetch public web addresses on the standard web ports.</p>
 <h2>Third parties</h2>
 <p>The internet speed test sends test data between your browser and Cloudflare\'s public speed-test servers, so Cloudflare sees your address as it would for any website you visit. We do not store your speed results.</p>
+<p>The what-is-my-IP page and the game ping test also run in your browser, and talk to Cloudflare and to public cloud servers, so those services see your address as any website would. We do not store your address or results. If you turn on browser notifications for a site, we store your browser\'s notification address and the site you chose, so we can send you an alert when it goes down or comes back. Turn it off on the same page and we delete it, and we also delete it automatically if your browser stops accepting notifications.</p>
 <p>Regional probes run on the public <a href="https://globalping.io" rel="noopener">Globalping</a> network. Sign-in with Google uses Google&rsquo;s own sign-in service, and the site&rsquo;s fonts (Space Grotesk and JetBrains Mono) are loaded from Google Fonts.</p>
 <h2>Content</h2>
 <p>Site names shown in lists are used only to identify the services being checked.</p>''')
@@ -625,6 +626,7 @@ def site_pages_build():
             '<div class="sp-stats" id="sp-stats"></div><noscript><p>Turn on JavaScript to see the live status.</p></noscript></div>' +
             ('<div class="sp-card" id="sp-app" hidden><div class="sp-rhead"><b>%s app servers</b><span class="sp-level">Servers the app uses</span></div><ul class="sp-svc" id="sp-svc"></ul>'
              '<p class="note">These are the servers the %s app talks to. If they answer, the servers are reachable, but that does not prove everything inside the app is working, such as messages, feeds or logins. For in-app problems, see what other visitors are reporting below.</p></div>' % (n, n) if name in SP.APPS else '') +
+            '<p class="sp-pushrow"><button type="button" class="btn small ghost" id="sp-push" hidden><span>Notify me when %s changes</span></button> <span class="note" id="sp-pushmsg"></span></p>' % n +
             '<div id="lv-slot" data-host="%s"></div>' % hh +
             '<p class="lead" style="margin-top:22px">%s</p>' % blurb +
             '<h2>Are other people having problems with %s?</h2>' % n +

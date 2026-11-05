@@ -69,6 +69,16 @@ function human_span(int $sec): string {
 }
 
 function notify_watchers(PDO $pdo, string $host, bool $down, string $now, ?string $since): void {
+    // Browser notifications for anyone who asked to hear about this site (separate from the watchlist emails below).
+    try {
+        require_once __DIR__ . '/_push.php'; require_once __DIR__ . '/_sitepages.php';
+        $sp = site_pages()[$host] ?? null;
+        if ($sp) {
+            $url = 'https://siteupdown.com' . $sp['page'];
+            if ($down) push_host($pdo, $host, "\u{1F534} " . $sp['name'] . ' looks down', 'We could not reach it on two checks in a row.', $url);
+            else { $for = $since ? human_span(max(0, strtotime($now . ' UTC') - strtotime($since . ' UTC'))) : ''; push_host($pdo, $host, "\u{1F7E2} " . $sp['name'] . ' is back up', $for ? 'It was down for about ' . $for . '.' : 'It is answering again.', $url); }
+        }
+    } catch (Throwable $e) {}
     $q = $pdo->prepare('SELECT u.id, u.email, u.name FROM watchlist w JOIN users u ON u.id = w.user_id WHERE w.host=? AND w.alerts=1');
     $q->execute([$host]);
     $site = rtrim((config()['site'] ?? 'https://siteupdown.com'), '/');

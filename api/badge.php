@@ -15,7 +15,7 @@ function svg_out(string $label, string $value, string $color, int $age = 300): v
     header('Cross-Origin-Resource-Policy: cross-origin');
     echo '<svg xmlns="http://www.w3.org/2000/svg" width="' . $tw . '" height="22" role="img" aria-label="' . $l . ': ' . $v . '">'
        . '<title>' . $l . ': ' . $v . '</title><clipPath id="r"><rect width="' . $tw . '" height="22" rx="4"/></clipPath>'
-       . '<g clip-path="url(#r)"><rect width="' . $lw . '" height="22" fill="#1b1330"/><rect x="' . $lw . '" width="' . $vw . '" height="22" fill="' . $color . '"/></g>'
+       . '<g clip-path="url(#r)"><rect width="' . $lw . '" height="22" fill="#5b5870"/><rect x="' . $lw . '" width="' . $vw . '" height="22" fill="' . $color . '"/></g>'
        . '<g fill="#fff" font-family="Verdana,DejaVu Sans,sans-serif" font-size="11" text-anchor="middle">'
        . '<text x="' . ($lw / 2) . '" y="15">' . $l . '</text><text x="' . ($lw + $vw / 2) . '" y="15" font-weight="bold">' . $v . '</text></g></svg>';
     exit;

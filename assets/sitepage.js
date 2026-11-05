@@ -15,6 +15,44 @@
   }
   function getJSON(u) { return fetch(u, { credentials: 'same-origin' }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); }); }
 
+  /* ---- browser notifications ---- */
+  var pb = $('#sp-push'), pm = $('#sp-pushmsg'), pHost = (($('#lv-slot') || {}).getAttribute ? $('#lv-slot').getAttribute('data-host') : '') || '';
+  if (pb && pHost && 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window) {
+    var pName = pb.textContent.replace(/^Notify me when /, '').replace(/ changes$/, '');
+    var pKey = 'sud-push'; function pGet() { try { return JSON.parse(localStorage.getItem(pKey) || '[]'); } catch (x) { return []; } }
+    function pSet(a) { try { localStorage.setItem(pKey, JSON.stringify(a)); } catch (x) {} }
+    function pOn() { return pGet().indexOf(pHost) > -1 && Notification.permission === 'granted'; }
+    function pDraw() { pb.firstElementChild.textContent = pOn() ? 'Notifications on \u00b7 turn off' : 'Notify me when ' + pName + ' changes'; pb.hidden = false; }
+    function post(body) { return fetch('/api/push.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+    function u8(b) { var p = '='.repeat((4 - b.length % 4) % 4), s = atob((b + p).replace(/-/g, '+').replace(/_/g, '/')), o = new Uint8Array(s.length); for (var i = 0; i < s.length; i++) o[i] = s.charCodeAt(i); return o; }
+    pDraw();
+    pb.addEventListener('click', function () {
+      pb.disabled = true; pm.textContent = '';
+      var done = function (m) { pb.disabled = false; pm.textContent = m || ''; pDraw(); };
+      if (pOn()) {
+        navigator.serviceWorker.getRegistration('/').then(function (reg) { return reg ? reg.pushManager.getSubscription() : null; }).then(function (sub) {
+          var a = pGet().filter(function (h) { return h !== pHost; }); pSet(a);
+          if (!sub) return;
+          return post({ act: 'unsub', host: pHost, sub: sub.toJSON() }).then(function () { if (!a.length) return sub.unsubscribe(); });
+        }).then(function () { done('Notifications are off for ' + pName + '.'); }, function () { done('Could not turn them off. Try again.'); });
+        return;
+      }
+      Notification.requestPermission().then(function (perm) {
+        if (perm !== 'granted') { done('Notifications are blocked. Allow them for this site in your browser settings, then try again.'); return; }
+        return navigator.serviceWorker.register('/sw.js').then(function () { return navigator.serviceWorker.ready; }).then(function (reg) {
+          return reg.pushManager.getSubscription().then(function (existing) {
+            if (existing) return existing;
+            return fetch('/api/push.php').then(function (r) { return r.json(); }).then(function (k) { return reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: u8(k.key) }); });
+          });
+        }).then(function (sub) { return post({ act: 'sub', host: pHost, sub: sub.toJSON() }); }).then(function (r) {
+          if (r.error) { done(r.error); return; }
+          var a = pGet(); if (a.indexOf(pHost) < 0) a.push(pHost); pSet(a);
+          done('Done. We will alert you if ' + pName + ' goes down and when it comes back.');
+        });
+      }).catch(function (er) { done('Your browser would not allow notifications here.'); });
+    });
+  }
+
   var ec = $('#sp-embed-copy');
   if (ec) ec.addEventListener('click', function () {
     var t = $('#sp-embed-code'), s = ec.firstElementChild;
