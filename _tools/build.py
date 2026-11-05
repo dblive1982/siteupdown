@@ -82,7 +82,7 @@ def head(title, desc, path, extra_head='', noindex=False):
 '''
 
 def foot(scripts):
-    links = [('Regional map', '/#global-pulse'), ('How it works', '/#how-it-works'), ('How we check', '/how-we-check'), ('FAQ', '/faq'), ('Help centre', '/help/'), ('Tools', '/tools/'), ('Is it down?', '/is-it-down/'), ('Heat map', '/heat-map'), ('Internet speed test', '/internet-speed-test'), ('Website speed test', '/speed'), ('Monitor', '/monitor'), ('Account', '/account'), ('About', '/about'), ('For business', '/business'), ('Contact', '/contact'), ('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')]
+    links = [('Regional map', '/#global-pulse'), ('How it works', '/#how-it-works'), ('How we check', '/how-we-check'), ('FAQ', '/faq'), ('Help centre', '/help/'), ('Tools', '/tools/'), ('Is it down?', '/is-it-down/'), ('Heat map', '/heat-map'), ('Internet speed test', '/internet-speed-test'), ('What is my IP?', '/what-is-my-ip'), ('Game ping test', '/game-ping-test'), ('Website speed test', '/speed'), ('Monitor', '/monitor'), ('Account', '/account'), ('About', '/about'), ('For business', '/business'), ('Contact', '/contact'), ('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')]
     return f'''</main>
 <footer class="site-foot"><div class="wrap">
 <div class="foot-brand">{BRAND}</div>
@@ -101,7 +101,7 @@ def foot(scripts):
 import hashlib, re as _re
 def _ver():
     h = hashlib.md5()
-    for n in ('app.css', 'app.js', 'home.js', 'pages.js', 'worldmap.js', 'live.js', 'sitepage.js', 'tools.js', 'sla.js', 'speedtest.js', 'heatmap.js'):
+    for n in ('app.css', 'app.js', 'home.js', 'pages.js', 'worldmap.js', 'live.js', 'sitepage.js', 'tools.js', 'sla.js', 'speedtest.js', 'heatmap.js', 'ip.js', 'gameping.js'):
         try: h.update(open(os.path.join(ROOT, 'assets', n), 'rb').read())
         except OSError: pass
     return h.hexdigest()[:8]
@@ -699,7 +699,7 @@ def help_pages():
                 '<p style="margin-top:20px"><a href="/help/">&larr; All help guides</a></p></div></section>')
         write('help/' + a['slug'] + '.html', h + body + foot('<script src="/assets/app.js"></script>'))
     # sitemap
-    urls = [('/', 'daily', '1.0'), ('/speed', 'monthly', '0.8'), ('/internet-speed-test', 'monthly', '0.8'), ('/heat-map', 'daily', '0.7'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8'), ('/tools/', 'monthly', '0.8')] + [('/tools/' + t['slug'], 'monthly', '0.7') for t in TOOLS] + [('/tools/uptime-sla-calculator', 'monthly', '0.7'), ('/how-we-check', 'monthly', '0.6'), ('/faq', 'monthly', '0.6')] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES if n not in HIDDEN] + [('/about', 'monthly', '0.5'), ('/business', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
+    urls = [('/', 'daily', '1.0'), ('/speed', 'monthly', '0.8'), ('/internet-speed-test', 'monthly', '0.8'), ('/what-is-my-ip', 'monthly', '0.8'), ('/game-ping-test', 'monthly', '0.8'), ('/heat-map', 'daily', '0.7'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8'), ('/tools/', 'monthly', '0.8')] + [('/tools/' + t['slug'], 'monthly', '0.7') for t in TOOLS] + [('/tools/uptime-sla-calculator', 'monthly', '0.7'), ('/how-we-check', 'monthly', '0.6'), ('/faq', 'monthly', '0.6')] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES if n not in HIDDEN] + [('/about', 'monthly', '0.5'), ('/business', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
     sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join('<url><loc>%s%s</loc><lastmod>2026-11-02</lastmod><changefreq>%s</changefreq><priority>%s</priority></url>\n' % (SITE, u, c, p) for u, c, p in urls) + '</urlset>\n'
     open(os.path.join(ROOT, 'sitemap.xml'), 'w').write(sm)
 
@@ -712,6 +712,8 @@ def tools_pages():
     extra_cards = ('<a class="tool" href="/"><span class="ti">&#128269;</span><h3>Is it down?</h3><p>Check any website from our server and fifteen places around the world.</p><span class="tgo">Open the checker &rarr;</span></a>'
                    '<a class="tool" href="/heat-map"><span class="ti">&#127758;</span><h3>Global heat map</h3><p>See where in the world websites are reachable right now.</p><span class="tgo">Open the map &rarr;</span></a>'
                    '<a class="tool" href="/internet-speed-test"><span class="ti">&#128246;</span><h3>Internet speed test</h3><p>Measure your download, upload, ping and jitter.</p><span class="tgo">Test your connection &rarr;</span></a>'
+                   '<a class="tool" href="/what-is-my-ip"><span class="ti">&#127760;</span><h3>What is my IP address?</h3><p>See your public address, provider and approximate location.</p><span class="tgo">Show my IP &rarr;</span></a>'
+                   '<a class="tool" href="/game-ping-test"><span class="ti">&#127918;</span><h3>Game ping test</h3><p>Check your ping to 17 regions that online games use.</p><span class="tgo">Test my ping &rarr;</span></a>'
                    '<a class="tool" href="/speed"><span class="ti">&#9889;</span><h3>Website speed test</h3><p>See how fast a page loads and where the time goes.</p><span class="tgo">Test a site &rarr;</span></a>'
                    '<a class="tool" href="/tools/uptime-sla-calculator"><span class="ti">&#128208;</span><h3>Uptime and SLA calculator</h3><p>Turn an uptime percentage into the downtime it allows, or the reverse.</p><span class="tgo">Open the calculator &rarr;</span></a>'
                    '<a class="tool" href="/monitor"><span class="ti">&#128276;</span><h3>Monitor and alerts</h3><p>Watch your sites and get an email when one goes down.</p><span class="tgo">Open Monitor &rarr;</span></a>')
@@ -742,7 +744,7 @@ def tools_pages():
                 '<nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/tools/">Tools</a> / %s</nav>' % html.escape(t['name']) +
                 '<h1 style="margin:14px 0 14px">%s</h1>' % html.escape(t['h1']) +
                 '<form class="tool-form" id="tf" novalidate><div class="field"><input id="ti" type="text" inputmode="url" placeholder="%s" autocapitalize="none" autocorrect="off" spellcheck="false" aria-label="Website address"></div>' % t['ph'] +
-                ('<select id="tq" class="tool-sel" aria-label="Record type">' + ''.join('<option value="%s">%s</option>' % o for o in t['sel']) + '</select>' if t.get('sel') else '') +
+                ('<select id="tq" class="tool-sel" aria-label="' + t.get('sel_label', 'Record type') + '">' + ''.join('<option value="%s">%s</option>' % o for o in t['sel']) + '</select>' if t.get('sel') else '') +
                 '<button class="btn" type="submit" id="tb"><span>%s</span></button></form>' % t['btn'] +
                 '<p class="tool-err" id="te" role="alert" hidden></p><div class="tool-out" id="tout" aria-live="polite"></div>' +
                 ''.join('<p>%s</p>' % x for x in t['intro']) +
@@ -822,6 +824,53 @@ def heatmap_page():
             '<p style="margin-top:20px"><a href="/">&larr; Back to the website checker</a></p></div></section>')
     write('heat-map.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/worldmap.js"></script><script src="/assets/heatmap.js"></script>'))
 
+def _tool_page(path, fname, title, desc, tool_key, name, h1, inner, faq, script, extra_after=''):
+    ld = {"@context": "https://schema.org", "@graph": [
+        {"@type": "WebApplication", "name": name, "url": SITE + path, "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "GBP"}},
+        {"@type": "BreadcrumbList", "itemListElement": [
+            {"@type": "ListItem", "position": 1, "name": "Home", "item": SITE + "/"}, {"@type": "ListItem", "position": 2, "name": "Tools", "item": SITE + "/tools/"}, {"@type": "ListItem", "position": 3, "name": name, "item": SITE + path}]},
+        {"@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": q, "acceptedAnswer": {"@type": "Answer", "text": _re.sub('<[^>]+>', '', a)}} for q, a in faq]}]}
+    h = head(title, desc, path, '<script type="application/ld+json">' + _json.dumps(ld) + '</script>').replace('{BODYATTR}', '')
+    body = ('<section class="page"><div class="wrap prose toolpage" data-tool="%s"><nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/tools/">Tools</a> / %s</nav>' % (tool_key, html.escape(name)) +
+            '<h1 style="margin:14px 0 8px">%s<span class="dot">.</span></h1>' % html.escape(h1) + inner +
+            '<h2>Questions</h2><div class="faq">' + ''.join('<details><summary>%s</summary><p>%s</p></details>' % (html.escape(q), a) for q, a in faq) + '</div>' + extra_after +
+            '<h2>More free tools</h2><ul><li><a href="/">Is it down? website checker</a></li><li><a href="/internet-speed-test">Internet speed test</a></li><li><a href="/what-is-my-ip">What is my IP address?</a></li><li><a href="/game-ping-test">Game ping test</a></li>' + ''.join('<li><a href="/tools/%s">%s</a></li>' % (o['slug'], html.escape(o['name'])) for o in TOOLS) + '</ul>'
+            '<p style="margin-top:20px"><a href="/tools/">&larr; All tools</a></p></div></section>')
+    write(fname, h + body + foot('<script src="/assets/app.js"></script><script src="/assets/%s"></script>' % script))
+
+
+def ip_page():
+    faq = [('What is an IP address?', 'It is the number that identifies your connection on the internet, a bit like a postal address for your router. Websites see it when you visit them, and it is how replies find their way back to you.'),
+           ('What is the difference between IPv4 and IPv6?', 'IPv4 addresses look like 203.0.113.7 and the world is running out of them. IPv6 addresses are much longer, like 2001:db8::1, and there are plenty. Many connections now use IPv6, and some use both.'),
+           ('Is the location shown accurate?', 'Only roughly. It usually points to your internet provider\'s nearest network hub, so it can be the right city or a nearby one. It does not show your street or your house.'),
+           ('Why is my address different on my phone and my home Wi-Fi?', 'Each network gives you its own address. Your phone on mobile data shares an address with many other customers of that provider, and your home router has its own.'),
+           ('Does a VPN change this?', 'Yes. With a VPN on, the address and location shown are the VPN\'s, not yours. That is a quick way to check the VPN is working.'),
+           ('Do you store my address?', 'No. The lookup runs between your browser and Cloudflare\'s public network, so nothing about it is sent to or saved by siteupdown.com.')]
+    inner = ('<div class="sp-card ip-card"><span class="ip-kind" id="ip-kind"></span><b class="ip-big" id="ip-big" aria-live="polite">Looking&hellip;</b>'
+             '<div class="ip-act"><button class="btn small" id="ip-copy" type="button" hidden><span>Copy address</span></button><button class="btn small ghost" id="ip-again" type="button"><span>Check again</span></button></div>'
+             '<dl class="facts ip-facts" id="ip-facts" hidden></dl><p class="note" id="ip-note" hidden>Location comes from your provider\'s network records, so it is approximate. Nothing on this page is sent to or stored by us.</p></div>'
+             '<p class="lead" style="margin-top:22px">Your public IP address is what every website and game server sees when you connect. This page shows it, along with your provider and approximate location.</p>'
+             '<h2>What you can do with it</h2><ul><li>Check that a VPN is on, or off.</li><li>Give your address to a game host or a firewall rule that asks for it.</li><li>Compare the address on your phone and your home network.</li><li>Test whether a port is open on it with the <a href="/tools/port-checker">port checker</a>.</li></ul>'
+             '<p class="note">Looking for the speed of this connection? Try the <a href="/internet-speed-test">internet speed test</a>.</p>')
+    _tool_page('/what-is-my-ip', 'what-is-my-ip.html', 'What is my IP address? — free IP lookup | siteupdown.com', 'See your public IP address, internet provider and approximate location in one tap. Free, no sign-up, and nothing is stored.', 'ip', 'What is my IP address?', 'What is my IP address?', inner, faq, 'ip.js')
+
+
+def gameping_page():
+    faq = [('What does this test?', 'It times how long your connection takes to reach cloud data centres in 17 regions around the world. Many online games and game services run their servers in the same regions, so it shows roughly what ping you could expect there.'),
+           ('Is this the same as the ping in my game?', 'Not exactly. It is a browser test, which usually reads about 15 to 20 ms higher than a game does, and it is not the game\'s own server. Use it to compare regions and spot a problem, not as an exact in-game number.'),
+           ('What is a good ping for gaming?', 'Under about 50 ms feels instant, up to about 100 ms is fine for most games, and over 150 ms is noticeable. Fast competitive shooters feel best under about 40 ms.'),
+           ('Why is my nearest region still slow?', 'Wi-Fi, a busy network, other devices downloading and a VPN all add delay. Try a cable, pause downloads and run the test again. Mobile data is also less steady than a home line.'),
+           ('What does steadiness mean?', 'It is how much the five measurements for a region varied. Steady connections feel smooth. Uneven ones cause rubber-banding even when the average looks fine.'),
+           ('Why does a region show no answer?', 'An ad blocker, a work or school network, or a VPN can stop the test reaching it. Turn those off for this page and try again.')]
+    inner = ('<div class="sp-card gp-card"><p class="note" style="margin-top:0">Press start and we time your connection to 17 cloud regions, closest first. It takes about 15 seconds and uses almost no data.</p>'
+             '<div class="st-btn"><button class="btn" id="gp-go" type="button"><span>Start test</span></button></div><p class="tool-err" id="gp-err" role="alert" hidden></p>'
+             '<div class="gp-best" id="gp-best" aria-live="polite" hidden></div>'
+             '<div class="rt-wrap" id="gp-table" hidden><table class="rt"><thead><tr><th>Region</th><th>Ping</th><th>Rating</th></tr></thead><tbody id="gp-rows"></tbody></table></div></div>'
+             '<p class="lead" style="margin-top:22px">Which part of the world gives you the best ping? This test measures your connection to cloud regions that many online games and game services use.</p>'
+             '<p class="note">This is a browser test against cloud regions, not against any one game\'s own servers, and it reads a little higher than in-game ping. We do not store your results. For your download and upload speed use the <a href="/internet-speed-test">internet speed test</a>, and to see whether a game is down use <a href="/is-it-down/">Is it down?</a></p>'
+             '<h2>Getting a fair result</h2><ul><li>Use a cable if you can, or stand near the router.</li><li>Pause downloads and streaming first.</li><li>Turn off a VPN, which adds its own delay.</li><li>Run it twice and compare, because a single run can catch a busy moment.</li></ul>')
+    _tool_page('/game-ping-test', 'game-ping-test.html', 'Game ping test — check your ping to game regions | siteupdown.com', 'Free game ping test: see your ping and steadiness to 17 cloud regions around the world that many online games use. No app and no sign-up.', 'gameping', 'Game ping test', 'Game ping test', inner, faq, 'gameping.js')
+
 
 if __name__ == '__main__':
-    home(); login(); account(); monitor(); speed(); status(); static_pages(); help_pages(); tools_pages(); sla_page(); internet_speed_page(); heatmap_page(); site_pages_build()
+    home(); login(); account(); monitor(); speed(); status(); static_pages(); help_pages(); tools_pages(); sla_page(); internet_speed_page(); heatmap_page(); ip_page(); gameping_page(); site_pages_build()

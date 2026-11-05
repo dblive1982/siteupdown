@@ -19,6 +19,15 @@
   function codeCls(c) { return c >= 200 && c < 300 ? 'up' : c >= 300 && c < 400 ? 'unsure' : c >= 400 && c < 500 ? 'slow' : 'down'; }
 
   var R = {
+    ports: function (d) {
+      var st = { open: ['up', 'Open'], closed: ['down', 'Closed'], filtered: ['slow', 'No answer'] }[d.state] || ['slow', 'No answer'];
+      var why = { open: 'Our server connected to port ' + d.port + '. Something is listening there and nothing blocked us.',
+        closed: 'The server answered but refused the connection, so nothing is listening on port ' + d.port + '.',
+        filtered: 'We got no reply. A firewall may be dropping the connection, or the server is off or unreachable.' }[d.state];
+      return '<div class="sp-card"><div class="sp-rhead"><b>' + e(d.host) + ' &middot; port ' + d.port + ' (' + e(d.service) + ')</b>' + pill(st[0], st[1]) + '</div><p>' + e(why) + '</p>' +
+        facts([['Address tested', '<code>' + e(d.ip) + '</code>'], ['Port', d.port + ' · ' + e(d.service)], ['Connection time', d.state === 'open' ? d.ms + ' ms' : '']]) +
+        '<p class="note">TCP only, tested from our server at one moment. Games often use UDP, which this does not test.</p></div>';
+    },
     dns: function (d) {
       if (!d.records.length) return '<div class="sp-card"><b>No records found for ' + e(d.host) + '.</b><p class="note">The name may not exist, or it may have no records of these types.</p></div>';
       var types = ['A', 'AAAA', 'CNAME', 'MX', 'NS', 'TXT', 'SOA', 'CAA'], h = '<div class="sp-card"><b>DNS records for ' + e(d.host) + '</b></div>';
@@ -164,7 +173,7 @@
     show(''); addr = (addr || '').trim();
     if (!addr) { show('Please enter a website address like example.com.'); input.focus(); return; }
     btn.disabled = true; out.innerHTML = '<p class="note">Checking&hellip;</p>';
-    fetch('/api/tool.php', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-SUD': '1' }, body: JSON.stringify({ tool: tool, address: addr }) })
+    fetch('/api/tool.php', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-SUD': '1' }, body: JSON.stringify({ tool: tool, address: addr, port: (document.getElementById('tq') || {}).value }) })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (x) {
         btn.disabled = false;

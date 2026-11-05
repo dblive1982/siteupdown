@@ -7,7 +7,7 @@ require __DIR__ . '/_dns.php';
 require __DIR__ . '/_fetch.php';
 $in = read_post();
 $tool = (string)($in['tool'] ?? '');
-if (!in_array($tool, ['dns', 'headers', 'ssl', 'redirects', 'whois', 'mx', 'robots', 'secheaders'], true)) out(422, ['error' => 'Unknown tool.']);
+if (!in_array($tool, ['dns', 'headers', 'ssl', 'redirects', 'whois', 'mx', 'robots', 'secheaders', 'ports'], true)) out(422, ['error' => 'Unknown tool.']);
 $t = parse_target((string)($in['address'] ?? ''));
 if (!$t) out(422, ['error' => 'Please enter a website address like example.com.']);
 [$host, $path, $scheme] = $t;
@@ -62,6 +62,24 @@ if ($tool === 'whois') {
     $w = domain_whois($dom);
     $ns = []; foreach ((array)@dns_get_record($dom, DNS_NS) as $r) if (!empty($r['target'])) $ns[] = $r['target'];
     out(200, ['tool' => $tool, 'host' => $host, 'domain' => $dom, 'whois' => $w, 'ns' => array_slice(array_values(array_unique($ns)), 0, 8)]);
+}
+
+if ($tool === 'ports') {
+    $allowed = [21 => 'FTP', 22 => 'SSH', 25 => 'SMTP', 53 => 'DNS (TCP)', 80 => 'HTTP', 110 => 'POP3', 143 => 'IMAP', 443 => 'HTTPS', 465 => 'SMTP over SSL', 587 => 'SMTP submission', 993 => 'IMAP over SSL', 995 => 'POP3 over SSL',
+                3306 => 'MySQL', 3389 => 'Remote Desktop', 5432 => 'PostgreSQL', 8080 => 'Alternate web', 8443 => 'Alternate HTTPS', 25565 => 'Minecraft (Java)'];
+    $port = (int)($in['port'] ?? 443);
+    if (!isset($allowed[$port])) out(422, ['error' => 'Please pick one of the listed ports.']);
+    $rp = resolve_public($host);
+    if ($rp['error']) $fail($rp['error']);
+    $ip = $rp['ips'][0];
+    $addr = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) ? '[' . $ip . ']' : $ip;
+    $t0 = microtime(true); $en = 0; $es = '';
+    $fp = @stream_socket_client('tcp://' . $addr . ':' . $port, $en, $es, 4.0, STREAM_CLIENT_CONNECT);
+    $ms = (int)round((microtime(true) - $t0) * 1000);
+    if ($fp) { fclose($fp); $state = 'open'; }
+    elseif ($en === 111 || $en === 10061 || stripos($es, 'refused') !== false) $state = 'closed';
+    else $state = 'filtered';
+    out(200, ['tool' => $tool, 'host' => $host, 'ip' => $ip, 'port' => $port, 'service' => $allowed[$port], 'state' => $state, 'ms' => $ms]);
 }
 
 if ($tool === 'ssl') {

@@ -137,4 +137,24 @@ TOOLS += [
                ('Why does the path differ by country?', 'Each network picks its own route, and large sites use servers close to each region, so the destination itself can differ.')],
          help=[('what-is-a-good-response-time', 'What is a good response time?')]),
 ]
+TOOLS += [
+    dict(slug='port-checker', key='ports', name='Port checker', short='Check whether a port such as 22, 443 or 25565 is open on a server.', icon='🔌',
+         h1='Port checker: is a port open?', desc='Free online port checker: test whether a common port (SSH, web, mail, database, Minecraft) is open on a website or server from our servers.',
+         ph='example.com or an IP address', btn='Check port',
+         sel_label='Port',
+         sel=[('443', '443 · HTTPS (secure web)'), ('80', '80 · HTTP (web)'), ('22', '22 · SSH'), ('21', '21 · FTP'), ('25', '25 · SMTP (mail)'), ('465', '465 · SMTP over SSL'), ('587', '587 · SMTP submission'),
+              ('110', '110 · POP3'), ('143', '143 · IMAP'), ('993', '993 · IMAP over SSL'), ('995', '995 · POP3 over SSL'), ('53', '53 · DNS (TCP)'), ('3306', '3306 · MySQL'), ('5432', '5432 · PostgreSQL'),
+              ('3389', '3389 · Remote Desktop'), ('8080', '8080 · Alternate web'), ('8443', '8443 · Alternate HTTPS'), ('25565', '25565 · Minecraft (Java)')],
+         intro=['A port is a numbered door on a server. Web pages use 80 and 443, secure shell uses 22, mail uses 25, 587 and 993, and a Minecraft server usually listens on 25565. If the door is open, something is listening behind it. If it is closed or blocked by a firewall, connections fail.',
+                'This tool tries to open a connection to the port you pick, from our server, and tells you what happened. It is handy for checking that a game server, website or mail server is reachable from outside your own network, or that a port you meant to keep private really is closed.'],
+         read=['<b>Open</b> means our server connected, so something is listening and no firewall stopped us.', '<b>Closed</b> means the server answered but nothing is listening on that port.',
+               '<b>No answer</b> usually means a firewall is silently dropping the connection, or the server is off. It can also mean our own hosting provider restricts that port, so treat it as a strong hint rather than proof.',
+               '<b>Time</b> is how long the connection took to set up, which is a rough sign of distance and load.'],
+         faqs=[('Why does it only offer certain ports?', 'We check a list of common service ports only. That keeps the tool useful for owners checking their own servers and stops it being used to scan networks.'),
+               ('My Minecraft server shows closed but works for me. Why?', 'If you can join from the same network but we cannot, the port is probably not forwarded on your router or allowed through your firewall. Forward TCP port 25565 to the computer running the server.'),
+               ('Does this test UDP ports?', 'No, only TCP. Many games use UDP for gameplay, so an open TCP port does not prove the game traffic will get through.'),
+               ('Is it safe to leave database ports open?', 'Usually not. Ports such as 3306 (MySQL), 5432 (PostgreSQL) and 3389 (Remote Desktop) should only be reachable from addresses you trust. If this tool says open and you did not expect it, restrict it in your firewall.')],
+         help=[('website-not-loading-checklist', 'Website not loading? A step-by-step checklist')]),
+]
+
 BY_SLUG = {t['slug']: t for t in TOOLS}
