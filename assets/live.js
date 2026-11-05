@@ -15,12 +15,12 @@
   function clock(t) { return new Date(t * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }); }
   function cls(v) { return v === 'up' ? 'up' : (v === 'down' ? 'down' : (v === 'none' ? 'none' : 'slow')); }
 
-  var HTML = '<div class="sp-card live-card"><div class="sp-rhead"><b>Response time</b><span class="sp-pill up" data-lv="pill">Live</span></div>' +
-    '<div class="sp-ranges" data-lv="ranges" role="group" aria-label="Graph range"><button type="button" class="rg on" data-range="live" aria-pressed="true">Live</button><button type="button" class="rg" data-range="24h" aria-pressed="false">24 hours</button><button type="button" class="rg" data-range="7d" aria-pressed="false">7 days</button><button type="button" class="rg" data-range="1y" aria-pressed="false">12 months</button></div>' +
+  var HTML = '<div class="sp-card live-card"><div class="sp-rhead"><b>Response time</b><span class="sp-pill up" data-lv="pill">&hellip;</span></div>' +
+    '<div class="sp-ranges" data-lv="ranges" role="group" aria-label="Graph range"><button type="button" class="rg" data-range="live" aria-pressed="false">Live</button><button type="button" class="rg on" data-range="24h" aria-pressed="true">24 hours</button><button type="button" class="rg" data-range="7d" aria-pressed="false">7 days</button><button type="button" class="rg" data-range="1y" aria-pressed="false">12 months</button></div>' +
     '<div class="lv-now"><b data-lv="ms">&mdash;</b><span data-lv="sub">Waiting for the first sample&hellip;</span></div>' +
     '<div class="lv-wrap"><svg data-lv="svg" viewBox="0 0 600 170" preserveAspectRatio="none" role="img" aria-label="Response time graph"></svg></div>' +
     '<div class="lv-strip" data-lv="strip" aria-hidden="true"></div>' +
-    '<div class="sp-axis"><span data-lv="a1">5 minutes ago</span><span data-lv="a2">Now</span></div>' +
+    '<div class="sp-axis"><span data-lv="a1">24 hours ago</span><span data-lv="a2">Now</span></div>' +
     '<p class="sp-rdetail" data-lv="detail">Tap or hover the graph for a time.</p></div>' +
     '<div class="sp-card" data-lv="outcard"><div class="sp-rhead"><b>Outages in the last 7 days</b><span class="sp-level" data-lv="osum"></span></div><div data-lv="obody"><p class="so-clear">Checking the record&hellip;</p></div>' +
     '<p class="note" data-lv="oyear"></p><p class="note">Times are shown in your own time zone. A site counts as down after two failed checks in a row, so start times can be a few minutes late and lengths are approximate.</p></div>';
@@ -30,7 +30,7 @@
     box.innerHTML = HTML; box.hidden = false;
     var q = function (n) { return box.querySelector('[data-lv="' + n + '"]'); };
     var svg = q('svg'), strip = q('strip');
-    var mode = 'live', samples = [], every = 10, timer = 0, started = Date.now(), data = null, stopped = false, dead = false, first = true, take = true, gid = 'lvg' + (++uid);
+    var mode = '24h', samples = [], every = 10, timer = 0, started = Date.now(), data = null, stopped = false, dead = false, first = true, take = true, gid = 'lvg' + (++uid);
 
     function draw(pts) {
       data = pts;
@@ -114,6 +114,11 @@
         var got = pts.filter(function (x) { return x.c !== 'none'; }).length, cv = j.current.verdict;
         if (got < 4) pill('collecting'); else pill(cv === 'timeout' || cv === 'inconclusive' ? cv : (cv === 'up' ? 'up' : (cv === 'down' ? 'down' : 'slow')));
         q('a2').textContent = 'Now';
+        if (range === '24h') {
+          var ms = pts.map(function (x) { return x.ms; }), lastMs = null;
+          for (var k = ms.length - 1; k >= 0; k--) if (ms[k] != null) { lastMs = ms[k]; break; }
+          emit({ kind: 'sample', ms: lastMs, v: cv, avg: j.avg_ms, t: Math.round(Date.now() / 1000), series: ms.filter(function (x) { return x != null; }).slice(-30) });
+        }
       }).catch(function () {});
     }
 
@@ -176,7 +181,7 @@
     wrap.addEventListener('mouseleave', hideCursor); wrap.addEventListener('touchend', function () { setTimeout(hideCursor, 1500); });
     function vis() { if (!document.hidden && mode === 'live' && !stopped) poll(); }
     document.addEventListener('visibilitychange', vis);
-    poll(); outages();
+    history('24h'); outages();
     current = { destroy: function () { dead = true; clearTimeout(timer); document.removeEventListener('visibilitychange', vis); box.innerHTML = ''; } };
     return current;
   }
