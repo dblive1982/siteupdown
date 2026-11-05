@@ -122,6 +122,7 @@
     var hh = o.again && o.host ? o.host : null;
     if (hh !== HS.host) HS = { host: hh, ms: null, v: null, series: [], up24: null, rep: null, reach: null, total: null };
     if (hh && o.reach) { var m = /^(\d+)\/(\d+)$/.exec(o.reach); if (m && +m[2] > 0 && o.status === 'Complete') { HS.reach = +m[1]; HS.total = +m[2]; } }
+    HS.key = o.key || null;
     hsRender();
     repBox(hh);
     $('#wl-add').hidden = !o.again;
@@ -220,10 +221,11 @@
     if (vals.length > 1) { var mx = Math.max.apply(null, vals.concat([50])), n = HS.series.length; $('#hs-spark').innerHTML = '<polyline fill="none" stroke="#39b54a" stroke-width="1.6" vector-effect="non-scaling-stroke" points="' + HS.series.map(function (x, i) { return x == null ? '' : (60 * i / Math.max(1, n - 1)).toFixed(1) + ',' + (16 - 14 * x / mx).toFixed(1); }).filter(Boolean).join(' ') + '"/>'; }
     var s = HS.host;
     if (HS.v === 'down') s += ' is not answering right now.';
+    else if (HS.key === 'blocked') s += ' is answering, but it blocks automated checks, so we cannot tell what a real visitor sees. That does not mean it is down.';
     else if (HS.v === 'inconclusive' || HS.v === 'timeout') s += ' did not answer our quick check just now. It may be down, or it may ignore automated checks.';
     else if (HS.v && HS.v !== 'up') s += ' is answering, but slowly' + (HS.ms != null ? ' (' + HS.ms + ' ms)' : '') + '.';
     else s += ' is up' + (HS.ms != null ? ' and answering in ' + HS.ms + ' ms right now' : '') + '.';
-    if (HS.reach != null && HS.total) s += ' ' + (HS.reach === HS.total ? 'All ' + HS.total + ' regions' : HS.reach + ' of ' + HS.total + ' regions') + ' reached it.';
+    if (HS.reach != null && HS.total) s += HS.key === 'blocked' && !HS.reach ? ' All ' + HS.total + ' regions got a reply and were refused.' : ' ' + (HS.reach === HS.total ? 'All ' + HS.total + ' regions' : HS.reach + ' of ' + HS.total + ' regions') + ' reached it.';
     if (HS.rep != null) s += HS.rep === 0 ? ' Nobody has reported a problem in the last 3 hours.' : ' ' + HS.rep + (HS.rep === 1 ? ' person has' : ' people have') + ' reported a problem in the last 3 hours.';
     $('#hs-line').textContent = s;
   }
