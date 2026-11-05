@@ -54,7 +54,7 @@ ErrorDocument 404 /404.html
   Header always set Content-Security-Policy "default-src 'self'; script-src 'self' https://accounts.google.com https://pagead2.googlesyndication.com https://partner.googleadservices.com https://tpc.googlesyndication.com https://www.googletagservices.com; style-src 'self' 'unsafe-inline' https://accounts.google.com https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https:; connect-src 'self' https://speed.cloudflare.com https://*.amazonaws.com https://accounts.google.com https://pagead2.googlesyndication.com https://*.g.doubleclick.net https://ep1.adtrafficquality.google; frame-src 'self' https://accounts.google.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://*.safeframe.googlesyndication.com; base-uri 'self'; form-action 'self'; object-src 'none'"
   <FilesMatch "^widget\.php$">
     Header always unset X-Frame-Options
-    Header always set Content-Security-Policy "default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src data:; connect-src 'self'; base-uri 'none'; form-action 'none'"
+    Header always set Content-Security-Policy "default-src 'none'; script-src 'self'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; base-uri 'none'; form-action 'none'"
   </FilesMatch>
   <FilesMatch "\.(css|js|svg|png)$">
     Header set Cache-Control "public, max-age=3600, must-revalidate"
