@@ -15,6 +15,13 @@
   }
   function getJSON(u) { return fetch(u, { credentials: 'same-origin' }).then(function (r) { return r.json().then(function (j) { return { ok: r.ok, status: r.status, j: j }; }); }); }
 
+  var ec = $('#sp-embed-copy');
+  if (ec) ec.addEventListener('click', function () {
+    var t = $('#sp-embed-code'), s = ec.firstElementChild;
+    t.focus(); t.select();
+    try { navigator.clipboard.writeText(t.value).then(function () { s.textContent = 'Copied'; setTimeout(function () { s.textContent = 'Copy badge code'; }, 1800); }, function () {}); } catch (x) { s.textContent = 'Press and hold to copy'; }
+  });
+
   /* ----------------------------------------------------------------- directory */
   if (root.getAttribute('data-sp') === 'dir') {
     var VMAP = { up: 'up', down: 'down', timeout: 'slow', inconclusive: 'unsure' };

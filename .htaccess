@@ -21,6 +21,7 @@ RewriteRule ^ https://siteupdown.com%{REQUEST_URI} [R=301,L]
 RewriteRule ^s/([a-f0-9]{10})/?$ /index.html?r=$1 [L,QSA]
 
 # Public status pages: /status/example.com
+RewriteRule ^badge/([A-Za-z0-9.-]+)\.svg$ /api/badge.php?host=$1 [L,QSA]
 RewriteRule ^status/[A-Za-z0-9.-]+/?$ /status.html [L]
 
 # Help centre: /help/ and /help/some-guide
