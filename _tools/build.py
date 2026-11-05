@@ -126,6 +126,10 @@ _ICO['\U0001F4E1'] = '<path d="M5 19a9 9 0 0 1 0-12"/><path d="M8.5 15.5a4.5 4.5
 _ICO['\U0001F5FA'] = '<path d="m3 6 6-2 6 2 6-2v14l-6 2-6-2-6 2z"/><path d="M9 4v14M15 6v14"/>'
 _ICO['\U0001F4D0'] = '<path d="M4 20 20 4v16z"/><path d="M8 20v-3M12 20v-6M16 20v-9"/>'
 _ICO['\U0001F50D'] = '<circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/>'
+_ICO['\U0001F4F6'] = '<path d="M5 20v-4M10 20v-8M15 20V8M20 20V4"/>'
+_ICO['\U0001F3AE'] = '<rect x="2" y="7" width="20" height="11" rx="5"/><path d="M7 10.5v4M5 12.5h4M16 11h.01M18.5 14h.01"/>'
+_ICO['\U0001F50C'] = '<path d="M9 2v5M15 2v5"/><path d="M6 7h12v4a6 6 0 0 1-12 0z"/><path d="M12 17v5"/>'
+_ICO['\U0001F4CD'] = '<path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/>'
 def _svgicons(c):
     def r(m):
         e = _html.unescape(m.group(1)).rstrip('\ufe0f')
@@ -710,9 +714,9 @@ def tools_pages():
     # hub
     cards = ''.join('<a class="tool" href="/tools/%s"><span class="ti">%s</span><h3>%s</h3><p>%s</p><span class="tgo">Open the tool &rarr;</span></a>' % (t['slug'], t['icon'], html.escape(t['name']), t['short']) for t in TOOLS)
     extra_cards = ('<a class="tool" href="/"><span class="ti">&#128269;</span><h3>Is it down?</h3><p>Check any website from our server and fifteen places around the world.</p><span class="tgo">Open the checker &rarr;</span></a>'
-                   '<a class="tool" href="/heat-map"><span class="ti">&#127758;</span><h3>Global heat map</h3><p>See where in the world websites are reachable right now.</p><span class="tgo">Open the map &rarr;</span></a>'
+                   '<a class="tool" href="/heat-map"><span class="ti">&#128506;</span><h3>Global heat map</h3><p>See where in the world websites are reachable right now.</p><span class="tgo">Open the map &rarr;</span></a>'
                    '<a class="tool" href="/internet-speed-test"><span class="ti">&#128246;</span><h3>Internet speed test</h3><p>Measure your download, upload, ping and jitter.</p><span class="tgo">Test your connection &rarr;</span></a>'
-                   '<a class="tool" href="/what-is-my-ip"><span class="ti">&#127760;</span><h3>What is my IP address?</h3><p>See your public address, provider and approximate location.</p><span class="tgo">Show my IP &rarr;</span></a>'
+                   '<a class="tool" href="/what-is-my-ip"><span class="ti">&#128205;</span><h3>What is my IP address?</h3><p>See your public address, provider and approximate location.</p><span class="tgo">Show my IP &rarr;</span></a>'
                    '<a class="tool" href="/game-ping-test"><span class="ti">&#127918;</span><h3>Game ping test</h3><p>Check your ping to 17 regions that online games use.</p><span class="tgo">Test my ping &rarr;</span></a>'
                    '<a class="tool" href="/speed"><span class="ti">&#9889;</span><h3>Website speed test</h3><p>See how fast a page loads and where the time goes.</p><span class="tgo">Test a site &rarr;</span></a>'
                    '<a class="tool" href="/tools/uptime-sla-calculator"><span class="ti">&#128208;</span><h3>Uptime and SLA calculator</h3><p>Turn an uptime percentage into the downtime it allows, or the reverse.</p><span class="tgo">Open the calculator &rarr;</span></a>'
