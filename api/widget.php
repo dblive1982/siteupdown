@@ -28,21 +28,20 @@ header('Content-Type: text/html; charset=utf-8'); header('Cache-Control: public,
 <title><?= $e ?> status</title>
 <style>
 *{box-sizing:border-box}html,body{margin:0;background:transparent;font:13px/1.35 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#1c1b29}
-.w{position:relative;display:block;height:100vh;min-height:92px;background:#fff;border:1px solid #d9d6e6;border-radius:12px;padding:9px 12px;text-decoration:none;color:inherit;overflow:hidden}
+.w{display:block;height:100vh;min-height:92px;background:#fff;border:1px solid #d9d6e6;border-radius:12px;padding:9px 12px;text-decoration:none;color:inherit;overflow:hidden}
 .t{display:flex;align-items:center;gap:8px;justify-content:space-between}.n{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .p{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:2px 10px;color:#fff;font-weight:700;font-size:12px;background:#6b6b7a;white-space:nowrap}
 .p i{width:7px;height:7px;border-radius:50%;background:#fff;display:inline-block}
 .p.up{background:#2e9d46}.p.down{background:#d6454b}.p.maybe{background:#d9962b}.p.up i{animation:b 1.6s infinite}
 @keyframes b{50%{opacity:.35}}
 .s{display:flex;gap:14px;margin:4px 0 2px;color:#5b5870;font-size:12px;flex-wrap:wrap}.s b{color:#1c1b29}
-/* a faint logo behind the content */
-.w:after{content:'';position:absolute;right:8px;bottom:4px;width:104px;height:69px;background:url(/assets/logo-arrow-light.png) no-repeat center/contain;opacity:.09;pointer-events:none}
-.t,.s,.r,svg{position:relative;z-index:1}
+.lg{flex:0 0 auto;height:24px;width:auto;opacity:.75;margin:0 auto}
+@media(max-width:230px){.lg{display:none}}
 svg{display:block;width:100%;height:30px;margin-top:2px;cursor:crosshair;touch-action:none}
 .r{display:flex;justify-content:space-between;color:#5b5870;font-size:11px;min-height:15px}
 </style></head><body data-host="<?= htmlspecialchars($host, ENT_QUOTES) ?>">
 <a class="w" id="w" href="https://siteupdown.com<?= htmlspecialchars($page, ENT_QUOTES) ?>" target="_blank" rel="noopener" title="Open the full <?= $e ?> status page">
-<div class="t"><span class="n"><?= $e ?></span><span class="p" id="p"><i></i><span id="pt">Checking</span></span></div>
+<div class="t"><span class="n"><?= $e ?></span><img class="lg" src="/assets/logo-arrow-light.png" alt="siteupdown.com" width="36" height="24"><span class="p" id="p"><i></i><span id="pt">Checking</span></span></div>
 <div class="s"><span>Uptime 24h <b id="u">–</b></span><span>Response <b id="m">–</b></span></div>
 <svg id="g" viewBox="0 0 200 30" preserveAspectRatio="none" aria-label="Recent response times"></svg>
 <div class="r"><span id="rd">Live, updates every few seconds</span><span id="ra">siteupdown.com</span></div>
