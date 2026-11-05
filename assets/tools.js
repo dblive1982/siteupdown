@@ -19,6 +19,14 @@
   function codeCls(c) { return c >= 200 && c < 300 ? 'up' : c >= 300 && c < 400 ? 'unsure' : c >= 400 && c < 500 ? 'slow' : 'down'; }
 
   var R = {
+    email: function (d) {
+      var head = d.bad ? [d.bad + (d.bad === 1 ? ' problem' : ' problems') + ' to fix', 'down'] : d.warn ? ['Mostly good, a few things to review', 'slow'] : ['All set', 'up'];
+      var h = '<div class="sp-card"><div class="sp-rhead"><b>' + e(d.host) + '</b>' + pill(head[1], head[0]) + '</div><p class="note">These records help receivers trust email sent from this domain. A snapshot from our server.</p></div><ul class="sec-list">';
+      d.items.forEach(function (i) {
+        h += '<li>' + pill(i.status === 'ok' ? 'up' : (i.status === 'warn' ? 'slow' : 'down'), i.status === 'ok' ? 'Good' : (i.status === 'warn' ? 'Review' : 'Problem')) + ' <b>' + e(i.name) + '</b><p>' + e(i.text) + '</p>' + (i.value ? '<code>' + e(i.value) + '</code>' : '') + '</li>';
+      });
+      return h + '</ul>';
+    },
     ports: function (d) {
       var st = { open: ['up', 'Open'], closed: ['down', 'Closed'], filtered: ['slow', 'No answer'] }[d.state] || ['slow', 'No answer'];
       var why = { open: 'Our server connected to port ' + d.port + '. Something is listening there and nothing blocked us.',

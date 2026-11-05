@@ -157,4 +157,20 @@ TOOLS += [
          help=[('website-not-loading-checklist', 'Website not loading? A step-by-step checklist')]),
 ]
 
+TOOLS += [
+    dict(slug='email-checker', key='email', name='Email checker: SPF, DKIM and DMARC', short='Check the records that stop your email landing in spam or being faked.', icon='✉',
+         h1='Email checker: SPF, DKIM and DMARC', desc='Free email authentication checker: test a domain\'s SPF, DKIM and DMARC records and see in plain words what to fix so your email reaches the inbox.',
+         ph='example.com', btn='Check email setup',
+         intro=['When you send email from your own domain, receiving services such as Gmail and Outlook check three records to decide whether to trust it. If they are missing or wrong, your messages can land in spam or be rejected, and criminals can send fake email that looks like it came from you.',
+                'This tool looks up the three records for a domain and explains each one in plain words, with what to change if something is wrong. Enter the domain you send email from, such as the part after the @ in your address.'],
+         read=['<b>SPF</b> lists the servers allowed to send email for your domain. It should be a single record that ends in ~all or -all.', '<b>DKIM</b> adds a digital signature to each message so receivers know it was not changed on the way. The key is published under a name your email provider chooses, so we try the common ones.',
+               '<b>DMARC</b> tells receivers what to do with mail that fails SPF and DKIM, and where to send reports. Policy none only watches, quarantine sends fakes to spam, and reject blocks them.',
+               '<b>MX</b> records say which servers receive email for the domain. A domain that only sends can have none.'],
+         faqs=[('Why does DKIM say it was not found when my email works?', 'Each email service picks its own DKIM selector name, and we can only test the common ones. Your provider\'s settings page shows the exact name, and you can look it up with the DNS lookup tool as selector._domainkey.yourdomain.com.'),
+               ('What does SPF "too many lookups" mean?', 'SPF allows at most 10 name lookups while it is being checked. Each include, a, mx and similar entry counts. Going over makes SPF fail, so remove senders you no longer use.'),
+               ('Is DMARC p=none good enough?', 'It is a safe first step because it only collects reports. To actually protect your domain from fakes, move to quarantine and then reject once the reports show your real mail passing.'),
+               ('Do I need all three?', 'Yes. Large providers now expect SPF, DKIM and DMARC for anyone who sends a lot of email, and having them is the best way to keep your mail out of spam.')],
+         help=[('dns-propagation', 'What is DNS propagation, and why does a change take time?'), ('domain-name-expiry', 'What happens when a domain name expires?')]),
+]
+
 BY_SLUG = {t['slug']: t for t in TOOLS}

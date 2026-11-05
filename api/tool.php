@@ -7,7 +7,7 @@ require __DIR__ . '/_dns.php';
 require __DIR__ . '/_fetch.php';
 $in = read_post();
 $tool = (string)($in['tool'] ?? '');
-if (!in_array($tool, ['dns', 'headers', 'ssl', 'redirects', 'whois', 'mx', 'robots', 'secheaders', 'ports'], true)) out(422, ['error' => 'Unknown tool.']);
+if (!in_array($tool, ['dns', 'headers', 'ssl', 'redirects', 'whois', 'mx', 'robots', 'secheaders', 'ports', 'email'], true)) out(422, ['error' => 'Unknown tool.']);
 $t = parse_target((string)($in['address'] ?? ''));
 if (!$t) out(422, ['error' => 'Please enter a website address like example.com.']);
 [$host, $path, $scheme] = $t;
@@ -62,6 +62,56 @@ if ($tool === 'whois') {
     $w = domain_whois($dom);
     $ns = []; foreach ((array)@dns_get_record($dom, DNS_NS) as $r) if (!empty($r['target'])) $ns[] = $r['target'];
     out(200, ['tool' => $tool, 'host' => $host, 'domain' => $dom, 'whois' => $w, 'ns' => array_slice(array_values(array_unique($ns)), 0, 8)]);
+}
+
+if ($tool === 'email') {
+    if ($isIp) out(422, ['error' => 'Please enter a domain name, not an IP address.']);
+    $dom = preg_replace('/^www\./', '', $host);
+    $txt = function (string $name): array { $o = []; foreach ((array)@dns_get_record($name, DNS_TXT) as $r) if (isset($r['txt'])) $o[] = (string)$r['txt']; return $o; };
+    $items = [];
+    // Mail servers
+    $mx = @dns_get_record($dom, DNS_MX); $mxn = is_array($mx) ? count(array_filter($mx, fn($r) => !empty($r['target']))) : 0;
+    $items[] = ['name' => 'Mail servers (MX)', 'status' => $mxn ? 'ok' : 'warn', 'text' => $mxn ? $mxn . ' mail server' . ($mxn === 1 ? '' : 's') . ' receive email for this domain.' : 'No mail servers are listed, so this domain cannot receive email. That is fine if it only sends.', 'value' => ''];
+    // SPF
+    $spf = array_values(array_filter($txt($dom), fn($t) => stripos($t, 'v=spf1') === 0));
+    if (!$spf) $items[] = ['name' => 'SPF', 'status' => 'bad', 'text' => 'No SPF record. Without it, receivers cannot tell which servers may send email for this domain, and more of your mail can land in spam.', 'value' => ''];
+    elseif (count($spf) > 1) $items[] = ['name' => 'SPF', 'status' => 'bad', 'text' => 'There is more than one SPF record. Receivers treat that as an error, so SPF fails. Merge them into a single record.', 'value' => mb_substr($spf[0], 0, 300)];
+    else {
+        $r = $spf[0]; $lk = 0;
+        foreach (preg_split('/\s+/', trim($r)) as $tk) if (preg_match('/^[+\-~?]?(include:|a$|a:|a\/|mx$|mx:|mx\/|ptr|exists:)/i', $tk) || stripos($tk, 'redirect=') === 0) $lk++;
+        $all = preg_match('/(?:^|\s)([+\-~?]?)all(?:\s|$)/i', $r, $m) ? ($m[1] === '' ? '+' : $m[1]) : null;
+        if ($all === '+' || $all === '?') { $st = 'bad'; $tx = 'The record ends in ' . ($all === '+' ? '+all' : '?all') . ', which lets anyone send as this domain. Change it to ~all or -all.'; }
+        elseif ($all === null) { $st = 'warn'; $tx = 'The record has no "all" rule at the end, so receivers do not know what to do with mail from other servers. End it with ~all or -all.'; }
+        elseif ($lk > 10) { $st = 'bad'; $tx = 'The record asks receivers to look up ' . $lk . ' names at the top level. The limit is 10, and going over makes SPF fail. Remove services you no longer use.'; }
+        else { $st = 'ok'; $tx = 'A single SPF record is in place and ends in ' . $all . 'all (' . ($all === '-' ? 'strict: other servers should be rejected' : 'soft: other servers are treated as suspicious') . '). It uses about ' . $lk . ' of the 10 allowed lookups at the top level.'; }
+        $items[] = ['name' => 'SPF', 'status' => $st, 'text' => $tx, 'value' => mb_substr($r, 0, 300)];
+    }
+    // DMARC
+    $dm = array_values(array_filter($txt('_dmarc.' . $dom), fn($t) => stripos($t, 'v=DMARC1') === 0));
+    if (!$dm) $items[] = ['name' => 'DMARC', 'status' => 'bad', 'text' => 'No DMARC record. Big mailbox providers now expect one, and without it anyone can send email that looks like it came from your domain.', 'value' => ''];
+    else {
+        $tags = []; foreach (explode(';', $dm[0]) as $kv) { $kv = trim($kv); if (strpos($kv, '=') !== false) { [$k, $v] = explode('=', $kv, 2); $tags[strtolower(trim($k))] = trim($v); } }
+        $pol = strtolower($tags['p'] ?? '');
+        if ($pol === 'reject' || $pol === 'quarantine') { $st = 'ok'; $tx = 'DMARC is on with policy "' . $pol . '", so fake mail from this domain is ' . ($pol === 'reject' ? 'rejected' : 'sent to spam') . '.'; }
+        elseif ($pol === 'none') { $st = 'warn'; $tx = 'DMARC is on in monitoring mode (p=none). It reports problems but does not stop fake mail yet. Move to quarantine once the reports look clean.'; }
+        else { $st = 'bad'; $tx = 'The DMARC record is missing a valid policy (p=none, quarantine or reject).'; }
+        if ($st === 'ok' && empty($tags['rua'])) $tx .= ' There is no report address (rua), so you will not receive reports.';
+        $items[] = ['name' => 'DMARC', 'status' => $st, 'text' => $tx, 'value' => mb_substr($dm[0], 0, 300)];
+    }
+    // DKIM: selector names are chosen by the sender, so we try the common ones
+    $sels = ['default', 'google', 'selector1', 'selector2', 'k1', 'k2', 's1', 's2', 'mail', 'dkim', 'smtp', 'mandrill', 'sendgrid', 'zoho', 'protonmail'];
+    $found = [];
+    foreach ($sels as $sel) {
+        $rows = @dns_get_record($sel . '._domainkey.' . $dom, DNS_TXT | DNS_CNAME);
+        foreach (is_array($rows) ? $rows : [] as $r) {
+            if ((isset($r['txt']) && (stripos($r['txt'], 'v=DKIM1') !== false || stripos($r['txt'], 'p=') !== false)) || (($r['type'] ?? '') === 'CNAME' && !empty($r['target']))) { $found[] = $sel; break; }
+        }
+    }
+    $items[] = $found
+        ? ['name' => 'DKIM', 'status' => 'ok', 'text' => 'DKIM signing keys were found for: ' . implode(', ', $found) . '. That means your mail can be signed so receivers know it was not altered.', 'value' => '']
+        : ['name' => 'DKIM', 'status' => 'warn', 'text' => 'No DKIM key was found under the common selector names. That does not prove it is missing, because each sender chooses its own selector name. Check your email provider\'s settings.', 'value' => ''];
+    $bad = count(array_filter($items, fn($i) => $i['status'] === 'bad')); $warn = count(array_filter($items, fn($i) => $i['status'] === 'warn'));
+    out(200, ['tool' => $tool, 'host' => $dom, 'items' => $items, 'bad' => $bad, 'warn' => $warn]);
 }
 
 if ($tool === 'ports') {
