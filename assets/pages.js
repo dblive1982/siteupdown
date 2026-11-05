@@ -240,14 +240,37 @@
       h += '<div class="row-actions" style="margin-top:18px"><a class="btn small" href="/?q=' + encodeURIComponent(host) + '"><span>Check from 15 places</span></a><button class="btn small ghost" id="st-copy" type="button">Copy this link</button></div>';
       $('#st-body').innerHTML = h;
     }
+    var lcSeries = [];
     function lineChart(series) {
       var pts = series.map(function (b, i) { return b.ms != null ? [i, b.ms] : null; }).filter(Boolean);
       if (pts.length < 2) return '<p class="note">Not enough data yet. Results appear after a few checks.</p>';
       var W = 600, H = 150, max = Math.max.apply(null, pts.map(function (p) { return p[1]; })) * 1.15 || 1, n = series.length - 1;
       var xy = function (p) { return (p[0] / n * W).toFixed(1) + ',' + (H - 10 - (p[1] / max) * (H - 24)).toFixed(1); };
       var d = pts.map(xy).join(' ');
-      return '<svg class="lc" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" role="img" aria-label="Response time over the selected period"><line x1="0" x2="' + W + '" y1="' + (H - 10) + '" y2="' + (H - 10) + '" class="ax"/><polyline points="' + d + '" class="ln"/><polyline points="0,' + (H - 10) + ' ' + d + ' ' + W + ',' + (H - 10) + '" class="ar"/></svg><div class="upleg"><span>Peak ' + esc(S.ms(Math.round(max / 1.15))) + '</span><span>Lower is faster</span></div>';
+      lcSeries = series;
+      return '<div class="lv-wrap lc-wrap"><svg class="lc" viewBox="0 0 ' + W + ' ' + H + '" preserveAspectRatio="none" role="img" aria-label="Response time over the selected period"><line x1="0" x2="' + W + '" y1="' + (H - 10) + '" y2="' + (H - 10) + '" class="ax"/><polyline points="' + d + '" class="ln"/><polyline points="0,' + (H - 10) + ' ' + d + ' ' + W + ',' + (H - 10) + '" class="ar"/></svg></div><div class="upleg"><span>Peak ' + esc(S.ms(Math.round(max / 1.15))) + '</span><span>Lower is faster</span></div>';
     }
+    /* white bar + reading card on the response-time graph (same as the site pages) */
+    function lcTip(e) {
+      var w = e.target.closest ? e.target.closest('.lc-wrap') : null; if (!w || !lcSeries.length) return;
+      var r = w.getBoundingClientRect(), cx = e.touches ? e.touches[0].clientX : e.clientX, f = Math.min(1, Math.max(0, (cx - r.left) / r.width));
+      var n = lcSeries.length, i = Math.round(f * (n - 1)), b = lcSeries[i]; if (!b) return;
+      var cur = w.querySelector('.lv-cursor'), tip = w.querySelector('.lv-tip');
+      if (!cur) { cur = document.createElement('div'); cur.className = 'lv-cursor'; cur.setAttribute('aria-hidden', 'true'); w.appendChild(cur); tip = document.createElement('div'); tip.className = 'lv-tip'; tip.setAttribute('aria-hidden', 'true'); w.appendChild(tip); }
+      var xf = n < 2 ? 0.5 : i / (n - 1), px = xf * r.width;
+      var vs = lcSeries.map(function (x) { return x.ms; }).filter(function (v) { return v != null; }), avg = vs.length ? vs.reduce(function (a, c) { return a + c; }, 0) / vs.length : null, rel = '';
+      if (b.ms != null && avg) { var dv = Math.round((b.ms - avg) / avg * 100); rel = Math.abs(dv) < 8 ? 'about average' : (dv > 0 ? dv + '% slower than average' : Math.abs(dv) + '% faster than average'); }
+      var c = b.state === 'up' ? 'up' : b.state === 'down' ? 'down' : b.state === 'partial' ? 'slow' : 'none', st = { up: 'Up', down: 'Down', slow: 'Some failures', none: 'No data' }[c];
+      var d = new Date(b.t), when = d.toLocaleString([], range === '24h' ? { weekday: 'short', hour: '2-digit', minute: '2-digit' } : { weekday: 'short', day: 'numeric', month: 'short', hour: '2-digit' });
+      tip.innerHTML = '<span class="lt-when">' + esc(when) + '</span><b>' + (b.ms != null ? esc(S.ms(b.ms)) : '\u2014') + '</b><span class="lt-st ' + c + '">' + st + '</span>' + (rel ? '<span class="lt-rel">' + rel + '</span>' : '');
+      cur.style.left = px.toFixed(1) + 'px'; cur.style.display = 'block';
+      tip.className = 'lv-tip' + (xf > 0.6 ? ' l' : ''); tip.style.left = px.toFixed(1) + 'px'; tip.style.display = 'block';
+    }
+    function lcHide(e) { var w = e.target.closest ? e.target.closest('.lc-wrap') : null; if (!w) return; Array.prototype.forEach.call(w.querySelectorAll('.lv-cursor,.lv-tip'), function (x) { x.style.display = 'none'; }); }
+    var sb = $('#st-body');
+    sb.addEventListener('mousemove', lcTip); sb.addEventListener('touchmove', lcTip, { passive: true }); sb.addEventListener('touchstart', lcTip, { passive: true });
+    sb.addEventListener('mouseout', function (e) { if (e.target.closest && e.target.closest('.lc-wrap') && !(e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('.lc-wrap'))) lcHide(e); });
+    sb.addEventListener('touchend', function (e) { setTimeout(function () { lcHide(e); }, 1500); });
     $('#st-body').addEventListener('click', function (e) {
       var b = e.target.closest('[data-r]'); if (b) { range = b.getAttribute('data-r'); load(); }
       if (e.target.closest('#st-copy')) { try { navigator.clipboard.writeText(location.href); S.toast('Link copied'); } catch (x) { S.toast('Copy the address from your browser bar'); } }
