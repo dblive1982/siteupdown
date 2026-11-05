@@ -149,7 +149,9 @@
     ['Video calls', function (r) { return r.down >= 5 && r.up >= 2 && r.ping < 150 ? 2 : r.down >= 2 && r.up >= 1 ? 1 : 0; }],
     ['HD streaming', function (r) { return r.down >= 10 ? 2 : r.down >= 5 ? 1 : 0; }],
     ['4K streaming', function (r) { return r.down >= 25 ? 2 : r.down >= 15 ? 1 : 0; }],
-    ['Online gaming', function (r) { return r.ping < 50 && r.jitter < 20 ? 2 : r.ping < 100 && r.jitter < 40 ? 1 : 0; }],
+    // browser ping runs about 15-20 ms higher than in-game ping, so the cut-offs allow for that
+    ['Online gaming', function (r) { return r.ping < 75 && r.jitter < 25 ? 2 : r.ping < 130 && r.jitter < 50 ? 1 : 0; }],
+    ['Fast competitive games', function (r) { return r.ping < 45 && r.jitter < 15 ? 2 : r.ping < 90 && r.jitter < 30 ? 1 : 0; }],
     ['Large downloads', function (r) { return r.down >= 100 ? 2 : r.down >= 30 ? 1 : 0; }]
   ];
   var WORDS = ['Struggles', 'Works', 'Great'];
