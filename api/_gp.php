@@ -142,6 +142,18 @@ function gp_world_sweep(PDO $pdo, array $hosts, int $deadline): ?string {
     foreach ($pdo->query('SELECT host, ts FROM world_checks')->fetchAll() as $r) $seen[$r['host']] = (int)$r['ts'];
     $order = $hosts; usort($order, fn($a, $b) => ($seen[$a] ?? 0) <=> ($seen[$b] ?? 0));
     $host = $order[0] ?? null; if (!$host) return null;
+    // Every other sweep goes to a site our own server cannot get a clear answer from (they rely on this result for their status), if one is due.
+    // The other sweeps carry on round the whole list, so the rest are never starved.
+    if (intdiv(time(), max($every, 1)) % 2 === 0) {
+        try {
+            $due = [];
+            foreach ($pdo->query('SELECT host FROM world_blocked WHERE ts > ' . (time() - 86400))->fetchAll() as $r) {
+                if (in_array($r['host'], $hosts, true) && ($seen[$r['host']] ?? 0) < time() - 5400) $due[] = $r['host'];
+            }
+            usort($due, fn($a, $b) => ($seen[$a] ?? 0) <=> ($seen[$b] ?? 0));
+            if ($due) $host = $due[0];
+        } catch (Throwable $e) {}
+    }
     $set('*world-last', time());
     // If this site's measurement fails, send it to the back of the queue so one bad site can never hold up the others.
     $skip = function () use ($pdo, $host) {
