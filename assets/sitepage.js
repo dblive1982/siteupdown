@@ -60,7 +60,8 @@
     if (v === 'up') {
       pill.className = 'sp-pill up'; pill.textContent = 'Up';
       msg.textContent = busy ? 'We can reach ' + host + ', but many visitors are reporting problems. It may affect the app, logging in or certain regions.'
-        : name + ' is up. Our server reached ' + host + ' ' + ago(cur.at) + (cur.ms ? ' in ' + cur.ms + ' ms' : '') + '.' + (isApp ? ' This shows the servers are reachable. Problems inside the app can still happen, so check the reports below.' : '');
+        : (cur.code == null || cur.code >= 400 ? name + ' is up. Our own check was blocked or got no clear answer ' + ago(cur.at) + ', but it was reached from most of the places on the map below.'
+          : name + ' is up. Our server reached ' + host + ' ' + ago(cur.at) + (cur.ms ? ' in ' + cur.ms + ' ms' : '') + '.') + (isApp ? ' This shows the servers are reachable. Problems inside the app can still happen, so check the reports below.' : '');
     } else if (v === 'down') {
       pill.className = 'sp-pill down'; pill.textContent = 'Down';
       msg.textContent = name + ' looks down. Our server got errors on two attempts ' + ago(cur.at) + '.';

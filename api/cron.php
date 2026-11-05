@@ -31,6 +31,7 @@ $probe = function (string $h) use ($pdo, $up, &$n) {
     $r = check_site($h, '/', false, true);
     if ($r['verdict'] === 'timeout' && !seen_up_recently($pdo, $h)) { $r['verdict'] = 'inconclusive'; $r['note'] = 'Nothing answered our checks and we have not seen this site answer lately, so we cannot be sure it is down.'; }
     if (in_array($r['verdict'], ['down', 'timeout'], true) && corroborated_alive_cached($pdo, $h)) { $r['verdict'] = 'inconclusive'; $r['note'] = 'The site answers other countries but not our server, so we cannot be sure.'; }
+    if (in_array($r['verdict'], ['inconclusive', 'timeout'], true) && world_says_up($pdo, $h)) { $r['verdict'] = 'up'; $r['note'] = 'Our own check could not confirm, but the worldwide check reached it from most places.'; }
     $up->execute([$h, $r['verdict'], $r['http_code'], $r['ms'], sql_now()]);
     track_result($pdo, $h, $r['verdict'], $r['ms']);
     $n++;

@@ -12,6 +12,17 @@ function corroborated_alive_cached(PDO $pdo, string $host): bool {
     return (bool)$c->fetchColumn();
 }
 
+/** Did the latest worldwide check (fifteen places, under 12 hours old) reach this site from at least 80% of them? Then our own server being blocked or unanswered does not mean the site is down. */
+function world_says_up(PDO $pdo, string $host): bool {
+    $q = $pdo->prepare('SELECT data, ts FROM world_checks WHERE host=?'); $q->execute([$host]);
+    $r = $q->fetch();
+    if (!$r || $r['data'] === '' || (int)$r['ts'] < time() - 43200) return false;
+    $d = json_decode($r['data'], true);
+    if (!is_array($d) || empty($d['probes']) || count($d['probes']) < 10) return false;
+    $ok = 0; foreach ($d['probes'] as $p) if (($p['state'] ?? '') === 'ok') $ok++;
+    return $ok / count($d['probes']) >= 0.8;
+}
+
 /** Has this site answered one of our checks in the last 24 hours? */
 function seen_up_recently(PDO $pdo, string $host): bool {
     $q = $pdo->prepare("SELECT 1 FROM site_log WHERE host=? AND verdict='up' AND ts > ? LIMIT 1");
