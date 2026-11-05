@@ -101,7 +101,7 @@ def foot(scripts):
 import hashlib, re as _re
 def _ver():
     h = hashlib.md5()
-    for n in ('app.css', 'app.js', 'home.js', 'pages.js', 'worldmap.js', 'live.js', 'sitepage.js', 'tools.js', 'sla.js', 'speedtest.js', 'heatmap.js', 'ip.js', 'gameping.js'):
+    for n in ('app.css', 'app.js', 'home.js', 'pages.js', 'worldmap.js', 'live.js', 'sitepage.js', 'tools.js', 'sla.js', 'speedtest.js', 'heatmap.js', 'ip.js', 'gameping.js', 'embed.js'):
         try: h.update(open(os.path.join(ROOT, 'assets', n), 'rb').read())
         except OSError: pass
     return h.hexdigest()[:8]
@@ -641,10 +641,15 @@ def site_pages_build():
             '<div class="sp-card" id="sp-world" hidden><div class="sp-rhead"><b>Seen from around the world</b><span class="sp-level" id="sp-wwhen"></span></div><p id="sp-wsum" class="note"></p><div class="sp-wmap"><svg id="sp-wsvg" role="img" aria-label="World map of where this site was reached" preserveAspectRatio="xMidYMid meet"></svg></div><div class="rt-wrap"><table class="rt" id="sp-wtab"><thead><tr><th>Place</th><th>Result</th><th>Time</th></tr></thead><tbody></tbody></table></div><p class="note">A snapshot from probes on the public Globalping network, refreshed every few hours. It shows whether the site answers from other countries, not what every visitor sees.</p></div>' +
             '<h2>Check %s from fifteen places</h2><p>This page shows our latest scheduled check. To test %s right now from our server and from fifteen countries, run a live check.</p>' % (n, hh) +
             '<p><a class="btn" href="/?q=%s"><span>Check %s now</span></a> <a class="btn ghost" href="/status/%s"><span>Full status page</span></a></p>' % (hh, n, hh) +
-            '<h2>Show %s status on your own site</h2><div class="sp-card sp-embed"><p class="note" style="margin-top:0">Add a small live badge to a forum, blog or community page so visitors can see at a glance whether %s is up. It updates by itself.</p>' % (n, n) +
-            '<p><a href="%s"><img src="/badge/%s.svg" alt="%s status badge" height="22" loading="lazy"></a></p>' % (path, hh, n) +
-            '<textarea class="sp-code" id="sp-embed-code" readonly rows="3" aria-label="Badge code">&lt;a href="https://siteupdown.com%s"&gt;&lt;img src="https://siteupdown.com/badge/%s.svg" alt="%s status" height="22"&gt;&lt;/a&gt;</textarea>' % (path, hh, n) +
-            '<p><button type="button" class="btn small ghost" id="sp-embed-copy"><span>Copy badge code</span></button></p></div>' +
+            '<h2>Show %s status on your own site</h2><div class="sp-card sp-embed"><p class="note" style="margin-top:0">Two ways to show whether %s is up on a forum, blog or community page. Both update by themselves.</p>' % (n, n) +
+            '<h3>Live card</h3><p class="note">Shows the status, 24-hour uptime, response time and a small live graph. Move your cursor along the graph for each reading. It refreshes every few seconds while the page is open. Works on any normal web page that allows embeds.</p>' +
+            '<p><iframe src="/widget/%s" title="%s live status" width="300" height="104" style="border:0;max-width:100%%" loading="lazy"></iframe></p>' % (hh, n) +
+            '<textarea class="sp-code" id="sp-embed-code2" readonly rows="3" aria-label="Live card code">&lt;iframe src="https://siteupdown.com/widget/%s" title="%s live status" width="300" height="104" style="border:0;max-width:100%%" loading="lazy"&gt;&lt;/iframe&gt;</textarea>' % (hh, n) +
+            '<p><button type="button" class="btn small ghost sp-embed-copy" data-for="sp-embed-code2"><span>Copy live card code</span></button></p>' +
+            '<h3>Small badge</h3><p class="note">A tiny image for places that only allow pictures, such as forum signatures or GitHub pages. Hover for details. Other sites keep their own copy of images, so it can lag by a few minutes.</p>' +
+            '<p><a href="%s"><img src="/badge/%s.svg" alt="%s status badge" title="Live status from siteupdown.com. Click for uptime and response details." height="22" loading="lazy"></a></p>' % (path, hh, n) +
+            '<textarea class="sp-code" id="sp-embed-code" readonly rows="3" aria-label="Badge code">&lt;a href="https://siteupdown.com%s"&gt;&lt;img src="https://siteupdown.com/badge/%s.svg" alt="%s status" title="Live status from siteupdown.com. Click for uptime and response details." height="22"&gt;&lt;/a&gt;</textarea>' % (path, hh, n) +
+            '<p><button type="button" class="btn small ghost sp-embed-copy" data-for="sp-embed-code"><span>Copy badge code</span></button></p></div>' +
             '<h2>Questions about %s</h2><div class="faq">%s</div>' % (n, faqh) +
             '<h2>Other %s checks</h2><ul>%s</ul>' % (html.escape(catname.lower()), rel) +
             '<p class="note">Category: %s. siteupdown.com is independent and is not affiliated with %s.</p>' % (html.escape(catname), n) +

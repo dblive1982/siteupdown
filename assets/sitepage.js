@@ -53,11 +53,13 @@
     });
   }
 
-  var ec = $('#sp-embed-copy');
-  if (ec) ec.addEventListener('click', function () {
-    var t = $('#sp-embed-code'), s = ec.firstElementChild;
-    t.focus(); t.select();
-    try { navigator.clipboard.writeText(t.value).then(function () { s.textContent = 'Copied'; setTimeout(function () { s.textContent = 'Copy badge code'; }, 1800); }, function () {}); } catch (x) { s.textContent = 'Press and hold to copy'; }
+  [].forEach.call(document.querySelectorAll('.sp-embed-copy'), function (ec) {
+    var label = ec.firstElementChild.textContent;
+    ec.addEventListener('click', function () {
+      var t = document.getElementById(ec.getAttribute('data-for')), s = ec.firstElementChild;
+      t.focus(); t.select();
+      try { navigator.clipboard.writeText(t.value).then(function () { s.textContent = 'Copied'; setTimeout(function () { s.textContent = label; }, 1800); }, function () {}); } catch (x) { s.textContent = 'Press and hold to copy'; }
+    });
   });
 
   /* ----------------------------------------------------------------- directory */
