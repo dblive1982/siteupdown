@@ -1069,3 +1069,5 @@ a.icon-btn svg{width:24px;height:24px}
 #sp-pill{font-size:23px;padding:10px 24px;gap:14px;max-width:100%;white-space:normal;line-height:1.15;border-width:1px}
 #sp-pill::before{width:14px;height:14px}
 @media(max-width:560px){#sp-pill{font-size:17px;padding:8px 16px;gap:10px}#sp-pill::before{width:11px;height:11px}}
+.lc-wrap{border-bottom:0}
+.lc-wrap .lv-cursor{bottom:10px}
