@@ -399,6 +399,21 @@
       });
     }).catch(function () { ul.innerHTML = '<li class="ro-none">Could not load recent outages.</li>'; });
   }
+  function loadSlow() {
+    var ul = $('#ro-slow'); if (!ul) return;
+    fetch('/api/slow.php').then(function (r) { return r.json(); }).then(function (j) {
+      ul.textContent = '';
+      if (!j.items || !j.items.length) { var li = document.createElement('li'); li.className = 'ro-none'; li.textContent = 'Nothing we watch is running unusually slow right now.'; ul.appendChild(li); return; }
+      j.items.forEach(function (o) {
+        var li = document.createElement('li'); li.className = 'ro-end';
+        var a = document.createElement(o.page ? 'a' : 'span'); if (o.page) a.href = o.page; a.className = 'ro-name'; a.textContent = o.name;
+        var st = document.createElement('span'); st.className = 'ro-st'; st.textContent = 'About ' + o.x + '\u00d7 slower than usual';
+        var t = document.createElement('small'); t.textContent = 'Answering in about ' + o.now + ' ms, usually about ' + o.usual + ' ms. Still up.';
+        li.appendChild(a); li.appendChild(st); li.appendChild(t); ul.appendChild(li);
+      });
+    }).catch(function () { ul.innerHTML = '<li class="ro-none">Could not load this just now.</li>'; });
+  }
+  setTimeout(loadSlow, 500); setInterval(loadSlow, 120000);
   setTimeout(loadOutages, 300); setInterval(loadOutages, 60000);
   function loadTop() {
     fetch('/api/top.php' + (topCat ? '?cat=' + encodeURIComponent(topCat) : '')).then(function (r) { return r.json(); }).then(function (j) {
