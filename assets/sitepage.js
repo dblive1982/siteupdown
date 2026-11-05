@@ -47,7 +47,7 @@
 
   /* ----------------------------------------------------------------- site page */
   var host = root.getAttribute('data-host'), name = root.getAttribute('data-name');
-  var rep = { level: 'none' }, cur = null, isApp = root.getAttribute('data-app') === '1';
+  var rep = { level: 'none' }, cur = null, wblk = null, isApp = root.getAttribute('data-app') === '1';
 
   function headline() {
     var pill = $('#sp-pill'), msg = $('#sp-msg');
@@ -65,6 +65,9 @@
     } else if (v === 'down') {
       pill.className = 'sp-pill down'; pill.textContent = 'Down';
       msg.textContent = name + ' looks down. Our server got errors on two attempts ' + ago(cur.at) + '.';
+    } else if (wblk && (v === 'timeout' || v === 'inconclusive')) {
+      pill.className = 'sp-pill unsure'; pill.textContent = 'Blocks our checks';
+      msg.textContent = host + ' is answering, but it turns our automated checks away' + (wblk.code ? ' (error ' + wblk.code + ')' : '') + '. ' + wblk.n + ' of ' + wblk.total + ' places we tried got a reply and were refused, so the site itself is running. Try opening it yourself to be sure.';
     } else if (v === 'timeout') {
       pill.className = 'sp-pill unsure'; pill.textContent = 'No answer';
       msg.textContent = 'Our server did not get an answer from ' + host + ' ' + ago(cur.at) + '. It may be down, overloaded, or simply ignoring automated checks.';
@@ -114,7 +117,12 @@
       svg.setAttribute('viewBox', '0 0 ' + Wd + ' ' + Hd);
       svg.innerHTML = '<path class="map-land" d="' + d + '"/>' + mk;
     })();
-    $('#sp-wsum').textContent = w.reachable + ' of ' + w.total + ' places reached ' + host + (w.median_ms ? ', typical time ' + w.median_ms + ' ms' : '') + '.';
+    var nb = 0, cc = {}; w.probes.forEach(function (p) { if (p.state === 'blocked') { nb++; if (p.code) cc[p.code] = (cc[p.code] || 0) + 1; } });
+    $('#sp-wsum').textContent = w.reachable + ' of ' + w.total + ' places reached ' + host + (w.median_ms ? ', typical time ' + w.median_ms + ' ms' : '') + '.' + (nb ? ' ' + nb + (nb === 1 ? ' place' : ' places') + ' got an answer but turned our check away.' : '');
+    if (w.total >= 10 && nb / w.total >= 0.8 && (!w.measured_at || Date.now() - Date.parse(w.measured_at) < 14400000)) {
+      var top = null; Object.keys(cc).forEach(function (k) { if (top == null || cc[k] > cc[top]) top = k; });
+      wblk = { n: nb, total: w.total, code: top }; headline();
+    }
     if (w.measured_at) $('#sp-wwhen').textContent = ago(w.measured_at);
     $('#sp-world').hidden = false;
   }).catch(function () {});
