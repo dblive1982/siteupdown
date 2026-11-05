@@ -10,17 +10,22 @@
   var D2R = Math.PI / 180, ctx = cv.getContext('2d'), tip = $('hm-tip');
   var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* Land: the same dot-matrix grid as the flat map, turned into points on a sphere. */
-  var land = [];
-  M.runs.forEach(function (runs, r) {
-    var lat = (M.top - (r + 0.5) * M.cell) * D2R;
-    runs.forEach(function (run) {
-      for (var c = run[0]; c < run[0] + run[1]; c++) {
-        var lon = (-180 + (c + 0.5) * M.cell) * D2R;
-        land.push([Math.sin(lat), Math.cos(lat), lon]);
-      }
-    });
-  });
+  /* Land: evenly spaced points over the sphere, kept where the land grid says there is land. */
+  var mask = [], land = [], r0, c0, N = 24000, GA = Math.PI * (3 - Math.sqrt(5));
+  for (r0 = 0; r0 < M.rows; r0++) mask.push(new Uint8Array(M.cols));
+  M.runs.forEach(function (runs, r) { runs.forEach(function (run) { for (var c = run[0]; c < run[0] + run[1] && c < M.cols; c++) mask[r][c] = 1; }); });
+  function isLand(latD, lonD) {
+    var fr = (M.top - latD) / M.cell - 0.5, fc = (lonD + 180) / M.cell - 0.5, r = Math.floor(fr), c = Math.floor(fc), tr = fr - r, tc = fc - c, v = 0;
+    for (var i = 0; i < 2; i++) for (var j = 0; j < 2; j++) {
+      var rr = r + i, cc = ((c + j) % M.cols + M.cols) % M.cols;
+      v += (rr >= 0 && rr < M.rows ? mask[rr][cc] : 0) * (i ? tr : 1 - tr) * (j ? tc : 1 - tc);
+    }
+    return v >= 0.5;
+  }
+  for (r0 = 0; r0 < N; r0++) {
+    var la = Math.asin(1 - 2 * (r0 + 0.5) / N), lo = ((r0 * GA) % (2 * Math.PI)) - Math.PI;
+    if (isLand(la / D2R, lo / D2R)) land.push([Math.sin(la), Math.cos(la), lo]);
+  }
 
   function name(p) { return (p.city ? p.city + ', ' : '') + (p.country ? (dn ? (dn.of(p.country) || p.country) : p.country) : ''); }
   function heat(p) {
@@ -34,7 +39,7 @@
   }
 
   /* View state: lon0/lat0 is the point facing the viewer. */
-  var lon0 = 10 * D2R, lat0 = 22 * D2R, vLon = 0, vLat = 0;
+  var lon0 = 10 * D2R, lat0 = 22 * D2R, vLon = 0, vLat = 0, TILT = -16 * D2R, ct = Math.cos(TILT), st = Math.sin(TILT);
   var drag = null, hover = null, W = 0, R = 0, dpr = 1, auto = !reduce, visible = true, raf = 0, lastT = 0, markers = [];
   var COL = { g: '13,192,78', a: '245,184,61', r: '255,90,95', n: '107,124,115' };
 
@@ -46,7 +51,8 @@
   }
   function proj(sl, cl, lon) {
     var dl = lon - lon0, cd = Math.cos(dl), sc = Math.sin(lat0), cc = Math.cos(lat0);
-    return [cl * Math.sin(dl), cc * sl - sc * cl * cd, sc * sl + cc * cl * cd];
+    var x = cl * Math.sin(dl), y = cc * sl - sc * cl * cd;
+    return [x * ct - y * st, x * st + y * ct, sc * sl + cc * cl * cd];
   }
   function render() {
     raf = 0;
@@ -60,13 +66,12 @@
     g.addColorStop(1, light ? 'rgba(47,158,65,.02)' : 'rgba(13,192,78,.015)');
     ctx.beginPath(); ctx.arc(c, c, R, 0, 7); ctx.fillStyle = g; ctx.fill();
     ctx.lineWidth = 1.5; ctx.strokeStyle = light ? 'rgba(47,158,65,.45)' : 'rgba(13,192,78,.35)'; ctx.stroke();
-    /* land dots, brighter toward the centre of the globe */
-    var rgb = light ? '47,158,65' : '13,192,78', base = light ? 0.85 : 0.75, d = Math.max(1.2, R * 0.0105);
+    /* land dots: bright on the near side, faint through the globe on the far side */
+    var rgb = light ? '47,158,65' : '13,192,78', base = light ? 0.9 : 0.85, d = Math.max(1.2, R * 0.0072);
     for (i = 0; i < land.length; i++) {
       q = land[i]; p = proj(q[0], q[1], q[2]);
-      if (p[2] <= 0.02) continue;
-      ctx.fillStyle = 'rgba(' + rgb + ',' + (base * Math.min(1, 0.25 + p[2] * 0.9)).toFixed(2) + ')';
-      var s = d * (0.55 + 0.45 * p[2]);
+      var near = p[2] > 0, al = near ? base * Math.min(1, 0.3 + p[2] * 0.95) : (light ? 0.07 : 0.09) * (1 + p[2]), s = d * (near ? 0.6 + 0.4 * p[2] : 0.55);
+      ctx.fillStyle = 'rgba(' + rgb + ',' + al.toFixed(2) + ')';
       ctx.fillRect(c + p[0] * R - s / 2, c - p[1] * R - s / 2, s, s);
     }
     /* heat glows and place markers */
@@ -94,6 +99,22 @@
         markers.push(m);
       });
     }
+    /* place name labels, nudged apart so they do not overlap */
+    ctx.font = '600 ' + Math.max(10, Math.round(R * 0.032)) + 'px "Space Grotesk",system-ui,sans-serif'; ctx.textBaseline = 'middle';
+    var placed = [];
+    markers.slice().sort(function (a, b) { return b.z - a.z; }).forEach(function (m) {
+      if (m.z < 0.25 || !m.pl.city) return;
+      var t = m.pl.city.toUpperCase(), w = ctx.measureText(t).width + 12, h = Math.max(16, R * 0.05), x = m.x + 9, y = m.y, tries = 0;
+      if (x + w > W - 2) x = m.x - 9 - w;
+      function hit() { return placed.some(function (b) { return x < b.x + b.w && x + w > b.x && y - h / 2 < b.y + b.h / 2 && y + h / 2 > b.y - b.h / 2; }); }
+      while (hit() && tries < 8) { y += (tries % 2 ? -1 : 1) * (tries + 1) * (h + 2) / 2 * 1.0; tries++; }
+      if (hit()) return;
+      placed.push({ x: x, y: y, w: w, h: h });
+      var col = COL[m.h.cls];
+      ctx.fillStyle = light ? 'rgba(255,255,255,.88)' : 'rgba(19,2,40,.78)'; ctx.strokeStyle = 'rgba(' + col + ',.75)'; ctx.lineWidth = 1;
+      ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(x, y - h / 2, w, h, 4); else ctx.rect(x, y - h / 2, w, h); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = light ? '#14301d' : '#f3f1fa'; ctx.fillText(t, x + 6, y + 0.5);
+    });
     if (hover && tip) {
       var hm = markers.filter(function (m) { return m.pl === hover; })[0];
       if (hm) { tip.hidden = false; tip.textContent = name(hover) + ': ' + hm.h.label; tip.style.left = Math.min(Math.max(hm.x, 70), W - 70) + 'px'; tip.style.top = (hm.y - 18) + 'px'; }
@@ -130,7 +151,8 @@
     if (drag) {
       var dx = q[0] - drag.x, dy = q[1] - drag.y; drag.x = q[0]; drag.y = q[1]; drag.moved += Math.abs(dx) + Math.abs(dy);
       var k = 1 / R / Math.max(0.35, Math.cos(lat0) * 0.4 + 0.6);
-      lon0 -= dx * k; lat0 = clampLat(lat0 + dy * k * 0.9); vLon = -dx * k * 0.5; vLat = dy * k * 0.45;
+      var ux = dx * ct + dy * st, uy = -dx * st + dy * ct;
+      lon0 -= ux * k; lat0 = clampLat(lat0 + uy * k * 0.9); vLon = -ux * k * 0.5; vLat = uy * k * 0.45;
       hover = null; need();
     } else {
       var h = pick(q[0], q[1]); if (h !== hover) { hover = h; cv.style.cursor = h ? 'pointer' : 'grab'; need(); }
