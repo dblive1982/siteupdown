@@ -563,7 +563,10 @@ BATCH = ['Max', 'Paramount+', 'Crunchyroll', 'Plex', 'SoundCloud', 'Deezer', 'Ki
          'Threads', 'Tumblr', 'Quora', 'Signal', 'Imgur', 'Medium',
          'Claude', 'Gemini', 'Perplexity', 'Microsoft Copilot', 'Midjourney', 'DeepSeek', 'Grok',
          'DuckDuckGo', 'Proton Mail', 'Google Maps', 'Google Meet',
-         'Vercel', 'Netlify', 'GitLab', 'Docker', 'npm', 'Wix', 'Asana', 'Microsoft 365']
+         'Vercel', 'Netlify', 'GitLab', 'Docker', 'npm', 'Wix', 'Asana', 'Microsoft 365',
+         # batch 2: broadband and mobile providers, plus a few popular consumer services
+         'BT', 'Virgin Media', 'EE', 'Vodafone UK', 'O2', 'Three UK', 'TalkTalk', 'Plusnet', 'giffgaff', 'Openreach', 'AT&T', 'Verizon', 'T-Mobile', 'Xfinity', 'Spectrum', 'Starlink', 'Speedtest',
+         'Messenger', 'ITVX', 'Sky', 'Deliveroo', 'Royal Mail']
 SITES = SITES[:CORE] + [x for x in EXTENDED_SITES if x[0] in BATCH]
 
 KIND_LABELS = [
