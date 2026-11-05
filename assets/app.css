@@ -1057,7 +1057,7 @@ a.chip{text-decoration:none;display:inline-flex;align-items:center;color:var(--t
 .head-tools{display:flex;align-items:center;gap:8px}
 a.icon-btn{text-decoration:none}
 a.icon-btn svg{color:var(--green)}
-.st-inst{margin:-6px 0 12px}
+.st-inst{text-align:center;margin:14px 0 4px}
 a.icon-btn svg{width:24px;height:24px}
 @media (max-width:640px){.speed-row{flex-direction:column;gap:12px}}
 
