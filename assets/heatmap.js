@@ -1,8 +1,8 @@
 /* Global heat map: how the sites we watch look from each of our worldwide probe places. */
 (function () {
   'use strict';
-  var cv = document.getElementById('hm-globe'), M = window.SUD_MAP;
-  if (!cv || !M || !cv.getContext) return;
+  var cv = document.getElementById('hm-globe'), LAND = window.SUD_LAND;
+  if (!cv || !LAND || !cv.getContext) return;
   var $ = function (id) { return document.getElementById(id); };
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
   var dn = null; try { dn = new Intl.DisplayNames(['en'], { type: 'region' }); } catch (e) {}
@@ -10,15 +10,19 @@
   var D2R = Math.PI / 180, ctx = cv.getContext('2d'), tip = $('hm-tip');
   var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* Land: evenly spaced points over the sphere, kept where the land grid says there is land. */
-  var mask = [], landTmp = [], r0, c0, N = 24000, GA = Math.PI * (3 - Math.sqrt(5));
-  for (r0 = 0; r0 < M.rows; r0++) mask.push(new Uint8Array(M.cols));
-  M.runs.forEach(function (runs, r) { runs.forEach(function (run) { for (var c = run[0]; c < run[0] + run[1] && c < M.cols; c++) mask[r][c] = 1; }); });
+  /* Land: evenly spaced points over the sphere, kept where the 1 degree land mask says there is land. */
+  var AL = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_', MR = 180, MC = 360;
+  var mask = [], landTmp = [], r0, N = 20000, GA = Math.PI * (3 - Math.sqrt(5));
+  LAND.split(';').forEach(function (row) {
+    var m = new Uint8Array(MC), x = 0, cur = 0;
+    for (var i = 0; i + 1 < row.length; i += 2) { var run = (AL.indexOf(row.charAt(i)) << 6) | AL.indexOf(row.charAt(i + 1)); if (cur) m.fill(1, x, Math.min(MC, x + run)); x += run; cur ^= 1; }
+    mask.push(m);
+  });
   function isLand(latD, lonD) {
-    var fr = (M.top - latD) / M.cell - 0.5, fc = (lonD + 180) / M.cell - 0.5, r = Math.floor(fr), c = Math.floor(fc), tr = fr - r, tc = fc - c, v = 0;
+    var fr = (90 - latD) - 0.5, fc = (lonD + 180) - 0.5, r = Math.floor(fr), c = Math.floor(fc), tr = fr - r, tc = fc - c, v = 0;
     for (var i = 0; i < 2; i++) for (var j = 0; j < 2; j++) {
-      var rr = r + i, cc = ((c + j) % M.cols + M.cols) % M.cols;
-      v += (rr >= 0 && rr < M.rows ? mask[rr][cc] : 0) * (i ? tr : 1 - tr) * (j ? tc : 1 - tc);
+      var rr = r + i, cc = ((c + j) % MC + MC) % MC;
+      v += (rr >= 0 && rr < MR ? mask[rr][cc] : 0) * (i ? tr : 1 - tr) * (j ? tc : 1 - tc);
     }
     return v >= 0.5;
   }
@@ -42,6 +46,7 @@
   /* View state: lon0/lat0 is the point facing the viewer. Angles in radians, speeds in radians per second. */
   var lon0 = 10 * D2R, lat0 = 22 * D2R, wLon = 0, wLat = 0, TILT = -16 * D2R, ct = Math.cos(TILT), st = Math.sin(TILT);
   var AUTO = 3.5 * D2R, autoV = 0, idleAt = 0, MAXW = 1.6;
+  var sel = null, fly = null, sorted = [];
   var drag = null, hover = null, W = 0, R = 0, dpr = 1, visible = true, raf = 0, lastT = 0, lastDraw = 0, markers = [], wcache = {};
   var COL = { g: '13,192,78', a: '245,184,61', r: '255,90,95', n: '107,124,115' };
   var NB = 8, fills = [], fillTheme = null;
@@ -102,16 +107,17 @@
       });
       ctx.globalCompositeOperation = light ? 'source-over' : 'lighter';
       list.forEach(function (m) {
-        var gr = R * 0.2 * (0.6 + 0.4 * m.z), rg = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, gr), col = COL[m.h.cls];
-        rg.addColorStop(0, 'rgba(' + col + ',' + (light ? 0.55 : 0.75) + ')'); rg.addColorStop(1, 'rgba(' + col + ',0)');
+        var gr = R * 0.115 * (0.6 + 0.4 * m.z), rg = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, gr), col = COL[m.h.cls];
+        rg.addColorStop(0, 'rgba(' + col + ',' + (light ? 0.5 : 0.62) + ')'); rg.addColorStop(1, 'rgba(' + col + ',0)');
         ctx.fillStyle = rg; ctx.beginPath(); ctx.arc(m.x, m.y, gr, 0, 7); ctx.fill();
       });
       ctx.globalCompositeOperation = 'source-over';
+      var bg = light ? '#ffffff' : '#130228';
       list.forEach(function (m) {
-        var col = COL[m.h.cls], rad = 4.2 + 2.2 * m.z, on = hover === m.pl;
-        ctx.beginPath(); ctx.arc(m.x, m.y, on ? rad + 2 : rad, 0, 7);
-        ctx.fillStyle = 'rgb(' + col + ')'; ctx.fill();
-        ctx.lineWidth = on ? 2.5 : 1.5; ctx.strokeStyle = '#fff'; ctx.stroke();
+        var col = COL[m.h.cls], rad = 2.3 + 1.3 * m.z, on = hover === m.pl || sel === m.pl;
+        ctx.beginPath(); ctx.arc(m.x, m.y, rad + 2.6, 0, 7); ctx.globalAlpha = 0.9; ctx.fillStyle = bg; ctx.fill(); ctx.globalAlpha = 1;
+        ctx.beginPath(); ctx.arc(m.x, m.y, on ? rad + 1 : rad, 0, 7); ctx.fillStyle = 'rgb(' + col + ')'; ctx.fill();
+        if (on) { ctx.beginPath(); ctx.arc(m.x, m.y, rad + 5, 0, 7); ctx.lineWidth = 1.6; ctx.strokeStyle = light ? '#14301d' : '#ffffff'; ctx.stroke(); }
         markers.push(m);
       });
     }
@@ -145,7 +151,11 @@
     raf = 0;
     var dt = lastT ? Math.min(0.05, (t - lastT) / 1000) : 0.016; lastT = t;
     var live = false;
-    if (!drag) {
+    if (fly) {
+      var pf = Math.min(1, (t - fly.t0) / fly.dur), ef = pf < 0.5 ? 2 * pf * pf : 1 - Math.pow(-2 * pf + 2, 2) / 2;
+      lon0 = fly.a + fly.da * ef; lat0 = fly.b + fly.db * ef; wLon = wLat = 0; autoV = 0; idleAt = performance.now(); live = true;
+      if (pf >= 1) fly = null;
+    } else if (!drag) {
       var sp = Math.abs(wLon) + Math.abs(wLat);
       if (sp > 0.02) {
         lon0 += wLon * dt; lat0 = clampLat(lat0 + wLat * dt);
@@ -159,7 +169,7 @@
       }
     }
     /* idle spinning only needs ~30 frames a second; dragging gets every frame */
-    if (drag || sp > 0.02 || t - lastDraw >= 30) { render(); lastDraw = t; }
+    if (drag || fly || sp > 0.02 || t - lastDraw >= 30) { render(); lastDraw = t; }
     if (live || drag) raf = requestAnimationFrame(frame); else lastT = 0;
   }
 
@@ -171,7 +181,7 @@
   function pos(e) { var b = cv.getBoundingClientRect(); return [e.clientX - b.left, e.clientY - b.top]; }
   cv.addEventListener('pointerdown', function (e) {
     var q = pos(e); drag = { x: q[0], y: q[1], moved: 0, t: e.timeStamp, last: e.timeStamp };
-    wLon = wLat = 0; autoV = 0; idleAt = Infinity;
+    wLon = wLat = 0; autoV = 0; idleAt = Infinity; fly = null;
     try { cv.setPointerCapture(e.pointerId); } catch (x) {}
     cv.classList.add('grab'); need();
   });
@@ -195,7 +205,7 @@
     drag = null; cv.classList.remove('grab'); idleAt = performance.now();
     if (stale || tap) wLon = wLat = 0;
     wLon = Math.max(-MAXW, Math.min(MAXW, wLon)); wLat = Math.max(-MAXW, Math.min(MAXW, wLat));
-    if (tap && e && e.type === 'pointerup') { var q = pos(e), h = pick(q[0], q[1]); hover = h === hover ? null : h; }
+    if (tap && e && e.type === 'pointerup') { var q = pos(e), h = pick(q[0], q[1]); hover = h; if (h) select(h === sel ? null : h, false); }
     need();
   }
   cv.addEventListener('pointerup', end); cv.addEventListener('pointercancel', end);
@@ -211,14 +221,54 @@
   var th = $('theme'); if (th) th.addEventListener('click', function () { fillTheme = null; setTimeout(need, 30); });
   size();
 
+  function flyTo(p) {
+    if (p.lat == null || p.lon == null) return;
+    var lo = p.lon * D2R, da = (((lo - lon0 + Math.PI) % (2 * Math.PI)) + 2 * Math.PI) % (2 * Math.PI) - Math.PI, la = Math.max(-55 * D2R, Math.min(55 * D2R, p.lat * D2R));
+    fly = { t0: performance.now(), dur: 900, a: lon0, da: da, b: lat0, db: la - lat0 }; wLon = wLat = 0; need();
+  }
+  function select(p, fromList) {
+    sel = p; if (fromList) hover = null;
+    if (p && fromList) { flyTo(p); try { cv.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (x) {} }
+    var rows = document.querySelectorAll('#hm-tab tr');
+    for (var i = 0; i < rows.length; i++) rows[i].classList.toggle('on', !!p && sorted[i] === p);
+    card(); need();
+  }
+  function pct(p) { return Math.round(p.ok / Math.max(p.n, 1) * 100); }
+  function card() {
+    var el = $('hm-card'); if (!el || !data) return;
+    var ps = data.places, i;
+    if (!sel) {
+      var withT = ps.filter(function (p) { return p.median_ms != null; }).sort(function (a, b) { return a.median_ms - b.median_ms; });
+      var avg = Math.round(ps.reduce(function (t, p) { return t + pct(p); }, 0) / ps.length);
+      el.innerHTML = '<div class="hm-card-h"><b>Worldwide summary</b></div><div class="hm-stats"><div><i>Places checked</i><b>' + ps.length + '</b></div><div><i>Average reached</i><b>' + avg + '%</b></div>' +
+        (withT.length ? '<div><i>Fastest</i><b>' + withT[0].median_ms + ' ms</b><em>' + esc(name(withT[0])) + '</em></div><div><i>Slowest</i><b>' + withT[withT.length - 1].median_ms + ' ms</b><em>' + esc(name(withT[withT.length - 1])) + '</em></div>' : '') +
+        '</div><p class="note">Tap a dot on the globe, or a country in the list below, to see its details.</p>';
+      return;
+    }
+    var p = sel, r = p.n ? p.ok / p.n : 0, cls = r >= 0.9 ? 'g' : r >= 0.7 ? 'a' : 'r';
+    var verdict = r >= 0.9 ? 'Almost every site we watch answered from here.' : r >= 0.7 ? 'Most sites answered from here, but some did not.' : 'Many sites did not answer from here. This can point to a problem with a network or country, or to sites blocking automated checks.';
+    el.innerHTML = '<div class="hm-card-h"><b>' + esc(name(p)) + '</b><span class="hm-chip ' + cls + '">' + pct(p) + '%</span><button type="button" class="hm-x" data-close aria-label="Close details">&times;</button></div>' +
+      '<p class="hm-verdict">' + verdict + '</p><div class="hm-stats"><div><i>Sites reached</i><b>' + p.ok + ' of ' + p.n + '</b></div><div><i>Typical time</i><b>' + (p.median_ms != null ? p.median_ms + ' ms' : '–') + '</b></div>' +
+      '<div><i>Failed to load</i><b>' + (p.error || 0) + '</b></div><div><i>Blocked our check</i><b>' + (p.blocked || 0) + '</b></div><div><i>No answer</i><b>' + (p.none || 0) + '</b></div></div>' +
+      '<p class="note">A site that cannot be reached from one place is not always down. Some sites block automated checks from certain countries.</p>';
+  }
+  $('hm-card') && $('hm-card').addEventListener('click', function (e) { if (e.target.closest && e.target.closest('[data-close]')) select(null, false); });
+  var tb = $('hm-tab');
+  if (tb) {
+    tb.addEventListener('click', function (e) { var tr = e.target.closest && e.target.closest('tr[data-i]'); if (tr) { var p = sorted[+tr.getAttribute('data-i')]; select(p === sel ? null : p, true); } });
+    tb.addEventListener('keydown', function (e) { if (e.key !== 'Enter' && e.key !== ' ') return; var tr = e.target.closest && e.target.closest('tr[data-i]'); if (tr) { e.preventDefault(); var p = sorted[+tr.getAttribute('data-i')]; select(p === sel ? null : p, true); } });
+  }
+
   function draw() {
     if (!data) return;
     need();
-    var rows = data.places.slice().sort(function (a, b) { return (a.country || '').localeCompare(b.country || ''); }).map(function (p) {
+    sorted = data.places.slice().sort(function (a, b) { return name(a).localeCompare(name(b)); });
+    var rows = sorted.map(function (p, i) {
       var h = heat(p);
-      return '<tr><td data-l="Place">' + esc(name(p)) + '</td><td data-l="Sites reached"><span class="hm-chip ' + h.cls + '">' + Math.round(p.ok / Math.max(p.n, 1) * 100) + '%</span> <span class="sp-ms">' + p.ok + ' of ' + p.n + '</span></td><td data-l="Typical time">' + (p.median_ms != null ? p.median_ms + ' ms' : '–') + '</td></tr>';
+      return '<tr class="hm-row' + (p === sel ? ' on' : '') + '" tabindex="0" role="button" data-i="' + i + '" aria-label="Show details for ' + esc(name(p)) + '"><td data-l="Place">' + esc(name(p)) + '</td><td data-l="Sites reached"><span class="hm-chip ' + h.cls + '">' + Math.round(p.ok / Math.max(p.n, 1) * 100) + '%</span> <span class="sp-ms">' + p.ok + ' of ' + p.n + '</span></td><td data-l="Typical time">' + (p.median_ms != null ? p.median_ms + ' ms' : '–') + '</td></tr>';
     });
     $('hm-tab').innerHTML = rows.join('');
+    card();
     $('hm-leg').innerHTML = layer === 'reach' ? '<span><i class="g"></i>90% or more reached</span><span><i class="a"></i>70 to 90%</span><span><i class="r"></i>Under 70%</span>' : '<span><i class="g"></i>Under 400 ms</span><span><i class="a"></i>400 to 900 ms</span><span><i class="r"></i>Over 900 ms</span>';
   }
   function ago(ts) {
@@ -227,7 +277,9 @@
   }
   function load() { return fetch('/api/heatmap.php').then(function (r) { return r.json(); }).then(function (j) {
     if (!j.places || !j.places.length) { $('hm-sum').textContent = 'The first worldwide results are still being collected. Please check back soon.'; return; }
-    data = j; draw();
+    var sk = sel ? name(sel) : null; data = j; sel = null; hover = null;
+    if (sk) j.places.forEach(function (p) { if (name(p) === sk) sel = p; });
+    draw();
     $('hm-sum').textContent = 'Based on the latest worldwide check of ' + j.sites_count + ' websites and apps from ' + j.places.length + ' places. Results from ' + ago(j.newest) + ' back to ' + ago(j.oldest) + '.';
     if (j.unreachable && j.unreachable.length) {
       $('hm-sites').innerHTML = '<h2>Sites not reached everywhere right now</h2><div class="hm-list">' + j.unreachable.map(function (s) {

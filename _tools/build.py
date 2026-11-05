@@ -101,7 +101,7 @@ def foot(scripts):
 import hashlib, re as _re
 def _ver():
     h = hashlib.md5()
-    for n in ('app.css', 'app.js', 'home.js', 'pages.js', 'worldmap.js', 'live.js', 'sitepage.js', 'tools.js', 'sla.js', 'speedtest.js', 'heatmap.js', 'ip.js', 'gameping.js', 'embed.js'):
+    for n in ('app.css', 'app.js', 'home.js', 'pages.js', 'worldmap.js', 'landmask.js', 'live.js', 'sitepage.js', 'tools.js', 'sla.js', 'speedtest.js', 'heatmap.js', 'ip.js', 'gameping.js', 'embed.js'):
         try: h.update(open(os.path.join(ROOT, 'assets', n), 'rb').read())
         except OSError: pass
     return h.hexdigest()[:8]
@@ -834,12 +834,12 @@ def heatmap_page():
             '<h1 style="margin:14px 0 8px">Global heat map<span class="dot">.</span></h1>'
             '<p class="lead">Where in the world are websites and apps reachable right now? Each glow shows how the sites we watch look from that place.</p>'
             '<div class="sp-card"><div class="hm-tabs" role="group" aria-label="Map layer"><button type="button" class="btn small" data-hm="reach" aria-pressed="true"><span>Reachability</span></button><button type="button" class="btn small" data-hm="speed" aria-pressed="false"><span>Response time</span></button></div>'
-            '<div class="hm-globe"><canvas id="hm-globe" tabindex="0" role="img" aria-label="Interactive 3D globe of website reachability. Drag or use the arrow keys to turn it. The table below lists every place."></canvas><div class="hm-tip" id="hm-tip" hidden></div></div><p class="note hm-hint">Drag the globe to turn it. Tap a glowing dot to see its place.</p><div class="hm-leg" id="hm-leg"></div><p class="note" id="hm-sum">Loading the map&hellip;</p>'
+            '<div class="hm-globe"><canvas id="hm-globe" tabindex="0" role="img" aria-label="Interactive 3D globe of website reachability. Drag or use the arrow keys to turn it. The table below lists every place."></canvas><div class="hm-tip" id="hm-tip" hidden></div></div><p class="note hm-hint">Drag the globe to turn it. Tap a dot, or a country in the list, for details.</p><div class="hm-card" id="hm-card" aria-live="polite"></div><div class="hm-leg" id="hm-leg"></div><p class="note" id="hm-sum">Loading the map&hellip;</p>'
             '<div class="rt-wrap"><table class="rt"><thead><tr><th>Place</th><th>Sites reached</th><th>Typical time</th></tr></thead><tbody id="hm-tab"></tbody></table></div></div>'
             '<div id="hm-sites"></div>'
             '<h2>How to read this map</h2><ul><li>Green means almost every site we watch answered from that place. Amber and red mean more of them did not.</li><li>A whole place turning red can point to a problem with a network or country, not just one website.</li><li>Some sites deliberately block automated checks from certain countries, so a lower figure is a hint, not proof of an outage.</li><li>The data comes from probes on the public <a href="https://globalping.io" rel="noopener">Globalping</a> network, refreshed through the day. Read <a href="/how-we-check">how we check</a> for the details.</li></ul>'
             '<p style="margin-top:20px"><a href="/">&larr; Back to the website checker</a></p></div></section>')
-    write('heat-map.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/worldmap.js"></script><script src="/assets/heatmap.js"></script>'))
+    write('heat-map.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/landmask.js"></script><script src="/assets/heatmap.js"></script>'))
 
 def _tool_page(path, fname, title, desc, tool_key, name, h1, inner, faq, script, extra_after=''):
     ld = {"@context": "https://schema.org", "@graph": [

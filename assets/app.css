@@ -1098,3 +1098,13 @@ a.icon-btn svg{width:24px;height:24px}
 .hm-globe canvas.grab{cursor:grabbing}
 .hm-tip{position:absolute;transform:translate(-50%,-100%);background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:6px 10px;font-size:13px;white-space:nowrap;pointer-events:none;box-shadow:0 4px 14px rgba(0,0,0,.35)}
 .hm-hint{text-align:center;margin:0 0 8px}
+
+.hm-card{margin:6px 0 12px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--card)}
+.hm-card-h{display:flex;align-items:center;gap:10px}.hm-card-h b{font-size:18px;flex:1 1 auto;min-width:0}.hm-card-h .hm-chip{flex:none}
+.hm-x{flex:none;background:none;border:1px solid var(--line);color:var(--text);border-radius:8px;width:32px;height:32px;cursor:pointer;font-size:18px;line-height:1}
+.hm-verdict{margin:8px 0 0}
+.hm-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:10px 0 6px}
+.hm-stats div{border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+.hm-stats i{display:block;font-style:normal;font-size:12px;color:var(--muted)}
+.hm-stats b{font-family:var(--mono);font-size:16px}.hm-stats em{display:block;font-style:normal;font-size:12px;color:var(--muted)}
+.rt tr.hm-row{cursor:pointer}.rt tr.hm-row:hover td,.rt tr.hm-row.on td{background:rgba(13,192,78,.12)}.rt tr.hm-row:focus-visible{outline:2px solid var(--green);outline-offset:-2px}
