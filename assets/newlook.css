@@ -219,12 +219,12 @@
 :root[data-theme=light] body .hm-hint{text-align:center;margin:6px 0}
 :root[data-theme=light] body .hm-leg{justify-content:center;margin:10px 0 18px}
 
-:root[data-theme=light] body .hm-zoom{position:absolute;top:10px;right:10px;z-index:6;display:flex;flex-direction:column;gap:8px;line-height:1}
-:root[data-theme=light] body .hm-zoom button{width:44px;height:44px;border-radius:50%;border:3px solid #111;background:#fffbe8;color:#111;font:800 26px/1 system-ui;box-shadow:0 3px 0 #111;cursor:pointer;padding:0}
+:root[data-theme=light] body .hm-zoom{position:absolute;top:8px;right:8px;z-index:6;display:flex;flex-direction:column;gap:6px;line-height:1}
+:root[data-theme=light] body .hm-zoom button{width:32px;height:32px;border-radius:50%;border:2.5px solid #111;background:#fffbe8;color:#111;font:800 19px/1 system-ui;box-shadow:0 2px 0 #111;cursor:pointer;padding:0}
 :root[data-theme=light] body .hm-zoom button:active{transform:translateY(2px);box-shadow:0 1px 0 #111}
-:root[data-theme=light] body .hm-zoom .rs{display:none;font-size:22px}
+:root[data-theme=light] body .hm-zoom .rs{display:none;font-size:16px}
 :root[data-theme=light] body .hm-world.zoomed .hm-zoom .rs{display:block}
 :root[data-theme=light] body .hm-world.zoomed svg{cursor:grab}
-@media (max-width:700px){:root[data-theme=light] body .hm-zoom{top:6px;right:6px;gap:6px}:root[data-theme=light] body .hm-zoom button{width:36px;height:36px;font-size:22px}}
+@media (max-width:700px){:root[data-theme=light] body .hm-zoom{top:5px;right:5px;gap:5px}:root[data-theme=light] body .hm-zoom button{width:28px;height:28px;font-size:17px;border-width:2px}}
 
 body:after{content:"TEST SITE";position:fixed;right:10px;bottom:10px;background:#f59e0b;color:#000;font:700 12px/1 system-ui,sans-serif;letter-spacing:.08em;padding:7px 10px;border:2px solid #000;border-radius:6px;z-index:90;pointer-events:none}
