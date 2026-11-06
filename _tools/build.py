@@ -103,7 +103,7 @@ def foot(scripts):
 <div class="socials" aria-label="Social media">
 <a href="#" title="Facebook" aria-label="Facebook">{I_FB}</a><a href="#" title="Instagram" aria-label="Instagram">{I_IG}</a><a href="#" title="X" aria-label="X">{I_X}</a><a href="#" title="TikTok" aria-label="TikTok">{I_TT}</a><a href="#" title="YouTube" aria-label="YouTube">{I_YT}</a>
 </div>
-<details open><summary>All pages</summary><div class="nl-fgrid">{fgrid}</div></details>
+<nav class="nl-fgrid nl-fcard" aria-label="All pages">{fgrid}</nav>
 <p class="fine">&copy; <span data-year>2026</span> siteupdown.com. An independent website checker, not affiliated with the sites it checks. Regional probes use the public <a href="https://globalping.io" rel="noopener">Globalping</a> network.</p>
 </div></footer>
 {scripts}
@@ -199,10 +199,10 @@ def home():
 </div></section>
 
 <section class="nl-tiles"><div class="wrap"><div class="nl-grid">
-<a class="nl-tile" href="/internet-speed-test"><b>Speed test</b><span>How fast is your internet?</span><img src="/assets/nl-globe.png" alt="" width="180" height="180" loading="lazy"></a>
+<a class="nl-tile" href="/internet-speed-test"><b>Speed test</b><span>How fast is your internet?</span><img src="/assets/nl-tile-speed.svg" alt="" width="200" height="140" loading="lazy"></a>
 <a class="nl-tile map" href="/outage-map"><b>Outage map</b><span>What is down around the world</span><img src="/assets/nl-map.png" alt="" width="580" height="437" loading="lazy"></a>
-<a class="nl-tile plain" href="/monitor"><b>Monitor</b><span>Email alerts for up to 25 sites</span></a>
-<a class="nl-tile plain" href="/help/"><b>Help</b><span>Plain-English guides</span></a>
+<a class="nl-tile mon" href="/monitor"><b>Monitor</b><span>Email alerts for up to 25 sites</span><img src="/assets/nl-tile-monitor.svg" alt="" width="200" height="150" loading="lazy"></a>
+<a class="nl-tile help" href="/help/"><b>Help</b><span>Plain-English guides</span><img src="/assets/nl-tile-help.svg" alt="" width="160" height="160" loading="lazy"></a>
 </div></div></section>
 
 <section id="global-pulse" class="nl-pulse"><div class="wrap">
