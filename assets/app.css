@@ -1108,6 +1108,3 @@ a.icon-btn svg{width:24px;height:24px}
 .hm-stats i{display:block;font-style:normal;font-size:12px;color:var(--muted)}
 .hm-stats b{font-family:var(--mono);font-size:16px}.hm-stats em{display:block;font-style:normal;font-size:12px;color:var(--muted)}
 .rt tr.hm-row{cursor:pointer}.rt tr.hm-row:hover td,.rt tr.hm-row.on td{background:rgba(13,192,78,.12)}.rt tr.hm-row:focus-visible{outline:2px solid var(--green);outline-offset:-2px}
-
-/* TEST SITE ribbon */
-body::after{content:"TEST SITE - not the live site";position:fixed;right:0;bottom:0;z-index:99999;background:#f5b83d;color:#1a1200;font:700 11px/1 system-ui,sans-serif;letter-spacing:.04em;padding:6px 10px;border-top-left-radius:8px;pointer-events:none}

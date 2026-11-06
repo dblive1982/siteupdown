@@ -44,13 +44,23 @@ I_YT = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d=
 
 NAV = [('Regional map', '/#global-pulse'), ('Top websites', '/#top-sites'), ('Gaming', '/#online-gaming'), ('Tools', '/tools/'), ('Monitor', '/monitor'), ('Account', '/account'), ('Help', '/help/'), ('How it works', '/#how-it-works')]
 
+
+MENU = [
+ ('Check', [('Website checker', '/', 'Is it down, or just you?'), ('All apps &amp; sites', '/is-it-down/', ''), ('Heat map', '/heat-map', 'Reachability around the world'), ('Monitor &amp; alerts', '/monitor', 'Watch up to 25 sites')]),
+ ('Tools', [('Internet speed test', '/internet-speed-test', ''), ('Website speed test', '/speed', ''), ('What is my IP?', '/what-is-my-ip', ''), ('Game ping test', '/game-ping-test', ''), ('All tools', '/tools/', '')]),
+ ('Learn', [('Help centre', '/help/', 'Plain-English guides'), ('How we check', '/how-we-check', ''), ('FAQ', '/faq', '')]),
+ ('More', [('Account', '/account', ''), ('About', '/about', ''), ('For business', '/business', ''), ('Contact', '/contact', '')]),
+]
+DRAWER_HTML = '<button class="nl-close" id="nl-close" type="button" aria-label="Close menu">&times;</button>' + ''.join('<h2>%s</h2>%s' % (g, ''.join('<a href="%s"%s>%s%s</a>' % (h, '' if g != 'More' else ' class="nl-sub"', l, ('<small>%s</small>' % sm) if sm else '') for l, h, sm in items)) for g, items in MENU)
+
 def head(title, desc, path, extra_head='', noindex=False):
     t = html.escape(title)
     d = html.escape(desc)
     canon = SITE + path
+    drawer = DRAWER_HTML
     robots = '<meta name="robots" content="noindex,follow">' if noindex else '<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">'
     return f'''<!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -64,36 +74,39 @@ def head(title, desc, path, extra_head='', noindex=False):
 <meta property="og:image" content="{SITE}/assets/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:locale" content="en_GB">
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{t}"><meta name="twitter:description" content="{d}"><meta name="twitter:image" content="{SITE}/assets/og.png">
 <meta name="application-name" content="siteupdown.com"><meta name="format-detection" content="telephone=no">
-<meta name="theme-color" content="#130228">
+<meta name="theme-color" content="#ffde59">
 <link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/favicon-32.png" type="image/png" sizes="32x32"><link rel="icon" href="/favicon-64.png" type="image/png" sizes="64x64"><link rel="manifest" href="/site.webmanifest"><link rel="icon" href="/favicon-192.png" type="image/png" sizes="192x192"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="/assets/app.css">
+<link rel="stylesheet" href="/assets/newlook.css">
 {extra_head}
 </head>
 <body{{BODYATTR}}>
 <a class="skip" href="#main">Skip to content</a>
-<header class="site-head"><div class="wrap head-in">
-<a class="brand" href="/" aria-label="siteupdown.com home">{BRAND}</a>
-<nav class="nav" aria-label="Main">{''.join('<a href="%s">%s</a>' % (h, l) for l, h in NAV)}</nav>
-<div class="head-tools"><a class="icon-btn" href="/internet-speed-test" aria-label="Internet speed test" title="Internet speed test"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.6 17.2a8.4 8.4 0 1 1 14.8 0"/><path d="M12 14l3.6-4.8"/><circle cx="12" cy="14.2" r="1.1"/></svg></a><button class="icon-btn" id="theme" type="button" aria-label="Switch theme"></button><div id="auth"></div></div>
+<header class="nl-head"><div class="nl-bar">
+<a class="nl-logo" href="/" aria-label="siteupdown.com home"><img src="/assets/nl-logo.png" alt="Site up down?" width="308" height="147"></a>
+<div class="nl-tools"><div id="auth"></div><button class="nl-menu-btn" id="nl-menu-btn" type="button" aria-expanded="false" aria-controls="nl-drawer" aria-label="Open menu"><span></span><span></span><span></span></button></div>
 </div></header>
+<div class="nl-scrim" id="nl-scrim" hidden></div>
+<nav class="nl-drawer" id="nl-drawer" aria-label="Main menu">{drawer}</nav>
 <main id="main">
 '''
 
 def foot(scripts):
-    links = [('Regional map', '/#global-pulse'), ('How it works', '/#how-it-works'), ('How we check', '/how-we-check'), ('FAQ', '/faq'), ('Help centre', '/help/'), ('Tools', '/tools/'), ('Is it down?', '/is-it-down/'), ('Heat map', '/heat-map'), ('Internet speed test', '/internet-speed-test'), ('What is my IP?', '/what-is-my-ip'), ('Game ping test', '/game-ping-test'), ('Website speed test', '/speed'), ('Monitor', '/monitor'), ('Account', '/account'), ('About', '/about'), ('For business', '/business'), ('Contact', '/contact'), ('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')]
+    links = [('Website checker', '/'), ('Is it down?', '/is-it-down/'), ('Heat map', '/heat-map'), ('Internet speed test', '/internet-speed-test'), ('What is my IP?', '/what-is-my-ip'), ('Game ping test', '/game-ping-test'), ('Website speed test', '/speed'), ('Tools', '/tools/'), ('Monitor', '/monitor'), ('Account', '/account'), ('Help centre', '/help/'), ('How we check', '/how-we-check'), ('FAQ', '/faq'), ('About', '/about'), ('For business', '/business'), ('Contact', '/contact'), ('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')]
     return f'''</main>
-<footer class="site-foot"><div class="wrap">
-<div class="foot-brand">{BRAND}</div>
+<footer class="site-foot"><div class="wrap nl-foot">
+<img src="/assets/nl-logo.png" alt="Site up down?" width="308" height="147">
 <p class="note">Less refreshing. More knowing.</p>
 <div class="socials" aria-label="Social media">
 <a href="#" title="Facebook" aria-label="Facebook">{I_FB}</a><a href="#" title="Instagram" aria-label="Instagram">{I_IG}</a><a href="#" title="X" aria-label="X">{I_X}</a><a href="#" title="TikTok" aria-label="TikTok">{I_TT}</a><a href="#" title="YouTube" aria-label="YouTube">{I_YT}</a>
 </div>
-<div class="foot-links">{''.join('<a href="%s">%s</a>' % (h, l) for l, h in links)}<button type="button" data-cookie-settings>Cookie settings</button></div>
+<details><summary>All pages</summary><div class="nl-links">{''.join('<a href="%s">%s</a>' % (h, l) for l, h in links)}<button type="button" data-cookie-settings>Cookie settings</button></div></details>
 <p class="fine">&copy; <span data-year>2026</span> siteupdown.com. An independent website checker, not affiliated with the sites it checks. Regional probes use the public <a href="https://globalping.io" rel="noopener">Globalping</a> network.</p>
 </div></footer>
 {scripts}
+<script src="/assets/newlook.js"></script>
 </body>
 </html>
 '''
@@ -101,7 +114,7 @@ def foot(scripts):
 import hashlib, re as _re
 def _ver():
     h = hashlib.md5()
-    for n in ('app.css', 'app.js', 'home.js', 'pages.js', 'worldmap.js', 'landmask.js', 'live.js', 'sitepage.js', 'tools.js', 'sla.js', 'speedtest.js', 'heatmap.js', 'ip.js', 'gameping.js', 'embed.js'):
+    for n in ('app.css', 'app.js', 'home.js', 'pages.js', 'worldmap.js', 'landmask.js', 'live.js', 'sitepage.js', 'tools.js', 'sla.js', 'speedtest.js', 'heatmap.js', 'ip.js', 'gameping.js', 'embed.js', 'newlook.js', 'newlook.css'):
         try: h.update(open(os.path.join(ROOT, 'assets', n), 'rb').read())
         except OSError: pass
     return h.hexdigest()[:8]
@@ -136,11 +149,16 @@ def _svgicons(c):
         return '<span class="ti"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">%s</svg></span>' % _ICO[e] if e in _ICO else m.group(0)
     return _re.sub(r'<span class="ti">([^<]{1,9})</span>', r, c)
 
+def build_newlook_css():
+    src = open(os.path.join(ROOT, '_tools', 'newlook.src.css'), encoding='utf-8').read()
+    out = src.replace('@@', ':root[data-theme=light] body')
+    open(os.path.join(ROOT, 'assets', 'newlook.css'), 'w', encoding='utf-8').write(out)
+
 def write(name, content):
     if name.endswith('.html'):
         content = _svgicons(content)
         v = _ver()
-        content = _re.sub(r'(/assets/(?:app\.css|app\.js|home\.js|pages\.js|worldmap\.js|live\.js|sitepage\.js|tools\.js|sla\.js|speedtest\.js|heatmap\.js))(?=")', r'\1?v=' + v, content)
+        content = _re.sub(r'(/assets/(?:app\.css|newlook\.css|newlook\.js|app\.js|home\.js|pages\.js|worldmap\.js|live\.js|sitepage\.js|tools\.js|sla\.js|speedtest\.js|heatmap\.js))(?=")', r'\1?v=' + v, content)
     with open(os.path.join(ROOT, name), 'w', encoding='utf-8') as f:
         f.write(content)
     print('wrote', name, len(content), 'bytes')
@@ -162,31 +180,30 @@ def home():
     topchips = '<button class="chip" type="button" data-cat="" aria-pressed="true">Popular</button>' + ''.join('<button class="chip" type="button" data-cat="%s" aria-pressed="false" data-full="%s">%s</button>' % (k, html.escape(SP.CATS[k][0]), html.escape(short[k])) for k in order if k in SP.CATS)
     share_btns = ''.join(f'<button class="sb{" wide" if k=="copy" else ""}" type="button" data-share="{k}" title="{t}" aria-label="{t}"{" hidden" if k=="native" else ""}>{i}{("<span>"+t+"</span>") if k=="copy" else ""}</button>' for k, t, i in [('copy', 'Copy link', I_LINK), ('x', 'Share on X', I_X), ('fb', 'Share on Facebook', I_FB), ('wa', 'Share on WhatsApp', I_WA), ('native', 'More share options', I_SHARE)])
     body = f'''
-<section class="hero"><div class="wrap">
-<svg class="rings" viewBox="0 0 400 400" aria-hidden="true"><circle cx="200" cy="200" r="60"/><circle cx="200" cy="200" r="130"/><circle cx="200" cy="200" r="198"/><rect x="262" y="52" width="9" height="9" fill="var(--green)"/></svg>
-<span class="eyebrow"><i></i>A little clarity. In one click.</span>
-<h1>Is it down — or <span class="hl">just you?</span></h1>
-<p class="lead">Paste any address for a clear answer in seconds, then watch real probes on six continents show whether a site is down for everyone — or just you.</p>
+<section class="nl-hero"><div class="wrap">
+<h1>Is it down, or is it just you?</h1>
+<p class="lead">Paste any website. We check it from our server and from around the world.</p>
 <form class="card checker" id="chk-form" aria-labelledby="checker-title" novalidate>
-<div class="top"><span id="checker-title">{I_RADIO}Check a website <em>· Live from our server</em></span><span class="live">Live check</span></div>
+<div class="top"><span id="checker-title">{I_RADIO}Check a website</span></div>
 <div class="chk-row">
-<div class="field">{I_GLOBE}<input id="chk-input" name="address" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="Website address, e.g. example.com" maxlength="300" aria-label="Website address"></div>
+<div class="field">{I_GLOBE}<input id="chk-input" name="address" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="e.g. netflix.com" maxlength="300" aria-label="Website address"></div>
 <button class="btn" id="chk-btn" type="submit"><span>Check website</span>{I_ARROW}</button></div>
 <p class="err" id="chk-err" role="alert"></p>
-<div class="chk-foot">
-<p class="assure">{I_SHIELD}No sign-up. Just answers.</p></div>
+<div class="chk-foot"><p class="assure">{I_SHIELD}No sign-up. Just answers.</p></div>
 </form>
 <div class="recent-row" id="recent-wrap" hidden><div class="eyebrow">Your recent searches</div><div class="chips" id="recent-chips"></div></div>
-<div class="try-row"><span class="eyebrow">Try a website</span><div class="chips">
-<button class="chip" type="button" data-h="google.com">google.com<span class="ne">↗</span></button><button class="chip" type="button" data-h="youtube.com">youtube.com<span class="ne">↗</span></button><button class="chip" type="button" data-h="github.com">github.com<span class="ne">↗</span></button></div></div>
-<div class="try-row app-row"><span class="eyebrow">Checking an app?</span><div class="chips">
-<a class="chip" href="/is-whatsapp-down">WhatsApp</a><a class="chip" href="/is-instagram-down">Instagram</a><a class="chip" href="/is-spotify-down">Spotify</a><a class="chip" href="/is-roblox-down">Roblox</a><a class="chip" href="/is-it-down/">All apps &amp; sites<span class="ne">→</span></a>
-</div></div>
-<div class="try-row app-row speed-row"><span class="eyebrow">Test your connection</span><div class="chips"><a class="chip" href="/internet-speed-test">Internet speed test<span class="ne">&rarr;</span></a></div></div>
-<p class="rule-note"><span>One server check, fifteen regional probes. No sign-up, no guesswork.</span></p>
+<div class="nl-try"><span class="eyebrow">Try one</span>
+<button class="chip" type="button" data-h="google.com">google.com</button><button class="chip" type="button" data-h="youtube.com">youtube.com</button><a class="chip" href="/is-whatsapp-down">WhatsApp</a><a class="chip" href="/is-instagram-down">Instagram</a><a class="chip" href="/is-roblox-down">Roblox</a></div>
 </div></section>
 
-<section id="global-pulse"><div class="wrap">
+<section class="nl-tiles"><div class="wrap"><div class="nl-grid">
+<a class="nl-tile" href="/internet-speed-test"><b>Speed test</b><span>How fast is your internet?</span><img src="/assets/nl-globe.png" alt="" width="180" height="180" loading="lazy"></a>
+<a class="nl-tile map" href="/heat-map"><b>Heat map</b><span>What is down around the world</span><img src="/assets/nl-map.png" alt="" width="580" height="437" loading="lazy"></a>
+<a class="nl-tile plain" href="/monitor"><b>Monitor</b><span>Email alerts for up to 25 sites</span></a>
+<a class="nl-tile plain" href="/help/"><b>Help</b><span>Plain-English guides</span></a>
+</div></div></section>
+
+<section id="global-pulse" class="nl-pulse"><div class="wrap">
 <div class="card pulse-card" aria-live="polite">
 <div class="pc-head"><div><span class="eyebrow"><i></i>Global pulse · worldwide probes</span>
 <h2>Down for everyone — or just you<span class="dot">?</span></h2>
@@ -219,52 +236,36 @@ def home():
 <div class="card more-det" id="more-det" hidden><h3>Technical details</h3><p class="fine">Certificate, DNS and what we saw when we fetched the page.</p><div id="ssl" hidden></div><div id="dns" hidden></div><div class="facts" id="facts" hidden></div></div>
 </div></section>
 
-<section id="recent-outages"><div class="wrap"><div class="card toplist">
+<section class="nl-acc"><div class="wrap">
+<details class="nl-d" id="recent-outages"><summary>Outages right now</summary><div class="nl-dbody"><div class="card toplist">
 <div class="pc-head"><div><span class="eyebrow"><i></i>Live · updates every minute</span><h2 id="ro-h">Outages right now<span class="dot">.</span></h2>
 <p class="lead" id="ro-lead">Popular sites that are down at this moment, with any that came back in the last 24 hours underneath.</p></div></div>
 <ul class="ro-list" id="ro-list"><li class="skeleton">Loading&hellip;</li></ul>
 <h3 class="ro-sub">Running slower than usual</h3><ul class="ro-list" id="ro-slow"><li class="skeleton">Loading&hellip;</li></ul>
 <p class="fine" style="margin-top:14px">A site counts as down after two failed checks in a row, so times are approximate and shown in your time zone.</p>
-</div></div></section>
-
-<section id="top-sites"><div class="wrap"><div class="card toplist">
+</div></div></details>
+<details class="nl-d" id="top-sites"><summary>Top websites</summary><div class="nl-dbody"><div class="card toplist">
 <div class="pc-head"><div><span class="eyebrow"><i></i>Watchlist · real requests</span><h2>Top websites<span class="dot">.</span></h2>
 <p class="lead">A rolling sweep of the sites people ask about most. Every line is a real request from this server — a red entry is one that answered with an error or not at all.</p></div>
 <div class="pc-actions col"><div class="seg2"><button type="button" data-f="all" aria-pressed="true">All sites</button><button type="button" data-f="issues" aria-pressed="false" id="f-issues">Issues</button></div>
 <span class="fine" id="top-count"></span><button class="btn small ghost" type="button" id="top-refresh">{I_REFRESH}Refresh</button></div></div>
 <div class="rows" id="top-grid"><div class="skeleton">Sweeping the watchlist…</div></div>
 <p class="fine" id="top-updated" style="margin-top:14px">A snapshot, not continuous uptime monitoring.</p>
-</div></div></section>
-
-<section id="online-gaming"><div class="wrap">
+</div></div></details>
+<details class="nl-d" id="online-gaming"><summary>Online gaming</summary><div class="nl-dbody">
 <div class="sec-head"><span class="eyebrow"><i></i>Games &amp; services</span><h2>Online gaming<span class="dot">.</span></h2>
 <p class="lead">Is the game down, or is it your connection? Search a service or browse by type.</p></div>
 <div class="tools"><div class="field" style="flex:1;min-width:240px;max-width:420px">{I_SEARCH}<input id="g-q" type="search" placeholder="Search gaming services" aria-label="Search gaming services" autocomplete="off"></div><span class="fine" id="g-count"></span></div>
 <div class="chips" id="g-cats" style="margin-bottom:16px"></div>
 <div class="rows" id="g-grid"><div class="skeleton">Loading gaming services…</div></div>
 <div class="pager"><button class="btn small ghost" type="button" id="g-prev">Prev</button><button class="btn small ghost" type="button" id="g-next">Next</button></div>
-</div></section>
-
-<div class="wrap">{ad('ADVERTISEMENT', 'A little space that keeps siteupdown.com free.')}</div>
-
-<section id="recent"><div class="wrap">
+</div></details>
+<details class="nl-d" id="recent"><summary>Recently checked websites</summary><div class="nl-dbody">
 <div class="sec-head"><span class="eyebrow"><i></i>Live feed</span><h2>Recently checked websites<span class="dot">.</span></h2>
 <p class="lead">What people have just checked. A snapshot in time, not a promise of uptime.</p></div>
 <div class="card table-wrap"><table class="feed"><thead><tr><th>Website</th><th>Status</th><th>Last checked</th></tr></thead><tbody id="feed-body"><tr><td colspan="3" class="skeleton">Loading recently checked websites…</td></tr></tbody></table></div>
-</div></section>
-
-<section><div class="wrap">
-<div class="sec-head"><h2>Clear signals. No false alarms<span class="dot">.</span></h2></div>
-<div class="defs">
-<div class="def"><span class="pill up">Up</span><p class="note" style="margin:0">The site responded to our server.</p></div>
-<div class="def"><span class="pill down">Confirmed down</span><p class="note" style="margin:0">Repeated server errors, verified on two attempts.</p></div>
-<div class="def"><span class="pill timeout">Timeout</span><p class="note" style="margin:0">A slow or missing response. That isn't proof of downtime.</p></div>
-<div class="def"><span class="pill inconclusive">Inconclusive</span><p class="note" style="margin:0">The check was blocked or couldn't verify the connection.</p></div>
-</div></div></section>
-
-<div class="wrap">{ad('ADVERTISEMENT', 'Space for a little support.')}</div>
-
-<section id="tools"><div class="wrap">
+</div></details>
+<details class="nl-d" id="tools"><summary>Tools for every website</summary><div class="nl-dbody">
 <div class="sec-head"><span class="eyebrow"><i></i>More than a status check</span><h2>Tools for every website<span class="dot">.</span></h2></div>
 <div class="tools-grid">
 <a class="tool" href="/speed"><span class="ti">⚡</span><h3>Website speed test</h3><p>See how fast a page loads, where the time goes, and what to fix. Free, no sign-up.</p><span class="tgo">Test a site →</span></a>
@@ -272,18 +273,16 @@ def home():
 <a class="tool" href="#checker-title" onclick="document.getElementById('chk-input').focus()"><span class="ti">🔒</span><h3>SSL, DNS &amp; domain expiry</h3><p>Every check shows the certificate, DNS records, redirects and when the domain expires.</p><span class="tgo">Run a check →</span></a>
 <a class="tool" href="/monitor"><span class="ti">📈</span><h3>Uptime history &amp; status pages</h3><p>Uptime over 24 hours, 7 and 30 days, with a public status page you can share.</p><span class="tgo">Start tracking →</span></a>
 </div>
-<p class="tools-more"><a class="btn ghost" href="/tools/"><span>See all free tools</span></a></p></div></section>
-
-<section id="help-teaser"><div class="wrap">
+<p class="tools-more"><a class="btn ghost" href="/tools/"><span>See all free tools</span></a></p></div></details>
+<details class="nl-d" id="help-teaser"><summary>Help guides</summary><div class="nl-dbody">
 <div class="sec-head"><span class="eyebrow"><i></i>Help centre</span><h2>Plain-English guides<span class="dot">.</span></h2></div>
 <div class="tools-grid">
 <a class="tool" href="/help/website-not-loading-checklist"><span class="ti">🧭</span><h3>Website not loading?</h3><p>A step-by-step checklist to find out whether it is the site or you.</p><span class="tgo">Read the guide →</span></a>
 <a class="tool" href="/help/server-errors-500-502-503-504"><span class="ti">🛠</span><h3>500, 502, 503, 504 errors</h3><p>What each server error means and what to try.</p><span class="tgo">Read the guide →</span></a>
 <a class="tool" href="/help/ssl-certificate-errors"><span class="ti">🔒</span><h3>SSL certificate errors</h3><p>Why browsers warn that a connection is not private, and how to fix it.</p><span class="tgo">Read the guide →</span></a>
 <a class="tool" href="/help/"><span class="ti">📚</span><h3>All help guides</h3><p>Error codes, fixes, DNS, uptime and speed, in one place.</p><span class="tgo">Open the help centre →</span></a>
-</div></div></section>
-
-<section id="faq"><div class="wrap">
+</div></div></details>
+<details class="nl-d" id="faq"><summary>Frequently asked questions</summary><div class="nl-dbody">
 <div class="sec-head"><span class="eyebrow"><i></i>Questions</span><h2>Frequently asked questions<span class="dot">.</span></h2></div>
 <div class="faq">
 <details><summary>How do I know if a website is down for everyone or just me?</summary><p>Paste the address into the checker. We load it from our own server and from fifteen probes in different countries at the same moment. If every probe reaches it, the site is up and the problem is probably on your side (your network, DNS, browser or device). If most fail, it is down for everyone.</p></details>
@@ -292,9 +291,8 @@ def home():
 <details><summary>How does the website speed test work?</summary><p>It loads the page three times from our server and reports the median. You see how long finding the server, connecting, securing the connection, waiting and downloading each took, plus page size, compression, protocol and a grade with plain-English tips.</p></details>
 <details><summary>Can I check an SSL certificate or a domain's expiry date?</summary><p>Yes. Every check shows the SSL certificate (who issued it, when it expires, whether it covers the address) as well as DNS records, redirects and the domain registration expiry date.</p></details>
 <details><summary>How often are monitored sites checked?</summary><p>Sites on a watchlist are re-checked about every minute. A site is only reported as down after two failed checks in a row, which avoids false alarms.</p></details>
-</div></div></section>
-
-<section id="how-it-works"><div class="wrap">
+</div></div></details>
+<details class="nl-d" id="how-it-works"><summary>How it works</summary><div class="nl-dbody">
 <div class="sec-head"><span class="eyebrow"><i></i>Behind the signal</span><h2>Less guesswork. More peace of mind<span class="dot">.</span></h2></div>
 <div class="steps">
 <div class="step"><span class="n">01</span><h3>We dispatch probes</h3><p>Machines in different countries fetch the address at the same moment and report back status codes and timings.</p></div>
@@ -302,6 +300,14 @@ def home():
 <div class="step"><span class="n">03</span><h3>You get the full picture</h3><p>Status codes, timings, a cautious verdict and a share link you can send to someone.</p></div>
 </div>
 <p class="center" style="margin-top:28px"><a class="btn" href="#checker-title" onclick="document.getElementById('chk-input').focus()"><span>Check a website</span>{I_ARROW}</a></p>
+
+<div class="sec-head"><h2>Clear signals. No false alarms<span class="dot">.</span></h2></div>
+<div class="defs">
+<div class="def"><span class="pill up">Up</span><p class="note" style="margin:0">The site responded to our server.</p></div>
+<div class="def"><span class="pill down">Confirmed down</span><p class="note" style="margin:0">Repeated server errors, verified on two attempts.</p></div>
+<div class="def"><span class="pill timeout">Timeout</span><p class="note" style="margin:0">A slow or missing response. That isn't proof of downtime.</p></div>
+<div class="def"><span class="pill inconclusive">Inconclusive</span><p class="note" style="margin:0">The check was blocked or couldn't verify the connection.</p></div>
+</div></div></details>
 </div></section>
 '''
     scripts = '<script src="/assets/worldmap.js"></script>\n<script src="/assets/app.js"></script>\n<script src="/assets/home.js"></script><script src="/assets/live.js"></script>'
@@ -794,6 +800,31 @@ def sla_page():
             '<p style="margin-top:20px"><a href="/tools/">&larr; All tools</a></p></div></section>')
     write('tools/uptime-sla-calculator.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/sla.js"></script>'))
 
+def stopwatch_svg():
+    import math
+    cx, cy = 150, 185
+    def pt(r, d):
+        a = math.radians(d - 90); return cx + r * math.cos(a), cy + r * math.sin(a)
+    def arc(r, d0, d1, col, w):
+        x0, y0 = pt(r, d0); x1, y1 = pt(r, d1); big = 1 if d1 - d0 > 180 else 0
+        return '<path d="M%.1f %.1f A%d %d 0 %d 1 %.1f %.1f" fill="none" stroke="%s" stroke-width="%d"/>' % (x0, y0, r, r, big, x1, y1, col, w)
+    sp = lambda f: -135 + f * 270
+    ticks = ''
+    for i in range(0, 33):
+        d = -135 + i * 270 / 32.0; major = i % 4 == 0
+        x0, y0 = pt(86 if major else 90, d); x1, y1 = pt(100, d)
+        ticks += '<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke="#0b0b0b" stroke-width="%s" stroke-linecap="round"/>' % (x0, y0, x1, y1, 4 if major else 2.2)
+    labels = ''
+    for f, t in ((0, '0'), (2/8., '10'), (3/8., '50'), (4/8., '100'), (5/8., '250'), (6/8., '500'), (1, '1000')):
+        x, y = pt(68, sp(f)); labels += '<text x="%.1f" y="%.1f" text-anchor="middle" font-size="12" font-weight="700" fill="#0b0b0b">%s</text>' % (x, y + 4, t)
+    return ('<svg viewBox="0 0 300 330" aria-hidden="true">'
+        '<rect x="128" y="6" width="44" height="26" rx="8" fill="#e84a4a" stroke="#0b0b0b" stroke-width="5"/><rect x="140" y="30" width="20" height="16" fill="#fbc531" stroke="#0b0b0b" stroke-width="5"/>'
+        '<circle cx="150" cy="185" r="138" fill="#0b0b0b"/><circle cx="150" cy="185" r="130" fill="#fbc531"/><circle cx="150" cy="185" r="112" fill="#fffbea" stroke="#0b0b0b" stroke-width="5"/>'
+        + arc(104, sp(0), sp(.25), '#e84a4a', 10) + arc(104, sp(.25), sp(.5), '#fbc531', 10) + arc(104, sp(.5), sp(1), '#7ed957', 10) + ticks + labels +
+        '<path id="st-arc" class="st-arc" d="M36.4 163.6 A90 90 0 1 1 163.6 163.6" style="visibility:hidden"/>'
+        '<g class="st-needle" id="st-needle"><path d="M143 185 L150 87 L157 185 Z" fill="#0b0b0b"/></g>'
+        '<circle cx="150" cy="185" r="17" fill="#fbc531" stroke="#0b0b0b" stroke-width="5"/><circle cx="145" cy="180" r="4.5" fill="#fff"/></svg>')
+
 def internet_speed_page():
     path = '/internet-speed-test'
     faq = [('How does the speed test work?', 'Your browser downloads and uploads test data to Cloudflare\'s public speed-test servers and times it. It also sends many tiny requests to measure ping and jitter. Nothing is installed.'),
@@ -808,7 +839,7 @@ def internet_speed_page():
     h = head('Speed test — free internet speed test (download, upload, ping) | siteupdown.com', 'Free internet speed test: measure your download speed, upload speed, ping and jitter in about 20 seconds. No app and no sign-up.', path, '<script type="application/ld+json">' + _json.dumps(ld) + '</script>').replace('{BODYATTR}', '')
     body = ('<section class="page"><div class="wrap prose toolpage" data-tool="speedtest"><nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/tools/">Tools</a> / Internet speed test</nav>'
             '<h1 style="margin:14px 0 8px">Internet speed test<span class="dot">.</span></h1>'
-            '<div class="sp-card st-card"><div class="st-gauge"><svg viewBox="0 0 200 200" aria-hidden="true"><path class="st-track" d="M36.4 163.6 A90 90 0 1 1 163.6 163.6"/><path id="st-arc" class="st-arc" d="M36.4 163.6 A90 90 0 1 1 163.6 163.6"/></svg>'
+            '<div class="sp-card st-card"><div class="st-gauge">' + stopwatch_svg() + ''
             '<div class="st-read" aria-live="polite"><b id="st-num">0</b><span id="st-unit">Mbps</span><em id="st-phase">Ready</em></div></div>'
             '<div class="st-btn"><button class="btn" id="st-go" type="button"><span>Start test</span></button></div>'
             '<p class="tool-err" id="st-err" role="alert" hidden></p>'
@@ -890,4 +921,4 @@ def gameping_page():
 
 
 if __name__ == '__main__':
-    home(); login(); account(); monitor(); speed(); status(); static_pages(); help_pages(); tools_pages(); sla_page(); internet_speed_page(); heatmap_page(); ip_page(); gameping_page(); site_pages_build()
+    build_newlook_css(); home(); login(); account(); monitor(); speed(); status(); static_pages(); help_pages(); tools_pages(); sla_page(); internet_speed_page(); heatmap_page(); ip_page(); gameping_page(); site_pages_build()
