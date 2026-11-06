@@ -184,13 +184,14 @@ def home():
 <h1>Is it down, or is it just you?</h1>
 <p class="lead">Paste any website. We check it from our server and from around the world.</p>
 <form class="card checker" id="chk-form" aria-labelledby="checker-title" novalidate>
+<div class="nl-wbar" aria-hidden="true"><span>&lsaquo;</span><i></i><span>&rsaquo;</span></div><div class="nl-wbody">
 <div class="top"><span id="checker-title">{I_RADIO}Check a website</span></div>
 <div class="chk-row">
 <div class="field">{I_GLOBE}<input id="chk-input" name="address" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="e.g. netflix.com" maxlength="300" aria-label="Website address"></div>
 <button class="btn" id="chk-btn" type="submit"><span>Check website</span>{I_ARROW}</button></div>
 <p class="err" id="chk-err" role="alert"></p>
 <div class="chk-foot"><p class="assure">{I_SHIELD}No sign-up. Just answers.</p></div>
-</form>
+</div></form>
 <div class="recent-row" id="recent-wrap" hidden><div class="eyebrow">Your recent searches</div><div class="chips" id="recent-chips"></div></div>
 <div class="nl-try"><span class="eyebrow">Try one</span>
 <button class="chip" type="button" data-h="google.com">google.com</button><button class="chip" type="button" data-h="youtube.com">youtube.com</button><a class="chip" href="/is-whatsapp-down">WhatsApp</a><a class="chip" href="/is-instagram-down">Instagram</a><a class="chip" href="/is-roblox-down">Roblox</a></div>
