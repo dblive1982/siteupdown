@@ -6,7 +6,7 @@
   if (!go) return;
   var B = 'https://speed.cloudflare.com';
   var $ = function (id) { return document.getElementById(id); };
-  var arc = $('st-arc'), num = $('st-num'), phase = $('st-phase'), err = $('st-err');
+  var needle = $('st-needle'), arc = $('st-arc'), num = $('st-num'), phase = $('st-phase'), err = $('st-err');
   var running = false, cancelled = false, ctrl = null, xhrs = [], bytesUsed = 0;
   var L = 0;
   try { L = arc.getTotalLength(); } catch (e) { L = 424.1; }
@@ -21,6 +21,7 @@
   function fmt(v) { return v >= 100 ? String(Math.round(v)) : v >= 10 ? v.toFixed(1) : v.toFixed(2); }
   function gauge(v, unit, label) {
     arc.style.strokeDasharray = (frac(v) * L).toFixed(1) + ' ' + L.toFixed(1);
+    if (needle) needle.style.transform = 'rotate(' + (-135 + frac(v) * 270).toFixed(1) + 'deg)';
     num.textContent = fmt(v);
     if (unit) $('st-unit').textContent = unit;
     if (label) phase.textContent = label;

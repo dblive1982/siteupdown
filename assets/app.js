@@ -137,7 +137,7 @@
   // Preview: add ?navy=1 to the address to try the deep-blue colours from the new logo (?navy=0 turns it off).
   try { var nq = new URLSearchParams(location.search).get('navy'); if (nq === '1') S.store.set('sud-navy', '1'); else if (nq === '0') S.store.set('sud-navy', ''); } catch (e) { /* ignore */ }
   if (S.store.get('sud-navy') === '1') d.documentElement.classList.add('navy');
-  var theme = S.store.get('sud-theme') || 'dark';
+  var theme = 'light'; /* new look is light only */
   applyTheme(theme);
   d.addEventListener('DOMContentLoaded', function () {
     applyTheme(theme);
