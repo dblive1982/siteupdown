@@ -212,7 +212,7 @@ def home():
 <p class="lead">One run asks machines in different countries to fetch the same address at the same time. If they can all reach it, the problem is probably on your side.</p></div>
 <div class="pc-actions"><span class="statchip"><i></i><span id="pulse-status">Standby</span></span><button class="btn small ghost" type="button" id="run-again" hidden>Run again</button></div></div>
 <div class="strip">
-<div class="cell wide"><span class="k">Verdict</span><b id="v-big">Waiting for probes</b><small id="v-sub">No address checked yet</small><span id="v-pill"></span><img class="v-mon" src="/assets/nl-monster-blue.png" alt="" width="800" height="800"></div>
+<div class="cell wide"><span class="k">Verdict</span><b id="v-big">Waiting for probes</b><small id="v-sub">No address checked yet</small><span id="v-pill"></span></div>
 <div class="cell"><span class="k">Reachable</span><b id="s-reach">0/12</b><small>probes that answered</small></div>
 <div class="cell"><span class="k">Median response</span><b id="s-med">—</b><small>across responding probes</small></div>
 <div class="cell"><span class="k">Measured at</span><b id="s-at">—</b><small>Not run yet</small></div>
@@ -539,6 +539,9 @@ def static_pages():
     write('admin.html', h + '''<section class="page adm-page"><div class="wrap"><div id="adm-root"><p class="lead">Loading&hellip;</p></div></div></section>''' + foot('<script src="/assets/app.js"></script><script src="/assets/admin.js"></script>'))
     h = head('Page not found — siteupdown.com', 'That page could not be found.', '/404', noindex=True).replace('{BODYATTR}', '')
     write('404.html', h + '<section class="page"><div class="wrap narrow center"><img class="nl-404mon" src="/assets/nl-monster-blue.png" alt="" width="800" height="800"><span class="eyebrow"><i></i>Error 404</span><h1 style="margin:14px 0">Not found<span class="dot">.</span></h1><p class="lead">We checked everywhere. This page is down for everyone.</p><p style="margin-top:24px"><a class="btn" href="/"><span>Back to the checker</span></a></p></div></section>' + foot('<script src="/assets/app.js"></script>'))
+    for code, ttl, big, msg in (('403', 'Access denied', 'No entry', 'You do not have permission to open this page.'), ('500', 'Something went wrong', 'Oops', 'That one is on us, not you. Please try again in a minute.')):
+        h = head('%s — siteupdown.com' % ttl, 'An error occurred.', '/' + code, noindex=True).replace('{BODYATTR}', '')
+        write(code + '.html', h + '<section class="page"><div class="wrap narrow center"><img class="nl-404mon" src="/assets/nl-monster-blue.png" alt="" width="800" height="800"><span class="eyebrow"><i></i>Error %s</span><h1 style="margin:14px 0">%s<span class="dot">.</span></h1><p class="lead">%s</p><p style="margin-top:24px"><a class="btn" href="/"><span>Back to the checker</span></a></p></div></section>' % (code, big, msg) + foot('<script src="/assets/app.js"></script>'))
 
 
 
