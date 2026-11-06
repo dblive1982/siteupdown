@@ -1,6 +1,6 @@
 
 (function(){
-var G={x0:30,y0:50,w:900,h:340,rows:136,top:77};
+var G={x0:30,y0:240,w:900,h:340,rows:136,top:77};
 function X(lon){return G.x0+(lon+180)/360*G.w}function Y(lat){return G.y0+(G.top-lat)/G.rows*G.h}
 var PAL=['#f4a259','#f6d55c','#f28ab0','#b79ced','#8fcf6f','#6fb7e8','#ef8a7a','#78d4bd','#e9b872','#c5e17a'];
 var SHORT={'United States of America':'USA','Dem. Rep. Congo':'DR CONGO','Central African Rep.':'C.A.R.','Dominican Rep.':'','Bosnia and Herz.':'','S. Sudan':'S. SUDAN','Saudi Arabia':'SAUDI ARABIA','United Kingdom':'UK','United Arab Emirates':'','Papua New Guinea':'PAPUA N.G.','New Zealand':'NEW ZEALAND','South Africa':'SOUTH AFRICA','South Korea':'','North Korea':'','W. Sahara':'','Falkland Is.':'','Greenland':'GREENLAND','Eq. Guinea':'','Fiji':'','Solomon Is.':'','Vanuatu':'','New Caledonia':'','Fr. S. Antarctic Lands':''};
