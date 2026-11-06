@@ -8,7 +8,7 @@
   var dn = null; try { dn = new Intl.DisplayNames(['en'], { type: 'region' }); } catch (e) {}
   var data = null, layer = 'reach', sel = null, sorted = [], dots = [];
   /* where the land sits on the paper picture (pixels of the 960x830 image) */
-  var G = { x0: 82, y0: 200, w: 796, h: 410, W: 960, H: 830, rows: 136, top: 77 };
+  var G = { x0: 52, y0: 110, w: 856, h: 560, W: 960, H: 830, rows: 136, top: 77 };
 
   function name(p) { return (p.city ? p.city + ', ' : '') + (p.country ? (dn ? (dn.of(p.country) || p.country) : p.country) : ''); }
   function heat(p) {
