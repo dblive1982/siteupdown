@@ -165,3 +165,23 @@
 .nl-wbar i{flex:1;height:22px;background:#fffbea;border:2.5px solid #0b0b0b;border-radius:9px}
 .nl-wbody{padding:16px}
 @@ .checker .top{padding:0 0 8px}
+
+/* Heat map page: cartoon globe, ink-outlined chips and cards */
+@@ .hm-globe canvas{border-radius:0}
+@@ .hm-globe{max-width:520px}
+@@ .hm-leg{color:#111;font-weight:600;gap:16px}
+@@ .hm-leg i{width:16px;height:16px;border:2.5px solid #111}
+@@ .hm-leg i.g,@@ .hm-chip.g{background:#7ed957}
+@@ .hm-leg i.a,@@ .hm-chip.a{background:#ffb020}
+@@ .hm-leg i.r,@@ .hm-chip.r{background:#e84a4a;color:#fff}
+@@ .hm-chip{border:2.5px solid #111;color:#111;font-weight:800;padding:1px 8px}
+@@ .hm-chip.n{background:#ddd}
+@@ .hm-card,@@ .hm-list a,@@ .rt-wrap{border:2.5px solid #111;background:#fffbe8;box-shadow:0 4px 0 #111}
+@@ .hm-stats div{border:2.5px solid #111;background:#fff;border-radius:14px}
+@@ .hm-x{border:2.5px solid #111;background:#fff}
+@@ .hm-list b{color:#111}
+@@ .hm-tip{background:#fffbe8;color:#111;border:2.5px solid #111;box-shadow:0 3px 0 #111}
+@@ .rt th{background:#ffde59;color:#111;border-bottom:2.5px solid #111}
+@@ .rt td{border-bottom:1.5px solid #111}
+@@ .rt tr.hm-row:hover td,@@ .rt tr.hm-row.on td{background:#fff2b0}
+@@ .hm-tabs .btn[aria-pressed=false]{background:#fffbe8;color:#111;border:2.5px solid #111}

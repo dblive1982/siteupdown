@@ -166,4 +166,24 @@
 .nl-wbody{padding:16px}
 :root[data-theme=light] body .checker .top{padding:0 0 8px}
 
+/* Heat map page: cartoon globe, ink-outlined chips and cards */
+:root[data-theme=light] body .hm-globe canvas{border-radius:0}
+:root[data-theme=light] body .hm-globe{max-width:520px}
+:root[data-theme=light] body .hm-leg{color:#111;font-weight:600;gap:16px}
+:root[data-theme=light] body .hm-leg i{width:16px;height:16px;border:2.5px solid #111}
+:root[data-theme=light] body .hm-leg i.g,:root[data-theme=light] body .hm-chip.g{background:#7ed957}
+:root[data-theme=light] body .hm-leg i.a,:root[data-theme=light] body .hm-chip.a{background:#ffb020}
+:root[data-theme=light] body .hm-leg i.r,:root[data-theme=light] body .hm-chip.r{background:#e84a4a;color:#fff}
+:root[data-theme=light] body .hm-chip{border:2.5px solid #111;color:#111;font-weight:800;padding:1px 8px}
+:root[data-theme=light] body .hm-chip.n{background:#ddd}
+:root[data-theme=light] body .hm-card,:root[data-theme=light] body .hm-list a,:root[data-theme=light] body .rt-wrap{border:2.5px solid #111;background:#fffbe8;box-shadow:0 4px 0 #111}
+:root[data-theme=light] body .hm-stats div{border:2.5px solid #111;background:#fff;border-radius:14px}
+:root[data-theme=light] body .hm-x{border:2.5px solid #111;background:#fff}
+:root[data-theme=light] body .hm-list b{color:#111}
+:root[data-theme=light] body .hm-tip{background:#fffbe8;color:#111;border:2.5px solid #111;box-shadow:0 3px 0 #111}
+:root[data-theme=light] body .rt th{background:#ffde59;color:#111;border-bottom:2.5px solid #111}
+:root[data-theme=light] body .rt td{border-bottom:1.5px solid #111}
+:root[data-theme=light] body .rt tr.hm-row:hover td,:root[data-theme=light] body .rt tr.hm-row.on td{background:#fff2b0}
+:root[data-theme=light] body .hm-tabs .btn[aria-pressed=false]{background:#fffbe8;color:#111;border:2.5px solid #111}
+
 body:after{content:"TEST SITE";position:fixed;right:10px;bottom:10px;background:#f59e0b;color:#000;font:700 12px/1 system-ui,sans-serif;letter-spacing:.08em;padding:7px 10px;border:2px solid #000;border-radius:6px;z-index:90;pointer-events:none}
