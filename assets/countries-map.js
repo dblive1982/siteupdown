@@ -1,6 +1,12 @@
 
 (function(){
 var G={x0:30,y0:240,w:900,h:340,rows:136,top:77};
+var EA1=1.340264,EA2=-0.081106,EA3=0.000893,EA4=0.003796,ES=166;
+function PR(lon,lat){var l=lon*Math.PI/180,f=lat*Math.PI/180,t=Math.asin(Math.sqrt(3)/2*Math.sin(f)),t2=t*t,t6=t2*t2*t2;
+ var x=2*Math.sqrt(3)*l*Math.cos(t)/(3*(EA1+3*EA2*t2+t6*(7*EA3+9*EA4*t2)));
+ var y=t*(EA1+EA2*t2+t6*(EA3+EA4*t2));
+ return [480+x*ES,EYC-(y-EY0)*ES]}
+var EYC=340,EY0=0;EY0=(function(){var f=14*Math.PI/180,t=Math.asin(Math.sqrt(3)/2*Math.sin(f)),t2=t*t,t6=t2*t2*t2;return t*(EA1+EA2*t2+t6*(EA3+EA4*t2))})();
 function X(lon){return G.x0+(lon+180)/360*G.w}function Y(lat){return G.y0+(G.top-lat)/G.rows*G.h}
 var PAL=['#f4a259','#f6d55c','#f28ab0','#b79ced','#8fcf6f','#6fb7e8','#ef8a7a','#78d4bd','#e9b872','#c5e17a'];
 var SHORT={'United States of America':'USA','Dem. Rep. Congo':'DR CONGO','Central African Rep.':'C.A.R.','Dominican Rep.':'','Bosnia and Herz.':'','S. Sudan':'S. SUDAN','Saudi Arabia':'SAUDI ARABIA','United Kingdom':'UK','United Arab Emirates':'','Papua New Guinea':'PAPUA N.G.','New Zealand':'NEW ZEALAND','South Africa':'SOUTH AFRICA','South Korea':'','North Korea':'','W. Sahara':'','Falkland Is.':'','Greenland':'GREENLAND','Eq. Guinea':'','Fiji':'','Solomon Is.':'','Vanuatu':'','New Caledonia':'','Fr. S. Antarctic Lands':''};
@@ -13,7 +19,7 @@ fetch('assets/countries.json').then(function(r){return r.json()}).then(function(
     var d='',best=null,ba=0;
     c[1].split('|').forEach(function(rs){
       var pts=dec(rs),minx=1e9,maxx=-1e9,miny=1e9,maxy=-1e9;
-      d+='M'+pts.map(function(p){var x=X(p[0]),y=Y(p[1]);if(x<minx)minx=x;if(x>maxx)maxx=x;if(y<miny)miny=y;if(y>maxy)maxy=y;return x.toFixed(1)+' '+y.toFixed(1)}).join('L')+'Z';
+      d+='M'+pts.map(function(p){var q=PR(p[0],p[1]),x=q[0],y=q[1];if(x<minx)minx=x;if(x>maxx)maxx=x;if(y<miny)miny=y;if(y>maxy)maxy=y;return x.toFixed(1)+' '+y.toFixed(1)}).join('L')+'Z';
       var a=(maxx-minx)*(maxy-miny);if(a>ba){ba=a;best=[(minx+maxx)/2,(miny+maxy)/2,maxx-minx]}
     });
     var col=PAL[hash(c[0])%PAL.length];
@@ -25,10 +31,10 @@ fetch('assets/countries.json').then(function(r){return r.json()}).then(function(
   document.getElementById('land').innerHTML=land;document.getElementById('hatchg').innerHTML=hat;document.getElementById('names').innerHTML=names;
 });
 var seas=[['ATLANTIC',-35,22],['OCEAN',-35,16],['PACIFIC',-150,5],['OCEAN',-150,-1],['PACIFIC',165,-12],['OCEAN',165,-18],['INDIAN',82,-24],['OCEAN',82,-30],['ARCTIC OCEAN',-110,76],['SOUTHERN OCEAN',20,-52]];
-document.getElementById('seas').innerHTML=seas.map(function(s){return '<text class="oc" x="'+X(s[1]).toFixed(0)+'" y="'+Y(s[2]).toFixed(0)+'">'+s[0]+'</text>'}).join('');
+document.getElementById('seas').innerHTML=seas.map(function(s){return '<text class="oc" x="'+PR(s[1],s[2])[0].toFixed(0)+'" y="'+PR(s[1],s[2])[1].toFixed(0)+'">'+s[0]+'</text>'}).join('');
 var P=[['London',51.5,-0.1,'g',99,120],['New York',40.7,-74,'g',94,210],['Sao Paulo',-23.5,-46.6,'a',78,640],['Johannesburg',-26.2,28,'r',56,980],['Mumbai',19,72.8,'a',78,420],['Tokyo',35.7,139.7,'g',97,180],['Sydney',-33.9,151.2,'g',95,300],['Los Angeles',34,-118,'g',96,230],['Singapore',1.3,103.8,'g',98,160],['Dubai',25.2,55.3,'g',92,260]];
 var COL={g:'#7ed957',a:'#ffb020',r:'#e84a4a'},ph='';
-P.forEach(function(p,i){var x=X(p[2]).toFixed(1),y=Y(p[1]).toFixed(1);
+P.forEach(function(p,i){var q=PR(p[2],p[1]),x=q[0].toFixed(1),y=q[1].toFixed(1);
  ph+='<g class="pole'+(i==4?' on':'')+'" data-i="'+i+'" transform="translate('+x+' '+y+')"><ellipse cx="0" cy="1" rx="9" ry="3.5" fill="rgba(0,0,0,.28)"/><line x1="0" y1="0" x2="0" y2="-46" stroke="#4a2c17" stroke-width="3.4" stroke-linecap="round"/><path d="M1.5 -46 L30 -39 L1.5 -30 Z" fill="'+COL[p[3]]+'" stroke="#111" stroke-width="2.6" stroke-linejoin="round"/><circle cx="0" cy="-48" r="4" fill="#111"/><rect x="-14" y="-72" width="1" height="1" fill="none"/><text x="0" y="-56" text-anchor="middle">'+p[0].toUpperCase()+'</text></g>';});
 document.getElementById('poles').innerHTML=ph;
 document.getElementById('poles').addEventListener('click',function(e){var g=e.target.closest('.pole');if(!g)return;document.querySelectorAll('.pole').forEach(function(n){n.classList.remove('on')});g.classList.add('on');var p=P[+g.getAttribute('data-i')];document.getElementById('pn').textContent=p[0];document.getElementById('pc').textContent=p[4]+'%';document.getElementById('pc').style.background=COL[p[3]];document.getElementById('pt').textContent='Typical time '+p[5]+' ms'});
