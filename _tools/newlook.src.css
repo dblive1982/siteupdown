@@ -193,12 +193,12 @@
 @@ .hm-mrow input{flex:1;min-width:0;height:46px;border:2.5px solid #111;border-radius:99px;padding:0 16px;font-size:16px;background:#fff}
 
 /* Heat map on the crayon paper map */
-@@ .hm-world{position:relative;width:100%;margin:4px auto;border:3.5px solid #111;border-radius:22px;box-shadow:6px 6px 0 #111;overflow:hidden;background:#c8e1ee;line-height:0}
+@@ .hm-world{position:relative;width:100%;margin:4px auto;border:3.5px solid #111;border-radius:22px;box-shadow:6px 6px 0 #111;overflow:hidden;background:#e8eaee;line-height:0}
 @@ .hm-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 @@ .hm-inner{position:relative;min-width:100%}
 @@ .hm-world svg{display:block;width:100%;height:auto;touch-action:pan-x pan-y}
-@@ .hm-world .cn{font-family:"Chalkboard SE","Comic Sans MS",system-ui,sans-serif;font-weight:800;fill:#3b2414;text-anchor:middle;pointer-events:none}
-@@ .hm-world .oc{font-family:Georgia,serif;font-style:italic;font-weight:700;fill:#5f7f96;text-anchor:middle;letter-spacing:.3em;opacity:.9;pointer-events:none}
+@@ .hm-world .cn{font-family:"Chalkboard SE","Comic Sans MS",system-ui,sans-serif;font-weight:800;fill:#1d1d22;text-anchor:middle;pointer-events:none}
+@@ .hm-world .oc{font-family:Georgia,serif;font-style:italic;font-weight:700;fill:#8b909b;text-anchor:middle;letter-spacing:.3em;opacity:.9;pointer-events:none}
 @@ .hm-world .pole{cursor:pointer;outline:none}
 @@ .hm-world .pole:hover .flag,@@ .hm-world .pole:focus-visible .flag,@@ .hm-world .pole.on .flag{filter:brightness(1.12)}
 @@ .hm-world .pole.on line,@@ .hm-world .pole:focus-visible line{stroke:#111}
