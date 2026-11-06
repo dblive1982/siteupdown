@@ -1,0 +1,50 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive"><link rel="icon" href="/favicon-32.png" type="image/png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap"><title>Theme 5 — yellow sidebar</title>
+<style>
+:root{--page:#e2e2d3;--text:#0b0b0b;--card:#fffbea;--yellow:#ffde59;--bar:#fbc531;--green:#6cb33f;--green-d:#3f7d27;--red:#e84a4a;--line:2.5px solid #0b0b0b}
+*{box-sizing:border-box}body{margin:0;background:var(--page);color:var(--text);font:500 16px/1.5 "Space Grotesk",system-ui,sans-serif}
+.side{background:var(--yellow);border-bottom:var(--line);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.side img{height:52px;width:auto;display:block}
+.side nav{display:flex;gap:16px}.side nav a{color:#0b0b0b;font-weight:700;text-decoration:none}
+.side .q,.side .help{display:none}
+.main{padding:0 16px 70px;max-width:760px;margin:0 auto}
+.hero{text-align:center;padding:30px 0 8px}.hero h1{margin:0 0 6px;font-size:clamp(28px,6vw,40px);line-height:1.1}.hero p{margin:0 0 18px;opacity:.85}
+.win,.form,.card{background:var(--card);border:var(--line);border-radius:22px;box-shadow:6px 7px 0 #0b0b0b;overflow:hidden}
+.bar{background:var(--bar);border-bottom:var(--line);padding:9px 12px;display:flex;gap:8px;align-items:center;font-weight:700}
+.bar i{flex:1;height:24px;background:var(--card);border:var(--line);border-radius:9px}
+.body{padding:18px}
+.check{display:flex;gap:10px;flex-wrap:wrap}.check input,.row input{font:inherit;min-width:0;padding:12px 14px;border:var(--line);border-radius:13px;background:#fff;width:100%}.check input{flex:1 1 200px;width:auto}
+.btn{font:700 17px "Space Grotesk",system-ui,sans-serif;color:#fff;background:var(--green);border:0;border-radius:999px;padding:12px 28px;cursor:pointer;box-shadow:0 5px 0 var(--green-d)}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--green-d)}
+h2{margin:34px 0 12px;font-size:22px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px}
+.card{padding:16px;border-radius:18px;box-shadow:5px 6px 0 #0b0b0b}.card h3{margin:0 0 6px;font-size:18px}.card p{margin:8px 0 0;font-size:14px}
+.pill{display:inline-block;font-weight:700;font-size:13px;padding:2px 12px;border:var(--line);border-radius:999px;background:#7ed957}.pill.warn{background:var(--bar)}.pill.bad{background:var(--red);color:#fff}
+.form{margin:0 6px 20px 0}.row{display:grid;grid-template-columns:84px 1fr;gap:12px;align-items:center;margin-bottom:12px}
+.go{display:block;margin:16px auto 0;font:700 16px "Space Grotesk",system-ui,sans-serif;color:#fff;background:var(--red);border:var(--line);border-radius:12px;padding:10px 38px;cursor:pointer}
+footer{font-size:14px;opacity:.7;margin-top:30px}
+.ribbon{position:fixed;right:10px;bottom:10px;background:#f59e0b;color:#000;font:700 12px/1 system-ui;letter-spacing:.08em;padding:7px 10px;border:2px solid #000;border-radius:6px;z-index:9}
+@media(min-width:860px){
+ body{display:grid;grid-template-columns:300px 1fr;min-height:100vh}
+ .side{position:sticky;top:0;height:100vh;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:22px;padding:26px 22px;border-bottom:0;border-right:var(--line)}
+ .side img{height:auto;width:210px;margin:0 auto}
+ .side nav{flex-direction:column;gap:2px}.side nav a{font-size:20px;padding:8px 12px;border-radius:12px}.side nav a:hover{background:#0b0b0b18}
+ .side .q{display:block}.side .help{display:block;margin-top:auto;align-self:center}
+ .side .q .win{box-shadow:5px 6px 0 #0b0b0b}
+ .main{max-width:none;margin:0;padding:0 48px 70px}.main .inner{max-width:760px;margin:0 auto}
+ .hero{text-align:left;padding-top:48px}.mobile-check{display:none}
+}
+</style></head><body>
+<aside class="side"><a href="/themes.html"><img src="/assets/t/logo-plain.png" alt="Site updown" width="288" height="200"></a>
+<nav aria-label="Main"><a href="#">Check</a><a href="#">Tools</a><a href="#">Learn</a></nav>
+<div class="q"><div class="win"><div class="bar"><span>&lsaquo;</span><i></i><span>&rsaquo;</span></div><div class="body"><form onsubmit="return false"><input type="text" placeholder="e.g. netflix.com" aria-label="Website address" style="width:100%;font:inherit;padding:11px 14px;border:var(--line);border-radius:12px;background:#fff;margin-bottom:12px"><button class="btn" style="width:100%">Check</button></form></div></div></div>
+<button class="btn help" type="button">HELP</button></aside>
+<main class="main"><div class="inner">
+<section class="hero"><h1>Is it down, or is it just you?</h1><p>Type any website and we'll check it from around the world.</p></section>
+<section class="win mobile-check"><div class="bar"><span>&lsaquo;</span><i></i><span>&rsaquo;</span></div><div class="body"><form class="check" onsubmit="return false"><input type="text" placeholder="e.g. netflix.com" aria-label="Website address"><button class="btn">Check</button></form></div></section>
+<h2>Recent checks</h2>
+<div class="grid"><div class="card"><h3>netflix.com</h3><span class="pill">Up</span><p>Reached from 15 of 15 places. 212 ms.</p></div>
+<div class="card"><h3>steamcommunity.com</h3><span class="pill warn">Slow</span><p>Reached from 14 of 15 places. 1.8 s.</p></div>
+<div class="card"><h3>example-store.com</h3><span class="pill bad">Down</span><p>Not reachable from any place.</p></div></div>
+<h2>Get an alert</h2>
+<section class="form"><div class="bar"><span>&lsaquo;</span><i></i><span>&rsaquo;</span></div><div class="body"><div class="row"><label for="e">Email</label><input id="e" type="email" placeholder="you@example.com"></div><div class="row"><label for="w">Website</label><input id="w" type="text" placeholder="yoursite.com"></div><button class="go" type="button">Alert me</button></div></section>
+<footer>&copy; 2026 siteupdown.com &middot; theme 5 test page</footer></div></main><div class="ribbon">TEST SITE</div></body></html>
