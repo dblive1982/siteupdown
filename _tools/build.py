@@ -46,7 +46,7 @@ NAV = [('Regional map', '/#global-pulse'), ('Top websites', '/#top-sites'), ('Ga
 
 
 MENU = [
- ('Check', [('Website checker', '/', 'Is it down, or just you?'), ('All apps &amp; sites', '/is-it-down/', ''), ('Heat map', '/heat-map', 'Reachability around the world'), ('Monitor &amp; alerts', '/monitor', 'Watch up to 25 sites')]),
+ ('Check', [('Website checker', '/', 'Is it down, or just you?'), ('All apps &amp; sites', '/is-it-down/', ''), ('Outage map', '/outage-map', 'Reachability around the world'), ('Monitor &amp; alerts', '/monitor', 'Watch up to 25 sites')]),
  ('Tools', [('Internet speed test', '/internet-speed-test', ''), ('Website speed test', '/speed', ''), ('What is my IP?', '/what-is-my-ip', ''), ('Game ping test', '/game-ping-test', ''), ('All tools', '/tools/', '')]),
  ('Learn', [('Help centre', '/help/', 'Plain-English guides'), ('How we check', '/how-we-check', ''), ('FAQ', '/faq', '')]),
  ('More', [('Account', '/account', ''), ('About', '/about', ''), ('For business', '/business', ''), ('Contact', '/contact', '')]),
@@ -94,7 +94,7 @@ def head(title, desc, path, extra_head='', noindex=False):
 '''
 
 def foot(scripts):
-    links = [('Website checker', '/'), ('Is it down?', '/is-it-down/'), ('Heat map', '/heat-map'), ('Internet speed test', '/internet-speed-test'), ('What is my IP?', '/what-is-my-ip'), ('Game ping test', '/game-ping-test'), ('Website speed test', '/speed'), ('Tools', '/tools/'), ('Monitor', '/monitor'), ('Account', '/account'), ('Help centre', '/help/'), ('How we check', '/how-we-check'), ('FAQ', '/faq'), ('About', '/about'), ('For business', '/business'), ('Contact', '/contact'), ('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')]
+    links = [('Website checker', '/'), ('Is it down?', '/is-it-down/'), ('Outage map', '/outage-map'), ('Internet speed test', '/internet-speed-test'), ('What is my IP?', '/what-is-my-ip'), ('Game ping test', '/game-ping-test'), ('Website speed test', '/speed'), ('Tools', '/tools/'), ('Monitor', '/monitor'), ('Account', '/account'), ('Help centre', '/help/'), ('How we check', '/how-we-check'), ('FAQ', '/faq'), ('About', '/about'), ('For business', '/business'), ('Contact', '/contact'), ('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')]
     return f'''</main>
 <footer class="site-foot"><div class="wrap nl-foot">
 <img src="/assets/nl-logo-light.png" alt="Site up down?" width="831" height="391">
@@ -199,7 +199,7 @@ def home():
 
 <section class="nl-tiles"><div class="wrap"><div class="nl-grid">
 <a class="nl-tile" href="/internet-speed-test"><b>Speed test</b><span>How fast is your internet?</span><img src="/assets/nl-globe.png" alt="" width="180" height="180" loading="lazy"></a>
-<a class="nl-tile map" href="/heat-map"><b>Heat map</b><span>What is down around the world</span><img src="/assets/nl-map.png" alt="" width="580" height="437" loading="lazy"></a>
+<a class="nl-tile map" href="/outage-map"><b>Outage map</b><span>What is down around the world</span><img src="/assets/nl-map.png" alt="" width="580" height="437" loading="lazy"></a>
 <a class="nl-tile plain" href="/monitor"><b>Monitor</b><span>Email alerts for up to 25 sites</span></a>
 <a class="nl-tile plain" href="/help/"><b>Help</b><span>Plain-English guides</span></a>
 </div></div></section>
@@ -722,7 +722,7 @@ def help_pages():
                 '<p style="margin-top:20px"><a href="/help/">&larr; All help guides</a></p></div></section>')
         write('help/' + a['slug'] + '.html', h + body + foot('<script src="/assets/app.js"></script>'))
     # sitemap
-    urls = [('/', 'daily', '1.0'), ('/speed', 'monthly', '0.8'), ('/internet-speed-test', 'monthly', '0.8'), ('/what-is-my-ip', 'monthly', '0.8'), ('/game-ping-test', 'monthly', '0.8'), ('/heat-map', 'daily', '0.7'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8'), ('/tools/', 'monthly', '0.8')] + [('/tools/' + t['slug'], 'monthly', '0.7') for t in TOOLS] + [('/tools/uptime-sla-calculator', 'monthly', '0.7'), ('/how-we-check', 'monthly', '0.6'), ('/faq', 'monthly', '0.6')] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES if n not in HIDDEN] + [('/about', 'monthly', '0.5'), ('/business', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
+    urls = [('/', 'daily', '1.0'), ('/speed', 'monthly', '0.8'), ('/internet-speed-test', 'monthly', '0.8'), ('/what-is-my-ip', 'monthly', '0.8'), ('/game-ping-test', 'monthly', '0.8'), ('/outage-map', 'daily', '0.7'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8'), ('/tools/', 'monthly', '0.8')] + [('/tools/' + t['slug'], 'monthly', '0.7') for t in TOOLS] + [('/tools/uptime-sla-calculator', 'monthly', '0.7'), ('/how-we-check', 'monthly', '0.6'), ('/faq', 'monthly', '0.6')] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES if n not in HIDDEN] + [('/about', 'monthly', '0.5'), ('/business', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
     sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join('<url><loc>%s%s</loc><lastmod>2026-11-02</lastmod><changefreq>%s</changefreq><priority>%s</priority></url>\n' % (SITE, u, c, p) for u, c, p in urls) + '</urlset>\n'
     open(os.path.join(ROOT, 'sitemap.xml'), 'w').write(sm)
 
@@ -733,7 +733,7 @@ def tools_pages():
     # hub
     cards = ''.join('<a class="tool" href="/tools/%s"><span class="ti">%s</span><h3>%s</h3><p>%s</p><span class="tgo">Open the tool &rarr;</span></a>' % (t['slug'], t['icon'], html.escape(t['name']), t['short']) for t in TOOLS)
     extra_cards = ('<a class="tool" href="/"><span class="ti">&#128269;</span><h3>Is it down?</h3><p>Check any website from our server and fifteen places around the world.</p><span class="tgo">Open the checker &rarr;</span></a>'
-                   '<a class="tool" href="/heat-map"><span class="ti">&#128506;</span><h3>Global heat map</h3><p>See where in the world websites are reachable right now.</p><span class="tgo">Open the map &rarr;</span></a>'
+                   '<a class="tool" href="/outage-map"><span class="ti">&#128506;</span><h3>Global outage map</h3><p>See where in the world websites are reachable right now.</p><span class="tgo">Open the map &rarr;</span></a>'
                    '<a class="tool" href="/internet-speed-test"><span class="ti">&#128246;</span><h3>Internet speed test</h3><p>Measure your download, upload, ping and jitter.</p><span class="tgo">Test your connection &rarr;</span></a>'
                    '<a class="tool" href="/what-is-my-ip"><span class="ti">&#128205;</span><h3>What is my IP address?</h3><p>See your public address, provider and approximate location.</p><span class="tgo">Show my IP &rarr;</span></a>'
                    '<a class="tool" href="/game-ping-test"><span class="ti">&#127918;</span><h3>Game ping test</h3><p>Check your ping to 17 regions that online games use.</p><span class="tgo">Test my ping &rarr;</span></a>'
@@ -860,10 +860,10 @@ def internet_speed_page():
 
 
 def heatmap_page():
-    path = '/heat-map'
-    h = head('Global website heat map — where sites are reachable | siteupdown.com', 'A live world heat map showing how reachable popular websites and apps are from 15 places around the world, and how fast they respond.', path).replace('{BODYATTR}', '')
-    body = ('<section class="page"><div class="wrap prose toolpage"><nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / Heat map</nav>'
-            '<h1 style="margin:14px 0 8px">Global heat map<span class="dot">.</span></h1>'
+    path = '/outage-map'
+    h = head('Global website outage map — where sites are reachable | siteupdown.com', 'A live world outage map showing how reachable popular websites and apps are from 15 places around the world, and how fast they respond.', path).replace('{BODYATTR}', '')
+    body = ('<section class="page"><div class="wrap prose toolpage"><nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / Outage map</nav>'
+            '<h1 style="margin:14px 0 8px">Global outage map<span class="dot">.</span></h1>'
             '<p class="lead">Where in the world are websites and apps reachable right now? Each dot shows how the sites we watch look from that place.</p>'
             '<div class="hm-tabs" role="group" aria-label="Map layer"><button type="button" class="btn small" data-hm="reach" aria-pressed="true"><span>Reachability</span></button><button type="button" class="btn small" data-hm="speed" aria-pressed="false"><span>Response time</span></button></div>'
             '<div class="hm-world" id="hm-map"><div class="hm-scroll"><div class="hm-inner"><svg viewBox="0 0 2400 1221" role="img" aria-label="World map with a flag for each place we check from. The table below lists every place."><image href="/assets/nl-continents.png" x="0" y="0" width="2400" height="1221"/><g id="hm-lay"></g></svg><div class="hm-bub" id="hm-bub" aria-live="polite"></div></div></div></div><p class="note hm-hint">Hover or tap a dot, or a country in the list, for details.</p><div class="hm-leg" id="hm-leg"></div><div class="sp-card"><div class="hm-card" id="hm-card" aria-live="polite"></div><p class="note" id="hm-sum">Loading the map&hellip;</p>'
@@ -872,7 +872,7 @@ def heatmap_page():
             '<div id="hm-sites"></div>'
             '<h2>How to read this map</h2><ul><li>Green means almost every site we watch answered from that place. Amber and red mean more of them did not.</li><li>A whole place turning red can point to a problem with a network or country, not just one website.</li><li>Some sites deliberately block automated checks from certain countries, so a lower figure is a hint, not proof of an outage.</li><li>The data comes from probes on the public <a href="https://globalping.io" rel="noopener">Globalping</a> network, refreshed through the day. Read <a href="/how-we-check">how we check</a> for the details.</li></ul>'
             '<p style="margin-top:20px"><a href="/">&larr; Back to the website checker</a></p></div></section>')
-    write('heat-map.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/heatmap.js"></script>'))
+    write('outage-map.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/heatmap.js"></script>'))
 
 def _tool_page(path, fname, title, desc, tool_key, name, h1, inner, faq, script, extra_after=''):
     ld = {"@context": "https://schema.org", "@graph": [
