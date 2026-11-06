@@ -85,7 +85,7 @@ def head(title, desc, path, extra_head='', noindex=False):
 <body{{BODYATTR}}>
 <a class="skip" href="#main">Skip to content</a>
 <header class="nl-head"><div class="nl-bar">
-<a class="nl-logo" href="/" aria-label="siteupdown.com home"><img src="/assets/nl-logo.png" alt="Site up down?" width="308" height="147"></a>
+<a class="nl-logo" href="/" aria-label="siteupdown.com home"><img src="/assets/nl-logo.png" alt="Site up down?" width="831" height="391"></a>
 <div class="nl-tools"><div id="auth"></div><button class="nl-menu-btn" id="nl-menu-btn" type="button" aria-expanded="false" aria-controls="nl-drawer" aria-label="Open menu"><span></span><span></span><span></span></button></div>
 </div></header>
 <div class="nl-scrim" id="nl-scrim" hidden></div>
@@ -97,7 +97,7 @@ def foot(scripts):
     links = [('Website checker', '/'), ('Is it down?', '/is-it-down/'), ('Heat map', '/heat-map'), ('Internet speed test', '/internet-speed-test'), ('What is my IP?', '/what-is-my-ip'), ('Game ping test', '/game-ping-test'), ('Website speed test', '/speed'), ('Tools', '/tools/'), ('Monitor', '/monitor'), ('Account', '/account'), ('Help centre', '/help/'), ('How we check', '/how-we-check'), ('FAQ', '/faq'), ('About', '/about'), ('For business', '/business'), ('Contact', '/contact'), ('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')]
     return f'''</main>
 <footer class="site-foot"><div class="wrap nl-foot">
-<img src="/assets/nl-logo.png" alt="Site up down?" width="308" height="147">
+<img src="/assets/nl-logo.png" alt="Site up down?" width="831" height="391">
 <p class="note">Less refreshing. More knowing.</p>
 <div class="socials" aria-label="Social media">
 <a href="#" title="Facebook" aria-label="Facebook">{I_FB}</a><a href="#" title="Instagram" aria-label="Instagram">{I_IG}</a><a href="#" title="X" aria-label="X">{I_X}</a><a href="#" title="TikTok" aria-label="TikTok">{I_TT}</a><a href="#" title="YouTube" aria-label="YouTube">{I_YT}</a>
