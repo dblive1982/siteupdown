@@ -34,3 +34,9 @@ if 'TEST SITE' not in c:
     c += '\nbody:after{content:"TEST SITE";position:fixed;right:10px;bottom:10px;background:#f59e0b;color:#000;font:700 12px/1 system-ui,sans-serif;letter-spacing:.08em;padding:7px 10px;border:2px solid #000;border-radius:6px;z-index:90;pointer-events:none}\n'
     open(p('assets', 'newlook.css'), 'w', encoding='utf-8').write(c)
 print('staging overrides applied')
+
+# Test site only: let /layout, /heatmap-plain etc. open the matching .html mock-up without the extension.
+h = open(p('.htaccess')).read()
+if 'TEST-CLEAN-URLS' not in h:
+    h = h.replace('RewriteEngine On\n', 'RewriteEngine On\n# TEST-CLEAN-URLS\nRewriteCond %{REQUEST_FILENAME}.html -f\nRewriteRule ^([A-Za-z0-9_-]+)/?$ $1.html [L]\n', 1)
+    open(p('.htaccess'), 'w').write(h)
