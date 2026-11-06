@@ -1,0 +1,21 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Heat map - world map mock-up</title>
+<style>*{box-sizing:border-box}body{margin:0;background:#f1f1f5;font-family:system-ui,sans-serif;color:#111}
+.h{background:#ffde59;padding:18px 16px;text-align:center}.h img{width:170px}
+main{padding:18px 8px 40px;max-width:1100px;margin:0 auto}h1{margin:6px 8px 4px;font-size:1.9rem}p.l{color:#444;margin:0 8px 8px}
+.btns{display:flex;gap:8px;margin:10px 8px}.tab{border:2.5px solid #111;border-radius:99px;padding:8px 14px;font-weight:800;font-size:14px;background:#fffbe8}.tab.on{background:#7ed957;box-shadow:0 3px 0 #111}
+.map{position:relative;width:100%;aspect-ratio:1440/592;margin:6px 0}.map>img{position:absolute;inset:0;width:100%;height:100%}
+.d{position:absolute;transform:translate(-50%,-50%);width:4.4%;aspect-ratio:1;min-width:14px;border-radius:50%;border:3px solid #111;box-shadow:0 3px 0 #111}
+.d::before{content:"";position:absolute;inset:-35%;border-radius:50%;background:inherit;opacity:.3;z-index:-1}
+.d::after{content:"";position:absolute;left:18%;top:15%;width:28%;height:28%;border-radius:50%;background:rgba(255,255,255,.75)}
+.d em{display:none;position:absolute;left:115%;top:50%;transform:translateY(-50%);background:#fffbe8;border:2px solid #111;border-radius:8px;padding:1px 6px;font:800 10px system-ui;white-space:nowrap}
+.d.on em{display:block}.d.on{outline:3px solid #111;outline-offset:3px}
+.g{background:#7ed957}.a{background:#ffb020}.r{background:#e84a4a}
+.leg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;font-weight:600;margin:10px 8px}.leg i{display:inline-block;width:16px;height:16px;border:2.5px solid #111;border-radius:50%;vertical-align:-3px;margin-right:5px}
+.pop{background:#fffbe8;border:3px solid #111;border-radius:18px;box-shadow:5px 5px 0 #111;padding:12px 14px;margin:14px 8px}.pop b{font-size:1.1rem}.chip{float:right;background:#ffb020;border:2.5px solid #111;border-radius:99px;padding:0 10px;font-weight:800}.pop small{display:block;color:#444;margin-top:4px}
+</style></head><body><div class="h"><img src="assets/nl-logo.png" alt=""></div>
+<main><h1>Global heat map.</h1><p class="l">Where in the world are websites reachable right now? Tap a dot.</p>
+<div class="btns"><span class="tab on">Reachability</span><span class="tab">Response time</span></div>
+<div class="map"><img src="assets/nl-world-plain.png" alt=""><span class="d g" style="left:49.97%;top:23.99%"><em>LONDON</em></span><span class="d g" style="left:29.44%;top:31.28%"><em>NEW YORK</em></span><span class="d a" style="left:37.06%;top:74.66%"><em>SAO PAULO</em></span><span class="d r" style="left:57.78%;top:76.49%"><em>JOHANNESBURG</em></span><span class="d a" style="left:70.22%;top:45.95%"><em>MUMBAI</em></span><span class="d g" style="left:88.81%;top:34.66%"><em>TOKYO</em></span><span class="d g" style="left:92.00%;top:81.69%"><em>SYDNEY</em></span><span class="d g" style="left:17.22%;top:35.81%"><em>LOS ANGELES</em></span><span class="d g" style="left:78.83%;top:57.91%"><em>SINGAPORE</em></span><span class="d g" style="left:65.36%;top:41.76%"><em>DUBAI</em></span></div>
+<div class="leg"><span><i class="g"></i>90% or more reached</span><span><i class="a"></i>70 to 90%</span><span><i class="r"></i>Under 70%</span></div>
+<div class="pop"><span class="chip">78%</span><b>Mumbai, India</b><small>Most sites answered from here, but some did not.</small><small>Typical time 420 ms</small></div></main>
+<script>document.querySelectorAll('.d').forEach(function(d){d.addEventListener('click',function(){document.querySelectorAll('.d').forEach(function(x){x.classList.remove('on')});d.classList.add('on')})});document.querySelectorAll('.d')[4].classList.add('on')</script></body></html>
