@@ -197,7 +197,7 @@
 :root[data-theme=light] body .hm-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 :root[data-theme=light] body .hm-inner{position:relative;min-width:100%}
 :root[data-theme=light] body .hm-world svg{display:block;width:100%;height:auto;touch-action:pan-x pan-y}
-:root[data-theme=light] body .hm-world .cn{font-family:"Chalkboard SE","Comic Sans MS",system-ui,sans-serif;font-weight:800;fill:#3b2414;text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:rgba(255,255,255,.35);stroke-width:5px;stroke-linejoin:round}
+:root[data-theme=light] body .hm-world .cn{font-family:"Chalkboard SE","Comic Sans MS",system-ui,sans-serif;font-weight:800;fill:#3b2414;text-anchor:middle;pointer-events:none}
 :root[data-theme=light] body .hm-world .oc{font-family:Georgia,serif;font-style:italic;font-weight:700;fill:#1f5f86;text-anchor:middle;letter-spacing:.3em;opacity:.9;pointer-events:none}
 :root[data-theme=light] body .hm-world .pole{cursor:pointer;outline:none}
 :root[data-theme=light] body .hm-world .pole:hover .flag,:root[data-theme=light] body .hm-world .pole:focus-visible .flag,:root[data-theme=light] body .hm-world .pole.on .flag{filter:brightness(1.12)}
