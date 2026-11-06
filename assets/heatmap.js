@@ -12,7 +12,7 @@
   function mil(d) { return 1.25 * Math.log(Math.tan(Math.PI / 4 + 0.4 * d * Math.PI / 180)); }
   function PR(lon, lat) { var f = A.mix * mil(lat) + (1 - A.mix) * lat * Math.PI / 180; return [(A.ax * (lon + 180) + A.bx) * A.S * A.k, ((A.ay * f + A.by) * A.S - A.y0) * A.k]; }
   var COL = { g: '#2fbf4a', a: '#ffb020', r: '#e84a4a', n: '#bbbbbb' };
-  var CN = [['NORTH|AMERICA', -104, 56, 46], ['SOUTH|AMERICA', -66, -8, 46], ['AFRICA', 19, 11, 46], ['EUROPE', 18, 63, 46, 'eu'], ['ASIA', 96, 54, 46], ['MIDDLE|EAST', 43, 20, 46, 'me'], ['AUSTRALIA', 128, -26, 46]];
+  var CN = [['NORTH|AMERICA', -104, 56, 46], ['SOUTH|AMERICA', -66, -8, 46], ['AFRICA', 19, 11, 46], ['EUROPE', 30, 60, 46, 'eu'], ['ASIA', 96, 54, 46], ['MIDDLE|EAST', 43, 20, 46, 'me'], ['AUSTRALIA', 128, -26, 46]];
   var OC = [['ATLANTIC', -35, 30, 30], ['OCEAN', -35, 24, 30], ['PACIFIC', -150, 10, 30], ['OCEAN', -150, 4, 30], ['INDIAN', 78, -20, 30], ['OCEAN', 78, -26, 30], ['ARCTIC OCEAN', -60, 80, 26], ['PACIFIC', 148, -44, 26], ['OCEAN', 148, -50, 26]];
   var labels = '';
   CN.forEach(function (c) { var q = PR(c[1], c[2]); var ln = c[0].split('|'), x0 = q[0].toFixed(0); labels += '<text class="cn' + (c[4] ? ' ' + c[4] : '') + '" x="' + x0 + '" y="' + (q[1] - (ln.length - 1) * c[3] * 0.5).toFixed(0) + '" style="font-size:' + c[3] + 'px">' + ln.map(function (t, i) { return '<tspan x="' + x0 + '" dy="' + (i ? '1.05em' : '0') + '">' + t + '</tspan>'; }).join('') + '</text>'; });
@@ -32,19 +32,23 @@
   function paint() {
     if (!data) return;
     dots = data.places.filter(function (p) { return p.lat != null && p.lon != null; });
-    var pos = [], html = labels, s0 = (box.clientWidth < 700 ? (FLAGS ? 1.3 : 1.8) : 1.15) / Math.pow(zoom, 0.7);
+    var pos = [], html = labels, s0 = (box.clientWidth < 700 ? (FLAGS ? 1.3 : 1.5) : 1.15) / Math.pow(zoom, 0.7);
     var order = dots.map(function (p, i) { return i; }); if (sel) order.sort(function (a, c) { return (dots[a] === sel) - (dots[c] === sel); });
     order.forEach(function (i) {
       var p = dots[i], q = PR(p.lon, p.lat), h = heat(p), n = 0, on = p === sel;
-      var ring = '<circle class="ring" cx="0" cy="' + (FLAGS ? '-104' : '0') + '" r="16" fill="none" stroke="' + COL[h.cls] + '" stroke-width="5" vector-effect="non-scaling-stroke"/><circle class="ring r2" cx="0" cy="' + (FLAGS ? '-104' : '0') + '" r="16" fill="none" stroke="' + COL[h.cls] + '" stroke-width="5" vector-effect="non-scaling-stroke"/>';
+      for (var k = 0; k < pos.length; k++) if (Math.abs(pos[k][0] - q[0]) < 90 * s0 && Math.abs(pos[k][1] - q[1]) < 110 * s0) n++;
+      pos.push(q);
+      var PH = Math.min(78 + 52 * n, 190), cy = FLAGS ? 104 : PH + 10;
+      var ring = '<circle class="ring" cx="0" cy="-' + cy + '" r="16" fill="none" stroke="' + COL[h.cls] + '" stroke-width="5" vector-effect="non-scaling-stroke"/><circle class="ring r2" cx="0" cy="-' + cy + '" r="16" fill="none" stroke="' + COL[h.cls] + '" stroke-width="5" vector-effect="non-scaling-stroke"/>';
       var g0 = '<g class="pole ' + h.cls + (on ? ' on' : '') + '" data-d="' + i + '" tabindex="0" role="button" aria-label="' + esc(name(p) + ': ' + h.label) + '" transform="translate(' + q[0].toFixed(1) + ' ' + q[1].toFixed(1) + ') scale(' + s0.toFixed(3) + ')">';
       if (!FLAGS) {
-        html += g0 + ring + '<circle cx="0" cy="0" r="36" fill="transparent"/>' +
-          (on ? '<circle cx="0" cy="0" r="27" fill="none" stroke="#111" stroke-width="5"/><line x1="0" y1="-18" x2="0" y2="-92" stroke="#3a2412" stroke-width="7" stroke-linecap="round"/><path class="flag" d="M3 -92 L56 -78 L3 -60 Z" fill="' + COL[h.cls] + '" stroke="#111" stroke-width="5" stroke-linejoin="round"/>' : '') +
-          '<circle class="dot" cx="0" cy="0" r="18" fill="' + COL[h.cls] + '" stroke="#111" stroke-width="6"/><circle cx="-6" cy="-6" r="5" fill="rgba(255,255,255,.75)"/></g>';
+        html += g0 + ring + '<circle cx="0" cy="-' + cy + '" r="40" fill="transparent"/>' +
+          '<ellipse cx="0" cy="2" rx="18" ry="6" fill="rgba(0,0,0,.28)"/><line x1="0" y1="0" x2="0" y2="-' + (cy - 14) + '" stroke="#3a2412" stroke-width="7" stroke-linecap="round"/><circle cx="0" cy="0" r="6" fill="#111"/>' +
+          (on ? '<circle cx="0" cy="-' + cy + '" r="31" fill="none" stroke="#111" stroke-width="5"/>' : '') +
+          '<circle class="dot" cx="0" cy="-' + cy + '" r="22" fill="' + COL[h.cls] + '" stroke="#111" stroke-width="6.5"/><circle cx="-7" cy="-' + (cy + 7) + '" r="6" fill="rgba(255,255,255,.8)"/></g>';
         return;
       }
-      for (var k = 0; k < pos.length; k++) if (Math.abs(pos[k][0] - q[0]) < 110 * s0 && Math.abs(pos[k][1] - q[1]) < 90 * s0) n++;
+      n = 0; pos.pop(); for (var k2 = 0; k2 < pos.length; k2++) if (Math.abs(pos[k2][0] - q[0]) < 110 * s0 && Math.abs(pos[k2][1] - q[1]) < 90 * s0) n++;
       pos.push(q);
       var L = (p.lon > 110 ? -1 : 1) * (n % 2 ? -1 : 1), H = Math.min(100 + 55 * n, 210);
       html += g0 + '<circle class="ring" cx="0" cy="-' + (H + 4) + '" r="16" fill="none" stroke="' + COL[h.cls] + '" stroke-width="5" vector-effect="non-scaling-stroke"/><circle class="ring r2" cx="0" cy="-' + (H + 4) + '" r="16" fill="none" stroke="' + COL[h.cls] + '" stroke-width="5" vector-effect="non-scaling-stroke"/>' +
