@@ -53,7 +53,7 @@
 
 /* header + menu */
 .nl-head{background:var(--yellow);position:relative;z-index:40}
-.nl-bar{max-width:1120px;margin:0 auto;padding:40px 16px 10px;display:flex;justify-content:center;align-items:center;position:relative}
+.nl-bar{max-width:1120px;margin:0 auto;padding:34px 16px 10px;display:flex;justify-content:center;align-items:center;position:relative}
 .nl-logo{display:block;line-height:0}
 .nl-logo{display:flex;flex-direction:column;align-items:center}.nl-logo img{height:54px;width:auto;display:block}.nl-logo img.nl-mon{height:74px;margin-bottom:0;margin-right:18px;position:relative;z-index:1}
 @@ .nl-head ~ main .nl-hero{padding-top:20px}
@@ -80,12 +80,12 @@
 @@ .menu svg{color:var(--ink)}
 
 /* home */
-.nl-hero{padding:22px 0 10px}
+.nl-hero{padding:22px 0 0}
 .nl-hero h1{text-align:center;margin:0 0 6px}
 .nl-hero .lead{text-align:center;margin:0 auto 16px;font-size:clamp(15px,3.6vw,18px)}
 .nl-try{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:14px 0 0;align-items:center}
-.nl-try .eyebrow{width:100%;text-align:center}
-.nl-tiles{padding:18px 0 4px}
+.nl-try .eyebrow{width:100%;display:flex;justify-content:center;text-align:center}
+.nl-tiles{padding:14px 0 4px}
 .nl-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
 @@ .nl-tile{position:relative;display:flex;flex-direction:column;gap:2px;min-height:150px;padding:14px;border:2.5px solid #0b0b0b;border-radius:18px;background:#fffbea;box-shadow:5px 6px 0 #0b0b0b;text-decoration:none;color:#0b0b0b;overflow:hidden}
 @@ .nl-tile b{font-size:18px;line-height:1.15}
@@ -235,3 +235,7 @@
 /* mascot on 404 + verdict */
 .nl-404mon{display:block;height:150px;width:auto;margin:0 auto 6px}
 .cell.wide{position:relative}.v-mon{position:absolute;right:14px;top:50%;transform:translateY(-50%);height:64px;width:auto;pointer-events:none}@media (max-width:520px){.v-mon{height:48px;right:10px}}
+
+/* tighten gap between hero chips and tool tiles */
+@@ .nl-hero{padding-bottom:0}
+@@ .nl-tiles{padding-top:18px}

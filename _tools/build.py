@@ -194,7 +194,7 @@ def home():
 </div></form>
 <div class="recent-row" id="recent-wrap" hidden><div class="eyebrow">Your recent searches</div><div class="chips" id="recent-chips"></div></div>
 <div class="nl-try"><span class="eyebrow">Try one</span>
-<button class="chip" type="button" data-h="google.com">google.com</button><button class="chip" type="button" data-h="youtube.com">youtube.com</button><a class="chip" href="/is-whatsapp-down">WhatsApp</a><a class="chip" href="/is-instagram-down">Instagram</a><a class="chip" href="/is-roblox-down">Roblox</a></div>
+<button class="chip" type="button" data-h="google.com">google.com</button><button class="chip" type="button" data-h="youtube.com">youtube.com</button><a class="chip" href="/is-whatsapp-down">WhatsApp</a><a class="chip" href="/is-instagram-down">Instagram</a><a class="chip" href="/is-roblox-down">Roblox</a><a class="chip" href="/is-facebook-down">Facebook</a><a class="chip" href="/is-netflix-down">Netflix</a><a class="chip" href="/is-tiktok-down">TikTok</a><a class="chip" href="/is-amazon-down">Amazon</a><a class="chip" href="/is-discord-down">Discord</a><a class="chip" href="/is-chatgpt-down">ChatGPT</a></div>
 </div></section>
 
 <section class="nl-tiles"><div class="wrap"><div class="nl-grid">
