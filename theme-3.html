@@ -1,0 +1,49 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive"><link rel="icon" href="/favicon-32.png" type="image/png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap"><title>Theme 3 — space</title>
+<style>
+:root{--bg:#130228;--panel:#21103f;--edge:#5b3f94;--ink:#0b0b0b;--orange:#ff6200;--green:#7ed957;--gold:#fbc531;--red:#e84a4a;--line:3px solid #000}
+*{box-sizing:border-box}body{margin:0;color:#fff;font:500 16px/1.5 "Space Grotesk",system-ui,sans-serif;overflow-x:hidden;
+background-color:var(--bg);background-image:radial-gradient(1.5px 1.5px at 12% 18%,#fff8 50%,transparent 51%),radial-gradient(1.5px 1.5px at 78% 12%,#fff8 50%,transparent 51%),radial-gradient(2px 2px at 40% 34%,#fff6 50%,transparent 51%),radial-gradient(1.5px 1.5px at 88% 52%,#fff7 50%,transparent 51%),radial-gradient(1.5px 1.5px at 22% 70%,#fff7 50%,transparent 51%),radial-gradient(2px 2px at 64% 86%,#fff6 50%,transparent 51%)}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px;position:relative}
+nav{padding:12px 0;font-size:14px}nav a{color:#fff;opacity:.8}
+.hero{position:relative;text-align:center;min-height:330px;padding-top:96px}
+.hero .logo{width:min(360px,76%);margin-left:6%;height:auto;position:relative;z-index:2}
+.hero .earth{position:absolute;left:-16px;top:70px;width:30%;max-width:150px;height:auto}
+.hero .astro{position:absolute;left:34%;top:4px;width:56px;animation:fl 6s ease-in-out infinite}
+.hero .huh{position:absolute;left:calc(34% + 52px);top:8px;width:62px}
+.hero .cloud{position:absolute;right:-6px;top:40px;width:96px;opacity:.95}
+.hero .sat{position:absolute;right:24%;top:6px;width:30px}
+@keyframes fl{50%{transform:translateY(8px) rotate(6deg)}}
+.tag{text-align:center;font-weight:600;margin:0 0 22px}
+.panel{background:var(--panel);border:2px solid var(--edge);border-radius:22px;box-shadow:0 0 0 3px #000,0 10px 40px #ff62002e;padding:24px 20px;text-align:center}
+.panel h1{margin:0 0 6px;font-size:clamp(26px,6vw,36px);line-height:1.1}.panel p{margin:0 0 16px;opacity:.85}
+.check{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.check input{flex:1 1 220px;min-width:0;font:inherit;padding:13px 16px;border:var(--line);border-radius:14px;background:#fff;color:#000}
+.btn{font:700 17px "Space Grotesk",system-ui,sans-serif;color:#fff;background:var(--orange);border:var(--line);border-radius:999px;padding:12px 30px;cursor:pointer;box-shadow:0 5px 0 #000}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 #000}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:26px 0}
+.card{background:var(--panel);border:2px solid var(--edge);border-radius:18px;padding:16px;box-shadow:0 0 0 3px #000}
+.card h3{margin:0 0 6px;font-size:18px}.card p{margin:8px 0 0;font-size:14px;opacity:.85}
+.pill{display:inline-block;font-weight:700;font-size:13px;padding:2px 12px;border:var(--line);border-radius:999px;color:#000;background:var(--green)}
+.pill.warn{background:var(--gold)}.pill.bad{background:var(--red);color:#fff}
+.form{background:#fffbea;color:#000;border:var(--line);border-radius:22px;overflow:hidden;box-shadow:7px 8px 0 var(--orange);margin:10px 8px 30px 0}
+.form .bar{background:var(--gold);border-bottom:var(--line);padding:10px 14px;font-weight:700}
+.form .body{padding:20px}.row{display:grid;grid-template-columns:84px 1fr;gap:12px;align-items:center;margin-bottom:12px}
+.row input{width:100%;font:inherit;padding:10px 14px;border:var(--line);border-radius:12px;background:#fff}
+.go{display:block;margin:16px auto 0;font:700 16px "Space Grotesk",system-ui,sans-serif;color:#fff;background:var(--red);border:var(--line);border-radius:12px;padding:10px 38px;cursor:pointer}
+.foot{text-align:center;margin:20px 0 40px}.foot img{width:96px;display:block;margin:0 auto 4px}.foot p{margin:0;font-weight:600;opacity:.75}
+footer{text-align:center;font-size:14px;opacity:.7;padding:0 0 70px}
+.ribbon{position:fixed;right:10px;bottom:10px;background:#f59e0b;color:#000;font:700 12px/1 system-ui;letter-spacing:.08em;padding:7px 10px;border:2px solid #000;border-radius:6px;z-index:9}
+@media(prefers-reduced-motion:reduce){.hero .astro{animation:none}}
+</style></head><body><div class="wrap">
+<nav><a href="/">&larr; All themes</a></nav>
+<header class="hero"><img class="earth" src="/assets/t/earth.png" alt=""><img class="astro" src="/assets/t/astro.png" alt=""><img class="huh" src="/assets/t/huh2.png" alt=""><img class="cloud" src="/assets/t/cloud.png" alt=""><img class="sat" src="/assets/t/sat.png" alt=""><img class="logo" src="/assets/t/logo2.png" alt="Site updown?"></header>
+<p class="tag">Less refreshing. More knowing.</p>
+<section class="panel"><h1>Is it down, or is it just you?</h1><p>Type any website and we'll check it from around the world.</p>
+<form class="check" onsubmit="return false"><input type="text" placeholder="e.g. netflix.com" aria-label="Website address"><button class="btn">Check</button></form></section>
+<div class="grid">
+<div class="card"><h3>netflix.com</h3><span class="pill">Up</span><p>Reached from 15 of 15 places. 212 ms.</p></div>
+<div class="card"><h3>steamcommunity.com</h3><span class="pill warn">Slow</span><p>Reached from 14 of 15 places. 1.8 s.</p></div>
+<div class="card"><h3>example-store.com</h3><span class="pill bad">Down</span><p>Not reachable from any place.</p></div></div>
+<section class="form"><div class="bar">Get an alert</div><div class="body"><div class="row"><label for="e">Email</label><input id="e" type="email" placeholder="you@example.com"></div><div class="row"><label for="w">Website</label><input id="w" type="text" placeholder="yoursite.com"></div><button class="go" type="button">Alert me</button></div></section>
+<div class="foot"><img src="/assets/t/pow2.png" alt=""><p>No animals were harmed in this search</p></div>
+<footer>&copy; 2026 siteupdown.com &middot; theme 3 test page</footer></div><div class="ribbon">TEST SITE</div></body></html>

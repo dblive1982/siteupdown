@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>Theme 1 — cream</title>
+<link rel="icon" href="/favicon-32.png" type="image/png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap">
+<style>
+:root{--bg:#e2e2d3;--ink:#0b0b0b;--cream:#fffbea;--sun:#ffeaae;--gold:#fbc531;--orange:#ff6200;--green:#7ed957;--btn:#5aa83a;--btn-d:#3f7d27;--red:#e84a4a;--line:2.5px solid var(--ink)}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:500 16px/1.5 "Space Grotesk",system-ui,sans-serif}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+header{padding:22px 0 8px;text-align:center}
+header img{width:min(300px,70vw);height:auto;display:inline-block}
+.tag{margin:6px 0 0;font-weight:600}
+
+/* browser-window card */
+.win{background:var(--bg);border:var(--line);border-radius:22px;overflow:hidden;margin:22px 0}
+.win-bar{display:flex;align-items:center;justify-content:space-between;background:var(--sun);border-bottom:var(--line);padding:12px 16px}
+.win-bar i{width:24px;height:24px;border-radius:50%;background:var(--orange);border:var(--line)}
+.win-bar b{font-size:26px;line-height:1;font-weight:500}
+.win-body{padding:26px 20px 30px;text-align:center}
+.win-body h1{margin:0 0 6px;font-size:clamp(26px,6vw,38px);line-height:1.1;font-weight:700}
+.win-body p{margin:0 0 18px}
+.check{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.check input{flex:1 1 220px;min-width:0;font:inherit;padding:13px 16px;border:var(--line);border-radius:14px;background:var(--cream)}
+.btn{font:700 17px "Space Grotesk",sans-serif;color:#fff;background:var(--btn);border:0;border-radius:999px;padding:13px 30px;cursor:pointer;box-shadow:0 5px 0 var(--btn-d);transition:transform .08s,box-shadow .08s}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--btn-d)}
+.btn.help{letter-spacing:.04em}
+
+/* browser-form card */
+.app{background:var(--cream);border:var(--line);border-radius:22px;overflow:hidden;box-shadow:7px 8px 0 var(--ink);margin:30px 8px 34px 0}
+.app-bar{display:flex;align-items:center;gap:8px;background:var(--gold);border-bottom:var(--line);padding:10px 12px}
+.app-bar span{font-size:22px;font-weight:700}
+.app-bar div{flex:1;height:30px;background:var(--cream);border:var(--line);border-radius:10px}
+.app-body{padding:22px 20px 26px}
+.row{display:grid;grid-template-columns:90px 1fr;align-items:center;gap:14px;margin-bottom:14px}
+.row label{border-top:var(--line);padding-top:0;font-weight:600;font-size:14px;border:0}
+.row input,.row select{font:inherit;width:100%;padding:11px 14px;border:var(--line);border-radius:12px;background:var(--cream)}
+.go{display:block;margin:20px auto 0;font:700 16px "Space Grotesk",system-ui,sans-serif;color:#fff;background:var(--red);border:var(--line);border-radius:12px;padding:10px 38px;cursor:pointer}
+
+/* result cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin:8px 0 28px}
+.card{background:var(--cream);border:var(--line);border-radius:18px;padding:16px;box-shadow:5px 6px 0 var(--ink)}
+.card h3{margin:0 0 4px;font-size:18px}
+.pill{display:inline-block;font-weight:700;font-size:13px;padding:2px 12px;border:var(--line);border-radius:999px;background:var(--green)}
+.pill.warn{background:var(--gold)}.pill.bad{background:var(--red);color:#fff}
+.card p{margin:8px 0 0;font-size:14px}
+
+.help-row{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin:6px 0 8px}
+.cap{display:inline-block;background:#8b8a80;color:#e8e8e0;font-size:clamp(15px,3.6vw,22px);padding:2px 12px;margin:10px 0 40px}
+footer{text-align:center;font-size:14px;padding:0 0 70px}
+.ribbon{position:fixed;right:10px;bottom:10px;background:#f59e0b;color:#000;font:700 12px/1 system-ui;letter-spacing:.08em;padding:7px 10px;border:2px solid #000;border-radius:6px;z-index:9}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <img src="/assets/theme-logo.png" alt="Site updown?" width="511" height="313">
+    <p class="tag">Less refreshing. More knowing.</p>
+  </header>
+
+  <section class="win" aria-label="Website checker">
+    <div class="win-bar"><i></i><b aria-hidden="true">&times;</b></div>
+    <div class="win-body">
+      <h1>Is it down, or is it just you?</h1>
+      <p>Type any website and we'll check it from around the world.</p>
+      <form class="check" onsubmit="return false">
+        <input type="text" placeholder="e.g. netflix.com" aria-label="Website address">
+        <button class="btn" type="submit">Check</button>
+      </form>
+    </div>
+  </section>
+
+  <div class="grid">
+    <div class="card"><h3>netflix.com</h3><span class="pill">Up</span><p>Reached from 15 of 15 places. 212 ms.</p></div>
+    <div class="card"><h3>steamcommunity.com</h3><span class="pill warn">Slow</span><p>Reached from 14 of 15 places. 1.8 s.</p></div>
+    <div class="card"><h3>example-store.com</h3><span class="pill bad">Down</span><p>Not reachable from any place.</p></div>
+  </div>
+
+  <div class="help-row">
+    <button class="btn help" type="button">HELP</button>
+  </div>
+
+  <section class="app" aria-label="Sign in form">
+    <div class="app-bar"><span>&lsaquo;</span><div></div><span>&rsaquo;</span></div>
+    <div class="app-body">
+      <div class="row"><label for="e">Email</label><input id="e" type="email" placeholder="you@example.com"></div>
+      <div class="row"><label for="w">Website</label><input id="w" type="text" placeholder="yoursite.com"></div>
+      <button class="go" type="button">Alert me</button>
+    </div>
+  </section>
+
+  <span class="cap">No animals were harmed in this search</span>
+  <footer>&copy; 2026 siteupdown.com &middot; theme test page</footer>
+</div>
+<div class="ribbon">TEST SITE</div>
+</body>
+</html>
