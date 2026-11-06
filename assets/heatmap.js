@@ -6,7 +6,7 @@
   var $ = function (id) { return document.getElementById(id); };
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
   var dn = null; try { dn = new Intl.DisplayNames(['en'], { type: 'region' }); } catch (e) {}
-  var centred = false, data = null, layer = 'reach', sel = null, sorted = [], dots = [];
+  var svg = box.querySelector('svg'), VW = 2400, VH = 1221, zoom = 1, vx = 0, vy = 0, data = null, layer = 'reach', sel = null, sorted = [], dots = [];
   /* flat continents picture (2400x1221): fitted projection from lon/lat to picture pixels */
   var A = { ax: 3.41904622, bx: -24.79309414, ay: -213.39670053, by: 670.34834736, mix: 0.5, S: 2.5, y0: 690, k: 2400 / 3125 };
   function mil(d) { return 1.25 * Math.log(Math.tan(Math.PI / 4 + 0.4 * d * Math.PI / 180)); }
@@ -32,20 +32,64 @@
   function paint() {
     if (!data) return;
     dots = data.places.filter(function (p) { return p.lat != null && p.lon != null; });
-    var pos = [], html = labels;
+    var pos = [], html = labels, s0 = (box.clientWidth < 700 ? 1.7 : 1) / Math.pow(zoom, 0.7);
     dots.forEach(function (p, i) {
       var q = PR(p.lon, p.lat), h = heat(p), n = 0;
-      for (var k = 0; k < pos.length; k++) if (Math.abs(pos[k][0] - q[0]) < 110 && Math.abs(pos[k][1] - q[1]) < 90) n++;
+      for (var k = 0; k < pos.length; k++) if (Math.abs(pos[k][0] - q[0]) < 110 * s0 && Math.abs(pos[k][1] - q[1]) < 90 * s0) n++;
       pos.push(q);
-      var L = (p.lon > 110 ? -1 : 1) * (n % 2 ? -1 : 1), H = Math.min(100 + 45 * n, 190);
-      html += '<g class="pole ' + h.cls + (p === sel ? ' on' : '') + '" data-d="' + i + '" tabindex="0" role="button" aria-label="' + esc(name(p) + ': ' + h.label) + '" transform="translate(' + q[0].toFixed(1) + ' ' + q[1].toFixed(1) + ')">' +
+      var L = (p.lon > 110 ? -1 : 1) * (n % 2 ? -1 : 1), H = Math.min(100 + 55 * n, 210);
+      html += '<g class="pole ' + h.cls + (p === sel ? ' on' : '') + '" data-d="' + i + '" tabindex="0" role="button" aria-label="' + esc(name(p) + ': ' + h.label) + '" transform="translate(' + q[0].toFixed(1) + ' ' + q[1].toFixed(1) + ') scale(' + s0.toFixed(3) + ')">' +
         (h.cls === 'r' || h.cls === 'a' ? '<circle class="ring" r="14" fill="none" stroke="' + COL[h.cls] + '" stroke-width="5"/>' : '') +
         '<ellipse cx="0" cy="2" rx="20" ry="7" fill="rgba(0,0,0,.28)"/><line x1="0" y1="0" x2="0" y2="-' + H + '" stroke="#3a2412" stroke-width="7" stroke-linecap="round"/>' +
         '<path class="flag" d="M' + (3 * L) + ' -' + H + ' L' + (66 * L) + ' -' + (H - 16) + ' L' + (3 * L) + ' -' + (H - 36) + ' Z" fill="' + COL[h.cls] + '" stroke="#111" stroke-width="5.5" stroke-linejoin="round"/><circle cx="0" cy="-' + (H + 4) + '" r="9" fill="#111"/></g>';
     });
     lay.innerHTML = html;
-    if (!centred) { centred = true; var sc = box.querySelector('.hm-scroll'); if (sc) sc.scrollLeft = (sc.scrollWidth - sc.clientWidth) * 0.52; }
   }
+  function setView(cx, cy, z) {
+    zoom = Math.max(1, Math.min(8, z));
+    var w = VW / zoom, h = VH / zoom;
+    vx = Math.max(0, Math.min(VW - w, cx - w / 2)); vy = Math.max(-170, Math.min(VH - h, cy - h / 2));
+    svg.setAttribute('viewBox', vx.toFixed(1) + ' ' + vy.toFixed(1) + ' ' + w.toFixed(1) + ' ' + h.toFixed(1));
+    svg.style.touchAction = zoom > 1 ? 'none' : 'pan-y';
+    box.classList.toggle('zoomed', zoom > 1);
+    hideTip(); paint();
+  }
+  function toMap(clientX, clientY) { var r = svg.getBoundingClientRect(); return [vx + (clientX - r.left) / r.width * (VW / zoom), vy + (clientY - r.top) / r.height * (VH / zoom)]; }
+  function zoomAt(clientX, clientY, z) {
+    z = Math.max(1, Math.min(8, z)); var m = toMap(clientX, clientY), r = svg.getBoundingClientRect();
+    var w = VW / z, h = VH / z, fx = (clientX - r.left) / r.width, fy = (clientY - r.top) / r.height;
+    setView(m[0] - fx * w + w / 2, m[1] - fy * h + h / 2, z);
+  }
+  function zoomBtn(f) { var r = svg.getBoundingClientRect(); zoomAt(r.left + r.width / 2, r.top + r.height / 2, zoom * f); }
+  box.insertAdjacentHTML('beforeend', '<div class="hm-zoom"><button type="button" data-z="in" aria-label="Zoom in">+</button><button type="button" data-z="out" aria-label="Zoom out">&minus;</button><button type="button" data-z="reset" class="rs" aria-label="Show the whole world">&#8962;</button></div>');
+  box.querySelector('.hm-zoom').addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('[data-z]'); if (!b) return; e.stopPropagation();
+    var a = b.getAttribute('data-z'); if (a === 'in') zoomBtn(1.8); else if (a === 'out') zoomBtn(1 / 1.8); else setView(VW / 2, VH / 2, 1);
+  });
+  var ptrs = {}, drag = null, pinch0 = null, moved = false;
+  svg.addEventListener('pointerdown', function (e) {
+    ptrs[e.pointerId] = [e.clientX, e.clientY]; moved = false;
+    var ids = Object.keys(ptrs);
+    if (ids.length === 2) { var a = ptrs[ids[0]], b = ptrs[ids[1]]; pinch0 = { d: Math.hypot(a[0] - b[0], a[1] - b[1]), z: zoom }; drag = null; }
+    else if (zoom > 1) drag = { x: e.clientX, y: e.clientY, vx: vx, vy: vy };
+  });
+  svg.addEventListener('pointermove', function (e) {
+    if (!ptrs[e.pointerId]) return; ptrs[e.pointerId] = [e.clientX, e.clientY];
+    var ids = Object.keys(ptrs);
+    if (ids.length === 2 && pinch0) {
+      var a = ptrs[ids[0]], b = ptrs[ids[1]], d = Math.hypot(a[0] - b[0], a[1] - b[1]); moved = true;
+      zoomAt((a[0] + b[0]) / 2, (a[1] + b[1]) / 2, pinch0.z * d / Math.max(pinch0.d, 1));
+    } else if (drag) {
+      var r = svg.getBoundingClientRect(), dx = (e.clientX - drag.x) / r.width * (VW / zoom), dy = (e.clientY - drag.y) / r.height * (VH / zoom);
+      if (Math.abs(e.clientX - drag.x) + Math.abs(e.clientY - drag.y) > 6) moved = true;
+      if (moved) { var w = VW / zoom, h = VH / zoom; setView(drag.vx - dx + w / 2, drag.vy - dy + h / 2, zoom); }
+    }
+  });
+  function up(e) { delete ptrs[e.pointerId]; if (Object.keys(ptrs).length < 2) pinch0 = null; if (!Object.keys(ptrs).length) drag = null; }
+  svg.addEventListener('pointerup', up); svg.addEventListener('pointercancel', up);
+  svg.addEventListener('click', function (e) { if (moved) { e.stopPropagation(); e.preventDefault(); moved = false; } }, true);
+  svg.addEventListener('dblclick', function (e) { if (e.target.closest && e.target.closest('.pole')) return; zoomAt(e.clientX, e.clientY, zoom * 2); });
+  svg.addEventListener('wheel', function (e) { if (!e.ctrlKey && !e.metaKey) return; e.preventDefault(); zoomAt(e.clientX, e.clientY, zoom * (e.deltaY < 0 ? 1.25 : 0.8)); }, { passive: false });
   function showTip(g) {
     var p = dots[+g.getAttribute('data-d')]; if (!p) return;
     var h = heat(p);
@@ -106,7 +150,7 @@
     var rows = document.querySelectorAll('#hm-tab tr');
     for (var i = 0; i < rows.length; i++) rows[i].classList.toggle('on', !!p && sorted[i] === p);
     card(); paint();
-    if (p && fromList) { try { box.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (x) {} }
+    if (p && fromList) { var q = PR(p.lon, p.lat); setView(q[0], q[1] - 120, Math.max(zoom, 3)); try { box.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (x) {} }
   }
   box.addEventListener('click', function (e) {
     var b = e.target.closest && e.target.closest('[data-d]');
