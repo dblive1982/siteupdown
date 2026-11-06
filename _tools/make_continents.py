@@ -45,10 +45,10 @@ name[ca]='CA'
 # Egypt/Sinai: orange (Africa) east of Suez stays Africa
 for n,c in PAL.items():out[name==n]=c
 # ocean + grid
-OC=np.array((127,208,255),np.uint8)
+OC=np.array((200,225,238),np.uint8)
 canvas=np.zeros((H,W,3),np.uint8);canvas[:]=OC
 img=Image.fromarray(canvas);dr=ImageDraw.Draw(img)
-GR=(98,184,242)
+GR=(176,208,226)
 for lo in range(-180,181,30):
     pts=[fwd(lo,la) for la in np.linspace(-62,85,60)];dr.line(pts,fill=GR,width=4)
 for la in range(-60,90,15):
