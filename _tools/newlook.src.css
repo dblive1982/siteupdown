@@ -185,3 +185,9 @@
 @@ .rt td{border-bottom:1.5px solid #111}
 @@ .rt tr.hm-row:hover td,@@ .rt tr.hm-row.on td{background:#fff2b0}
 @@ .hm-tabs .btn[aria-pressed=false]{background:#fffbe8;color:#111;border:2.5px solid #111}
+
+@@ .hm-mine{margin:18px 0;padding:18px;display:grid;gap:8px}
+@@ .hm-mine b{font-size:1.15rem}
+@@ .hm-mine span{color:#444}
+@@ .hm-mrow{display:flex;gap:10px;margin-top:4px}
+@@ .hm-mrow input{flex:1;min-width:0;height:46px;border:2.5px solid #111;border-radius:99px;padding:0 16px;font-size:16px;background:#fff}
