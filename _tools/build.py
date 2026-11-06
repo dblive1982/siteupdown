@@ -97,7 +97,7 @@ def foot(scripts):
     links = [('Website checker', '/'), ('Is it down?', '/is-it-down/'), ('Heat map', '/heat-map'), ('Internet speed test', '/internet-speed-test'), ('What is my IP?', '/what-is-my-ip'), ('Game ping test', '/game-ping-test'), ('Website speed test', '/speed'), ('Tools', '/tools/'), ('Monitor', '/monitor'), ('Account', '/account'), ('Help centre', '/help/'), ('How we check', '/how-we-check'), ('FAQ', '/faq'), ('About', '/about'), ('For business', '/business'), ('Contact', '/contact'), ('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')]
     return f'''</main>
 <footer class="site-foot"><div class="wrap nl-foot">
-<img src="/assets/nl-logo.png" alt="Site up down?" width="831" height="391">
+<img src="/assets/nl-logo-light.png" alt="Site up down?" width="831" height="391">
 <p class="note">Less refreshing. More knowing.</p>
 <div class="socials" aria-label="Social media">
 <a href="#" title="Facebook" aria-label="Facebook">{I_FB}</a><a href="#" title="Instagram" aria-label="Instagram">{I_IG}</a><a href="#" title="X" aria-label="X">{I_X}</a><a href="#" title="TikTok" aria-label="TikTok">{I_TT}</a><a href="#" title="YouTube" aria-label="YouTube">{I_YT}</a>
@@ -211,7 +211,7 @@ def home():
 <p class="lead">One run asks machines in different countries to fetch the same address at the same time. If they can all reach it, the problem is probably on your side.</p></div>
 <div class="pc-actions"><span class="statchip"><i></i><span id="pulse-status">Standby</span></span><button class="btn small ghost" type="button" id="run-again" hidden>Run again</button></div></div>
 <div class="strip">
-<div class="cell wide"><span class="k">Verdict</span><b id="v-big">Waiting for probes</b><small id="v-sub">No address checked yet</small><span id="v-pill"></span></div>
+<div class="cell wide"><span class="k">Verdict</span><b id="v-big">Waiting for probes</b><small id="v-sub">No address checked yet</small><span id="v-pill"></span><img class="v-mon" src="/assets/nl-monster-blue.png" alt="" width="800" height="800"></div>
 <div class="cell"><span class="k">Reachable</span><b id="s-reach">0/12</b><small>probes that answered</small></div>
 <div class="cell"><span class="k">Median response</span><b id="s-med">—</b><small>across responding probes</small></div>
 <div class="cell"><span class="k">Measured at</span><b id="s-at">—</b><small>Not run yet</small></div>
@@ -580,7 +580,7 @@ def static_pages():
     h = head('Admin — siteupdown.com', 'Admin area.', '/admin', noindex=True).replace('{BODYATTR}', '')
     write('admin.html', h + '''<section class="page adm-page"><div class="wrap"><div id="adm-root"><p class="lead">Loading&hellip;</p></div></div></section>''' + foot('<script src="/assets/app.js"></script><script src="/assets/admin.js"></script>'))
     h = head('Page not found — siteupdown.com', 'That page could not be found.', '/404', noindex=True).replace('{BODYATTR}', '')
-    write('404.html', h + '<section class="page"><div class="wrap narrow center"><span class="eyebrow"><i></i>Error 404</span><h1 style="margin:14px 0">Not found<span class="dot">.</span></h1><p class="lead">We checked everywhere. This page is down for everyone.</p><p style="margin-top:24px"><a class="btn" href="/"><span>Back to the checker</span></a></p></div></section>' + foot('<script src="/assets/app.js"></script>'))
+    write('404.html', h + '<section class="page"><div class="wrap narrow center"><img class="nl-404mon" src="/assets/nl-monster-blue.png" alt="" width="800" height="800"><span class="eyebrow"><i></i>Error 404</span><h1 style="margin:14px 0">Not found<span class="dot">.</span></h1><p class="lead">We checked everywhere. This page is down for everyone.</p><p style="margin-top:24px"><a class="btn" href="/"><span>Back to the checker</span></a></p></div></section>' + foot('<script src="/assets/app.js"></script>'))
 
 
 

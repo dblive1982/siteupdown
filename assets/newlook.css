@@ -53,9 +53,9 @@
 
 /* header + menu */
 .nl-head{background:var(--yellow);position:relative;z-index:40}
-.nl-bar{max-width:1120px;margin:0 auto;padding:54px 16px 18px;display:flex;justify-content:center;align-items:center;position:relative}
+.nl-bar{max-width:1120px;margin:0 auto;padding:46px 16px 14px;display:flex;justify-content:center;align-items:center;position:relative}
 .nl-logo{display:block;line-height:0}
-.nl-logo{display:flex;flex-direction:column;align-items:center}.nl-logo img{height:104px;width:auto;display:block}.nl-logo img.nl-mon{height:96px;margin-bottom:-2px}
+.nl-logo{display:flex;flex-direction:column;align-items:center}.nl-logo img{height:68px;width:auto;display:block}.nl-logo img.nl-mon{height:66px;margin-bottom:-2px}
 :root[data-theme=light] body .nl-head ~ main .nl-hero{padding-top:20px}
 .nl-tools{position:absolute;top:10px;right:12px;display:flex;align-items:center;gap:8px}
 .nl-menu-btn{width:38px;height:38px;border:2.5px solid #0b0b0b;border-radius:12px;background:#fffbea;display:grid;place-content:center;gap:4px;cursor:pointer;box-shadow:0 3px 0 #0b0b0b;padding:0}
@@ -116,13 +116,13 @@
 :root[data-theme=light] body .faq details p{padding:0 14px 12px;margin:0}
 
 /* footer */
-:root[data-theme=light] body .site-foot{border-top:2.5px solid var(--ink);background:var(--yellow);color:var(--ink);margin-top:24px}
-:root[data-theme=light] body .site-foot a,:root[data-theme=light] body .site-foot button{color:var(--ink)}
-:root[data-theme=light] body .site-foot .note,:root[data-theme=light] body .site-foot .fine{color:#2a2a31}
+:root[data-theme=light] body .site-foot{border-top:0;background:#111113;color:#f3f3f5;margin-top:24px}
+:root[data-theme=light] body .site-foot a,:root[data-theme=light] body .site-foot button{color:#f3f3f5}
+:root[data-theme=light] body .site-foot .note,:root[data-theme=light] body .site-foot .fine{color:#b9b9c4}
 .nl-foot{padding:22px 0 30px;text-align:center}
 .nl-foot img{height:64px;width:auto}
 .nl-foot details{margin:14px 0;text-align:left;background:#fffbea;border:2.5px solid #0b0b0b;border-radius:16px}
-.nl-foot summary{padding:12px 16px;font-weight:700;cursor:pointer}
+.nl-foot summary{padding:12px 16px;font-weight:700;cursor:pointer;color:#0b0b0b}
 .nl-foot .nl-links{display:flex;flex-wrap:wrap;gap:6px 14px;padding:0 16px 14px}
 :root[data-theme=light] body .nl-foot .nl-links a,:root[data-theme=light] body .nl-foot .nl-links button{font:600 15px var(--sans);background:none;border:0;padding:4px 0;cursor:pointer;color:#0b0b0b;text-decoration:underline}
 .nl-foot .socials{display:flex;justify-content:center;gap:12px;margin:12px 0}
@@ -231,3 +231,7 @@
 :root[data-theme=light] body .hm-world.zoomed svg{cursor:grab}
 @media (max-width:700px){:root[data-theme=light] body .hm-zoom{top:5px;right:5px;gap:5px}:root[data-theme=light] body .hm-zoom button{width:28px;height:28px;font-size:17px;border-width:2px}}
 :root[data-theme=light] body .hm-world .pole:hover .dot,:root[data-theme=light] body .hm-world .pole:focus-visible .dot{filter:brightness(1.12)}
+
+/* mascot on 404 + verdict */
+.nl-404mon{display:block;height:150px;width:auto;margin:0 auto 6px}
+.cell.wide{position:relative}.v-mon{position:absolute;right:14px;top:50%;transform:translateY(-50%);height:64px;width:auto;pointer-events:none}@media (max-width:520px){.v-mon{height:48px;right:10px}}
