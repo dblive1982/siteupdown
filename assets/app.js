@@ -205,7 +205,6 @@
   }
   /* Google ads: the script is only added once the visitor has accepted advertising cookies. */
   function loadAds() {
-    return; /* test site: ads never load */
     var c = S.consent(); if (!c || !c.marketing || S.$('#sud-ads')) return;
     var s = d.createElement('script'); s.id = 'sud-ads'; s.async = true; s.crossOrigin = 'anonymous';
     s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6517978259411056';

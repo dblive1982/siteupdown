@@ -17,6 +17,9 @@ f = a[idx[0], idx[1]]
 for c in range(3): f[..., c] = nd.gaussian_filter(np.where(bad, f[..., c], a[..., c]), 4)
 paper = np.where(bad[..., None], f, a); paper = np.where(bg[..., None], a, paper)
 paper[~bg] += (nd.gaussian_filter(rng.normal(0, 1, (H, W)), 1.2) * 5)[~bg][:, None]
+pp = np.clip(paper, 0, 255).astype(np.uint8)
+pa = nd.gaussian_filter(nd.binary_closing(~bg, iterations=3).astype(float), 1.2)
+Image.fromarray(np.dstack([pp, (pa * 255).astype(np.uint8)])).save(ROOT + '/assets/nl-crayon-paper.png', optimize=True)
 # 2. world land
 L = re.search(r'SUD_LAND="([^"]*)"', open(ROOT + '/assets/landmask.js').read()).group(1)
 AL = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_'
