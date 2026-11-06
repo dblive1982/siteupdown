@@ -47,6 +47,7 @@ RewriteRule ^index$ / [R=301,L]
 ErrorDocument 404 /404.html
 
 <IfModule mod_headers.c>
+  Header always set X-Robots-Tag "noindex, nofollow, noarchive"
   Header always set X-Content-Type-Options "nosniff"
   Header always set X-Frame-Options "SAMEORIGIN"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"

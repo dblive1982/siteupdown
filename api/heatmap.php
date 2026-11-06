@@ -1,37 +1,7 @@
 <?php
-// GET -> how the sites we list look from each of our worldwide probe places, from the background sweep snapshots.
-require __DIR__ . '/_boot.php';
-require __DIR__ . '/_sitepages.php';
-$pages = site_pages();
-$rows = db()->query("SELECT host, data, ts FROM world_checks WHERE data <> ''")->fetchAll();
-$places = []; $sites = []; $oldest = null; $newest = null; $n = 0;
-foreach ($rows as $r) {
-    $h = $r['host'];
-    if (!isset($pages[$h])) continue;
-    $d = json_decode($r['data'], true);
-    if (!is_array($d) || empty($d['probes'])) continue;
-    $n++; $ts = (int)$r['ts'];
-    $oldest = $oldest === null ? $ts : min($oldest, $ts); $newest = $newest === null ? $ts : max($newest, $ts);
-    $ok = 0; $tot = 0;
-    foreach ($d['probes'] as $p) {
-        $k = ($p['country'] ?? '') !== '' ? (string)$p['country'] : ($p['continent'] ?? 'xx');
-        if (!isset($places[$k])) $places[$k] = ['country' => $p['country'] ?? '', 'city' => '', 'lat' => $p['lat'] ?? null, 'lon' => $p['lon'] ?? null, 'latn' => 0, 'n' => 0, 'ok' => 0, 'error' => 0, 'blocked' => 0, 'none' => 0, 'ms' => []];
-        $pl = &$places[$k]; $pl['n']++;
-        if (isset($p['lat'], $p['lon'])) { $pl['latn']++; if ($pl['latn'] > 1) { $pl['lat'] = round($pl['lat'] + ($p['lat'] - $pl['lat']) / $pl['latn'], 2); $pl['lon'] = round($pl['lon'] + ($p['lon'] - $pl['lon']) / $pl['latn'], 2); } }
-        $st = in_array($p['state'] ?? '', ['ok', 'error', 'blocked', 'none'], true) ? $p['state'] : 'none';
-        $pl[$st]++;
-        if ($st === 'ok' && is_numeric($p['ms'] ?? null)) $pl['ms'][] = (int)$p['ms'];
-        unset($pl);
-        $tot++; if (($p['state'] ?? '') === 'ok') $ok++;
-    }
-    if ($tot && $ok < $tot) $sites[] = ['name' => $pages[$h]['name'], 'page' => $pages[$h]['page'], 'ok' => $ok, 'total' => $tot];
-}
-foreach ($places as &$p) {
-    sort($p['ms']); $c = count($p['ms']);
-    $p['median_ms'] = $c ? ($c % 2 ? $p['ms'][intdiv($c, 2)] : (int)round(($p['ms'][$c / 2 - 1] + $p['ms'][$c / 2]) / 2)) : null;
-    unset($p['ms'], $p['latn']);
-}
-unset($p);
-usort($sites, fn($a, $b) => ($a['ok'] / $a['total']) <=> ($b['ok'] / $b['total']));
-header('Cache-Control: public, max-age=120');
-out(200, ['places' => array_values($places), 'sites_count' => $n, 'oldest' => $oldest, 'newest' => $newest, 'unreachable' => array_slice($sites, 0, 8)]);
+// TEST SITE ONLY: fixed sample data so the heat map globe can be styled. Not real results.
+header('Content-Type: application/json');
+$p = [['London','GB',51.5,-0.1,128,132,60,1,2,1],['Frankfurt','DE',50.1,8.7,124,132,77,3,3,2],['Dubai','AE',25.2,55.3,123,132,462,4,3,2],['Buenos Aires','AR',-34.6,-58.4,124,132,257,3,3,2],['Sydney','AU',-33.9,151.2,123,132,247,4,3,2],['Sao Paulo','BR',-23.5,-46.6,123,132,228,4,3,2],['Montreal','CA',45.5,-73.6,121,132,107,5,4,2],['Tokyo','JP',35.7,139.7,100,132,150,20,8,4],['Johannesburg','ZA',-26.2,28.0,123,132,300,4,3,2],['Dallas','US',32.8,-96.8,126,132,90,3,2,1],['Mumbai','IN',19.1,72.9,120,132,210,6,4,2],['Singapore','SG',1.3,103.8,125,132,140,3,2,2]];
+$places = [];
+foreach ($p as $r) $places[] = ['city'=>$r[0],'country'=>$r[1],'lat'=>$r[2],'lon'=>$r[3],'ok'=>$r[4],'n'=>$r[5],'median_ms'=>$r[6],'error'=>$r[7],'blocked'=>$r[8],'none'=>$r[9]];
+echo json_encode(['places'=>$places,'sites_count'=>132,'newest'=>time()-300,'oldest'=>time()-7200,'unreachable'=>[]]);
