@@ -1,0 +1,32 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Heat map - paper map mock-up</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f1f1f5;font-family:system-ui,sans-serif;color:#111}
+.h{background:#ffde59;padding:18px 16px;text-align:center}.h img{width:170px}
+main{max-width:460px;margin:0 auto;padding:18px 16px 40px}h1{margin:6px 0 4px;font-size:1.9rem}p.l{color:#444;margin:0 0 14px}
+.card{background:#fffbe8;border:3px solid #111;border-radius:26px;box-shadow:6px 6px 0 #111;padding:16px}
+.tabs{display:flex;gap:8px;margin-bottom:6px}.tab{border:2.5px solid #111;border-radius:99px;padding:8px 14px;font-weight:800;font-size:14px;background:#fffbe8}.tab.on{background:#7ed957;box-shadow:0 3px 0 #111}
+.map{position:relative;width:100%;aspect-ratio:871/655;margin:6px 0}.map img{position:absolute;inset:0;width:100%;height:100%}
+.d{position:absolute;transform:translate(-50%,-50%);width:26px;height:26px;border-radius:50%;border:3px solid #111;box-shadow:0 3px 0 #111}
+.d::before{content:"";position:absolute;inset:-9px;border-radius:50%;background:inherit;opacity:.35;z-index:-1}
+.d::after{content:"";position:absolute;left:5px;top:4px;width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.75)}
+.g{background:#7ed957}.a{background:#ffb020}.r{background:#e84a4a}
+.t{position:absolute;transform:translate(14px,-50%);background:#fffbe8;border:2px solid #111;border-radius:8px;padding:1px 6px;font-size:10px;font-weight:800;white-space:nowrap}
+.sel{outline:3px solid #111;outline-offset:3px}
+.leg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;font-weight:600;margin:8px 0}.leg i{display:inline-block;width:16px;height:16px;border:2.5px solid #111;border-radius:50%;vertical-align:-3px;margin-right:5px}
+.pop{background:#fff;border:2.5px solid #111;border-radius:16px;padding:12px 14px;margin-top:8px}.pop b{font-size:1.1rem}.chip{float:right;background:#ffb020;border:2.5px solid #111;border-radius:99px;padding:0 10px;font-weight:800}
+.pop small{display:block;color:#444;margin-top:4px}
+</style></head><body>
+<div class="h"><img src="assets/nl-logo.png" alt=""></div>
+<main><h1>Global heat map.</h1><p class="l">Where in the world are websites reachable right now? Tap a dot.</p>
+<div class="card"><div class="tabs"><span class="tab on">Reachability</span><span class="tab">Response time</span></div>
+<div class="map"><img src="assets/nl-map.png" alt="">
+<span class="d g" style="left:38%;top:31%"></span><span class="t" style="left:38%;top:31%">LONDON</span>
+<span class="d g" style="left:46%;top:41%"></span><span class="t" style="left:46%;top:41%">FRANKFURT</span>
+<span class="d g" style="left:21%;top:62%"></span><span class="t" style="left:21%;top:62%">NEW YORK</span>
+<span class="d a sel" style="left:61%;top:54%"></span><span class="t" style="left:61%;top:54%">MUMBAI</span>
+<span class="d g" style="left:80%;top:40%"></span><span class="t" style="left:80%;top:40%;transform:translate(-110%,-50%)">TOKYO</span>
+<span class="d a" style="left:30%;top:78%"></span><span class="t" style="left:30%;top:78%">SAO PAULO</span>
+<span class="d r" style="left:68%;top:67%"></span><span class="t" style="left:68%;top:67%">JOHANNESBURG</span>
+<span class="d g" style="left:52%;top:75%"></span><span class="t" style="left:52%;top:75%">SYDNEY</span></div>
+<div class="leg"><span><i class="g"></i>90% or more reached</span><span><i class="a"></i>70 to 90%</span><span><i class="r"></i>Under 70%</span></div>
+<div class="pop"><span class="chip">78%</span><b>Mumbai, India</b><small>Most sites answered from here, but some did not.</small><small>Typical time 420 ms</small></div></div></main></body></html>
