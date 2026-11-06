@@ -1,12 +1,12 @@
 
 (function(){
 var G={x0:30,y0:240,w:900,h:340,rows:136,top:77};
-var EA1=1.340264,EA2=-0.081106,EA3=0.000893,EA4=0.003796,ES=158;
+var EA1=1.340264,EA2=-0.081106,EA3=0.000893,EA4=0.003796,ES=172;
 function PR(lon,lat){var l=lon*Math.PI/180,f=lat*Math.PI/180,t=Math.asin(Math.sqrt(3)/2*Math.sin(f)),t2=t*t,t6=t2*t2*t2;
  var x=2*Math.sqrt(3)*l*Math.cos(t)/(3*(EA1+3*EA2*t2+t6*(7*EA3+9*EA4*t2)));
  var y=t*(EA1+EA2*t2+t6*(EA3+EA4*t2));
  return [480+x*ES,EYC-(y-EY0)*ES]}
-var EYC=385,EY0=0;EY0=(function(){var f=14*Math.PI/180,t=Math.asin(Math.sqrt(3)/2*Math.sin(f)),t2=t*t,t6=t2*t2*t2;return t*(EA1+EA2*t2+t6*(EA3+EA4*t2))})();
+var EYC=420,EY0=0;EY0=(function(){var f=14*Math.PI/180,t=Math.asin(Math.sqrt(3)/2*Math.sin(f)),t2=t*t,t6=t2*t2*t2;return t*(EA1+EA2*t2+t6*(EA3+EA4*t2))})();
 function X(lon){return G.x0+(lon+180)/360*G.w}function Y(lat){return G.y0+(G.top-lat)/G.rows*G.h}
 
 var PAL=['#f4a259','#f6d55c','#f28ab0','#b79ced','#8fcf6f','#6fb7e8','#ef8a7a','#78d4bd','#e9b872','#c5e17a'];
