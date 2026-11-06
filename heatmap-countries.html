@@ -14,11 +14,11 @@ main{padding:18px 8px 40px;max-width:1000px;margin:0 auto}h1{margin:6px 8px 4px;
 </style></head><body><div class="h"><img src="assets/nl-logo.png" alt=""></div>
 <main><h1>Global heat map.</h1><p class="l">Where in the world are websites reachable right now? Tap a pole.</p>
 <div class="btns"><span class="tab on">Reachability</span><span class="tab">Response time</span></div>
-<svg id="map" viewBox="0 0 960 570" role="img" aria-label="World map with a pole for each place we check from"><defs>
+<svg id="map" viewBox="0 0 960 830" role="img" aria-label="World map with a pole for each place we check from"><defs>
 <filter id="wob" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="5"/></filter>
 <pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(-35)"><line x1="0" y1="0" x2="0" y2="7" stroke="#fff" stroke-width="1.6" opacity=".38"/></pattern></defs>
-<rect x="6" y="8" width="948" height="554" rx="26" fill="#111"/><rect x="2" y="4" width="948" height="664" rx="26" fill="#f8e9bb" stroke="#111" stroke-width="4"/>
+<image href="assets/nl-crayon-paper.png" x="0" y="0" width="960" height="830"/>
 <g id="land" filter="url(#wob)" style="mix-blend-mode:multiply"></g><g id="hatchg" filter="url(#wob)" style="pointer-events:none"></g><g id="seas"></g><g id="names"></g><g id="poles"></g></svg>
 <div class="leg"><span><i class="g"></i>90% or more reached</span><span><i class="a"></i>70 to 90%</span><span><i class="r"></i>Under 70%</span></div>
 <div class="pop" id="pop"><span class="chip" id="pc">78%</span><b id="pn">Mumbai, India</b><small>Most sites answered from here, but some did not.</small><small id="pt">Typical time 420 ms</small></div></main>
-<script src="assets/countries-map.js?v=7"></script></body></html>
+<script src="assets/countries-map.js?v=8"></script></body></html>
