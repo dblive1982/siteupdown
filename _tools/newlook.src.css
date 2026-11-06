@@ -197,7 +197,7 @@
 @@ .hm-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 @@ .hm-inner{position:relative;min-width:100%}
 @@ .hm-world svg{display:block;width:100%;height:auto;touch-action:pan-x pan-y}
-@@ .hm-world .cn{font-family:"Chalkboard SE","Comic Sans MS",system-ui,sans-serif;font-weight:800;fill:#3b2414;text-anchor:middle;pointer-events:none}
+@@ .hm-world .cn{font-family:"Chalkboard SE","Comic Sans MS",system-ui,sans-serif;font-weight:800;fill:#3b2414;text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:rgba(255,255,255,.35);stroke-width:5px;stroke-linejoin:round}
 @@ .hm-world .oc{font-family:Georgia,serif;font-style:italic;font-weight:700;fill:#1f5f86;text-anchor:middle;letter-spacing:.3em;opacity:.9;pointer-events:none}
 @@ .hm-world .pole{cursor:pointer;outline:none}
 @@ .hm-world .pole:hover .flag,@@ .hm-world .pole:focus-visible .flag,@@ .hm-world .pole.on .flag{filter:brightness(1.12)}
@@ -216,7 +216,7 @@
 @@ .hm-bub b{font-size:15px;margin-right:8px}
 @@ .hm-bub .tp{display:inline-block;border:2px solid #111;border-radius:99px;padding:0 8px;font-weight:800;font-size:13px}
 @@ .hm-bub small{display:block;color:#444;font-size:12px;margin-top:2px}
-@media (max-width:700px){@@ .hm-world .cn{font-size:60px!important}@@ .hm-world .cn.eu,@@ .hm-world .cn.me{font-size:46px!important}@@ .hm-world .oc{font-size:34px!important}.hm-bub{font-size:13px}}
+@media (max-width:700px){@@ .hm-world .cn{font-size:54px!important}@@ .hm-world .oc{font-size:34px!important}.hm-bub{font-size:13px}}
 
 @@ .hm-tabs{margin:18px 0 6px}
 @@ .hm-world{max-width:1000px;margin:10px auto}
