@@ -239,3 +239,10 @@
 /* tighten gap between hero chips and tool tiles */
 @@ .nl-hero{padding-bottom:0}
 @@ .nl-tiles{padding-top:18px}
+
+/* footer link groups */
+.nl-fgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px 14px;padding:2px 18px 18px;text-align:left}
+.nl-fg h3{margin:0 0 6px;font:800 12px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:#6b6b78}
+@@ .nl-fg a,@@ .nl-fg button{display:block;font:600 15px var(--sans);background:none;border:0;padding:5px 0;cursor:pointer;color:#0b0b0b;text-decoration:none;text-align:left}
+@@ .nl-fg a:hover,@@ .nl-fg button:hover{text-decoration:underline}
+@media (min-width:760px){.nl-fgrid{grid-template-columns:repeat(5,1fr);padding:4px 24px 22px}}

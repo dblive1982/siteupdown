@@ -94,7 +94,8 @@ def head(title, desc, path, extra_head='', noindex=False):
 '''
 
 def foot(scripts):
-    links = [('Website checker', '/'), ('Is it down?', '/is-it-down/'), ('Outage map', '/outage-map'), ('Internet speed test', '/internet-speed-test'), ('What is my IP?', '/what-is-my-ip'), ('Game ping test', '/game-ping-test'), ('Website speed test', '/speed'), ('Tools', '/tools/'), ('Monitor', '/monitor'), ('Account', '/account'), ('Help centre', '/help/'), ('How we check', '/how-we-check'), ('FAQ', '/faq'), ('About', '/about'), ('For business', '/business'), ('Contact', '/contact'), ('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')]
+    groups = [('Check', [('Website checker', '/'), ('Is it down?', '/is-it-down/'), ('Outage map', '/outage-map'), ('Monitor', '/monitor')]), ('Tools', [('Internet speed test', '/internet-speed-test'), ('Website speed test', '/speed'), ('What is my IP?', '/what-is-my-ip'), ('Game ping test', '/game-ping-test'), ('All tools', '/tools/')]), ('Learn', [('Help centre', '/help/'), ('How we check', '/how-we-check'), ('FAQ', '/faq')]), ('Company', [('Account', '/account'), ('About', '/about'), ('For business', '/business'), ('Contact', '/contact')]), ('Legal', [('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')])]
+    fgrid = ''.join('<div class="nl-fg"><h3>%s</h3>%s%s</div>' % (g, ''.join('<a href="%s">%s</a>' % (h, l) for l, h in items), '<button type="button" data-cookie-settings>Cookie settings</button>' if g == 'Legal' else '') for g, items in groups)
     return f'''</main>
 <footer class="site-foot"><div class="wrap nl-foot">
 <img src="/assets/nl-logo-light.png" alt="Site up down?" width="831" height="391">
@@ -102,7 +103,7 @@ def foot(scripts):
 <div class="socials" aria-label="Social media">
 <a href="#" title="Facebook" aria-label="Facebook">{I_FB}</a><a href="#" title="Instagram" aria-label="Instagram">{I_IG}</a><a href="#" title="X" aria-label="X">{I_X}</a><a href="#" title="TikTok" aria-label="TikTok">{I_TT}</a><a href="#" title="YouTube" aria-label="YouTube">{I_YT}</a>
 </div>
-<details><summary>All pages</summary><div class="nl-links">{''.join('<a href="%s">%s</a>' % (h, l) for l, h in links)}<button type="button" data-cookie-settings>Cookie settings</button></div></details>
+<details open><summary>All pages</summary><div class="nl-fgrid">{fgrid}</div></details>
 <p class="fine">&copy; <span data-year>2026</span> siteupdown.com. An independent website checker, not affiliated with the sites it checks. Regional probes use the public <a href="https://globalping.io" rel="noopener">Globalping</a> network.</p>
 </div></footer>
 {scripts}
