@@ -1,0 +1,25 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Heat map - continents mock-up</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f1f1f5;font-family:system-ui,sans-serif;color:#111}
+.h{background:#ffde59;padding:18px 16px;text-align:center}.h img{width:170px}
+main{padding:18px 8px 40px;max-width:1100px;margin:0 auto}h1{margin:6px 8px 4px;font-size:1.9rem}p.l{color:#444;margin:0 8px 8px}
+.btns{display:flex;gap:8px;margin:10px 8px}.tab{border:2.5px solid #111;border-radius:99px;padding:8px 14px;font-weight:800;font-size:14px;background:#fffbe8}.tab.on{background:#7ed957;box-shadow:0 3px 0 #111}
+.mapbox{margin:10px 8px;border:3.5px solid #111;border-radius:22px;box-shadow:6px 6px 0 #111;overflow:hidden;background:#7fd0ff;line-height:0}
+#map{display:block;width:100%;height:auto;touch-action:manipulation}
+.cn{font-family:"Chalkboard SE","Comic Sans MS",system-ui,sans-serif;font-weight:800;fill:#3b2414;text-anchor:middle;letter-spacing:.02em;pointer-events:none}
+.oc{font-family:Georgia,serif;font-style:italic;font-weight:700;fill:#2d6f93;text-anchor:middle;letter-spacing:.3em;opacity:.75;pointer-events:none}
+.pole{cursor:pointer}.pl{font:800 30px system-ui;fill:#111;paint-order:stroke;stroke:#fffbe8;stroke-width:8px;display:none}.pole.on .pl{display:block}
+@keyframes pulse{0%{r:14;opacity:.95}100%{r:70;opacity:0}}@keyframes wave{0%,100%{transform:skewY(0)}50%{transform:skewY(-7deg)}}
+.pole.r .ring{animation:pulse 1.1s ease-out infinite}.pole.a .ring{animation:pulse 2.2s ease-out infinite}
+.pole .flag{transform-box:fill-box;transform-origin:left center;animation:wave 2.4s ease-in-out infinite}
+.leg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:13px;font-weight:600;margin:10px 8px}.leg i{display:inline-block;width:16px;height:16px;border:2.5px solid #111;border-radius:50%;vertical-align:-3px;margin-right:5px}
+.g{background:#2fbf4a}.a{background:#ffb020}.r{background:#e84a4a}
+.pop{background:#fffbe8;border:3px solid #111;border-radius:18px;box-shadow:5px 5px 0 #111;padding:12px 14px;margin:14px 8px}.pop b{font-size:1.1rem}.chip{float:right;background:#ffb020;border:2.5px solid #111;border-radius:99px;padding:0 10px;font-weight:800}.pop small{display:block;color:#444;margin-top:4px}
+@media(max-width:600px){.pl{font-size:38px}}
+</style></head><body><div class="h"><img src="assets/nl-logo.png" alt=""></div>
+<main><h1>Global heat map.</h1><p class="l">Where in the world are websites reachable right now? Tap a pole.</p>
+<div class="btns"><span class="tab on">Reachability</span><span class="tab">Response time</span></div>
+<div class="mapbox"><svg id="map" viewBox="0 0 2400 1221" role="img" aria-label="World map with a pole for each place we check from"><image href="assets/nl-continents.png" x="0" y="0" width="2400" height="1221"/><g id="lay"></g></svg></div>
+<div class="leg"><span><i class="g"></i>90% or more reached</span><span><i class="a"></i>70 to 90%</span><span><i class="r"></i>Under 70%</span></div>
+<div class="pop"><span class="chip" id="pc">78%</span><b id="pn">Mumbai, India</b><small>Most sites answered from here, but some did not.</small><small id="pt">Typical time 420 ms</small></div></main>
+<script src="assets/continents-map.js?v=1"></script></body></html>
