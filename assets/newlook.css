@@ -246,3 +246,12 @@
 :root[data-theme=light] body .nl-fg a,:root[data-theme=light] body .nl-fg button{display:block;font:600 15px var(--sans);background:none;border:0;padding:5px 0;cursor:pointer;color:#0b0b0b;text-decoration:none;text-align:left}
 :root[data-theme=light] body .nl-fg a:hover,:root[data-theme=light] body .nl-fg button:hover{text-decoration:underline}
 @media (min-width:760px){.nl-fgrid{grid-template-columns:repeat(5,1fr);padding:4px 24px 22px}}
+
+/* tile illustrations + always-open footer links */
+.nl-tile.speed img,.nl-tile:not(.map):not(.mon):not(.help) img{width:58%;right:8px;bottom:8px}
+.nl-tile.mon img{width:50%;right:6px;bottom:6px}
+.nl-tile.help img{width:42%;right:10px;bottom:8px}
+.nl-fcard{background:#fffbea;border:2.5px solid #0b0b0b;border-radius:16px;margin:14px 0;padding:18px 18px 10px}
+.nl-fgrid.nl-fcard{padding:20px 18px 10px}
+@media (min-width:760px){.nl-fgrid.nl-fcard{padding:22px 24px 14px}}
+.nl-fg h3{font:900 15px var(--sans);letter-spacing:.06em;color:#0b0b0b;margin:0 0 8px;padding-bottom:6px;border-bottom:3px solid #ffd93d;display:inline-block}
