@@ -650,7 +650,7 @@ def help_pages():
     # hub
     cards = ''
     for key, name, blurb in CATS:
-        items = ''.join('<li><a href="/help/%s">%s</a></li>' % (a['slug'], html.escape(a['title'])) for a in ARTICLES if a['cat'] == key)
+        items = ''.join('<li><a href="/help/%s">%s</a></li>' % (a['slug'], html.escape(html.unescape(a['title']))) for a in ARTICLES if a['cat'] == key)
         cards += '<section class="hcat"><h2>%s</h2><p>%s</p><ul>%s</ul></section>' % (html.escape(name), html.escape(blurb), items)
     ld = '<script type="application/ld+json">' + _json.dumps({"@context": "https://schema.org", "@type": "CollectionPage", "name": "siteupdown.com help centre", "url": SITE + "/help/"}) + '</script>'
     h = head('Help centre: website errors, DNS, SSL and uptime guides — siteupdown.com', 'Plain-English guides to website errors, DNS, SSL certificates, uptime and speed. Find out why a site will not load and how to fix it.', '/help/', ld).replace('{BODYATTR}', '')
