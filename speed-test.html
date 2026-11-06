@@ -1,0 +1,68 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive"><link rel="icon" href="/favicon-32.png" type="image/png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap"><title>Internet speed test — new look (mock-up)</title>
+<style>
+:root{--page:#f1f1f5;--card:#fffbea;--yellow:#ffde59;--bar:#fbc531;--green:#6cb33f;--green-d:#3f7d27;--red:#e84a4a;--line:2.5px solid #0b0b0b}
+*{box-sizing:border-box}body{margin:0;background:var(--page);color:#0b0b0b;font:500 16px/1.5 "Space Grotesk",system-ui,sans-serif}
+.top{background:var(--yellow);text-align:center;padding:34px 16px 14px}
+.top img{width:min(320px,64vw);height:auto}
+.top nav{margin-top:12px;display:flex;justify-content:center;gap:22px}.top nav a{color:#0b0b0b;font-weight:700;text-decoration:none;padding:4px 2px;border-bottom:3px solid transparent}.top nav a:hover{border-color:#0b0b0b}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+.lead{text-align:center;margin:30px 0 20px}.lead h1{margin:0 0 6px;font-size:clamp(26px,6vw,38px);line-height:1.1}.lead p{margin:0;opacity:.8}
+.win,.form,.card{background:var(--card);border:var(--line);border-radius:22px;box-shadow:7px 8px 0 #0b0b0b;overflow:hidden}
+.bar{background:var(--bar);border-bottom:var(--line);padding:10px 14px;display:flex;gap:8px;align-items:center;font-weight:700}
+.bar i{flex:1;height:26px;background:var(--card);border:var(--line);border-radius:9px}
+.body{padding:22px}
+.row{display:grid;grid-template-columns:90px 1fr;gap:12px;align-items:center;margin-bottom:12px}
+.row input,.check input{font:inherit;min-width:0;padding:12px 14px;border:var(--line);border-radius:13px;background:#fff;width:100%}
+.check{display:flex;gap:10px;flex-wrap:wrap}.check input{flex:1 1 220px;width:auto}
+.btn{font:700 17px "Space Grotesk",system-ui,sans-serif;color:#fff;background:var(--green);border:0;border-radius:999px;padding:13px 32px;cursor:pointer;box-shadow:0 5px 0 var(--green-d)}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--green-d)}
+.go{font:700 16px "Space Grotesk",system-ui,sans-serif;color:#fff;background:var(--red);border:var(--line);border-radius:12px;padding:10px 36px;cursor:pointer}
+.sub{display:flex;align-items:center;gap:14px;margin:6px 0 0}
+.more{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center;margin:30px 0}
+.help{display:flex;flex-direction:column;align-items:center;gap:12px}.help img{width:92px;height:auto}
+.heat{position:relative;display:block;text-decoration:none;color:inherit;background:var(--card);border:var(--line);border-radius:18px;box-shadow:5px 6px 0 #0b0b0b;padding:14px 14px 0;overflow:hidden;height:200px}
+.heat b{display:block;font-size:18px}.heat span{font-size:14px;opacity:.8}.heat img{position:absolute;left:14%;top:78px;width:80%;height:auto}
+h2{margin:34px 0 12px;font-size:22px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px}
+.card{padding:16px;border-radius:18px;box-shadow:5px 6px 0 #0b0b0b}.card h3{margin:0 0 6px;font-size:18px}.card p{margin:8px 0 0;font-size:14px}
+a.tool{text-decoration:none;color:inherit;display:block;transition:transform .08s}a.tool:hover{transform:translate(-2px,-2px)}
+.pill{display:inline-block;font-weight:700;font-size:13px;padding:2px 12px;border:var(--line);border-radius:999px;background:#7ed957}.pill.warn{background:var(--bar)}.pill.bad{background:var(--red);color:#fff}
+footer{text-align:center;font-size:14px;opacity:.7;padding:30px 0 70px}
+.ribbon{position:fixed;right:10px;bottom:10px;background:#f59e0b;color:#000;font:700 12px/1 system-ui;letter-spacing:.08em;padding:7px 10px;border:2px solid #000;border-radius:6px;z-index:9}
+@media(max-width:560px){.row{grid-template-columns:1fr;gap:4px}.more{grid-template-columns:1fr}}
+.gauge{display:block;width:min(440px,100%);margin:0 auto}
+.needle{transform-origin:150px 150px;transform:rotate(-90deg);transition:transform 2.6s cubic-bezier(.2,.8,.2,1)}
+.big{text-align:center;font-weight:700;font-size:clamp(40px,12vw,64px);line-height:1;margin:2px 0 0}.big small{font-size:.3em;font-weight:600;margin-left:6px}
+.say{position:relative;background:#fff;border:var(--line);border-radius:18px;padding:12px 16px;margin:18px auto 0;max-width:460px;text-align:center;font-weight:600}
+.say:before{content:"";position:absolute;left:50%;top:-12px;margin-left:-10px;border:10px solid transparent;border-top:0;border-bottom:12px solid #0b0b0b}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:22px 0 6px}.stats .card{padding:12px;text-align:center}.stats b{display:block;font-size:22px}.stats span{font-size:13px;opacity:.75}
+.center{text-align:center;margin:20px 0 4px}.demo{font-size:13px;opacity:.7;text-align:center;margin:6px 0 0}
+.uses{list-style:none;padding:0;margin:0;display:grid;gap:10px}.uses li{display:flex;gap:10px;align-items:center}.dot{width:14px;height:14px;border-radius:50%;border:var(--line);flex:none;background:#ccc}
+</style></head><body>
+<header class="top"><a href="/"><img src="/assets/t/logo-v1.png" alt="Site updown?" width="308" height="147"></a><nav aria-label="Main"><a href="/">Check</a><a href="/speed-test.html">Tools</a><a href="#">Learn</a></nav></header>
+<main class="wrap">
+<section class="lead"><h1>How fast is your internet?</h1><p>One tap. We'll tell you what it means in plain English.</p></section>
+<section class="win"><div class="bar"><span>&lsaquo;</span><i></i><span>&rsaquo;</span></div><div class="body">
+<svg class="gauge" viewBox="0 0 300 175" role="img" aria-label="Speed dial"><path d="M20 150 A130 130 0 0 1 280 150" fill="none" stroke="#0b0b0b" stroke-width="30" stroke-linecap="round"/><path d="M20 150 A130 130 0 0 1 85 37.4" fill="none" stroke="#e84a4a" stroke-width="22" stroke-linecap="round"/><path d="M85 37.4 A130 130 0 0 1 215 37.4" fill="none" stroke="#fbc531" stroke-width="22"/><path d="M215 37.4 A130 130 0 0 1 280 150" fill="none" stroke="#7ed957" stroke-width="22" stroke-linecap="round"/>
+<g class="needle" id="needle"><path d="M150 150 L142 150 L150 38 L158 150 Z" fill="#0b0b0b"/></g><circle cx="150" cy="150" r="14" fill="#fffbea" stroke="#0b0b0b" stroke-width="4"/></svg>
+<p class="big"><span id="num">0</span><small>Mbps</small></p>
+<div class="say" id="say">Ready when you are.</div>
+<div class="center"><button class="btn" id="go" type="button">Start test</button></div>
+<p class="demo">Mock-up only: these numbers are simulated.</p></div></section>
+<div class="stats"><div class="card"><b id="dl">&ndash;</b><span>Download (Mbps)</span></div><div class="card"><b id="ul">&ndash;</b><span>Upload (Mbps)</span></div><div class="card"><b id="pg">&ndash;</b><span>Delay (ms)</span></div></div>
+<h2>What can you do with it?</h2>
+<section class="card"><ul class="uses" id="uses"><li><span class="dot"></span>Browsing and email</li><li><span class="dot"></span>Streaming Netflix in HD</li><li><span class="dot"></span>Video calls</li><li><span class="dot"></span>Online gaming</li></ul></section>
+<p style="margin:26px 0 0"><a href="/">&larr; Back to the website checker</a></p>
+</main><footer>&copy; 2026 siteupdown.com &middot; speed test mock-up</footer><div class="ribbon">TEST SITE</div>
+<script>
+var n=document.getElementById('needle'),num=document.getElementById('num'),say=document.getElementById('say'),go=document.getElementById('go'),busy=false;
+function lvl(v){return v<25?0:v<100?1:2}
+function ok(t,v){return t==0?v>=3:t==1?v>=25:t==2?v>=10:v>=40}
+go.onclick=function(){if(busy)return;busy=true;go.textContent='Testing\u2026';say.textContent='Checking\u2026';
+ var v=Math.round(8+Math.random()*290),a=-90+Math.min(v,300)/300*180;n.style.transform='rotate('+a+'deg)';
+ var t0=performance.now();(function f(t){var p=Math.min(1,(t-t0)/2600);num.textContent=Math.round(v*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(f);else done(v)})(t0)};
+function done(v){busy=false;go.textContent='Test again';
+ document.getElementById('dl').textContent=v;document.getElementById('ul').textContent=Math.round(v*.35);document.getElementById('pg').textContent=Math.round(10+Math.random()*40);
+ say.textContent=v>=100?'Fast. Plenty for the whole family at once.':v>=25?'Good. Fine for streaming and calls.':'A bit slow. Browsing is fine, video may struggle.';
+ var li=document.querySelectorAll('#uses .dot');[3,25,10,40].forEach(function(m,i){li[i].style.background=v>=m?'#7ed957':'#e84a4a'})}
+</script></body></html>

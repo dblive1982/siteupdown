@@ -1,48 +1,47 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive"><link rel="icon" href="/favicon-32.png" type="image/png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap"><title>siteupdown — comic burst theme</title>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive"><link rel="icon" href="/favicon-32.png" type="image/png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap"><title>siteupdown — new look (mock-up)</title>
 <style>
-:root{--bg:#130228;--panel:#1f0a3a;--ink:#0b0b0b;--cream:#fffbea;--gold:#fbc531;--orange:#ff6200;--green:#7ed957;--red:#e84a4a;--blue:#3cc8f0;--line:3px solid var(--ink)}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font:500 16px/1.5 "Space Grotesk",system-ui,sans-serif;overflow-x:hidden}
+:root{--page:#f1f1f5;--card:#fffbea;--yellow:#ffde59;--bar:#fbc531;--green:#6cb33f;--green-d:#3f7d27;--red:#e84a4a;--line:2.5px solid #0b0b0b}
+*{box-sizing:border-box}body{margin:0;background:var(--page);color:#0b0b0b;font:500 16px/1.5 "Space Grotesk",system-ui,sans-serif}
+.top{background:var(--yellow);text-align:center;padding:34px 16px 14px}
+.top img{width:min(320px,64vw);height:auto}
+.top nav{margin-top:12px;display:flex;justify-content:center;gap:22px}.top nav a{color:#0b0b0b;font-weight:700;text-decoration:none;padding:4px 2px;border-bottom:3px solid transparent}.top nav a:hover{border-color:#0b0b0b}
 .wrap{max-width:760px;margin:0 auto;padding:0 16px}
-nav{padding:12px 0;font-size:14px}nav a{color:#fff;opacity:.8;margin-right:14px}
-.hero{text-align:center;position:relative;padding:6px 0 0}
-.hero .burst{width:min(440px,96%);height:auto}
-.hero .pow{position:absolute;right:-4px;top:2px;width:88px;transform:rotate(8deg)}
-.hero .huh{position:absolute;left:-2px;bottom:10px;width:92px;transform:rotate(-8deg)}
-.tag{text-align:center;font-weight:600;margin:4px 0 22px}
-.panel{background:var(--cream);color:var(--ink);border:var(--line);border-radius:22px;box-shadow:8px 8px 0 var(--gold);padding:24px 20px;text-align:center;position:relative}
-.panel h1{margin:0 0 6px;font-size:clamp(26px,6vw,36px);line-height:1.1}
-.panel p{margin:0 0 16px}
-.check{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
-.check input{flex:1 1 220px;min-width:0;font:inherit;padding:13px 16px;border:var(--line);border-radius:14px;background:#fff}
-.btn{font:700 17px "Space Grotesk",system-ui,sans-serif;color:#fff;background:var(--orange);border:var(--line);border-radius:999px;padding:12px 30px;cursor:pointer;box-shadow:0 5px 0 var(--ink)}
-.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
-.boom{position:absolute;right:-6px;bottom:-34px;width:96px;transform:rotate(6deg)}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;margin:44px 0 26px}
-.card{background:var(--panel);border:3px solid var(--gold);border-radius:18px;padding:16px;box-shadow:5px 6px 0 #000}
-.card h3{margin:0 0 6px;font-size:18px}.card p{margin:8px 0 0;font-size:14px;opacity:.85}
-.pill{display:inline-block;font-weight:700;font-size:13px;padding:2px 12px;border:var(--line);border-radius:999px;color:#000;background:var(--green)}
-.pill.warn{background:var(--gold)}.pill.bad{background:var(--red);color:#fff}
-.form{background:var(--cream);color:var(--ink);border:var(--line);border-radius:22px;overflow:hidden;box-shadow:8px 8px 0 var(--blue);margin:10px 8px 34px 0}
-.form .bar{background:var(--gold);border-bottom:var(--line);padding:10px 14px;font-weight:700}
-.form .body{padding:20px}.row{display:grid;grid-template-columns:84px 1fr;gap:12px;align-items:center;margin-bottom:12px}
-.row input{width:100%;font:inherit;padding:10px 14px;border:var(--line);border-radius:12px;background:#fff}
-.go{display:block;margin:16px auto 0;font:700 16px "Space Grotesk",system-ui,sans-serif;color:#fff;background:var(--red);border:var(--line);border-radius:12px;padding:10px 38px;cursor:pointer}
-.stickers{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:4px 10px;margin:14px 0 8px}
-.stickers img{height:84px;width:auto}
-.cap{text-align:center;margin:8px 0 40px;font-weight:600}
-footer{text-align:center;font-size:14px;opacity:.7;padding:0 0 70px}
+.lead{text-align:center;margin:30px 0 20px}.lead h1{margin:0 0 6px;font-size:clamp(26px,6vw,38px);line-height:1.1}.lead p{margin:0;opacity:.8}
+.win,.form,.card{background:var(--card);border:var(--line);border-radius:22px;box-shadow:7px 8px 0 #0b0b0b;overflow:hidden}
+.bar{background:var(--bar);border-bottom:var(--line);padding:10px 14px;display:flex;gap:8px;align-items:center;font-weight:700}
+.bar i{flex:1;height:26px;background:var(--card);border:var(--line);border-radius:9px}
+.body{padding:22px}
+.row{display:grid;grid-template-columns:90px 1fr;gap:12px;align-items:center;margin-bottom:12px}
+.row input,.check input{font:inherit;min-width:0;padding:12px 14px;border:var(--line);border-radius:13px;background:#fff;width:100%}
+.check{display:flex;gap:10px;flex-wrap:wrap}.check input{flex:1 1 220px;width:auto}
+.btn{font:700 17px "Space Grotesk",system-ui,sans-serif;color:#fff;background:var(--green);border:0;border-radius:999px;padding:13px 32px;cursor:pointer;box-shadow:0 5px 0 var(--green-d)}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--green-d)}
+.go{font:700 16px "Space Grotesk",system-ui,sans-serif;color:#fff;background:var(--red);border:var(--line);border-radius:12px;padding:10px 36px;cursor:pointer}
+.sub{display:flex;align-items:center;gap:14px;margin:6px 0 0}
+.more{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:center;margin:30px 0}
+.help{display:flex;flex-direction:column;align-items:center;gap:12px}.help img{width:92px;height:auto}
+.heat{position:relative;display:block;text-decoration:none;color:inherit;background:var(--card);border:var(--line);border-radius:18px;box-shadow:5px 6px 0 #0b0b0b;padding:14px 14px 0;overflow:hidden;height:200px}
+.heat b{display:block;font-size:18px}.heat span{font-size:14px;opacity:.8}.heat img{position:absolute;left:14%;top:78px;width:80%;height:auto}
+h2{margin:34px 0 12px;font-size:22px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px}
+.card{padding:16px;border-radius:18px;box-shadow:5px 6px 0 #0b0b0b}.card h3{margin:0 0 6px;font-size:18px}.card p{margin:8px 0 0;font-size:14px}
+a.tool{text-decoration:none;color:inherit;display:block;transition:transform .08s}a.tool:hover{transform:translate(-2px,-2px)}
+.pill{display:inline-block;font-weight:700;font-size:13px;padding:2px 12px;border:var(--line);border-radius:999px;background:#7ed957}.pill.warn{background:var(--bar)}.pill.bad{background:var(--red);color:#fff}
+footer{text-align:center;font-size:14px;opacity:.7;padding:30px 0 70px}
 .ribbon{position:fixed;right:10px;bottom:10px;background:#f59e0b;color:#000;font:700 12px/1 system-ui;letter-spacing:.08em;padding:7px 10px;border:2px solid #000;border-radius:6px;z-index:9}
-</style></head><body><div class="wrap">
-<nav><a href="/themes.html">&larr; All themes</a></nav>
-<header class="hero"><img class="burst" src="/assets/logo-main.png" alt="Site updown?"><img class="pow" src="/assets/t/pow.png" alt=""><img class="huh" src="/assets/t/huh.png" alt=""></header>
-<p class="tag">Less refreshing. More knowing.</p>
-<section class="panel"><h1>Is it down, or is it just you?</h1><p>Type any website and we'll check it from around the world.</p>
-<form class="check" onsubmit="return false"><input type="text" placeholder="e.g. netflix.com" aria-label="Website address"><button class="btn">Check</button></form><img class="boom" src="/assets/t/boom.png" alt=""></section>
-<div class="grid">
-<div class="card"><h3>netflix.com</h3><span class="pill">Up</span><p>Reached from 15 of 15 places. 212 ms.</p></div>
+@media(max-width:560px){.row{grid-template-columns:1fr;gap:4px}.more{grid-template-columns:1fr}}
+</style></head><body>
+<header class="top"><a href="/"><img src="/assets/t/logo-v1.png" alt="Site updown?" width="308" height="147"></a><nav aria-label="Main"><a href="/">Check</a><a href="/speed-test.html">Tools</a><a href="#">Learn</a></nav></header>
+<main class="wrap">
+<section class="lead"><h1>Is it down, or is it just you?</h1><p>Type any website and we'll check it from around the world.</p></section>
+<section class="win"><div class="bar"><span>&lsaquo;</span><i></i><span>&rsaquo;</span></div><div class="body">
+<form onsubmit="return false"><div class="row"><label for="u">Website</label><input id="u" type="text" placeholder="e.g. netflix.com"></div><div class="row"><label for="m">Email <small>(optional)</small></label><input id="m" type="email" placeholder="get an alert when it's back"></div><div class="sub"><button class="go" type="submit">Check it</button></div></form></div></section>
+<div class="more"><div class="help"><img src="/assets/t/globe.png" alt="" width="180" height="180"><button class="btn" type="button">HELP</button></div>
+<a class="heat" href="#"><b>Heat map</b><span>See what's down around the world</span><img src="/assets/t/map.png" alt="" width="580" height="437"></a></div>
+<h2>Tools</h2>
+<div class="grid"><a class="card tool" href="/speed-test.html"><h3>Internet speed test</h3><p>How fast is your connection? In plain English.</p></a><a class="card tool" href="#"><h3>What is my IP?</h3><p>See your address and location.</p></a><a class="card tool" href="#"><h3>Game ping test</h3><p>Is your connection good for gaming?</p></a></div>
+<h2>Recent checks</h2>
+<div class="grid"><div class="card"><h3>netflix.com</h3><span class="pill">Up</span><p>Reached from 15 of 15 places. 212 ms.</p></div>
 <div class="card"><h3>steamcommunity.com</h3><span class="pill warn">Slow</span><p>Reached from 14 of 15 places. 1.8 s.</p></div>
 <div class="card"><h3>example-store.com</h3><span class="pill bad">Down</span><p>Not reachable from any place.</p></div></div>
-<section class="form"><div class="bar">Get an alert</div><div class="body"><div class="row"><label for="e">Email</label><input id="e" type="email" placeholder="you@example.com"></div><div class="row"><label for="w">Website</label><input id="w" type="text" placeholder="yoursite.com"></div><button class="go" type="button">Alert me</button></div></section>
-<div class="stickers"><img src="/assets/t/huh.png" alt=""><img src="/assets/t/ouch.png" alt=""><img src="/assets/t/bam.png" alt=""><img src="/assets/t/boom.png" alt=""></div>
-<p class="cap">No animals were harmed in this search</p>
-<footer>&copy; 2026 siteupdown.com &middot; theme 2 test page</footer></div><div class="ribbon">TEST SITE</div></body></html>
+</main><footer>&copy; 2026 siteupdown.com &middot; theme 6 test page</footer><div class="ribbon">TEST SITE</div></body></html>
