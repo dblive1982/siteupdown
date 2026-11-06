@@ -3,7 +3,7 @@ var A={ax:3.41904622,bx:-24.79309414,ay:-213.39670053,by:670.34834736,mix:0.5,S:
 function mil(p){return 1.25*Math.log(Math.tan(Math.PI/4+0.4*p*Math.PI/180))}
 function PR(lon,lat){var f=A.mix*mil(lat)+(1-A.mix)*lat*Math.PI/180;return [(A.ax*(lon+180)+A.bx)*A.S*A.k,((A.ay*f+A.by)*A.S-A.y0)*A.k]}
 var NS='http://www.w3.org/2000/svg',COL={g:'#2fbf4a',a:'#ffb020',r:'#e84a4a'};
-var CN=[['NORTH AMERICA',-103,50,52],['SOUTH AMERICA',-60,-14,46],['AFRICA',19,6,56],['EUROPE',17,52.5,38],['ASIA',92,50,64],['MIDDLE EAST',46,26.5,30],['AUSTRALIA &amp; OCEANIA',134,-25,36]];
+var CN=[['NORTH AMERICA',-106,58,40],['SOUTH AMERICA',-68,-8,34],['AFRICA',19,11,46],['EUROPE',18,57,26],['ASIA',96,54,52],['MIDDLE EAST',43,21,20],['AUSTRALIA',128,-26,28]];
 var OC=[['ATLANTIC',-35,30,30],['OCEAN',-35,24,30],['PACIFIC',-150,10,30],['OCEAN',-150,4,30],['INDIAN',78,-20,30],['OCEAN',78,-26,30],['ARCTIC OCEAN',-60,80,26],['PACIFIC',160,-45,26],['OCEAN',160,-51,26]];
 var P=[['London',51.5,-0.1,'g',99,120],['New York',40.7,-74,'g',94,210],['Sao Paulo',-23.5,-46.6,'a',78,640],['Johannesburg',-26.2,28,'r',56,980],['Mumbai',19,72.8,'a',78,420],['Tokyo',35.7,139.7,'g',97,180],['Sydney',-33.9,151.2,'g',95,300],['Los Angeles',34,-118,'g',96,230],['Singapore',1.3,103.8,'g',98,160],['Dubai',25.2,55.3,'g',92,260]];
 var h='';
