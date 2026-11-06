@@ -230,3 +230,4 @@
 :root[data-theme=light] body .hm-world.zoomed .hm-zoom .rs{display:block}
 :root[data-theme=light] body .hm-world.zoomed svg{cursor:grab}
 @media (max-width:700px){:root[data-theme=light] body .hm-zoom{top:5px;right:5px;gap:5px}:root[data-theme=light] body .hm-zoom button{width:28px;height:28px;font-size:17px;border-width:2px}}
+:root[data-theme=light] body .hm-world .pole:hover .dot,:root[data-theme=light] body .hm-world .pole:focus-visible .dot{filter:brightness(1.12)}

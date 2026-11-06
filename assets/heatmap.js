@@ -6,7 +6,7 @@
   var $ = function (id) { return document.getElementById(id); };
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
   var dn = null; try { dn = new Intl.DisplayNames(['en'], { type: 'region' }); } catch (e) {}
-  var svg = box.querySelector('svg'), VW = 2400, VH = 1221, zoom = 1, vx = 0, vy = 0, data = null, layer = 'reach', sel = null, sorted = [], dots = [];
+  var FLAGS = /[?&]markers=flags/.test(location.search), svg = box.querySelector('svg'), VW = 2400, VH = 1221, zoom = 1, vx = 0, vy = 0, data = null, layer = 'reach', sel = null, sorted = [], dots = [];
   /* flat continents picture (2400x1221): fitted projection from lon/lat to picture pixels */
   var A = { ax: 3.41904622, bx: -24.79309414, ay: -213.39670053, by: 670.34834736, mix: 0.5, S: 2.5, y0: 690, k: 2400 / 3125 };
   function mil(d) { return 1.25 * Math.log(Math.tan(Math.PI / 4 + 0.4 * d * Math.PI / 180)); }
@@ -32,14 +32,22 @@
   function paint() {
     if (!data) return;
     dots = data.places.filter(function (p) { return p.lat != null && p.lon != null; });
-    var pos = [], html = labels, s0 = (box.clientWidth < 700 ? 1.3 : 1) / Math.pow(zoom, 0.7);
-    dots.forEach(function (p, i) {
-      var q = PR(p.lon, p.lat), h = heat(p), n = 0;
+    var pos = [], html = labels, s0 = (box.clientWidth < 700 ? (FLAGS ? 1.3 : 1.8) : 1.15) / Math.pow(zoom, 0.7);
+    var order = dots.map(function (p, i) { return i; }); if (sel) order.sort(function (a, c) { return (dots[a] === sel) - (dots[c] === sel); });
+    order.forEach(function (i) {
+      var p = dots[i], q = PR(p.lon, p.lat), h = heat(p), n = 0, on = p === sel;
+      var ring = '<circle class="ring" cx="0" cy="' + (FLAGS ? '-104' : '0') + '" r="16" fill="none" stroke="' + COL[h.cls] + '" stroke-width="5" vector-effect="non-scaling-stroke"/><circle class="ring r2" cx="0" cy="' + (FLAGS ? '-104' : '0') + '" r="16" fill="none" stroke="' + COL[h.cls] + '" stroke-width="5" vector-effect="non-scaling-stroke"/>';
+      var g0 = '<g class="pole ' + h.cls + (on ? ' on' : '') + '" data-d="' + i + '" tabindex="0" role="button" aria-label="' + esc(name(p) + ': ' + h.label) + '" transform="translate(' + q[0].toFixed(1) + ' ' + q[1].toFixed(1) + ') scale(' + s0.toFixed(3) + ')">';
+      if (!FLAGS) {
+        html += g0 + ring + '<circle cx="0" cy="0" r="36" fill="transparent"/>' +
+          (on ? '<circle cx="0" cy="0" r="27" fill="none" stroke="#111" stroke-width="5"/><line x1="0" y1="-18" x2="0" y2="-92" stroke="#3a2412" stroke-width="7" stroke-linecap="round"/><path class="flag" d="M3 -92 L56 -78 L3 -60 Z" fill="' + COL[h.cls] + '" stroke="#111" stroke-width="5" stroke-linejoin="round"/>' : '') +
+          '<circle class="dot" cx="0" cy="0" r="18" fill="' + COL[h.cls] + '" stroke="#111" stroke-width="6"/><circle cx="-6" cy="-6" r="5" fill="rgba(255,255,255,.75)"/></g>';
+        return;
+      }
       for (var k = 0; k < pos.length; k++) if (Math.abs(pos[k][0] - q[0]) < 110 * s0 && Math.abs(pos[k][1] - q[1]) < 90 * s0) n++;
       pos.push(q);
       var L = (p.lon > 110 ? -1 : 1) * (n % 2 ? -1 : 1), H = Math.min(100 + 55 * n, 210);
-      html += '<g class="pole ' + h.cls + (p === sel ? ' on' : '') + '" data-d="' + i + '" tabindex="0" role="button" aria-label="' + esc(name(p) + ': ' + h.label) + '" transform="translate(' + q[0].toFixed(1) + ' ' + q[1].toFixed(1) + ') scale(' + s0.toFixed(3) + ')">' +
-        '<circle class="ring" cx="0" cy="-' + (H + 4) + '" r="16" fill="none" stroke="' + COL[h.cls] + '" stroke-width="5" vector-effect="non-scaling-stroke"/><circle class="ring r2" cx="0" cy="-' + (H + 4) + '" r="16" fill="none" stroke="' + COL[h.cls] + '" stroke-width="5" vector-effect="non-scaling-stroke"/>' +
+      html += g0 + '<circle class="ring" cx="0" cy="-' + (H + 4) + '" r="16" fill="none" stroke="' + COL[h.cls] + '" stroke-width="5" vector-effect="non-scaling-stroke"/><circle class="ring r2" cx="0" cy="-' + (H + 4) + '" r="16" fill="none" stroke="' + COL[h.cls] + '" stroke-width="5" vector-effect="non-scaling-stroke"/>' +
         '<ellipse cx="0" cy="2" rx="20" ry="7" fill="rgba(0,0,0,.28)"/><line x1="0" y1="0" x2="0" y2="-' + H + '" stroke="#3a2412" stroke-width="7" stroke-linecap="round"/>' +
         '<path class="flag" d="M' + (3 * L) + ' -' + H + ' L' + (66 * L) + ' -' + (H - 16) + ' L' + (3 * L) + ' -' + (H - 36) + ' Z" fill="' + COL[h.cls] + '" stroke="#111" stroke-width="5.5" stroke-linejoin="round"/><circle cx="0" cy="-' + (H + 4) + '" r="9" fill="#111"/></g>';
     });
@@ -95,7 +103,7 @@
     var h = heat(p);
     tip.innerHTML = '<b>' + esc(name(p)) + '</b><span class="tp" style="background:' + COL[h.cls] + '">' + h.val + '</span><small>' + WORD[h.cls] + ' &middot; ' + (p.median_ms != null ? p.median_ms + ' ms' : 'no timing') + '</small>';
     tip.style.display = 'block';
-    var r = g.querySelector('line').getBoundingClientRect(), b = tip.parentNode.getBoundingClientRect();
+    var r = g.querySelector(FLAGS ? 'line' : '.dot').getBoundingClientRect(), b = tip.parentNode.getBoundingClientRect();
     var x = r.left + r.width / 2 - b.left, y = r.top - b.top, w = tip.offsetWidth, hh = tip.offsetHeight;
     var left = Math.max(6, Math.min(b.width - w - 6, x - w / 2)), top = y - hh - 8; if (top < 6) top = r.bottom - b.top + 14;
     tip.style.left = left + 'px'; tip.style.top = top + 'px';
