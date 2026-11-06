@@ -216,7 +216,7 @@
 @@ .hm-bub b{font-size:15px;margin-right:8px}
 @@ .hm-bub .tp{display:inline-block;border:2px solid #111;border-radius:99px;padding:0 8px;font-weight:800;font-size:13px}
 @@ .hm-bub small{display:block;color:#444;font-size:12px;margin-top:2px}
-@media (max-width:700px){@@ .hm-world .cn.eu,@@ .hm-world .cn.me{display:none}@@ .hm-world .cn{font-size:60px!important}@@ .hm-world .oc{font-size:34px!important}.hm-bub{font-size:13px}}
+@media (max-width:700px){@@ .hm-world .cn{font-size:60px!important}@@ .hm-world .cn.eu,@@ .hm-world .cn.me{font-size:46px!important}@@ .hm-world .oc{font-size:34px!important}.hm-bub{font-size:13px}}
 
 @@ .hm-tabs{margin:18px 0 6px}
 @@ .hm-world{max-width:1000px;margin:10px auto}
