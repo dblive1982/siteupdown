@@ -158,7 +158,7 @@
     var box = S.$('#auth'); if (!box) return;
     if (!S.user) {
       var here = location.pathname + location.search;
-      box.innerHTML = '<a class="signin-btn" href="/login' + (here !== '/' && here.indexOf('/login') !== 0 ? '?next=' + encodeURIComponent(here) : '') + '">Sign in</a>';
+      box.innerHTML = '<a class="signin-btn" href="/login' + (here !== '/' && here.indexOf('/login') !== 0 ? '?next=' + encodeURIComponent(here) : '') + '">Login</a>';
       return;
     }
     var ini = S.esc((S.user.name || '?').trim().charAt(0).toUpperCase());
