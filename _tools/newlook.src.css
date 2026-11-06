@@ -180,7 +180,7 @@
 @@ .hm-stats div{border:2.5px solid #111;background:#fff;border-radius:14px}
 @@ .hm-x{border:2.5px solid #111;background:#fff}
 @@ .hm-list b{color:#111}
-@@ .hm-tip{background:#fffbe8;color:#111;border:2.5px solid #111;box-shadow:0 3px 0 #111}
+@@ .hm-bub{background:#fffbe8;color:#111;border:2.5px solid #111;box-shadow:0 3px 0 #111}
 @@ .rt th{background:#ffde59;color:#111;border-bottom:2.5px solid #111}
 @@ .rt td{border-bottom:1.5px solid #111}
 @@ .rt tr.hm-row:hover td,@@ .rt tr.hm-row.on td{background:#fff2b0}
@@ -193,20 +193,28 @@
 @@ .hm-mrow input{flex:1;min-width:0;height:46px;border:2.5px solid #111;border-radius:99px;padding:0 16px;font-size:16px;background:#fff}
 
 /* Heat map on the crayon paper map */
-@@ .hm-paper{position:relative;width:100%;max-width:640px;margin:4px auto;aspect-ratio:960/830}
-@@ .hm-paper>img{position:absolute;inset:0;width:100%;height:100%}
-@@ .hm-paper .d{position:absolute;transform:translate(-50%,-50%);width:3.6%;min-width:16px;aspect-ratio:1;padding:0;border-radius:50%;border:3px solid #111;box-shadow:0 3px 0 #111;cursor:pointer}
-@@ .hm-paper .d::before{content:"";position:absolute;inset:-35%;border-radius:50%;background:inherit;opacity:.3;z-index:-1}
-@@ .hm-paper .d::after{content:"";position:absolute;left:18%;top:15%;width:28%;height:28%;border-radius:50%;background:rgba(255,255,255,.75)}
-@@ .hm-paper .d.g{background:#7ed957}
-@@ .hm-paper .d.a{background:#ffb020}
-@@ .hm-paper .d.r{background:#e84a4a}
-@@ .hm-paper .d.n{background:#bbb}
-@@ .hm-paper .d em{display:none;position:absolute;left:115%;top:50%;transform:translateY(-50%);background:#fffbe8;border:2px solid #111;border-radius:8px;padding:1px 6px;font:800 11px system-ui;white-space:nowrap;color:#111;z-index:2}
-@@ .hm-paper .d.on em,@@ .hm-paper .d:hover em,@@ .hm-paper .d:focus-visible em{display:block}
-@@ .hm-paper .d.on{outline:3px solid #111;outline-offset:3px;z-index:3}
+@@ .hm-world{position:relative;width:100%;margin:4px auto;border:3.5px solid #111;border-radius:22px;box-shadow:6px 6px 0 #111;overflow:hidden;background:#7fd0ff;line-height:0}
+@@ .hm-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
+@@ .hm-inner{position:relative;min-width:100%}
+@@ .hm-world svg{display:block;width:100%;height:auto;touch-action:pan-x pan-y}
+@@ .hm-world .cn{font-family:"Chalkboard SE","Comic Sans MS",system-ui,sans-serif;font-weight:800;fill:#3b2414;text-anchor:middle;pointer-events:none}
+@@ .hm-world .oc{font-family:Georgia,serif;font-style:italic;font-weight:700;fill:#1f5f86;text-anchor:middle;letter-spacing:.3em;opacity:.9;pointer-events:none}
+@@ .hm-world .pole{cursor:pointer;outline:none}
+@@ .hm-world .pole:hover .flag,@@ .hm-world .pole:focus-visible .flag,@@ .hm-world .pole.on .flag{filter:brightness(1.12)}
+@@ .hm-world .pole.on line,@@ .hm-world .pole:focus-visible line{stroke:#111}
+@keyframes hmpulse{0%{r:14;opacity:.95}100%{r:70;opacity:0}}
+@keyframes hmwave{0%,100%{transform:skewY(0)}50%{transform:skewY(-7deg)}}
+@@ .hm-world .pole.r .ring{animation:hmpulse 1.1s ease-out infinite}
+@@ .hm-world .pole.a .ring{animation:hmpulse 2.2s ease-out infinite}
+@@ .hm-world .flag{transform-box:fill-box;transform-origin:left center;animation:hmwave 2.4s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){@@ .hm-world .ring,@@ .hm-world .flag{animation:none!important}}
+@@ .hm-bub{display:none;position:absolute;z-index:5;pointer-events:none;background:#fffbe8;border:3px solid #111;border-radius:14px;box-shadow:4px 4px 0 #111;padding:7px 11px;line-height:1.25;white-space:nowrap;font-size:14px;color:#111}
+@@ .hm-bub b{font-size:15px;margin-right:8px}
+@@ .hm-bub .tp{display:inline-block;border:2px solid #111;border-radius:99px;padding:0 8px;font-weight:800;font-size:13px}
+@@ .hm-bub small{display:block;color:#444;font-size:12px;margin-top:2px}
+@media (max-width:700px){@@ .hm-inner{min-width:760px}@@ .hm-world .cn.eu,@@ .hm-world .cn.me{display:none}@@ .hm-world .cn{font-size:60px!important}@@ .hm-world .oc{font-size:34px!important}.hm-bub{font-size:13px}}
 
 @@ .hm-tabs{margin:18px 0 6px}
-@@ .hm-paper{max-width:760px;margin:10px auto}
+@@ .hm-world{max-width:1000px;margin:10px auto}
 @@ .hm-hint{text-align:center;margin:6px 0}
 @@ .hm-leg{justify-content:center;margin:10px 0 18px}

@@ -1,14 +1,23 @@
-/* Global heat map on the crayon paper map: how the sites we watch look from each of our worldwide probe places. */
+/* Global heat map on the flat continents map: how the sites we watch look from each of our worldwide probe places. */
 (function () {
   'use strict';
-  var box = document.getElementById('hm-map');
-  if (!box) return;
+  var box = document.getElementById('hm-map'), lay = document.getElementById('hm-lay'), tip = document.getElementById('hm-bub');
+  if (!box || !lay) return;
   var $ = function (id) { return document.getElementById(id); };
   var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
   var dn = null; try { dn = new Intl.DisplayNames(['en'], { type: 'region' }); } catch (e) {}
-  var data = null, layer = 'reach', sel = null, sorted = [], dots = [];
-  /* where the land sits on the paper picture (pixels of the 960x830 image) */
-  var G = { x0: 52, y0: 110, w: 856, h: 560, W: 960, H: 830, rows: 136, top: 77 };
+  var centred = false, data = null, layer = 'reach', sel = null, sorted = [], dots = [];
+  /* flat continents picture (2400x1221): fitted projection from lon/lat to picture pixels */
+  var A = { ax: 3.41904622, bx: -24.79309414, ay: -213.39670053, by: 670.34834736, mix: 0.5, S: 2.5, y0: 690, k: 2400 / 3125 };
+  function mil(d) { return 1.25 * Math.log(Math.tan(Math.PI / 4 + 0.4 * d * Math.PI / 180)); }
+  function PR(lon, lat) { var f = A.mix * mil(lat) + (1 - A.mix) * lat * Math.PI / 180; return [(A.ax * (lon + 180) + A.bx) * A.S * A.k, ((A.ay * f + A.by) * A.S - A.y0) * A.k]; }
+  var COL = { g: '#2fbf4a', a: '#ffb020', r: '#e84a4a', n: '#bbbbbb' };
+  var CN = [['NORTH AMERICA', -106, 58, 40], ['SOUTH AMERICA', -68, -8, 34], ['AFRICA', 19, 11, 46], ['EUROPE', 17, 63, 26, 'eu'], ['ASIA', 96, 54, 52], ['MIDDLE EAST', 43, 21, 20, 'me'], ['AUSTRALIA', 128, -26, 28]];
+  var OC = [['ATLANTIC', -35, 30, 30], ['OCEAN', -35, 24, 30], ['PACIFIC', -150, 10, 30], ['OCEAN', -150, 4, 30], ['INDIAN', 78, -20, 30], ['OCEAN', 78, -26, 30], ['ARCTIC OCEAN', -60, 80, 26], ['PACIFIC', 148, -44, 26], ['OCEAN', 148, -50, 26]];
+  var labels = '';
+  CN.forEach(function (c) { var q = PR(c[1], c[2]); labels += '<text class="cn' + (c[4] ? ' ' + c[4] : '') + '" x="' + q[0].toFixed(0) + '" y="' + q[1].toFixed(0) + '" style="font-size:' + c[3] + 'px">' + c[0] + '</text>'; });
+  OC.forEach(function (c) { var q = PR(c[1], c[2]); labels += '<text class="oc" x="' + q[0].toFixed(0) + '" y="' + q[1].toFixed(0) + '" style="font-size:' + c[3] + 'px">' + c[0] + '</text>'; });
+  var WORD = { g: 'Reachable', a: 'Slow or patchy', r: 'Problems', n: 'No timing' };
 
   function name(p) { return (p.city ? p.city + ', ' : '') + (p.country ? (dn ? (dn.of(p.country) || p.country) : p.country) : ''); }
   function heat(p) {
@@ -20,20 +29,38 @@
     if (m == null) return { cls: 'n', val: '\u2013', label: 'No timing' };
     return { cls: m < 400 ? 'g' : m < 900 ? 'a' : 'r', val: m + ' ms', label: 'Typical load time ' + m + ' ms' };
   }
-  function place(p) {
-    var x = G.x0 + (p.lon + 180) / 360 * G.w, y = G.y0 + (G.top - p.lat) / G.rows * G.h;
-    return 'left:' + (x / G.W * 100).toFixed(2) + '%;top:' + (y / G.H * 100).toFixed(2) + '%';
-  }
   function paint() {
     if (!data) return;
-    var html = '';
     dots = data.places.filter(function (p) { return p.lat != null && p.lon != null; });
+    var pos = [], html = labels;
     dots.forEach(function (p, i) {
-      html += '<button type="button" class="d ' + heat(p).cls + (p === sel ? ' on' : '') + '" data-d="' + i + '" style="' + place(p) + '" aria-label="' + esc(name(p) + ': ' + heat(p).label) + '"><em>' + esc(p.city || name(p)) + '</em></button>';
+      var q = PR(p.lon, p.lat), h = heat(p), L = 1;
+      for (var k = 0; k < pos.length; k++) if (Math.abs(pos[k][0] - q[0]) < 90 && Math.abs(pos[k][1] - q[1]) < 70 && pos[k][2] === 1) L = -1;
+      pos.push([q[0], q[1], L]);
+      html += '<g class="pole ' + h.cls + (p === sel ? ' on' : '') + '" data-d="' + i + '" tabindex="0" role="button" aria-label="' + esc(name(p) + ': ' + h.label) + '" transform="translate(' + q[0].toFixed(1) + ' ' + q[1].toFixed(1) + ')">' +
+        (h.cls === 'r' || h.cls === 'a' ? '<circle class="ring" r="14" fill="none" stroke="' + COL[h.cls] + '" stroke-width="5"/>' : '') +
+        '<ellipse cx="0" cy="2" rx="20" ry="7" fill="rgba(0,0,0,.28)"/><line x1="0" y1="0" x2="0" y2="-100" stroke="#3a2412" stroke-width="7" stroke-linecap="round"/>' +
+        '<path class="flag" d="M' + (3 * L) + ' -100 L' + (66 * L) + ' -84 L' + (3 * L) + ' -64 Z" fill="' + COL[h.cls] + '" stroke="#111" stroke-width="5.5" stroke-linejoin="round"/><circle cx="0" cy="-104" r="9" fill="#111"/></g>';
     });
-    box.querySelectorAll('.d').forEach(function (n) { n.remove(); });
-    box.insertAdjacentHTML('beforeend', html);
+    lay.innerHTML = html;
+    if (!centred) { centred = true; var sc = box.querySelector('.hm-scroll'); if (sc) sc.scrollLeft = (sc.scrollWidth - sc.clientWidth) * 0.52; }
   }
+  function showTip(g) {
+    var p = dots[+g.getAttribute('data-d')]; if (!p) return;
+    var h = heat(p);
+    tip.innerHTML = '<b>' + esc(name(p)) + '</b><span class="tp" style="background:' + COL[h.cls] + '">' + h.val + '</span><small>' + WORD[h.cls] + ' &middot; ' + (p.median_ms != null ? p.median_ms + ' ms' : 'no timing') + '</small>';
+    tip.style.display = 'block';
+    var r = g.querySelector('line').getBoundingClientRect(), b = tip.parentNode.getBoundingClientRect();
+    var x = r.left + r.width / 2 - b.left, y = r.top - b.top, w = tip.offsetWidth, hh = tip.offsetHeight;
+    var left = Math.max(6, Math.min(b.width - w - 6, x - w / 2)), top = y - hh - 8; if (top < 6) top = r.bottom - b.top + 14;
+    tip.style.left = left + 'px'; tip.style.top = top + 'px';
+  }
+  function hideTip() { tip.style.display = 'none'; }
+  lay.addEventListener('mouseover', function (e) { var g = e.target.closest && e.target.closest('.pole'); if (g) showTip(g); });
+  lay.addEventListener('mouseout', function (e) { if (e.target.closest && e.target.closest('.pole')) hideTip(); });
+  lay.addEventListener('focusin', function (e) { var g = e.target.closest && e.target.closest('.pole'); if (g) showTip(g); });
+  lay.addEventListener('focusout', hideTip);
+  lay.addEventListener('keydown', function (e) { if (e.key !== 'Enter' && e.key !== ' ') return; var g = e.target.closest && e.target.closest('.pole'); if (g) { e.preventDefault(); var p = dots[+g.getAttribute('data-d')]; select(p === sel ? null : p, false); } });
   function need() { paint(); }
   function pct(p) { return Math.round(p.ok / Math.max(p.n, 1) * 100); }
   function card() {
@@ -82,7 +109,7 @@
   }
   box.addEventListener('click', function (e) {
     var b = e.target.closest && e.target.closest('[data-d]');
-    if (b) { var p = dots[+b.getAttribute('data-d')]; select(p === sel ? null : p, false); } else if (sel) select(null, false);
+    if (b) { var p = dots[+b.getAttribute('data-d')]; select(p === sel ? null : p, false); var g2 = lay.querySelector('.pole.on'); if (g2) showTip(g2); else hideTip(); } else { hideTip(); if (sel) select(null, false); }
   });
   $('hm-card') && $('hm-card').addEventListener('click', function (e) { if (e.target.closest && e.target.closest('[data-close]')) select(null, false); });
   var tb = $('hm-tab');

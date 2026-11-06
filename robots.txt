@@ -1,15 +1,2 @@
 User-agent: *
-Allow: /
-Disallow: /api/
-Disallow: /login
-Disallow: /account
-Disallow: /admin
-Disallow: /s/
-Disallow: /*?q=
-Disallow: /*?host=
-
-# Google AdSense reviewer
-User-agent: Mediapartners-Google
-Allow: /
-
-Sitemap: https://siteupdown.com/sitemap.xml
+Disallow: /
