@@ -34,13 +34,14 @@
     dots = data.places.filter(function (p) { return p.lat != null && p.lon != null; });
     var pos = [], html = labels;
     dots.forEach(function (p, i) {
-      var q = PR(p.lon, p.lat), h = heat(p), L = 1;
-      for (var k = 0; k < pos.length; k++) if (Math.abs(pos[k][0] - q[0]) < 90 && Math.abs(pos[k][1] - q[1]) < 70 && pos[k][2] === 1) L = -1;
-      pos.push([q[0], q[1], L]);
+      var q = PR(p.lon, p.lat), h = heat(p), n = 0;
+      for (var k = 0; k < pos.length; k++) if (Math.abs(pos[k][0] - q[0]) < 110 && Math.abs(pos[k][1] - q[1]) < 90) n++;
+      pos.push(q);
+      var L = (p.lon > 110 ? -1 : 1) * (n % 2 ? -1 : 1), H = Math.min(100 + 45 * n, 190);
       html += '<g class="pole ' + h.cls + (p === sel ? ' on' : '') + '" data-d="' + i + '" tabindex="0" role="button" aria-label="' + esc(name(p) + ': ' + h.label) + '" transform="translate(' + q[0].toFixed(1) + ' ' + q[1].toFixed(1) + ')">' +
         (h.cls === 'r' || h.cls === 'a' ? '<circle class="ring" r="14" fill="none" stroke="' + COL[h.cls] + '" stroke-width="5"/>' : '') +
-        '<ellipse cx="0" cy="2" rx="20" ry="7" fill="rgba(0,0,0,.28)"/><line x1="0" y1="0" x2="0" y2="-100" stroke="#3a2412" stroke-width="7" stroke-linecap="round"/>' +
-        '<path class="flag" d="M' + (3 * L) + ' -100 L' + (66 * L) + ' -84 L' + (3 * L) + ' -64 Z" fill="' + COL[h.cls] + '" stroke="#111" stroke-width="5.5" stroke-linejoin="round"/><circle cx="0" cy="-104" r="9" fill="#111"/></g>';
+        '<ellipse cx="0" cy="2" rx="20" ry="7" fill="rgba(0,0,0,.28)"/><line x1="0" y1="0" x2="0" y2="-' + H + '" stroke="#3a2412" stroke-width="7" stroke-linecap="round"/>' +
+        '<path class="flag" d="M' + (3 * L) + ' -' + H + ' L' + (66 * L) + ' -' + (H - 16) + ' L' + (3 * L) + ' -' + (H - 36) + ' Z" fill="' + COL[h.cls] + '" stroke="#111" stroke-width="5.5" stroke-linejoin="round"/><circle cx="0" cy="-' + (H + 4) + '" r="9" fill="#111"/></g>';
     });
     lay.innerHTML = html;
     if (!centred) { centred = true; var sc = box.querySelector('.hm-scroll'); if (sc) sc.scrollLeft = (sc.scrollWidth - sc.clientWidth) * 0.52; }
