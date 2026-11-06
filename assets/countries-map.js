@@ -6,8 +6,16 @@ function PR(lon,lat){var l=lon*Math.PI/180,f=lat*Math.PI/180,t=Math.asin(Math.sq
  var x=2*Math.sqrt(3)*l*Math.cos(t)/(3*(EA1+3*EA2*t2+t6*(7*EA3+9*EA4*t2)));
  var y=t*(EA1+EA2*t2+t6*(EA3+EA4*t2));
  return [480+x*ES,EYC-(y-EY0)*ES]}
-var EYC=285,EY0=0;EY0=(function(){var f=14*Math.PI/180,t=Math.asin(Math.sqrt(3)/2*Math.sin(f)),t2=t*t,t6=t2*t2*t2;return t*(EA1+EA2*t2+t6*(EA3+EA4*t2))})();
+var EYC=285,EY0=0;EY0=0;/*(function(){var f=14*Math.PI/180,t=Math.asin(Math.sqrt(3)/2*Math.sin(f)),t2=t*t,t6=t2*t2*t2;return t*(EA1+EA2*t2+t6*(EA3+EA4*t2))})();*/
 function X(lon){return G.x0+(lon+180)/360*G.w}function Y(lat){return G.y0+(G.top-lat)/G.rows*G.h}
+
+(function(){var o=[],i,la,lo;
+ for(la=90;la>=-90;la-=3)o.push(PR(180,la));for(la=-90;la<=90;la+=3)o.push(PR(-180,la));
+ var d='M'+o.map(function(p){return p[0].toFixed(1)+' '+p[1].toFixed(1)}).join('L')+'Z',g='';
+ for(la=-60;la<=60;la+=30){var s=[];for(lo=-180;lo<=180;lo+=6){var p=PR(lo,la);s.push(p[0].toFixed(1)+' '+p[1].toFixed(1))}g+='<path d="M'+s.join('L')+'" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.4"/>'}
+ for(lo=-150;lo<=150;lo+=30){var s=[];for(la=-90;la<=90;la+=6){var p=PR(lo,la);s.push(p[0].toFixed(1)+' '+p[1].toFixed(1))}g+='<path d="M'+s.join('L')+'" fill="none" stroke="#fff" stroke-opacity=".7" stroke-width="1.4"/>'}
+ document.getElementById('land').insertAdjacentHTML('beforebegin','<g id="ocean"><path d="'+d+'" fill="#bfe4ee" stroke="#111" stroke-width="4"/>'+g+'</g>');
+})();
 var PAL=['#f4a259','#f6d55c','#f28ab0','#b79ced','#8fcf6f','#6fb7e8','#ef8a7a','#78d4bd','#e9b872','#c5e17a'];
 var SHORT={'United States of America':'USA','Dem. Rep. Congo':'DR CONGO','Central African Rep.':'C.A.R.','Dominican Rep.':'','Bosnia and Herz.':'','S. Sudan':'S. SUDAN','Saudi Arabia':'SAUDI ARABIA','United Kingdom':'UK','United Arab Emirates':'','Papua New Guinea':'PAPUA N.G.','New Zealand':'NEW ZEALAND','South Africa':'SOUTH AFRICA','South Korea':'','North Korea':'','W. Sahara':'','Falkland Is.':'','Greenland':'GREENLAND','Eq. Guinea':'','Fiji':'','Solomon Is.':'','Vanuatu':'','New Caledonia':'','Fr. S. Antarctic Lands':''};
 var SMALLOK={'United Kingdom':1,'Japan':1,'Italy':1,'Germany':1,'France':1,'Spain':1,'Poland':1,'Turkey':1,'Norway':1,'Sweden':1,'Finland':1,'Ukraine':1,'Iran':1,'Iraq':1,'Egypt':1,'Vietnam':1,'Thailand':1,'Myanmar':1,'Philippines':1,'Malaysia':1,'Cuba':1,'Nepal':0,'Ghana':0,'Nigeria':1,'Kenya':1,'Uganda':0,'Cameroon':0,'Venezuela':1,'Colombia':1,'Peru':1,'Bolivia':1,'Chile':1,'Paraguay':0,'Uruguay':0,'Ecuador':0,'Guyana':0,'Madagascar':1,'Zambia':1,'Mozambique':1,'Tanzania':1,'Somalia':1,'Ethiopia':1,'Zimbabwe':0,'Namibia':1,'Botswana':1,'Angola':1,'Libya':1,'Algeria':1,'Morocco':1,'Mali':1,'Niger':1,'Chad':1,'Sudan':1,'Mauritania':1,'Pakistan':1,'Afghanistan':1,'Kazakhstan':1,'Mongolia':1,'India':1,'China':1,'Russia':1,'Canada':1,'Brazil':1,'Argentina':1,'Mexico':1,'Indonesia':1,'Australia':1,'Greenland':1};
