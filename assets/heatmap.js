@@ -12,7 +12,7 @@
 
   /* Land: evenly spaced points over the sphere, kept where the 1 degree land mask says there is land. */
   var AL = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-_', MR = 180, MC = 360;
-  var mask = [], landTmp = [], r0, N = 30000, GA = Math.PI * (3 - Math.sqrt(5));
+  var mask = [], landTmp = [], r0, N = 15000, GA = Math.PI * (3 - Math.sqrt(5));
   LAND.split(';').forEach(function (row) {
     var m = new Uint8Array(MC), x = 0, cur = 0;
     for (var i = 0; i + 1 < row.length; i += 2) { var run = (AL.indexOf(row.charAt(i)) << 6) | AL.indexOf(row.charAt(i + 1)); if (cur) m.fill(1, x, Math.min(MC, x + run)); x += run; cur ^= 1; }
@@ -52,7 +52,7 @@
   var NB = 8, fills = [], fillTheme = null;
 
   function size() {
-    dpr = Math.min(window.devicePixelRatio || 1, 2);
+    dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     W = cv.clientWidth; if (!W) return;
     cv.width = Math.round(W * dpr); cv.height = Math.round(W * dpr);
     R = W / 2 - 6; wcache = {}; need();
@@ -81,10 +81,10 @@
       var cd = cs * cL + sn * sL, sd = sn * cL - cs * sL, x = b * sd, y = cl0 * a - sl0 * b * cd, z = sl0 * a + cl0 * b * cd;
       PX[i] = c + (x * ct - y * st) * R; PY[i] = c - (x * st + y * ct) * R; PB[i] = z > 0.02 ? 1 : 0; PZ[i] = z;
     }
-    var rr = R * 0.026, ink = Math.max(1.5, R * 0.009);
+    var rr = R * 0.03, ink = Math.max(1.5, R * 0.009);
     for (k = 0; k < 2; k++) {
       ctx.beginPath();
-      for (i = 0; i < NL; i++) if (PB[i]) { var q = rr * (0.45 + 0.55 * Math.min(1, PZ[i] * 1.6)) + (k ? 0 : ink); ctx.moveTo(PX[i] + q, PY[i]); ctx.arc(PX[i], PY[i], q, 0, 7); }
+      for (i = 0; i < NL; i++) if (PB[i]) { var q = rr * (0.5 + 0.5 * Math.min(1, PZ[i] * 1.6)) + (k ? 0 : ink); ctx.rect(PX[i] - q, PY[i] - q, q * 2, q * 2); }
       ctx.fillStyle = k ? '#a5c24a' : INK; ctx.fill();
     }
     ctx.restore();
@@ -163,7 +163,7 @@
       }
     }
     /* idle spinning only needs ~30 frames a second; dragging gets every frame */
-    if (drag || fly || sp > 0.02 || t - lastDraw >= 30) { render(); lastDraw = t; }
+    if (drag || fly || sp > 0.02 || t - lastDraw >= 42) { render(); lastDraw = t; }
     if (live || drag) raf = requestAnimationFrame(frame); else lastT = 0;
   }
 
