@@ -233,7 +233,7 @@
 @@ .hm-world .pole:hover .dot,@@ .hm-world .pole:focus-visible .dot{filter:brightness(1.12)}
 
 /* mascot on 404 + verdict */
-.nl-404mon{display:block;height:150px;width:auto;margin:0 auto 6px}
+.nl-404mon{display:block;height:64px;width:auto;margin:0 auto 8px}
 .cell.wide{position:relative}.v-mon{position:absolute;right:14px;top:50%;transform:translateY(-50%);height:64px;width:auto;pointer-events:none}@media (max-width:520px){.v-mon{height:48px;right:10px}}
 
 /* tighten gap between hero chips and tool tiles */
