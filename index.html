@@ -1,9 +1,48 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive"><link rel="icon" href="/favicon-32.png" type="image/png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap"><title>siteupdown theme tests</title>
-<style>body{margin:0;background:#130228;color:#fff;font:600 18px/1.5 "Space Grotesk",system-ui,sans-serif;text-align:center;padding:40px 16px}
-h1{margin:0 0 4px}p{opacity:.75;margin:0 0 26px}a{display:block;max-width:360px;margin:12px auto;padding:16px;border:3px solid #000;border-radius:16px;background:#fbc531;color:#000;text-decoration:none;box-shadow:0 5px 0 #000}a span{display:block;font-weight:500;font-size:14px}
-.ribbon{position:fixed;right:10px;bottom:10px;background:#f59e0b;color:#000;font:700 12px/1 system-ui;padding:7px 10px;border:2px solid #000;border-radius:6px}</style></head><body>
-<h1>Theme tests</h1><p>Pick one to try on your phone</p>
-<a href="/theme-1.html">Theme 1 — Cream<span>Beige, browser-window cards</span></a>
-<a href="/theme-2.html">Theme 2 — Comic burst<span>Dark purple, yellow starburst logo, stickers</span></a>
-<a href="/theme-3.html">Theme 3 — Space<span>Dark purple, planet and astronaut</span></a>
-<div class="ribbon">TEST SITE</div></body></html>
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow,noarchive"><link rel="icon" href="/favicon-32.png" type="image/png"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&display=swap"><title>siteupdown — comic burst theme</title>
+<style>
+:root{--bg:#130228;--panel:#1f0a3a;--ink:#0b0b0b;--cream:#fffbea;--gold:#fbc531;--orange:#ff6200;--green:#7ed957;--red:#e84a4a;--blue:#3cc8f0;--line:3px solid var(--ink)}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:#fff;font:500 16px/1.5 "Space Grotesk",system-ui,sans-serif;overflow-x:hidden}
+.wrap{max-width:760px;margin:0 auto;padding:0 16px}
+nav{padding:12px 0;font-size:14px}nav a{color:#fff;opacity:.8;margin-right:14px}
+.hero{text-align:center;position:relative;padding:6px 0 0}
+.hero .burst{width:min(440px,96%);height:auto}
+.hero .pow{position:absolute;right:-4px;top:2px;width:88px;transform:rotate(8deg)}
+.hero .huh{position:absolute;left:-2px;bottom:10px;width:92px;transform:rotate(-8deg)}
+.tag{text-align:center;font-weight:600;margin:4px 0 22px}
+.panel{background:var(--cream);color:var(--ink);border:var(--line);border-radius:22px;box-shadow:8px 8px 0 var(--gold);padding:24px 20px;text-align:center;position:relative}
+.panel h1{margin:0 0 6px;font-size:clamp(26px,6vw,36px);line-height:1.1}
+.panel p{margin:0 0 16px}
+.check{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.check input{flex:1 1 220px;min-width:0;font:inherit;padding:13px 16px;border:var(--line);border-radius:14px;background:#fff}
+.btn{font:700 17px "Space Grotesk",system-ui,sans-serif;color:#fff;background:var(--orange);border:var(--line);border-radius:999px;padding:12px 30px;cursor:pointer;box-shadow:0 5px 0 var(--ink)}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 var(--ink)}
+.boom{position:absolute;right:-6px;bottom:-34px;width:96px;transform:rotate(6deg)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px;margin:44px 0 26px}
+.card{background:var(--panel);border:3px solid var(--gold);border-radius:18px;padding:16px;box-shadow:5px 6px 0 #000}
+.card h3{margin:0 0 6px;font-size:18px}.card p{margin:8px 0 0;font-size:14px;opacity:.85}
+.pill{display:inline-block;font-weight:700;font-size:13px;padding:2px 12px;border:var(--line);border-radius:999px;color:#000;background:var(--green)}
+.pill.warn{background:var(--gold)}.pill.bad{background:var(--red);color:#fff}
+.form{background:var(--cream);color:var(--ink);border:var(--line);border-radius:22px;overflow:hidden;box-shadow:8px 8px 0 var(--blue);margin:10px 8px 34px 0}
+.form .bar{background:var(--gold);border-bottom:var(--line);padding:10px 14px;font-weight:700}
+.form .body{padding:20px}.row{display:grid;grid-template-columns:84px 1fr;gap:12px;align-items:center;margin-bottom:12px}
+.row input{width:100%;font:inherit;padding:10px 14px;border:var(--line);border-radius:12px;background:#fff}
+.go{display:block;margin:16px auto 0;font:700 16px "Space Grotesk",system-ui,sans-serif;color:#fff;background:var(--red);border:var(--line);border-radius:12px;padding:10px 38px;cursor:pointer}
+.stickers{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:4px 10px;margin:14px 0 8px}
+.stickers img{height:84px;width:auto}
+.cap{text-align:center;margin:8px 0 40px;font-weight:600}
+footer{text-align:center;font-size:14px;opacity:.7;padding:0 0 70px}
+.ribbon{position:fixed;right:10px;bottom:10px;background:#f59e0b;color:#000;font:700 12px/1 system-ui;letter-spacing:.08em;padding:7px 10px;border:2px solid #000;border-radius:6px;z-index:9}
+</style></head><body><div class="wrap">
+<nav><a href="/themes.html">&larr; All themes</a></nav>
+<header class="hero"><img class="burst" src="/assets/logo-main.png" alt="Site updown?"><img class="pow" src="/assets/t/pow.png" alt=""><img class="huh" src="/assets/t/huh.png" alt=""></header>
+<p class="tag">Less refreshing. More knowing.</p>
+<section class="panel"><h1>Is it down, or is it just you?</h1><p>Type any website and we'll check it from around the world.</p>
+<form class="check" onsubmit="return false"><input type="text" placeholder="e.g. netflix.com" aria-label="Website address"><button class="btn">Check</button></form><img class="boom" src="/assets/t/boom.png" alt=""></section>
+<div class="grid">
+<div class="card"><h3>netflix.com</h3><span class="pill">Up</span><p>Reached from 15 of 15 places. 212 ms.</p></div>
+<div class="card"><h3>steamcommunity.com</h3><span class="pill warn">Slow</span><p>Reached from 14 of 15 places. 1.8 s.</p></div>
+<div class="card"><h3>example-store.com</h3><span class="pill bad">Down</span><p>Not reachable from any place.</p></div></div>
+<section class="form"><div class="bar">Get an alert</div><div class="body"><div class="row"><label for="e">Email</label><input id="e" type="email" placeholder="you@example.com"></div><div class="row"><label for="w">Website</label><input id="w" type="text" placeholder="yoursite.com"></div><button class="go" type="button">Alert me</button></div></section>
+<div class="stickers"><img src="/assets/t/huh.png" alt=""><img src="/assets/t/ouch.png" alt=""><img src="/assets/t/bam.png" alt=""><img src="/assets/t/boom.png" alt=""></div>
+<p class="cap">No animals were harmed in this search</p>
+<footer>&copy; 2026 siteupdown.com &middot; theme 2 test page</footer></div><div class="ribbon">TEST SITE</div></body></html>
