@@ -171,7 +171,7 @@ def ad(label, text):
     return f'<aside class="ad" aria-label="Advertisement"><small>{label}</small><span>{text}</span></aside>'
 
 def home():
-    jsonld = '<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebSite", "@id": "https://siteupdown.com/#website", "name": "siteupdown.com", "url": "https://siteupdown.com/", "description": "Check whether a website is down for everyone or just you, with probes in fifteen places around the world.", "inLanguage": "en-GB"}, {"@type": "Organization", "@id": "https://siteupdown.com/#org", "name": "siteupdown.com", "url": "https://siteupdown.com/", "logo": "https://siteupdown.com/android-chrome-512.png", "email": "hello@siteupdown.com"}, {"@type": "WebApplication", "name": "siteupdown.com website checker", "url": "https://siteupdown.com/", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "GBP"}}]}</script>\n<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "How do I know if a website is down for everyone or just me?", "acceptedAnswer": {"@type": "Answer", "text": "Paste the address into the checker. We load it from our own server and from fifteen probes in different countries at the same moment. If every probe reaches it, the site is up and the problem is probably on your side (your network, DNS, browser or device). If most fail, it is down for everyone."}}, {"@type": "Question", "name": "Why does it say Timeout or Inconclusive instead of Down?", "acceptedAnswer": {"@type": "Answer", "text": "A slow or blocked response is not proof that a site is down. We only call a site Confirmed down when the server returns errors on two attempts. Timeouts and blocked requests are reported as such so you are never told something we cannot be sure of."}}, {"@type": "Question", "name": "Is siteupdown.com free to use?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. The checker, speed test and status pages are free and need no sign-up. A free account lets you keep a watchlist of up to 25 sites, see their uptime history and get an email when one goes down or comes back."}}, {"@type": "Question", "name": "How does the website speed test work?", "acceptedAnswer": {"@type": "Answer", "text": "It loads the page three times from our server and reports the median. You see how long finding the server, connecting, securing the connection, waiting and downloading each took, plus page size, compression, protocol and a grade with plain-English tips."}}, {"@type": "Question", "name": "Can I check an SSL certificate or a domain\'s expiry date?", "acceptedAnswer": {"@type": "Answer", "text": "Yes. Every check shows the SSL certificate (who issued it, when it expires, whether it covers the address) as well as DNS records, redirects and the domain registration expiry date."}}, {"@type": "Question", "name": "How often are monitored sites checked?", "acceptedAnswer": {"@type": "Answer", "text": "Sites on a watchlist are re-checked about every minute. A site is only reported as down after two failed checks in a row, which avoids false alarms."}}]}</script>'
+    jsonld = '<script type="application/ld+json">{"@context": "https://schema.org", "@graph": [{"@type": "WebSite", "@id": "https://siteupdown.com/#website", "name": "siteupdown.com", "url": "https://siteupdown.com/", "description": "Check whether a website is down for everyone or just you, with probes in fifteen places around the world.", "inLanguage": "en-GB"}, {"@type": "Organization", "@id": "https://siteupdown.com/#org", "name": "siteupdown.com", "url": "https://siteupdown.com/", "logo": "https://siteupdown.com/android-chrome-512.png", "email": "hello@siteupdown.com"}, {"@type": "WebApplication", "name": "siteupdown.com website checker", "url": "https://siteupdown.com/", "applicationCategory": "UtilitiesApplication", "operatingSystem": "Any", "offers": {"@type": "Offer", "price": "0", "priceCurrency": "GBP"}}]}</script>'
     h = head('siteupdown.com — Is the website down, or just you?', 'Paste any website address to see if it is down for everyone or only for you. We check from our server and from fifteen probes in different countries, at the same time.', '/', jsonld)
     h = h.replace('{BODYATTR}', ' data-page="home"')
     report_kinds = ''.join('<button type="button" class="rk" data-kind="%s">%s</button>' % (k, l) for k, l in SP.KIND_LABELS)
@@ -266,49 +266,6 @@ def home():
 <p class="lead">What people have just checked. A snapshot in time, not a promise of uptime.</p></div>
 <div class="card table-wrap"><table class="feed"><thead><tr><th>Website</th><th>Status</th><th>Last checked</th></tr></thead><tbody id="feed-body"><tr><td colspan="3" class="skeleton">Loading recently checked websites…</td></tr></tbody></table></div>
 </div></details>
-<details class="nl-d" id="tools"><summary>Tools for every website</summary><div class="nl-dbody">
-<div class="sec-head"><span class="eyebrow"><i></i>More than a status check</span><h2>Tools for every website<span class="dot">.</span></h2></div>
-<div class="tools-grid">
-<a class="tool" href="/speed"><span class="ti">⚡</span><h3>Website speed test</h3><p>See how fast a page loads, where the time goes, and what to fix. Free, no sign-up.</p><span class="tgo">Test a site →</span></a>
-<a class="tool" href="/monitor"><span class="ti">🔔</span><h3>Monitor &amp; email alerts</h3><p>Watch up to 25 sites and get an email when one goes down and when it is back.</p><span class="tgo">Open Monitor →</span></a>
-<a class="tool" href="#checker-title" onclick="document.getElementById('chk-input').focus()"><span class="ti">🔒</span><h3>SSL, DNS &amp; domain expiry</h3><p>Every check shows the certificate, DNS records, redirects and when the domain expires.</p><span class="tgo">Run a check →</span></a>
-<a class="tool" href="/monitor"><span class="ti">📈</span><h3>Uptime history &amp; status pages</h3><p>Uptime over 24 hours, 7 and 30 days, with a public status page you can share.</p><span class="tgo">Start tracking →</span></a>
-</div>
-<p class="tools-more"><a class="btn ghost" href="/tools/"><span>See all free tools</span></a></p></div></details>
-<details class="nl-d" id="help-teaser"><summary>Help guides</summary><div class="nl-dbody">
-<div class="sec-head"><span class="eyebrow"><i></i>Help centre</span><h2>Plain-English guides<span class="dot">.</span></h2></div>
-<div class="tools-grid">
-<a class="tool" href="/help/website-not-loading-checklist"><span class="ti">🧭</span><h3>Website not loading?</h3><p>A step-by-step checklist to find out whether it is the site or you.</p><span class="tgo">Read the guide →</span></a>
-<a class="tool" href="/help/server-errors-500-502-503-504"><span class="ti">🛠</span><h3>500, 502, 503, 504 errors</h3><p>What each server error means and what to try.</p><span class="tgo">Read the guide →</span></a>
-<a class="tool" href="/help/ssl-certificate-errors"><span class="ti">🔒</span><h3>SSL certificate errors</h3><p>Why browsers warn that a connection is not private, and how to fix it.</p><span class="tgo">Read the guide →</span></a>
-<a class="tool" href="/help/"><span class="ti">📚</span><h3>All help guides</h3><p>Error codes, fixes, DNS, uptime and speed, in one place.</p><span class="tgo">Open the help centre →</span></a>
-</div></div></details>
-<details class="nl-d" id="faq"><summary>Frequently asked questions</summary><div class="nl-dbody">
-<div class="sec-head"><span class="eyebrow"><i></i>Questions</span><h2>Frequently asked questions<span class="dot">.</span></h2></div>
-<div class="faq">
-<details><summary>How do I know if a website is down for everyone or just me?</summary><p>Paste the address into the checker. We load it from our own server and from fifteen probes in different countries at the same moment. If every probe reaches it, the site is up and the problem is probably on your side (your network, DNS, browser or device). If most fail, it is down for everyone.</p></details>
-<details><summary>Why does it say Timeout or Inconclusive instead of Down?</summary><p>A slow or blocked response is not proof that a site is down. We only call a site Confirmed down when the server returns errors on two attempts. Timeouts and blocked requests are reported as such so you are never told something we cannot be sure of.</p></details>
-<details><summary>Is siteupdown.com free to use?</summary><p>Yes. The checker, speed test and status pages are free and need no sign-up. A free account lets you keep a watchlist of up to 25 sites, see their uptime history and get an email, a Telegram message or a Slack or Discord message when one goes down or comes back.</p></details>
-<details><summary>How does the website speed test work?</summary><p>It loads the page three times from our server and reports the median. You see how long finding the server, connecting, securing the connection, waiting and downloading each took, plus page size, compression, protocol and a grade with plain-English tips.</p></details>
-<details><summary>Can I check an SSL certificate or a domain's expiry date?</summary><p>Yes. Every check shows the SSL certificate (who issued it, when it expires, whether it covers the address) as well as DNS records, redirects and the domain registration expiry date.</p></details>
-<details><summary>How often are monitored sites checked?</summary><p>Sites on a watchlist are re-checked about every minute. A site is only reported as down after two failed checks in a row, which avoids false alarms.</p></details>
-</div></div></details>
-<details class="nl-d" id="how-it-works"><summary>How it works</summary><div class="nl-dbody">
-<div class="sec-head"><span class="eyebrow"><i></i>Behind the signal</span><h2>Less guesswork. More peace of mind<span class="dot">.</span></h2></div>
-<div class="steps">
-<div class="step"><span class="n">01</span><h3>We dispatch probes</h3><p>Machines in different countries fetch the address at the same moment and report back status codes and timings.</p></div>
-<div class="step"><span class="n">02</span><h3>We compare regions</h3><p>If every region responds, the site is up for the wider internet. If only some do, the map shows where it stops.</p></div>
-<div class="step"><span class="n">03</span><h3>You get the full picture</h3><p>Status codes, timings, a cautious verdict and a share link you can send to someone.</p></div>
-</div>
-<p class="center" style="margin-top:28px"><a class="btn" href="#checker-title" onclick="document.getElementById('chk-input').focus()"><span>Check a website</span>{I_ARROW}</a></p>
-
-<div class="sec-head"><h2>Clear signals. No false alarms<span class="dot">.</span></h2></div>
-<div class="defs">
-<div class="def"><span class="pill up">Up</span><p class="note" style="margin:0">The site responded to our server.</p></div>
-<div class="def"><span class="pill down">Confirmed down</span><p class="note" style="margin:0">Repeated server errors, verified on two attempts.</p></div>
-<div class="def"><span class="pill timeout">Timeout</span><p class="note" style="margin:0">A slow or missing response. That isn't proof of downtime.</p></div>
-<div class="def"><span class="pill inconclusive">Inconclusive</span><p class="note" style="margin:0">The check was blocked or couldn't verify the connection.</p></div>
-</div></div></details>
 </div></section>
 '''
     scripts = '<script src="/assets/worldmap.js"></script>\n<script src="/assets/app.js"></script>\n<script src="/assets/home.js"></script><script src="/assets/live.js"></script>'
