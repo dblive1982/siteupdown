@@ -10,7 +10,7 @@ $now = time();
 header('Cache-Control: public, max-age=30');
 
 if (!empty($_GET['top'])) {
-    $q = $pdo->prepare('SELECT host, COUNT(*) AS n FROM reports WHERE ts > ? GROUP BY host ORDER BY n DESC LIMIT 8');
+    $q = $pdo->prepare("SELECT host, COUNT(*) AS n FROM reports WHERE ts > ? AND kind <> 'fixed' GROUP BY host ORDER BY n DESC LIMIT 8");
     $q->execute([gmdate('Y-m-d H:i:s', $now - 3 * 3600)]);
     $items = [];
     foreach ($q->fetchAll() as $r) {
@@ -33,7 +33,7 @@ if (!empty($_GET['recent'])) {
     $q->execute($h !== '' ? [$since, $h] : [$since]);
     $items = [];
     foreach ($q->fetchAll() as $r) {
-        if (!in_array($r['kind'], ['site', 'login', 'app', 'slow'], true)) continue;
+        if (!in_array($r['kind'], ['site', 'login', 'app', 'slow', 'fixed'], true)) continue;
         $items[] = ['host' => $r['host'], 'name' => $sites[$r['host']]['name'] ?? $r['host'], 'page' => $sites[$r['host']]['page'] ?? null,
                     'kind' => $r['kind'], 'ts' => iso($r['ts']), 'country' => ($r['country'] && isset($busy[$r['country']])) ? $r['country'] : null];
     }
@@ -77,17 +77,17 @@ foreach ($q->fetchAll() as $r) {
     $buckets[$key]['n'] += $c; $buckets[$key]['k'][$r['kind']] += $c; $total += $c; $kinds[$r['kind']] += $c;
 }
 foreach ($buckets as &$bk) unset($bk['s']); unset($bk);
-$cq = $pdo->prepare('SELECT country, COUNT(*) AS n FROM reports WHERE host=? AND ts >= ? AND country IS NOT NULL AND country <> \'\' GROUP BY country ORDER BY n DESC LIMIT 6');
+$cq = $pdo->prepare('SELECT country, COUNT(*) AS n FROM reports WHERE host=? AND kind <> \'fixed\' AND ts >= ? AND country IS NOT NULL AND country <> \'\' GROUP BY country ORDER BY n DESC LIMIT 6');
 $cq->execute([$host, gmdate('Y-m-d H:i:s', $from)]);
 $countries = array_map(fn($r) => ['cc' => $r['country'], 'n' => (int)$r['n']], $cq->fetchAll());
 // Last three hours and what is normal for this site (average per hour over the previous 6 days) drive the "more than usual" label.
-$l3 = $pdo->prepare('SELECT COUNT(*), MAX(ts) FROM reports WHERE host=? AND ts > ?');
+$l3 = $pdo->prepare("SELECT COUNT(*), MAX(ts) FROM reports WHERE host=? AND kind <> 'fixed' AND ts > ?");
 $l3->execute([$host, gmdate('Y-m-d H:i:s', $now - 3 * 3600)]);
 [$last3, $lastTs] = array_map(fn($v) => $v, $l3->fetch(PDO::FETCH_NUM)); $last3 = (int)$last3;
-$b = $pdo->prepare('SELECT COUNT(*) FROM reports WHERE host=? AND ts > ? AND ts <= ?');
+$b = $pdo->prepare("SELECT COUNT(*) FROM reports WHERE host=? AND kind <> 'fixed' AND ts > ? AND ts <= ?");
 $b->execute([$host, gmdate('Y-m-d H:i:s', $now - 7 * 86400), gmdate('Y-m-d H:i:s', $since)]);
 $base = round(((int)$b->fetchColumn()) / (6 * 24), 2);
-$t24 = $pdo->prepare('SELECT COUNT(*) FROM reports WHERE host=? AND ts > ?'); $t24->execute([$host, gmdate('Y-m-d H:i:s', $since)]); $total24 = (int)$t24->fetchColumn();
+$t24 = $pdo->prepare("SELECT COUNT(*) FROM reports WHERE host=? AND kind <> 'fixed' AND ts > ?"); $t24->execute([$host, gmdate('Y-m-d H:i:s', $since)]); $total24 = (int)$t24->fetchColumn();
 $level = 'none';
 if ($total24 > 0) $level = 'low';
 if ($last3 >= 12 && $last3 > 4 * $base * 3) $level = 'high';

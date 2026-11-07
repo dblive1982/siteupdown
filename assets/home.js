@@ -264,6 +264,7 @@
   }
   (function () {
     var btn = $('#rb-btn'); if (!btn) return;
+    S.repFix($('#rb-fix'), function () { return repHost; }, $('#rb-msg'), function () { if (repHost) S.repFeed($('#rb-feed'), repHost, false); });
     var picker = S.repPicker($('#rb-pick'), function (kinds) {
       if (!repHost) return;
       var h = repHost, m = $('#rb-msg'); m.textContent = 'Sending…';

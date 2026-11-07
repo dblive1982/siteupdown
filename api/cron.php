@@ -135,6 +135,12 @@ try {
     rollup_daily($pdo, $hasDaily ? (!empty($needDailyFix) ? 4 : 2) : 34);
     $pdo->prepare('DELETE FROM site_daily WHERE day < ?')->execute([gmdate('Y-m-d', time() - 400 * 86400)]);
 } catch (Throwable $e) { error_log('daily rollup: ' . $e->getMessage()); }
+// Permanent daily history (counts only): first run backfills from everything we still hold, later runs refresh today and yesterday.
+try {
+    require_once __DIR__ . '/_history.php';
+    $hasHist = $pdo->query('SELECT 1 FROM history_days LIMIT 1')->fetchColumn();
+    archive_history($pdo, $hasHist ? 2 : 1100);
+} catch (Throwable $e) { error_log('history archive: ' . $e->getMessage()); }
 $pdo->prepare('DELETE FROM checks WHERE checked_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - 3 * 86400)]);
 $pdo->prepare('DELETE FROM site_log WHERE ts < ?')->execute([gmdate('Y-m-d H:i:s', time() - 35 * 86400)]);
 // Problem reports are kept for three years; the one-way address hash is only needed for the 30-minute duplicate check, so it is wiped after two days.

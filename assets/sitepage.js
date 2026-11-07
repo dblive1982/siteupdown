@@ -193,6 +193,7 @@
   var feedUl = $('#sp-feed'); function loadFeed() { S.repFeed(feedUl, host, false); } loadFeed();
 
   var btn = $('#sp-rbtn'), pick = $('#sp-rpick'), rmsg = $('#sp-rmsg');
+  S.repFix($('#sp-fix'), function () { return host; }, rmsg, function () { loadFeed(); });
   var key = 'sud-rep-' + host, last = 0;
   try { last = parseInt(localStorage.getItem(key) || '0', 10) || 0; } catch (e) {}
   btn.addEventListener('click', function () { pick.hidden = !pick.hidden; });

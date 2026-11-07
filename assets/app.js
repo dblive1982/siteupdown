@@ -145,13 +145,25 @@
       it.forEach(function (r) {
         var li = d.createElement('li'), dot = d.createElement('i'), tx = d.createElement('span'), sm = d.createElement('small');
         dot.className = 'kdot s-' + r.kind;
-        if (withName) { var nm = r.page ? d.createElement('a') : d.createElement('b'); nm.textContent = r.name; if (r.page) nm.href = r.page; tx.appendChild(nm); tx.appendChild(d.createTextNode(': ' + (S.REPKIND[r.kind] || r.kind))); }
-        else tx.textContent = (S.REPKIND[r.kind] || r.kind).replace(/^./, function (c) { return c.toUpperCase(); });
+        if (withName) { var nm = r.page ? d.createElement('a') : d.createElement('b'); nm.textContent = r.name; if (r.page) nm.href = r.page; tx.appendChild(nm); tx.appendChild(d.createTextNode(': ' + (r.kind === 'fixed' ? 'working again' : (S.REPKIND[r.kind] || r.kind)))); }
+        else tx.textContent = (r.kind === 'fixed' ? 'working again' : (S.REPKIND[r.kind] || r.kind)).replace(/^./, function (c) { return c.toUpperCase(); });
         var place = r.country && dn ? (function () { try { return dn.of(r.country); } catch (e) { return ''; } })() : '';
         sm.textContent = (place ? place + ' · ' : '') + ago(r.ts);
         li.appendChild(dot); li.appendChild(tx); li.appendChild(sm); ul.appendChild(li);
       });
     }).catch(function () { ul.textContent = ''; });
+  };
+  // "It is working for me now": one-tap report that a problem has cleared. Helps the map fade a recovered site sooner.
+  S.repFix = function (btn, getHost, msgEl, done) {
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      var h = getHost(); if (!h) return;
+      msgEl.textContent = 'Sending…';
+      fetch('/api/report.php', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ host: h, kinds: ['fixed'], tz: S.tz() }), credentials: 'same-origin' })
+        .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
+        .then(function (r) { msgEl.textContent = r.ok ? r.j.message : (r.j.error || 'Sorry, that did not work. Please try again later.'); if (r.ok && done) done(); })
+        .catch(function () { msgEl.textContent = 'Sorry, that did not work. Please try again later.'; });
+    });
   };
   S.toast = function (msg, bad) {
     var t = d.createElement('div'); t.className = 'toast' + (bad ? ' bad' : ''); t.setAttribute('role', 'status'); t.textContent = msg; d.body.appendChild(t);

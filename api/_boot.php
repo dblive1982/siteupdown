@@ -126,6 +126,19 @@ function ensure_schema(PDO $pdo): void {
         down_s INT NOT NULL DEFAULT 0,
         PRIMARY KEY (host, day)
     )$cs");
+    // Permanent daily record (counts only, no personal data): visitor reports by type and our own detected outages, per site per day. Written by cron.php, read by history-day.php.
+    $pdo->exec("CREATE TABLE IF NOT EXISTS history_days (
+        day CHAR(10) NOT NULL,
+        host VARCHAR(253) NOT NULL,
+        rep_site INT NOT NULL DEFAULT 0,
+        rep_login INT NOT NULL DEFAULT 0,
+        rep_app INT NOT NULL DEFAULT 0,
+        rep_slow INT NOT NULL DEFAULT 0,
+        rep_fixed INT NOT NULL DEFAULT 0,
+        outages INT NOT NULL DEFAULT 0,
+        down_s INT NOT NULL DEFAULT 0,
+        PRIMARY KEY (day, host)
+    )$cs");
     // Which site each visitor is watching live (one at a time), and sites outside the built-in list that people have checked, so history starts building for them.
     $pdo->exec("CREATE TABLE IF NOT EXISTS live_viewer (
         viewer CHAR(64) NOT NULL PRIMARY KEY,

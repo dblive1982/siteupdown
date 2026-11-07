@@ -9,7 +9,7 @@ $host = strtolower(trim((string)($in['host'] ?? '')));
 $kinds = isset($in['kinds']) && is_array($in['kinds']) ? $in['kinds'] : [(string)($in['kind'] ?? '')];
 $kinds = array_values(array_unique(array_map('strval', $kinds)));
 $sites = site_pages();
-if (!$kinds || count($kinds) > 4 || array_diff($kinds, ['site', 'login', 'app', 'slow'])) out(422, ['error' => 'Please pick at least one option.']);
+if (!$kinds || count($kinds) > 4 || array_diff($kinds, ['site', 'login', 'app', 'slow', 'fixed']) || (in_array('fixed', $kinds, true) && count($kinds) > 1)) out(422, ['error' => 'Please pick at least one option.']);
 $pdo = db();
 if (!isset($sites[$host])) {
     // Any website, as long as it is a real public address that has been checked here recently.
@@ -53,4 +53,4 @@ foreach ($kinds as $kind) {
 }
 if (!$added) out(200, ['ok' => true, 'duplicate' => true, 'message' => 'Thanks, we already have ' . (count($kinds) > 1 ? 'those reports' : 'that report') . ' from you in the last 30 minutes.']);
 note_attempt('report');
-out(200, ['ok' => true, 'added' => $added, 'message' => $added > 1 ? 'Thanks, your ' . $added . ' reports have been added.' : 'Thanks, your report has been added.']);
+out(200, ['ok' => true, 'added' => $added, 'message' => $kinds === ['fixed'] ? 'Thanks, we have noted that it is working for you again.' : ($added > 1 ? 'Thanks, your ' . $added . ' reports have been added.' : 'Thanks, your report has been added.')]);
