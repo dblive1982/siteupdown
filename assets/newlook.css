@@ -357,5 +357,6 @@
 :root[data-theme=light] body .pulse-card .cantsure,:root[data-theme=light] body .pulse-card .hsum{margin:16px 20px 6px}
 :root[data-theme=light] body .pulse-card .strip .cell:first-child{padding-left:26px}
 :root[data-theme=light] body .pulse-card .strip .cell{padding-top:18px;padding-bottom:18px}
+:root[data-theme=light] body .statchip[hidden]{display:none}
 
 body:after{content:"TEST SITE";position:fixed;right:10px;bottom:10px;background:#f59e0b;color:#000;font:700 12px/1 system-ui,sans-serif;letter-spacing:.08em;padding:7px 10px;border:2px solid #000;border-radius:6px;z-index:90;pointer-events:none}

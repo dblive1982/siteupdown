@@ -128,6 +128,7 @@
     $('#wl-add').hidden = !o.again;
     $('#share').hidden = !o.share;
     $('#pulse-status').textContent = o.status || 'Standby';
+    $('#pulse-status').parentNode.hidden = !/^(Running|Probing)/.test(o.status || '');
   }
   function factsFor(r) {
     var f = '';
@@ -334,6 +335,7 @@
       renderResult(j.host, j.result, j.regional, j.verdict, j.checked_at, sid);
       if (j.regional && j.regional.probes) { mapMsg(''); drawProbes(j.regional.probes); drawCharts(j.regional.probes, j.result); } else mapMsg('This shared check has no regional map.');
       $('#pulse-status').textContent = 'Saved result';
+      $('#pulse-status').parentNode.hidden = true;
       $('#global-pulse').scrollIntoView({ block: 'start' });
     }).catch(function (e) { S.toast(e.message || 'That shared check could not be loaded.', true); });
   }
