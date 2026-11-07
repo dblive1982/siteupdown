@@ -350,3 +350,7 @@
 :root[data-theme=light] body .nl-try .eyebrow{font-weight:800;color:#0b0b0b}
 :root[data-theme=light] body .checker .top{position:relative}
 :root[data-theme=light] body .checker .top .nl-live{position:absolute;top:0;right:0}
+:root[data-theme=light] body .pill.blocked{background:#f97316;color:#0b0b0b;border-color:#0b0b0b;animation:nlflash 1.1s ease-in-out infinite}
+:root[data-theme=light] body .pill.blocked::before{background:#0b0b0b}
+@keyframes nlflash{0%,100%{background:#f97316;box-shadow:0 0 0 0 rgba(249,115,22,.7)}50%{background:#ffb066;box-shadow:0 0 0 6px rgba(249,115,22,0)}}
+@media(prefers-reduced-motion:reduce){:root[data-theme=light] body .pill.blocked{animation:none}}
