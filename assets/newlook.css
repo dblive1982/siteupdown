@@ -348,3 +348,4 @@
 :root[data-theme=light] body .hs-daybtn{all:unset;cursor:pointer;font-weight:800;text-decoration:underline;text-decoration-color:#ffb020;text-decoration-thickness:3px;text-underline-offset:3px}
 :root[data-theme=light] body .hs-daybtn:focus-visible{outline:3px solid #1f5fbf;outline-offset:2px}
 :root[data-theme=light] body .nl-try .eyebrow{font-weight:800;color:#0b0b0b}
+:root[data-theme=light] body .checker .top .nl-live{position:relative;top:-5px}
