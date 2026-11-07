@@ -116,7 +116,7 @@
 :root[data-theme=light] body .faq details p{padding:0 14px 12px;margin:0}
 
 /* footer */
-:root[data-theme=light] body .site-foot{border-top:0;background:#111113;color:#f3f3f5;margin-top:24px}
+:root[data-theme=light] body .site-foot{border-top:0;background:#000000;color:#f3f3f5;margin-top:24px}
 :root[data-theme=light] body .site-foot a,:root[data-theme=light] body .site-foot button{color:#f3f3f5}
 :root[data-theme=light] body .site-foot .note,:root[data-theme=light] body .site-foot .fine{color:#b9b9c4}
 .nl-foot{padding:22px 0 30px;text-align:center}
