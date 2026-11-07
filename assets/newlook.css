@@ -390,3 +390,5 @@
 :root[data-theme=light] body .ins-stats div:last-child:nth-child(odd){grid-column:1/-1}
 :root[data-theme=light] body #recent-outages .ins-tabs button{border:2px solid #0b0b0b;color:#0b0b0b;background:#fff;font-weight:700}
 :root[data-theme=light] body #recent-outages .ins-tabs button[aria-pressed=true]{background:var(--yellow);color:#0b0b0b}
+
+body:after{content:"TEST SITE";position:fixed;right:10px;bottom:10px;background:#f59e0b;color:#000;font:700 12px/1 system-ui,sans-serif;letter-spacing:.08em;padding:7px 10px;border:2px solid #000;border-radius:6px;z-index:90;pointer-events:none}
