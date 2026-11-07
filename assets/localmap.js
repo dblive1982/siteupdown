@@ -1,6 +1,7 @@
 /* Local outage reports map: loads Leaflet + street tiles only when the visitor opens it. */
 (function () {
   'use strict';
+  var feed = document.getElementById('rf-list'); if (feed && window.SUD && SUD.repFeed) SUD.repFeed(feed, '', true);
   var go = document.getElementById('lm-go'); if (!go) return;
   var el = document.getElementById('lm-map'), note = document.getElementById('lm-note'), me = document.getElementById('lm-me');
   var map = null, cells = [], heat = null, started = false;

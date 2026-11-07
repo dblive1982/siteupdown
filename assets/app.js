@@ -133,6 +133,26 @@
       }, function () { res(null); }, { timeout: 9000, maximumAge: 600000 });
     });
   };
+  // Latest visitor reports as a plain list (type, time, and country only when several people reported from it). host = '' for all sites.
+  S.repFeed = function (ul, host, withName) {
+    if (!ul) return;
+    var dn = null; try { dn = new Intl.DisplayNames(['en'], { type: 'region' }); } catch (e) {}
+    function ago(iso) { var m = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000)); return m < 1 ? 'just now' : m < 60 ? m + ' min ago' : m < 1440 ? Math.round(m / 60) + ' h ago' : 'yesterday'; }
+    fetch('/api/reports.php?recent=1' + (host ? '&host=' + encodeURIComponent(host) : ''), { credentials: 'same-origin' }).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
+      ul.textContent = '';
+      var it = (j && j.items) || [];
+      if (!it.length) { var e = d.createElement('li'); e.className = 'rf-none'; e.textContent = 'No reports in the last 24 hours.'; ul.appendChild(e); return; }
+      it.forEach(function (r) {
+        var li = d.createElement('li'), dot = d.createElement('i'), tx = d.createElement('span'), sm = d.createElement('small');
+        dot.className = 'kdot s-' + r.kind;
+        if (withName) { var nm = r.page ? d.createElement('a') : d.createElement('b'); nm.textContent = r.name; if (r.page) nm.href = r.page; tx.appendChild(nm); tx.appendChild(d.createTextNode(': ' + (S.REPKIND[r.kind] || r.kind))); }
+        else tx.textContent = (S.REPKIND[r.kind] || r.kind).replace(/^./, function (c) { return c.toUpperCase(); });
+        var place = r.country && dn ? (function () { try { return dn.of(r.country); } catch (e) { return ''; } })() : '';
+        sm.textContent = (place ? place + ' · ' : '') + ago(r.ts);
+        li.appendChild(dot); li.appendChild(tx); li.appendChild(sm); ul.appendChild(li);
+      });
+    }).catch(function () { ul.textContent = ''; });
+  };
   S.toast = function (msg, bad) {
     var t = d.createElement('div'); t.className = 'toast' + (bad ? ' bad' : ''); t.setAttribute('role', 'status'); t.textContent = msg; d.body.appendChild(t);
     setTimeout(function () { t.remove(); }, 3200);

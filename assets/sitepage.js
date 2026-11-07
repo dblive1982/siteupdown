@@ -190,6 +190,7 @@
     getJSON('/api/reports.php?host=' + encodeURIComponent(host) + '&range=' + range).then(function (r) { if (r.ok) { rep = r.j; renderReports(); } }).catch(function () {});
   }
   loadReports();
+  var feedUl = $('#sp-feed'); function loadFeed() { S.repFeed(feedUl, host, false); } loadFeed();
 
   var btn = $('#sp-rbtn'), pick = $('#sp-rpick'), rmsg = $('#sp-rmsg');
   var key = 'sud-rep-' + host, last = 0;
@@ -201,7 +202,7 @@
       .then(function (r) { return r.json().then(function (j) { return { ok: r.ok, j: j }; }); })
       .then(function (r) {
         rmsg.textContent = r.ok ? r.j.message : (r.j.error || 'Sorry, that did not work. Please try again later.');
-        if (r.ok) { pick.hidden = true; picker.reset(); try { localStorage.setItem(key, String(Date.now())); } catch (e) {} loadReports(); }
+        if (r.ok) { pick.hidden = true; picker.reset(); try { localStorage.setItem(key, String(Date.now())); } catch (e) {} loadReports(); loadFeed(); }
       }).catch(function () { rmsg.textContent = 'Sorry, that did not work. Please try again later.'; });
   });
 })();

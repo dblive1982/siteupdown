@@ -20,6 +20,26 @@ if (!empty($_GET['top'])) {
     out(200, ['items' => $items]);
 }
 
+if (!empty($_GET['recent'])) {
+    // Latest reports as a list: site, type, how long ago, and the country only when at least 3 reports came from it today.
+    $since = gmdate('Y-m-d H:i:s', $now - 24 * 3600);
+    $h = strtolower(trim((string)($_GET['host'] ?? '')));
+    if ($h !== '' && !isset($sites[$h]) && !parse_target($h)) out(404, ['error' => 'No reports are collected for that address.']);
+    $cc = $pdo->prepare('SELECT country, COUNT(*) AS n FROM reports WHERE ts > ? AND country IS NOT NULL GROUP BY country');
+    $cc->execute([$since]); $busy = [];
+    foreach ($cc->fetchAll() as $r) if ((int)$r['n'] >= 3) $busy[$r['country']] = true;
+    $q = $h !== '' ? $pdo->prepare('SELECT host, kind, ts, country FROM reports WHERE ts > ? AND host = ? ORDER BY ts DESC LIMIT 15')
+                   : $pdo->prepare('SELECT host, kind, ts, country FROM reports WHERE ts > ? ORDER BY ts DESC LIMIT 15');
+    $q->execute($h !== '' ? [$since, $h] : [$since]);
+    $items = [];
+    foreach ($q->fetchAll() as $r) {
+        if (!in_array($r['kind'], ['site', 'login', 'app', 'slow'], true)) continue;
+        $items[] = ['host' => $r['host'], 'name' => $sites[$r['host']]['name'] ?? $r['host'], 'page' => $sites[$r['host']]['page'] ?? null,
+                    'kind' => $r['kind'], 'ts' => iso($r['ts']), 'country' => ($r['country'] && isset($busy[$r['country']])) ? $r['country'] : null];
+    }
+    out(200, ['items' => $items]);
+}
+
 $host = strtolower(trim((string)($_GET['host'] ?? '')));
 if (!isset($sites[$host])) {
     $t = parse_target($host);
