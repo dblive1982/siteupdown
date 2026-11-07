@@ -278,12 +278,10 @@
 
 .nl-live em{font-style:normal;font-weight:800;font-size:13px;letter-spacing:0;text-transform:none;color:#0b0b0b}
 .nl-beacon{flex:none;overflow:visible}
-.nl-beacon .bk{animation:nlrays 1.2s steps(1,end) infinite}
-.nl-beacon .dm{animation:nldome 1.2s ease-in-out infinite}
-@keyframes nlrays{0%{opacity:1}50%{opacity:0}}
-@keyframes nldome{0%,100%{fill:#22c55e}50%{fill:#15803d}}
+.nl-beacon .bb{transform-origin:12px 12px;animation:nlbub 1.6s ease-out infinite}
+@keyframes nlbub{0%{transform:scale(1);opacity:.9}100%{transform:scale(1.9);opacity:0}}
 @keyframes nlbeacon{0%{box-shadow:0 0 0 0 rgba(21,128,61,.75);opacity:1}50%{opacity:.45}70%{box-shadow:0 0 0 7px rgba(21,128,61,0)}100%{box-shadow:0 0 0 0 rgba(21,128,61,0);opacity:1}}
-@media(prefers-reduced-motion:reduce){.nl-beacon .bk,.nl-beacon .dm{animation:none}}
+@media(prefers-reduced-motion:reduce){.nl-beacon .bb{animation:none;opacity:0}}
 
 @@ .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .nl-live{display:inline-flex;align-items:center;gap:7px;margin-left:auto}
