@@ -30,7 +30,7 @@
 @@ .field{background:#fff;border:2.5px solid var(--ink);border-radius:14px}
 @@ input,@@ select,@@ textarea{font-family:var(--sans);color:var(--ink)}
 @@ input[type=text],@@ input[type=email],@@ input[type=password],@@ input[type=search],@@ input[type=url],@@ textarea,@@ select{background:#fff;border:2.5px solid var(--ink);border-radius:14px;color:var(--ink)}
-@@ .field input{border:0;background:transparent}
+@@ .field input,@@ .field select{border:0;background:transparent;border-radius:0;box-shadow:none}
 @@ .field svg{color:var(--ink)}
 @@ input::placeholder{color:#767683}
 
