@@ -360,8 +360,8 @@
 :root[data-theme=light] body .statchip[hidden]{display:none}
 :root[data-theme=light] body .cookie{background:#c4c4ce;border:2.5px solid #0b0b0b;color:#0b0b0b;box-shadow:0 0 0 100vmax rgba(0,0,0,.78)}
 :root[data-theme=light] body .cookie p{color:#2a2a33}
-:root[data-theme=light] body #rb-btn,:root[data-theme=light] body #rb-btn.ghost,:root[data-theme=light] body #sp-rbtn{background:#f97316;color:#0b0b0b}
-:root[data-theme=light] body #rb-btn:hover,:root[data-theme=light] body #rb-btn.ghost:hover,:root[data-theme=light] body #sp-rbtn:hover{background:#fb8a3c}
+:root[data-theme=light] body #rb-btn,:root[data-theme=light] body #rb-btn.ghost,:root[data-theme=light] body #sp-rbtn,:root[data-theme=light] body #sp-push{background:#f97316;color:#0b0b0b}
+:root[data-theme=light] body #rb-btn:hover,:root[data-theme=light] body #rb-btn.ghost:hover,:root[data-theme=light] body #sp-rbtn:hover,:root[data-theme=light] body #sp-push:hover{background:#fb8a3c}
 :root[data-theme=light] body .seg button[aria-selected=true],:root[data-theme=light] body .seg2 button[aria-pressed=true],:root[data-theme=light] body .seg2 button[aria-selected=true],:root[data-theme=light] body .sp-ranges .rg.on{background:var(--yellow);color:#0b0b0b;border-color:#0b0b0b;font-weight:800}
 :root[data-theme=light] body .prose dl{margin:0 0 18px}
 :root[data-theme=light] body .prose dt{font-weight:800;margin-top:14px}
