@@ -354,3 +354,6 @@
 :root[data-theme=light] body .pill.blocked::before{background:#0b0b0b}
 @keyframes nlflash{0%,100%{background:#f97316;box-shadow:0 0 0 0 rgba(249,115,22,.7)}50%{background:#ffb066;box-shadow:0 0 0 6px rgba(249,115,22,0)}}
 @media(prefers-reduced-motion:reduce){:root[data-theme=light] body .pill.blocked{animation:none}}
+:root[data-theme=light] body .pulse-card .cantsure,:root[data-theme=light] body .pulse-card .hsum{margin:16px 20px 6px}
+:root[data-theme=light] body .pulse-card .strip .cell:first-child{padding-left:26px}
+:root[data-theme=light] body .pulse-card .strip .cell{padding-top:18px;padding-bottom:18px}
