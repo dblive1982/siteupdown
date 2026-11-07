@@ -239,13 +239,13 @@ def home():
 </div></section>
 
 <section class="nl-acc"><div class="wrap">
-<details class="nl-d" id="recent-outages"><summary>Outages right now</summary><div class="nl-dbody"><div class="card toplist">
+<div class="nl-d nl-fixed" id="recent-outages"><h2 class="nl-sum">Outages right now</h2><div class="nl-dbody"><div class="card toplist">
 <div class="pc-head"><div><span class="eyebrow"><i></i>Live · updates every minute</span><h2 id="ro-h">Outages right now<span class="dot">.</span></h2>
 <p class="lead" id="ro-lead">Popular sites that are down at this moment, with any that came back in the last 24 hours underneath.</p></div></div>
 <ul class="ro-list" id="ro-list"><li class="skeleton">Loading&hellip;</li></ul>
 <h3 class="ro-sub">Running slower than usual</h3><ul class="ro-list" id="ro-slow"><li class="skeleton">Loading&hellip;</li></ul>
 <p class="fine" style="margin-top:14px">A site counts as down after two failed checks in a row, so times are approximate and shown in your time zone.</p>
-</div></div></details>
+</div></div></div>
 <details class="nl-d" id="top-sites"><summary>Top websites</summary><div class="nl-dbody"><div class="card toplist">
 <div class="pc-head"><div><span class="eyebrow"><i></i>Watchlist · real requests</span><h2>Top websites<span class="dot">.</span></h2>
 <p class="lead">A rolling sweep of the sites people ask about most. Every line is a real request from this server — a red entry is one that answered with an error or not at all.</p></div>

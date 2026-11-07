@@ -268,3 +268,10 @@
 
 /* footer-style menu headings + readable links on the login page */
 :root[data-theme=light] body .nl-drawer h2{font:900 15px var(--sans);letter-spacing:.06em;color:#0b0b0b;margin:20px 0 8px;padding-bottom:6px;border-bottom:3px solid #ffd93d;display:inline-block}
+
+.nl-sum{margin:0;padding:15px 16px;font-size:18px;font-weight:700;background:var(--yellow);border-bottom:2.5px solid #0b0b0b}
+:root[data-theme=light] body #recent-outages .pc-head{padding:18px 18px 4px}
+:root[data-theme=light] body #recent-outages .ro-list,:root[data-theme=light] body #recent-outages .ro-sub,:root[data-theme=light] body #recent-outages .fine{margin-left:18px;margin-right:18px}
+:root[data-theme=light] body #recent-outages .ro-sub{margin-top:22px;margin-bottom:8px;font-size:16px;font-weight:700}
+:root[data-theme=light] body #recent-outages .ro-list{margin-top:10px}
+:root[data-theme=light] body #recent-outages .fine{margin-bottom:18px}
