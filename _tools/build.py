@@ -244,7 +244,10 @@ def home():
 <p class="lead" id="ro-lead">Popular sites that are down at this moment, with any that came back in the last 24 hours underneath.</p></div></div>
 <ul class="ro-list" id="ro-list"><li class="skeleton">Loading&hellip;</li></ul>
 <h3 class="ro-sub">Running slower than usual</h3><ul class="ro-list" id="ro-slow"><li class="skeleton">Loading&hellip;</li></ul>
-<p class="fine" style="margin-top:14px">A site counts as down after two failed checks in a row, so times are approximate and shown in your time zone.</p>
+<h3 class="ro-sub">More reports</h3>
+<div class="seg2 ins-tabs" id="ins-tabs" role="tablist"><button type="button" data-t="today" aria-pressed="true">Today</button><button type="button" data-t="rel" aria-pressed="false">Reliability</button><button type="button" data-t="speed" aria-pressed="false">Speed</button><button type="button" data-t="out" aria-pressed="false">Outages</button><button type="button" data-t="rep" aria-pressed="false">Visitor reports</button></div>
+<div id="ins-body" class="ins-body"><p class="ro-none">Loading&hellip;</p></div>
+<p class="fine" style="margin-top:14px">A site counts as down after two failed checks in a row, so times are approximate and shown in your time zone. These reports use our own checks of the sites we watch and the problem reports visitors send us.</p>
 </div></div></div>
 <details class="nl-d" id="top-sites"><summary>Top websites</summary><div class="nl-dbody"><div class="card toplist">
 <div class="pc-head"><div><span class="eyebrow"><i></i>Watchlist · real requests</span><h2>Top websites<span class="dot">.</span></h2>

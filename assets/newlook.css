@@ -366,5 +366,25 @@
 :root[data-theme=light] body .prose dl{margin:0 0 18px}
 :root[data-theme=light] body .prose dt{font-weight:800;margin-top:14px}
 :root[data-theme=light] body .prose dd{margin:2px 0 0;color:var(--muted)}
-
-body:after{content:"TEST SITE";position:fixed;right:10px;bottom:10px;background:#f59e0b;color:#000;font:700 12px/1 system-ui,sans-serif;letter-spacing:.08em;padding:7px 10px;border:2px solid #000;border-radius:6px;z-index:90;pointer-events:none}
+/* More reports (Outages tab) */
+:root[data-theme=light] body #recent-outages .ins-tabs{margin:8px 18px 4px}
+:root[data-theme=light] body #recent-outages .ins-body{margin:0 18px}
+:root[data-theme=light] body #recent-outages .ins-body .ro-list{margin-left:0;margin-right:0}
+:root[data-theme=light] body #recent-outages .ins-h{font-size:15px;font-weight:700;margin:20px 0 6px}
+:root[data-theme=light] body #recent-outages .ins-n{margin:0 0 8px}
+:root[data-theme=light] body #recent-outages .ins-body .fine{margin-left:0;margin-right:0}
+:root[data-theme=light] body .ro-list li.ro-up{border-left-color:#2f8f2f}
+:root[data-theme=light] body .ins-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}
+:root[data-theme=light] body .ins-stats div{border:1px solid #d9d2b8;border-radius:12px;padding:12px 14px;background:#fffdf3}
+:root[data-theme=light] body .ins-stats b{display:block;font-size:26px;line-height:1.1}
+:root[data-theme=light] body .ins-stats span{display:block;font-size:13px;color:#555;margin-top:4px}
+:root[data-theme=light] body .ins-bars{list-style:none;margin:6px 0 0;padding:0}
+:root[data-theme=light] body .ins-bars li{display:grid;grid-template-columns:minmax(80px,32%) 1fr auto;gap:10px;align-items:center;margin:7px 0;font-size:14px}
+:root[data-theme=light] body .ib-b{height:12px;background:#ece6cf;border-radius:7px;overflow:hidden}
+:root[data-theme=light] body .ib-b i{display:block;height:100%;background:#f97316;border-radius:7px}
+:root[data-theme=light] body .ib-n{font-weight:700;min-width:2ch;text-align:right}
+:root[data-theme=light] body .ins-trend{width:100%;height:auto;display:block;margin-top:6px}
+:root[data-theme=light] body .ins-trend rect{fill:#f97316}
+:root[data-theme=light] body .ins-trend text{font-size:9px;fill:#666}
+:root[data-theme=light] body #recent-outages .ins-tabs{border:0;border-radius:0;overflow:visible}
+:root[data-theme=light] body .ins-stats div:last-child:nth-child(odd){grid-column:1/-1}
