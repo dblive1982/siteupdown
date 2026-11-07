@@ -35,7 +35,7 @@ header('Content-Type: text/html; charset=utf-8'); header('Cache-Control: public,
 .p.up{background:#2e9d46}.p.down{background:#d6454b}.p.maybe{background:#d9962b}.p.up i{animation:b 1.6s infinite}
 @keyframes b{50%{opacity:.35}}
 .s{display:flex;gap:14px;margin:4px 0 2px;color:#5b5870;font-size:12px;flex-wrap:wrap}.s b{color:#1c1b29}
-.lg{flex:0 0 auto;height:24px;width:auto;margin:0 auto}
+.lg{flex:0 0 auto;height:24px;width:auto;opacity:.12;filter:grayscale(1) brightness(0);margin:0 auto}
 @media(max-width:230px){.lg{display:none}}
 svg{display:block;width:100%;height:30px;margin-top:2px;cursor:crosshair;touch-action:none}
 .r{display:flex;justify-content:space-between;color:#5b5870;font-size:11px;min-height:15px}
