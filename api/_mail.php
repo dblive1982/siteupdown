@@ -12,23 +12,23 @@ function sud_email_render(string $heading, string $paraHtml, string $paraText, s
     if ($btnText !== '' && $btnUrl !== '') {
         $u = htmlspecialchars($btnUrl, ENT_QUOTES, 'UTF-8');
         $t = htmlspecialchars($btnText, ENT_QUOTES, 'UTF-8');
-        $btn = '<table role="presentation" cellpadding="0" cellspacing="0" style="margin:28px 0 6px"><tr><td bgcolor="#39b54a" class="btn-td" style="border-radius:8px;background-image:linear-gradient(#39b54a,#39b54a)"><a class="btn-a" href="' . $u . '" style="display:inline-block;background:#39b54a;background-image:linear-gradient(#39b54a,#39b54a);color:#0b1a10;-webkit-text-fill-color:#0b1a10;text-decoration:none;font-weight:700;font-size:16px;padding:14px 30px;border-radius:8px;' . $F . '">' . $t . '</a></td></tr></table>';
+        $btn = '<table role="presentation" cellpadding="0" cellspacing="0" style="margin:28px 0 6px"><tr><td bgcolor="#7ed957" class="btn-td" style="border-radius:8px;background-image:linear-gradient(#7ed957,#7ed957)"><a class="btn-a" href="' . $u . '" style="display:inline-block;background:#7ed957;background-image:linear-gradient(#7ed957,#7ed957);color:#0b0b0b;-webkit-text-fill-color:#0b0b0b;text-decoration:none;font-weight:700;font-size:16px;padding:14px 30px;border-radius:8px;' . $F . '">' . $t . '</a></td></tr></table>';
     }
     $chip = '';
-    $stripe = '#39b54a';
+    $stripe = '#7ed957';
     if ($tone === 'down') { $stripe = '#e5484d'; $chip = '<p style="margin:0 0 12px"><span style="display:inline-block;background:#fde8e8;color:#a61b1f;font-size:12px;font-weight:700;letter-spacing:1.5px;padding:5px 12px;border-radius:99px;' . $F . '">&#9679; LOOKS DOWN</span></p>'; }
     if ($tone === 'warn') { $stripe = '#f0a020'; $chip = '<p style="margin:0 0 12px"><span style="display:inline-block;background:#fff1d6;color:#8a5a00;font-size:12px;font-weight:700;letter-spacing:1.5px;padding:5px 12px;border-radius:99px;' . $F . '">&#9679; HEADS UP</span></p>'; }
     if ($tone === 'up') { $chip = '<p style="margin:0 0 12px"><span style="display:inline-block;background:#e3f5e7;color:#1d7a2e;font-size:12px;font-weight:700;letter-spacing:1.5px;padding:5px 12px;border-radius:99px;' . $F . '">&#9679; BACK UP</span></p>'; }
     $link = fn(string $t, string $href) => '<a href="' . $site . $href . '" style="color:#ffffff;text-decoration:underline">' . $t . '</a>';
     $html = '<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light only"><meta name="supported-color-schemes" content="light only"><style>:root{color-scheme:light only;supported-color-schemes:light only}
 </style><title>' . $h . '</title></head>'
-        . '<body class="bg-out" style="margin:0;padding:0;background:#eeeaf5">'
-        . '<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#eeeaf5">' . $h . ' &middot; siteupdown.com</div>'
-        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#eeeaf5" class="bg-out" style="background:#eeeaf5"><tr><td align="center" class="bg-out" style="padding:26px 12px">'
+        . '<body class="bg-out" style="margin:0;padding:0;background:#f1f1f5">'
+        . '<div style="display:none;max-height:0;overflow:hidden;opacity:0;color:#f1f1f5">' . $h . ' &middot; siteupdown.com</div>'
+        . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" bgcolor="#f1f1f5" class="bg-out" style="background:#f1f1f5"><tr><td align="center" class="bg-out" style="padding:26px 12px">'
         . '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:580px">'
         . '<tr><td align="center" bgcolor="#000000" class="bg-dk" style="background:#000000;background-image:linear-gradient(#000000,#000000);border-radius:16px 16px 0 0;border-bottom:4px solid ' . $stripe . ';padding:26px 12px 22px">'
         . '<a href="' . $site . '/" style="text-decoration:none"><img src="' . $site . '/assets/nl-logo-light.png" width="150" height="71" alt="siteupdown.com" style="display:block;border:0;outline:none;width:150px;height:71px;color:#f0f2f6;font-size:20px;font-weight:700;' . $F . '"></a></td></tr>'
-        . '<tr><td bgcolor="#ffffff" class="bg-card t-main" style="background:#ffffff;border-left:1px solid #ddd6ee;border-right:1px solid #ddd6ee;padding:32px 28px 30px;' . $F . ';color:#1b1230;font-size:16px;line-height:1.65">'
+        . '<tr><td bgcolor="#fffbea" class="bg-card t-main" style="background:#fffbea;border-left:2px solid #0b0b0b;border-right:2px solid #0b0b0b;padding:32px 28px 30px;' . $F . ';color:#0b0b0b;font-size:16px;line-height:1.65">'
         . $chip . '<h1 class="t-h" style="margin:0 0 14px;font-size:25px;line-height:1.25;color:#000000;' . $F . '">' . $h . '</h1>' . $paraHtml . $btn
         . '</td></tr>'
         . '<tr><td align="center" bgcolor="#000000" class="bg-dk" style="background:#000000;background-image:linear-gradient(#000000,#000000);border-radius:0 0 16px 16px;padding:22px 18px;' . $F . ';font-size:13px;line-height:1.7;color:#c9c9d2">'
