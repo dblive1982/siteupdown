@@ -71,7 +71,7 @@
 
 
   /* ---------- charts under the map ---------- */
-  var COL = { ok: 'var(--green)', blocked: 'var(--amber)', error: 'var(--red)', none: 'var(--grey)' };
+  var COL = { ok: 'var(--gf, var(--green))', blocked: 'var(--of, var(--amber))', error: 'var(--rf, var(--red))', none: 'var(--grey)' };
   function chartsClear() { ['ch-bars', 'ch-donut', 'ch-range'].forEach(function (id) { var e = $('#' + id); if (e) { e.className = 'ch-empty'; e.textContent = 'Run a check to see this chart.'; } }); }
   function drawCharts(probes, res) {
     if (!probes || !probes.length) { chartsClear(); return; }
@@ -219,7 +219,7 @@
     $('#hs-pr').textContent = HS.reach != null ? HS.reach + '/' + HS.total : '\u2014';
     var dot = box.querySelector('.hs-dot'); dot.className = 'hs-dot ' + (HS.v === 'down' ? 'down' : (HS.v && HS.v !== 'up' ? 'slow' : 'up'));
     var vals = HS.series.filter(function (x) { return x != null; });
-    if (vals.length > 1) { var mx = Math.max.apply(null, vals.concat([50])), n = HS.series.length; $('#hs-spark').innerHTML = '<polyline fill="none" stroke="#39b54a" stroke-width="1.6" vector-effect="non-scaling-stroke" points="' + HS.series.map(function (x, i) { return x == null ? '' : (60 * i / Math.max(1, n - 1)).toFixed(1) + ',' + (16 - 14 * x / mx).toFixed(1); }).filter(Boolean).join(' ') + '"/>'; }
+    if (vals.length > 1) { var mx = Math.max.apply(null, vals.concat([50])), n = HS.series.length; $('#hs-spark').innerHTML = '<polyline fill="none" stroke="#0b0b0b" stroke-width="1.6" vector-effect="non-scaling-stroke" points="' + HS.series.map(function (x, i) { return x == null ? '' : (60 * i / Math.max(1, n - 1)).toFixed(1) + ',' + (16 - 14 * x / mx).toFixed(1); }).filter(Boolean).join(' ') + '"/>'; }
     var s = HS.host;
     if (HS.v === 'down') s += ' is not answering right now.';
     else if (HS.key === 'blocked') s += ' is answering, but it blocks automated checks, so we cannot tell what a real visitor sees. That does not mean it is down.';
