@@ -295,3 +295,5 @@
 :root[data-theme=light] body .checker .top #checker-title{gap:8px}
 :root[data-theme=light] body .checker .top{padding-top:6px}
 :root[data-theme=light] body .checker .top svg.nl-tower{width:40px;height:46px;stroke-width:3}
+:root[data-theme=light] body .checker .top .nl-ant{height:26px;width:auto;display:block;flex:none}
+:root[data-theme=light] body .checker .top #checker-title{gap:9px}
