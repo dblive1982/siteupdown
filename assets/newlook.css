@@ -358,10 +358,7 @@
 :root[data-theme=light] body .pulse-card .strip .cell:first-child{padding-left:26px}
 :root[data-theme=light] body .pulse-card .strip .cell{padding-top:18px;padding-bottom:18px}
 :root[data-theme=light] body .statchip[hidden]{display:none}
-:root[data-theme=light] body .cookie{background:#000;border:2.5px solid #4a4a52;color:#fff}
-:root[data-theme=light] body .cookie h3{color:#fff}
-:root[data-theme=light] body .cookie p{color:#e4e4ea}
-:root[data-theme=light] body .cookie .check small{color:#b9b9c4}
-:root[data-theme=light] body .cookie .btn{border-color:#fff;box-shadow:3px 3px 0 #fff}
+:root[data-theme=light] body .cookie{background:#c4c4ce;border:2.5px solid #0b0b0b;color:#0b0b0b;box-shadow:0 0 0 100vmax rgba(0,0,0,.78)}
+:root[data-theme=light] body .cookie p{color:#2a2a33}
 
 body:after{content:"TEST SITE";position:fixed;right:10px;bottom:10px;background:#f59e0b;color:#000;font:700 12px/1 system-ui,sans-serif;letter-spacing:.08em;padding:7px 10px;border:2px solid #000;border-radius:6px;z-index:90;pointer-events:none}
