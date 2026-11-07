@@ -388,3 +388,5 @@
 :root[data-theme=light] body .ins-trend text{font-size:9px;fill:#666}
 :root[data-theme=light] body #recent-outages .ins-tabs{border:0;border-radius:0;overflow:visible}
 :root[data-theme=light] body .ins-stats div:last-child:nth-child(odd){grid-column:1/-1}
+
+body:after{content:"TEST SITE";position:fixed;right:10px;bottom:10px;background:#f59e0b;color:#000;font:700 12px/1 system-ui,sans-serif;letter-spacing:.08em;padding:7px 10px;border:2px solid #000;border-radius:6px;z-index:90;pointer-events:none}
