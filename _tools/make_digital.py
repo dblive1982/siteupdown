@@ -5,11 +5,11 @@ a=np.array(Image.open('assets/nl-continents.png').convert('RGB')).astype(np.floa
 OC=np.array((200,225,238),np.float32); GR=np.array((176,208,226),np.float32)
 t=np.clip(np.minimum(np.linalg.norm(a-OC,axis=2),np.linalg.norm(a-GR,axis=2))/50,0,1)
 H,W=t.shape;S=3;P=15
-img=Image.new('RGB',(W*S,H*S),(255,255,255));d=ImageDraw.Draw(img)
+img=Image.new('RGB',(W*S,H*S),(234,243,251));d=ImageDraw.Draw(img)
 for y in range(P//2,H,P):
     for x in range(P//2,W,P):
         v=t[max(0,y-P//2):y+P//2,max(0,x-P//2):x+P//2].mean()
         if v>.5: r,c=5.2,(70,82,104)
-        else: r,c=1.5,(226,229,236)
+        else: r,c=1.5,(206,222,240)
         d.ellipse([(x-r)*S,(y-r)*S,(x+r)*S,(y+r)*S],fill=c)
 img.resize((W,H),Image.LANCZOS).save('assets/nl-continents-digital.png',optimize=True)
