@@ -358,5 +358,5 @@
 :root[data-theme=light] body .pulse-card .strip .cell:first-child{padding-left:26px}
 :root[data-theme=light] body .pulse-card .strip .cell{padding-top:18px;padding-bottom:18px}
 :root[data-theme=light] body .statchip[hidden]{display:none}
-:root[data-theme=light] body .cookie{background:#e6e6ec;border:2.5px solid #0b0b0b;color:#0b0b0b}
-:root[data-theme=light] body .cookie p{color:#3d3d48}
+:root[data-theme=light] body .cookie{background:#c4c4ce;border:2.5px solid #0b0b0b;color:#0b0b0b}
+:root[data-theme=light] body .cookie p{color:#2a2a33}
