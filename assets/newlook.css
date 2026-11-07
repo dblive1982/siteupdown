@@ -363,5 +363,8 @@
 :root[data-theme=light] body #rb-btn,:root[data-theme=light] body #rb-btn.ghost,:root[data-theme=light] body #sp-rbtn{background:#f97316;color:#0b0b0b}
 :root[data-theme=light] body #rb-btn:hover,:root[data-theme=light] body #rb-btn.ghost:hover,:root[data-theme=light] body #sp-rbtn:hover{background:#fb8a3c}
 :root[data-theme=light] body .seg button[aria-selected=true],:root[data-theme=light] body .seg2 button[aria-pressed=true],:root[data-theme=light] body .seg2 button[aria-selected=true],:root[data-theme=light] body .sp-ranges .rg.on{background:var(--yellow);color:#0b0b0b;border-color:#0b0b0b;font-weight:800}
+:root[data-theme=light] body .prose dl{margin:0 0 18px}
+:root[data-theme=light] body .prose dt{font-weight:800;margin-top:14px}
+:root[data-theme=light] body .prose dd{margin:2px 0 0;color:var(--muted)}
 
 body:after{content:"TEST SITE";position:fixed;right:10px;bottom:10px;background:#f59e0b;color:#000;font:700 12px/1 system-ui,sans-serif;letter-spacing:.08em;padding:7px 10px;border:2px solid #000;border-radius:6px;z-index:90;pointer-events:none}
