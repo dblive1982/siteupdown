@@ -52,7 +52,7 @@
 @@ .legend i{border-color:var(--ink)}
 
 /* header + menu */
-.nl-head{background:#000000;position:relative;z-index:40}
+.nl-head{background:#130228;position:relative;z-index:40}
 .nl-bar{max-width:1120px;margin:0 auto;padding:40px 16px 18px;display:flex;justify-content:center;align-items:center;position:relative}
 .nl-logo{display:block;line-height:0}
 .nl-logo{display:flex;flex-direction:column;align-items:center}.nl-logo img{height:64px;width:auto;display:block}.nl-logo img.nl-mon{height:74px;margin-bottom:0;margin-right:18px;position:relative;z-index:1}
@@ -116,7 +116,7 @@
 @@ .faq details p{padding:0 14px 12px;margin:0}
 
 /* footer */
-@@ .site-foot{border-top:0;background:#000000;color:#f3f3f5;margin-top:24px}
+@@ .site-foot{border-top:0;background:#130228;color:#f3f3f5;margin-top:24px}
 @@ .site-foot a,@@ .site-foot button{color:#f3f3f5}
 @@ .site-foot .note,@@ .site-foot .fine{color:#b9b9c4}
 .nl-foot{padding:22px 0 30px;text-align:center}
