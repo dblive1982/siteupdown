@@ -118,7 +118,7 @@
       function finish() {
         if (done) return; done = true;
         xhrs.forEach(function (x) { try { x.abort(); } catch (e) {} });
-        xhrs = [];
+        xhrs = []; clearInterval(tick);
         var t = sum(); bytesUsed += t;
         if (!t) return reject(new Error('upload'));
         resolve(speed(performance.now()));
@@ -131,7 +131,6 @@
           cur[i] = e.loaded;
           var now = performance.now();
           if (!mark && now - t0 > WARM) { mark = now; base = sum(); }
-          if (mark && now - mark > 250) live(speed(now));
           if (now - t0 > ms) finish();
         };
         x.onload = function () { doneBytes += blob.size; cur[i] = 0; start(i); };
@@ -140,6 +139,15 @@
         x.timeout = 20000;
         x.send(blob);
       }
+      // drive the dial on a timer so it moves even when the browser reports upload progress in bursts
+      var shown = 0, tick = setInterval(function () {
+        if (done) return;
+        var now = performance.now(), t = sum();
+        if (!t) return;
+        var v = speed(now);
+        shown = shown ? shown + (v - shown) * 0.35 : v;
+        live(shown);
+      }, 150);
       for (var i = 0; i < 3; i++) start(i);
       setTimeout(finish, ms + 4000);
     });
