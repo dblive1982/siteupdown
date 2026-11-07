@@ -720,4 +720,7 @@ ARTICLES = [
 
 ]
 
+from help_more_a import ARTICLES_A
+from help_more_b import ARTICLES_B
+ARTICLES = ARTICLES + ARTICLES_A + ARTICLES_B
 BY_SLUG = {a['slug']: a for a in ARTICLES}

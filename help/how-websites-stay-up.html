@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How websites stay up: redundancy, failover and backups — siteupdown.com</title>
+<meta name="description" content="The ideas behind reliable websites, including redundancy, load balancing, failover, backups and testing, explained without jargon.">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<link rel="canonical" href="https://siteupdown.com/help/how-websites-stay-up">
+<meta property="og:type" content="website"><meta property="og:site_name" content="siteupdown.com">
+<meta property="og:title" content="How websites stay up: redundancy, failover and backups — siteupdown.com"><meta property="og:description" content="The ideas behind reliable websites, including redundancy, load balancing, failover, backups and testing, explained without jargon."><meta property="og:url" content="https://siteupdown.com/help/how-websites-stay-up">
+<meta property="og:image" content="https://siteupdown.com/assets/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:locale" content="en_GB">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="How websites stay up: redundancy, failover and backups — siteupdown.com"><meta name="twitter:description" content="The ideas behind reliable websites, including redundancy, load balancing, failover, backups and testing, explained without jargon."><meta name="twitter:image" content="https://siteupdown.com/assets/og.png">
+<meta name="application-name" content="siteupdown.com"><meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="/favicon.ico?v=2" sizes="any"><link rel="icon" href="/favicon-32.png?v=2" type="image/png" sizes="32x32"><link rel="icon" href="/favicon-64.png?v=2" type="image/png" sizes="64x64"><link rel="manifest" href="/site.webmanifest"><link rel="icon" href="/favicon-192.png?v=2" type="image/png" sizes="192x192"><link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/assets/app.css?v=091189e7">
+<link rel="stylesheet" href="/assets/newlook.css?v=091189e7">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "How websites stay up: redundancy, failover and backups", "description": "The ideas behind reliable websites, including redundancy, load balancing, failover, backups and testing, explained without jargon.", "datePublished": "2026-11-02", "dateModified": "2026-11-02", "author": {"@type": "Organization", "name": "siteupdown.com", "url": "https://siteupdown.com/"}, "publisher": {"@type": "Organization", "name": "siteupdown.com", "url": "https://siteupdown.com/"}, "mainEntityOfPage": "https://siteupdown.com/help/how-websites-stay-up"}</script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://siteupdown.com/"}, {"@type": "ListItem", "position": 2, "name": "Help centre", "item": "https://siteupdown.com/help/"}, {"@type": "ListItem", "position": 3, "name": "How websites stay up: redundancy, failover and backups", "item": "https://siteupdown.com/help/how-websites-stay-up"}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="nl-head"><div class="nl-bar">
+<a class="nl-logo" href="/" aria-label="siteupdown.com home"><img src="/assets/nl-logo-light.png" alt="Site up down?" width="831" height="391"></a>
+<div class="nl-tools"><div id="auth"></div><button class="nl-menu-btn" id="nl-menu-btn" type="button" aria-expanded="false" aria-controls="nl-drawer" aria-label="Open menu"><span></span><span></span><span></span></button></div>
+</div></header>
+<div class="nl-scrim" id="nl-scrim" hidden></div>
+<nav class="nl-drawer" id="nl-drawer" aria-label="Main menu"><button class="nl-close" id="nl-close" type="button" aria-label="Close menu">&times;</button><h2>Check</h2><a href="/">Website checker<small>Is it down, or just you?</small></a><a href="/is-it-down/">All apps &amp; sites</a><a href="/outage-map">Outage map<small>Reachability around the world</small></a><a href="/outage-history">Outage history<small>What happened on past days</small></a><a href="/monitor">Monitor &amp; alerts<small>Watch up to 25 sites</small></a><h2>Tools</h2><a href="/internet-speed-test">Internet speed test</a><a href="/speed">Website speed test</a><a href="/what-is-my-ip">What is my IP?</a><a href="/game-ping-test">Game ping test</a><a href="/tools/">All tools</a><h2>Learn</h2><a href="/help/">Help centre<small>Plain-English guides</small></a><a href="/how-we-check">How we check</a><a href="/faq">FAQ</a><h2>More</h2><a href="/account" class="nl-sub">Account</a><a href="/about" class="nl-sub">About</a><a href="/business" class="nl-sub">For business</a><a href="/contact" class="nl-sub">Contact</a></nav>
+<main id="main">
+<section class="page"><div class="wrap prose article"><nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/help/">Help centre</a> / For website owners</nav><h1 style="margin:14px 0 20px">How websites stay up: redundancy, failover and backups</h1>
+<p class="lead">No website is up all the time. What separates a reliable site from a fragile one is how it is designed to cope when something breaks. The main ideas are old and simple: do not rely on one of anything, notice problems quickly, and practise recovering before you need to.</p>
+<h2>Single points of failure</h2>
+<p>A single point of failure is any one component whose failure stops everything. A lone web server, a single database, one internet connection, one DNS provider, one person who knows the passwords. Reliability work is largely about finding these and deciding which ones are worth removing.</p>
+<h2>Redundancy</h2>
+<p>Redundancy means having more than one of something. Two or more web servers can serve the same site, so if one fails the others carry on. Databases can have a copy that follows the main one, ready to take over. Important sites often run in more than one data centre, or even with more than one cloud provider, so a fault in one place does not take everything down.</p>
+<p>Redundancy has a cost, in money and in complexity. More moving parts means more things to configure and more ways for the redundancy itself to fail. The aim is to remove the failures that would hurt most, not to duplicate everything.</p>
+<h2>Load balancing</h2>
+<p>A load balancer sits in front of several servers and spreads visitors between them. It also checks whether each server is healthy and stops sending traffic to any that are not. For visitors this is invisible: one address, many machines behind it.</p>
+<h2>Failover</h2>
+<p>Failover is the switch from a failed component to its backup. It can be automatic, where the system notices and moves on its own, or manual, where a person decides. Automatic failover is faster but can misfire, for example by switching when there was only a brief blip. Whichever you choose, you need to test it. A failover that has never been tried is a theory, not a plan.</p>
+<h2>Backups</h2>
+<p>Redundancy and backups solve different problems. Redundancy protects against a machine failing. Backups protect against data being deleted, corrupted or encrypted by an attacker, where a live copy would simply copy the damage. A useful backup routine has these features:</p>
+<ul>
+<li>It runs automatically and regularly.</li>
+<li>Copies are stored somewhere separate from the main system.</li>
+<li>Several older versions are kept, not just the latest.</li>
+<li>Someone has actually restored from one to prove it works.</li>
+</ul>
+<h2>Caching and content delivery</h2>
+<p>Serving saved copies of pages and files takes load off the main servers and can keep a site partly working when the origin is struggling. A content delivery network spreads those saved copies around the world. The trade-off is that you add another provider that your site depends on. See <a href="/help/what-is-a-cdn-and-why-outages-spread">what a CDN is and why outages spread</a>.</p>
+<h2>Graceful degradation</h2>
+<p>Even when something fails, a site does not need to fail completely. A shop can keep showing products while checkout is unavailable. A news site can serve cached articles when the comments system is down. Designing for partial failure means the loss of one feature is an annoyance rather than an outage.</p>
+<h2>The boring causes</h2>
+<p>Many outages are caused by routine things rather than dramatic failures:</p>
+<ul>
+<li>An <a href="/help/ssl-certificate-errors">expired certificate</a>.</li>
+<li>A <a href="/help/domain-name-expiry">domain that was not renewed</a>.</li>
+<li>A full disk or exhausted database connections.</li>
+<li>A change released with no quick way to undo it.</li>
+<li>A <a href="/help/what-is-dns-and-why-it-fails">DNS</a> record edited by mistake.</li>
+</ul>
+<p>Simple habits fix most of these: automatic renewals, alerts for disk space and expiry dates, and releasing changes gradually.</p>
+<h2>Monitoring and communication</h2>
+<p>You cannot fix what you do not know about. Monitor your site from outside your own network, with alerts that go to more than one person and do not depend on the same provider as the site. Our <a href="/help/how-to-monitor-your-own-website">monitoring guide</a> explains how, and a free account here can <a href="/monitor">watch your sites</a> and email you when one goes down or recovers.</p>
+<p>When something does go wrong, tell people. A short, honest status update early on is worth more than a perfect explanation hours later. See <a href="/help/how-to-write-an-outage-update">how to write an outage update</a>.</p>
+<h2>What uptime numbers mean</h2>
+<p>Availability is usually quoted as a percentage. 99.9% sounds high but allows about 8 hours and 45 minutes of downtime a year, or about 43 minutes a month. 99.99% allows under an hour a year. Each extra nine is much more expensive than the one before. Our guide to <a href="/help/uptime-percentages-explained">uptime percentages</a> shows what each level means in minutes, and the <a href="/tools/uptime-sla-calculator">uptime SLA calculator</a> does the arithmetic for you.</p>
+<h2>A sensible order of priorities</h2>
+<ol>
+<li>Automatic renewals and expiry alerts.</li>
+<li>Tested backups kept off the main system.</li>
+<li>Outside monitoring with alerts to more than one person.</li>
+<li>A way to roll back a bad change quickly.</li>
+<li>Redundancy for the components that hurt most when they fail.</li>
+<li>A written plan for who does what in an incident.</li>
+</ol>
+<div class="cta-box"><b>Check a website now</b><p>Is it down for everyone, or just you? Paste an address and we test it from fifteen places.</p><a class="btn" href="/"><span>Open the checker</span></a></div><h2>Related guides</h2><ul><li><a href="/help/why-big-websites-go-down">Why big websites go down: cloud, CDN and DNS failures</a></li><li><a href="/help/uptime-percentages-explained">Uptime percentages explained: what 99.9% really means</a></li><li><a href="/help/how-to-monitor-your-own-website">How to monitor your own website: what to check and how often</a></li></ul><p class="note">Last updated 2 November 2026. Written by the siteupdown.com team. <a href="/contact">Spotted a mistake?</a></p><p style="margin-top:20px"><a href="/help/">&larr; All help guides</a></p></div></section></main>
+<footer class="site-foot"><div class="wrap nl-foot">
+<img src="/assets/nl-logo-light.png" alt="Site up down?" width="831" height="391">
+<p class="note">Less refreshing. More knowing.</p>
+<div class="socials" aria-label="Social media">
+<a href="#" title="Facebook" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 8V6.5c0-.7.3-1 1-1h2V2h-3a4 4 0 0 0-4 4.2V8H7.5v3.5H10V22h4V11.5h2.7L17 8z"/></svg></a><a href="#" title="Instagram" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg></a><a href="#" title="X" aria-label="X"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.8 3h3.1l-6.8 7.7L22 21h-6.2l-4.9-6.3L5.3 21H2.2l7.2-8.3L2 3h6.4l4.4 5.8zm-1.1 16.2h1.7L7.3 4.7H5.5z"/></svg></a><a href="#" title="TikTok" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 3a5 5 0 0 0 4 4.4v3.3a8 8 0 0 1-4-1.2v6.2a6 6 0 1 1-6-6c.3 0 .7 0 1 .1v3.4a2.7 2.7 0 1 0 1.8 2.5V3z"/></svg></a><a href="#" title="YouTube" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2C2 8.8 2 12 2 12s0 3.2.4 4.8a2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8c.4-1.6.4-4.8.4-4.8s0-3.2-.4-4.8zM10 15V9l5.2 3z"/></svg></a>
+</div>
+<nav class="nl-fgrid nl-fcard" aria-label="All pages"><div class="nl-fg"><h3>Check</h3><a href="/">Website checker</a><a href="/is-it-down/">Is it down?</a><a href="/outage-map">Outage map</a><a href="/outage-history">Outage history</a><a href="/monitor">Monitor</a></div><div class="nl-fg"><h3>Tools</h3><a href="/internet-speed-test">Internet speed test</a><a href="/speed">Website speed test</a><a href="/what-is-my-ip">What is my IP?</a><a href="/game-ping-test">Game ping test</a><a href="/tools/">All tools</a></div><div class="nl-fg"><h3>Learn</h3><a href="/help/">Help centre</a><a href="/how-we-check">How we check</a><a href="/faq">FAQ</a></div><div class="nl-fg"><h3>Company</h3><a href="/account">Account</a><a href="/about">About</a><a href="/business">For business</a><a href="/contact">Contact</a></div><div class="nl-fg"><h3>Legal</h3><a href="/legal">Terms &amp; legal</a><a href="/privacy">Privacy</a><button type="button" data-cookie-settings>Cookie settings</button></div></nav>
+<p class="fine">&copy; <span data-year>2026</span> siteupdown.com. An independent website checker, not affiliated with the sites it checks. Regional probes use the public <a href="https://globalping.io" rel="noopener">Globalping</a> network.</p>
+</div></footer>
+<script src="/assets/app.js?v=091189e7"></script>
+<script src="/assets/newlook.js?v=091189e7"></script>
+</body>
+</html>
