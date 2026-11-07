@@ -186,7 +186,7 @@ def home():
 <p class="lead">Paste any website. We check it from our server and from around the world.</p>
 <form class="card checker" id="chk-form" aria-labelledby="checker-title" novalidate>
 <div class="nl-wbar" aria-hidden="true"><span>&lsaquo;</span><i></i><span>&rsaquo;</span></div><div class="nl-wbody">
-<div class="top"><span id="checker-title">{I_RADIO}Check a website</span><span class="nl-live"><b class="nl-beacon"></b><em>Live Check</em></span></div>
+<div class="top"><span id="checker-title"><svg class="nl-tower" viewBox="0 0 40 46" aria-hidden="true"><g transform="translate(0 4)"><path d="M18 6 7.5 40M18 6 28.5 40M13.9 20.4h8.2M10.4 31.6h15.2M13.9 20.4 25.6 31.6M22.1 20.4 10.4 31.6M5 40h26"/><path d="M23.8 3.1A9 9 0 0 1 23.8 16.9M28.4 -1.5A15 15 0 0 1 28.4 21.5"/></g></svg>Check a website</span><span class="nl-live"><b class="nl-beacon"></b><em>Live Check</em></span></div>
 <div class="chk-row">
 <div class="field">{I_GLOBE}<input id="chk-input" name="address" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="e.g. netflix.com" maxlength="300" aria-label="Website address"></div>
 <button class="btn" id="chk-btn" type="submit"><span>Check website</span>{I_ARROW}</button></div>
