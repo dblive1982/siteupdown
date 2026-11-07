@@ -277,8 +277,8 @@
 :root[data-theme=light] body #recent-outages .fine{margin-bottom:18px}
 
 .nl-live em{font-style:normal;font-weight:800;font-size:13px;letter-spacing:0;text-transform:none;color:#0b0b0b}
-.nl-beacon{width:12px;height:12px;border-radius:50%;background:#15803d;box-shadow:0 0 0 0 rgba(21,128,61,.7);animation:nlbeacon 1.4s ease-out infinite;flex:none}
-@keyframes nlbeacon{0%{box-shadow:0 0 0 0 rgba(21,128,61,.75);opacity:1}50%{opacity:.45}70%{box-shadow:0 0 0 9px rgba(21,128,61,0)}100%{box-shadow:0 0 0 0 rgba(21,128,61,0);opacity:1}}
+.nl-beacon{width:9px;height:9px;border-radius:50%;background:#15803d;box-shadow:0 0 0 0 rgba(21,128,61,.7);animation:nlbeacon 1.4s ease-out infinite;flex:none}
+@keyframes nlbeacon{0%{box-shadow:0 0 0 0 rgba(21,128,61,.75);opacity:1}50%{opacity:.45}70%{box-shadow:0 0 0 7px rgba(21,128,61,0)}100%{box-shadow:0 0 0 0 rgba(21,128,61,0);opacity:1}}
 @media(prefers-reduced-motion:reduce){.nl-beacon{animation:none}}
 
 :root[data-theme=light] body .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
