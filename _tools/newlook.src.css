@@ -276,8 +276,11 @@
 @@ #recent-outages .ro-list{margin-top:10px}
 @@ #recent-outages .fine{margin-bottom:18px}
 
-.nl-wbar i{display:flex;align-items:center;justify-content:flex-end;gap:8px;padding-right:10px;font-style:normal}
-.nl-wbar i em{font-style:normal;font-weight:800;font-size:12px;letter-spacing:.12em;color:#0b0b0b}
+.nl-live em{font-style:normal;font-weight:800;font-size:12px;letter-spacing:.12em;color:#0b0b0b}
 .nl-beacon{width:12px;height:12px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 0 rgba(34,197,94,.7);animation:nlbeacon 1.4s ease-out infinite;flex:none}
 @keyframes nlbeacon{0%{box-shadow:0 0 0 0 rgba(34,197,94,.75);opacity:1}50%{opacity:.45}70%{box-shadow:0 0 0 9px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0);opacity:1}}
 @media(prefers-reduced-motion:reduce){.nl-beacon{animation:none}}
+
+@@ .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.nl-live{display:inline-flex;align-items:center;gap:8px;margin-left:auto}
+@@ .checker .top .nl-live em{display:inline;color:#0b0b0b}
