@@ -58,7 +58,7 @@
 .nl-logo{display:flex;flex-direction:column;align-items:center}.nl-logo img{height:64px;width:auto;display:block}.nl-logo img.nl-mon{height:74px;margin-bottom:0;margin-right:18px;position:relative;z-index:1}
 @@ .nl-head ~ main .nl-hero{padding-top:20px}
 .nl-tools{position:absolute;top:10px;right:12px;display:flex;align-items:center;gap:8px}
-.nl-menu-btn{width:38px;height:38px;border:2.5px solid #0b0b0b;border-radius:12px;background:#fffbea;display:grid;place-content:center;gap:4px;cursor:pointer;box-shadow:0 3px 0 #0b0b0b;padding:0}
+.nl-menu-btn{width:38px;height:38px;border:2.5px solid #0b0b0b;border-radius:12px;background:#f59e0b;display:grid;place-content:center;gap:4px;cursor:pointer;box-shadow:0 3px 0 #0b0b0b;padding:0}
 .nl-menu-btn span{display:block;width:18px;height:3px;background:#0b0b0b;border-radius:2px;transition:transform .2s,opacity .2s}
 .nl-menu-btn[aria-expanded=true] span:nth-child(1){transform:translateY(7px) rotate(45deg)}
 .nl-menu-btn[aria-expanded=true] span:nth-child(2){opacity:0}
