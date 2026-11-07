@@ -210,7 +210,7 @@ def home():
 <div class="pc-head"><div><span class="eyebrow"><i></i>Global pulse · worldwide probes</span>
 <h2>Down for everyone — or just you<span class="dot">?</span></h2>
 <p class="lead">One run asks machines in different countries to fetch the same address at the same time. If they can all reach it, the problem is probably on your side.</p></div>
-<div class="pc-actions"><span class="statchip"><i></i><span id="pulse-status">Standby</span></span><button class="btn small ghost" type="button" id="run-again" hidden>Run again</button></div></div>
+<div class="pc-actions"><span class="statchip" hidden><i></i><span id="pulse-status">Standby</span></span><button class="btn small ghost" type="button" id="run-again" hidden>Run again</button></div></div>
 <div class="strip">
 <div class="cell wide"><span class="k">Verdict</span><b id="v-big">Waiting for probes</b><small id="v-sub">No address checked yet</small><span id="v-pill"></span></div>
 <div class="cell"><span class="k">Reachable</span><b id="s-reach">0/12</b><small>probes that answered</small></div>

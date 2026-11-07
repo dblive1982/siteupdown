@@ -357,3 +357,4 @@
 :root[data-theme=light] body .pulse-card .cantsure,:root[data-theme=light] body .pulse-card .hsum{margin:16px 20px 6px}
 :root[data-theme=light] body .pulse-card .strip .cell:first-child{padding-left:26px}
 :root[data-theme=light] body .pulse-card .strip .cell{padding-top:18px;padding-bottom:18px}
+:root[data-theme=light] body .statchip[hidden]{display:none}
