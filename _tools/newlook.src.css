@@ -287,3 +287,7 @@
 @@ .hm-world.dg{background:#f1f1f5;border-color:#111}
 @@ .hm-world.dg .cn{fill:#000;font-weight:900;paint-order:stroke;stroke:#f1f1f5;stroke-width:10px;stroke-linejoin:round}
 @@ .hm-world.dg .oc{fill:#7b7f8f;opacity:1;font-weight:900}
+@@ .rt-wrap table{margin:0}
+@@ .rt th{white-space:nowrap}
+@@ .rt td .sp-ms,@@ .rt td .hm-chip{white-space:nowrap}
+@@ .rt td:nth-child(n+2),@@ .rt th:nth-child(n+2){padding-left:10px;padding-right:10px}
