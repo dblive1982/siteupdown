@@ -25,7 +25,7 @@
 :root[data-theme=light] body .btn:active,:root[data-theme=light] body .signin-btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
 :root[data-theme=light] body .btn.ghost,:root[data-theme=light] body .btn.ghost:hover{background:#fffbea;color:var(--ink)}
 :root[data-theme=light] body .btn.small{box-shadow:0 3px 0 var(--ink)}
-:root[data-theme=light] body .chip{font-family:var(--sans);background:#fff;color:var(--ink);border:2px solid var(--ink);border-radius:999px;text-transform:none;letter-spacing:0}
+:root[data-theme=light] body .chip{font-family:var(--sans);background:#fff;color:var(--ink);border:2px solid var(--ink);border-radius:999px;text-transform:none;font-weight:700;letter-spacing:0}
 :root[data-theme=light] body .chip[aria-pressed=true],:root[data-theme=light] body .chip:hover{background:var(--yellow);color:var(--ink);border-color:var(--ink)}
 :root[data-theme=light] body .field{background:#fff;border:2.5px solid var(--ink);border-radius:14px}
 :root[data-theme=light] body input,:root[data-theme=light] body select,:root[data-theme=light] body textarea{font-family:var(--sans);color:var(--ink)}
