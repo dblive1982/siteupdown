@@ -283,6 +283,9 @@ function ensure_schema(PDO $pdo): void {
         try { $pdo->exec($q); } catch (Throwable $e) { /* MySQL has no IF NOT EXISTS for indexes: created below */ }
     }
     try { $pdo->exec('ALTER TABLE reports ADD COLUMN country CHAR(2) NULL'); } catch (Throwable $e) { /* already there */ }
+    // Optional coarse location (one decimal place, about 10 km), only when the visitor chose to add their area.
+    try { $pdo->exec('ALTER TABLE reports ADD COLUMN lat DECIMAL(4,1) NULL'); } catch (Throwable $e) { /* already there */ }
+    try { $pdo->exec('ALTER TABLE reports ADD COLUMN lon DECIMAL(4,1) NULL'); } catch (Throwable $e) { /* already there */ }
     try { $pdo->exec('ALTER TABLE watchlist ADD COLUMN alerts TINYINT NOT NULL DEFAULT 1'); } catch (Throwable $e) { /* already there */ }
     if (!$lite) {
         foreach ([

@@ -36,13 +36,19 @@ if (!preg_match('/^[A-Z]{2}$/', $cc) || $cc === 'XX' || $cc === 'T1') {
         if (preg_match('/^[A-Z]{2}$/', $c2)) $cc = $c2;
     }
 }
+// Optional coarse area: both numbers present, in range, and rounded to one decimal (about 10 km) no matter what was sent.
+$lat = $lon = null;
+if (isset($in['lat'], $in['lon']) && is_numeric($in['lat']) && is_numeric($in['lon'])) {
+    $la = round((float)$in['lat'], 1); $lo = round((float)$in['lon'], 1);
+    if ($la >= -85 && $la <= 85 && $lo >= -180 && $lo <= 180) { $lat = $la; $lon = $lo; }
+}
 $dup = $pdo->prepare('SELECT 1 FROM reports WHERE host=? AND ip_hash=? AND kind=? AND ts > ? LIMIT 1');
-$ins = $pdo->prepare('INSERT INTO reports (host, kind, ip_hash, ts, country) VALUES (?,?,?,?,?)');
+$ins = $pdo->prepare('INSERT INTO reports (host, kind, ip_hash, ts, country, lat, lon) VALUES (?,?,?,?,?,?,?)');
 $added = 0;
 foreach ($kinds as $kind) {
     $dup->execute([$host, $h, $kind, gmdate('Y-m-d H:i:s', time() - 1800)]);
     if ($dup->fetch()) continue;
-    $ins->execute([$host, $kind, $h, sql_now(), $cc !== '' ? $cc : null]);
+    $ins->execute([$host, $kind, $h, sql_now(), $cc !== '' ? $cc : null, $lat, $lon]);
     $added++;
 }
 if (!$added) out(200, ['ok' => true, 'duplicate' => true, 'message' => 'Thanks, we already have ' . (count($kinds) > 1 ? 'those reports' : 'that report') . ' from you in the last 30 minutes.']);

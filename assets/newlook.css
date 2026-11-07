@@ -303,3 +303,13 @@
 :root[data-theme=light] body .nl-try .chip:nth-child(2){animation-delay:.05s}:root[data-theme=light] body .nl-try .chip:nth-child(3){animation-delay:.1s}:root[data-theme=light] body .nl-try .chip:nth-child(4){animation-delay:.15s}:root[data-theme=light] body .nl-try .chip:nth-child(5){animation-delay:.2s}:root[data-theme=light] body .nl-try .chip:nth-child(6){animation-delay:.25s}:root[data-theme=light] body .nl-try .chip:nth-child(7){animation-delay:.3s}:root[data-theme=light] body .nl-try .chip:nth-child(8){animation-delay:.35s}:root[data-theme=light] body .nl-try .chip:nth-child(9){animation-delay:.4s}:root[data-theme=light] body .nl-try .chip:nth-child(10){animation-delay:.45s}:root[data-theme=light] body .nl-try .chip:nth-child(11){animation-delay:.5s}:root[data-theme=light] body .nl-try .chip:nth-child(12){animation-delay:.55s}
 :root[data-theme=light] body .nl-try .chip:hover,:root[data-theme=light] body .nl-try .chip:active{animation:nlwob .5s ease-in-out}
 @media(prefers-reduced-motion:reduce){:root[data-theme=light] body .nl-try .chip,:root[data-theme=light] body .nl-try .chip:hover,:root[data-theme=light] body .nl-try .chip:active{animation:none}}
+:root[data-theme=light] body .rloc{display:flex;gap:10px;align-items:flex-start;margin:14px 0 0;font-weight:700;font-size:14px;line-height:1.35;cursor:pointer}
+:root[data-theme=light] body .rloc input{width:20px;height:20px;margin:2px 0 0;accent-color:#2fa84f;flex:none}
+:root[data-theme=light] body .rloc small{display:block;font-weight:500;color:#4b4b57;font-size:12.5px;margin-top:2px}
+:root[data-theme=light] body .lm{margin:28px 0 8px}
+:root[data-theme=light] body .lm h2{margin:0 0 6px}
+:root[data-theme=light] body .lm-card{padding:14px}
+:root[data-theme=light] body .lm-bar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+:root[data-theme=light] body .lm-map{height:380px;border:2.5px solid #111;border-radius:16px;overflow:hidden;background:#e8eaee;margin-bottom:10px;position:relative}
+:root[data-theme=light] body .lm-map .leaflet-tile-pane{filter:grayscale(.9) contrast(.95) brightness(1.04)}
+:root[data-theme=light] body .lm-map .leaflet-popup-content-wrapper{border:2.5px solid #111;border-radius:12px;box-shadow:3px 3px 0 #111;font:600 13px/1.35 var(--sans)}

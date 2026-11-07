@@ -123,6 +123,16 @@
     });
     return { reset: function () { Array.prototype.forEach.call(pick.querySelectorAll('.rk'), function (b) { b.classList.remove('on'); b.setAttribute('aria-pressed', 'false'); }); sync(); } };
   };
+  // Optional coarse location for a problem report: only when the visitor ticks the box AND the browser grants it. Rounded to 0.1 degree (about 10 km) before it leaves the page.
+  S.repLoc = function (pick) {
+    var cb = pick.querySelector('.rloc input');
+    if (!cb || !cb.checked || !navigator.geolocation) return Promise.resolve(null);
+    return new Promise(function (res) {
+      navigator.geolocation.getCurrentPosition(function (p) {
+        res({ lat: Math.round(p.coords.latitude * 10) / 10, lon: Math.round(p.coords.longitude * 10) / 10 });
+      }, function () { res(null); }, { timeout: 9000, maximumAge: 600000 });
+    });
+  };
   S.toast = function (msg, bad) {
     var t = d.createElement('div'); t.className = 'toast' + (bad ? ' bad' : ''); t.setAttribute('role', 'status'); t.textContent = msg; d.body.appendChild(t);
     setTimeout(function () { t.remove(); }, 3200);
