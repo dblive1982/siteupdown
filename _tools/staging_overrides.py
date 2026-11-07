@@ -21,23 +21,38 @@ open(p('api', 'outage-local.php'), 'w').write('''<?php
 header('Content-Type: application/json');
 $s = [[51.5,-0.1,14,'Netflix',6,'Instagram',5,'WhatsApp',3],[53.5,-2.3,6,'Netflix',4,'Facebook',2],[52.5,-1.9,4,'Instagram',4],[48.9,2.3,9,'WhatsApp',5,'Facebook',4],[40.7,-74.0,12,'Instagram',7,'Netflix',5],[34.1,-118.3,5,'YouTube',5],[19.1,72.9,8,'WhatsApp',8],[-33.9,151.2,3,'Netflix',3],[-23.5,-46.6,7,'Instagram',4,'WhatsApp',3],[35.7,139.7,4,'YouTube',4],[41.9,12.5,5,'Netflix',3,'Facebook',2],[52.5,13.4,4,'WhatsApp',4]];
 $cells = []; $total = 0;
-foreach ($s as $r) { $sites = []; for ($i = 3; $i < count($r); $i += 2) $sites[] = ['name' => $r[$i], 'n' => $r[$i + 1]]; $cells[] = ['lat' => $r[0], 'lon' => $r[1], 'cell' => 0.2, 'n' => $r[2], 'sites' => $sites]; $total += $r[2]; }
-echo json_encode(['hours' => 24, 'total' => $total, 'cells' => $cells]);
+foreach ($s as $r) { $sites = []; for ($i = 3; $i < count($r); $i += 2) $sites[] = ['name' => $r[$i], 'n' => $r[$i + 1]]; $k = count($cells); $cells[] = ['lat' => $r[0], 'lon' => $r[1], 'cell' => 0.2, 'n' => $r[2], 'w' => round(max(0.15, 1 - $k * 0.08), 2), 'newest' => gmdate('Y-m-d\\TH:i:s\\Z', time() - (5 + $k * 12) * 60), 'sites' => array_map(function($x) use ($k) { if ($k % 4 === 2) $x['rec'] = 'checks'; return $x; }, $sites)]; $total += $r[2]; }
+echo json_encode(['hours' => (int)($_GET['hours'] ?? 3), 'total' => $total, 'cells' => $cells]);
 ''')
 open(p('api', 'report.php'), 'w').write('''<?php
 // TEST SITE ONLY: accepts a report but stores nothing.
 header('Content-Type: application/json');
-echo json_encode(['ok' => true, 'added' => 1, 'message' => 'Thanks. This is the test site, so nothing was saved.']);
+$b = json_decode(file_get_contents('php://input'), true); $fx = !empty($b['kinds']) && $b['kinds'] === ['fixed'];
+echo json_encode(['ok' => true, 'added' => 1, 'message' => $fx ? 'Thanks. This is the test site, so nothing was saved.' : 'Thanks. This is the test site, so nothing was saved.']);
 ''')
 open(p('api', 'reports.php'), 'w').write('''<?php
 // TEST SITE ONLY: sample latest-reports list. Not real reports.
 header('Content-Type: application/json');
 if (empty($_GET['recent'])) { http_response_code(404); echo json_encode(['error' => 'Sample site']); exit; }
 $h = strtolower((string)($_GET['host'] ?? ''));
-$s = [['netflix.com','Netflix','/is-netflix-down','login',3,'GB'],['instagram.com','Instagram','/is-instagram-down','site',9,null],['whatsapp.com','WhatsApp','/is-whatsapp-down','slow',22,'IN'],['netflix.com','Netflix','/is-netflix-down','site',41,'GB'],['facebook.com','Facebook','/is-facebook-down','app',75,'US'],['instagram.com','Instagram','/is-instagram-down','login',130,'GB'],['youtube.com','YouTube','/is-youtube-down','slow',260,null]];
+$s = [['netflix.com','Netflix','/is-netflix-down','login',3,'GB'],['instagram.com','Instagram','/is-instagram-down','site',9,null],['whatsapp.com','WhatsApp','/is-whatsapp-down','slow',22,'IN'],['netflix.com','Netflix','/is-netflix-down','site',41,'GB'],['facebook.com','Facebook','/is-facebook-down','app',75,'US'],['instagram.com','Instagram','/is-instagram-down','login',130,'GB'],['youtube.com','YouTube','/is-youtube-down','slow',260,null],['netflix.com','Netflix','/is-netflix-down','fixed',12,'GB']];
 $items = [];
 foreach ($s as $r) { if ($h !== '' && $h !== $r[0]) continue; $items[] = ['host'=>$r[0],'name'=>$r[1],'page'=>$r[2],'kind'=>$r[3],'ts'=>gmdate('Y-m-d\\TH:i:s\\Z', time() - $r[4] * 60),'country'=>$r[5]]; }
 echo json_encode(['items' => $items]);
+''')
+open(p('api', 'history-day.php'), 'w').write('''<?php
+// TEST SITE ONLY: sample day-by-day history. Not real data.
+header('Content-Type: application/json');
+$today = gmdate('Y-m-d'); $h = strtolower((string)($_GET['host'] ?? ''));
+if (!empty($_GET['days'])) {
+    $days = []; foreach ([0,1,3,4,8,12,19] as $i => $o) $days[] = ['day' => gmdate('Y-m-d', time() - $o * 86400), 'reports' => 140 - $i * 17, 'outages' => $i % 3, 'down_min' => ($i % 3) * 22];
+    echo json_encode(['host' => $h ?: null, 'name' => null, 'today' => $today, 'days' => $days]); exit;
+}
+$date = (string)($_GET['date'] ?? $today);
+if (!preg_match('/^\\d{4}-\\d{2}-\\d{2}$/', $date) || $date > $today) { http_response_code(422); echo json_encode(['error' => 'Please pick a valid date that is not in the future.']); exit; }
+$rows = [['netflix.com','Netflix','/is-netflix-down',54,['site'=>10,'login'=>38,'app'=>4,'slow'=>2],9,1,26],['instagram.com','Instagram','/is-instagram-down',31,['site'=>20,'login'=>5,'app'=>4,'slow'=>2],4,0,0],['whatsapp.com','WhatsApp','/is-whatsapp-down',12,['site'=>3,'login'=>0,'app'=>2,'slow'=>7],1,0,0]];
+$out = []; foreach ($rows as $r) { if ($h !== '' && $h !== $r[0]) continue; $out[] = ['host'=>$r[0],'name'=>$r[1],'page'=>$r[2],'reports'=>$r[3],'kinds'=>$r[4],'fixed'=>$r[5],'outages'=>$r[6],'down_min'=>$r[7]]; }
+echo json_encode(['date' => $date, 'today' => $today, 'host' => $h ?: null, 'total_reports' => array_sum(array_column($out, 'reports')), 'total_outages' => array_sum(array_column($out, 'outages')), 'rows' => $out]);
 ''')
 open(p('robots.txt'), 'w').write('User-agent: *\nDisallow: /\n')
 for f in ('sitemap.xml', 'ads.txt'):

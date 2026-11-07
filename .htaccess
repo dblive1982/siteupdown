@@ -44,9 +44,9 @@ RewriteRule ^(is-[a-z0-9-]+-down)\.html$ /$1 [R=301,L]
 # Clean URLs.
 # Old address: heat map is now the outage map
 RewriteRule ^heat-map(\.html)?/?$ /outage-map [R=301,L]
-RewriteRule ^(login|account|monitor|speed|internet-speed-test|what-is-my-ip|game-ping-test|outage-map|about|privacy|legal|business|admin|contact)/?$ /$1.html [L]
-RewriteCond %{THE_REQUEST} \s/+(login|account|monitor|speed|internet-speed-test|what-is-my-ip|game-ping-test|outage-map|about|privacy|legal|business|admin|contact|index)\.html[\s?]
-RewriteRule ^(login|account|monitor|speed|internet-speed-test|what-is-my-ip|game-ping-test|outage-map|about|privacy|legal|business|admin|contact|index)\.html$ /$1 [R=301,L]
+RewriteRule ^(login|account|monitor|speed|internet-speed-test|what-is-my-ip|game-ping-test|outage-map|outage-history|about|privacy|legal|business|admin|contact)/?$ /$1.html [L]
+RewriteCond %{THE_REQUEST} \s/+(login|account|monitor|speed|internet-speed-test|what-is-my-ip|game-ping-test|outage-map|outage-history|about|privacy|legal|business|admin|contact|index)\.html[\s?]
+RewriteRule ^(login|account|monitor|speed|internet-speed-test|what-is-my-ip|game-ping-test|outage-map|outage-history|about|privacy|legal|business|admin|contact|index)\.html$ /$1 [R=301,L]
 RewriteRule ^index$ / [R=301,L]
 
 ErrorDocument 404 /404.html
