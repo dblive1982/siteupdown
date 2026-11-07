@@ -284,5 +284,12 @@
 :root[data-theme=light] body .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .nl-live{display:inline-flex;align-items:center;gap:8px;margin-left:auto}
 :root[data-theme=light] body .checker .top .nl-live em{display:inline;color:#0b0b0b}
+:root[data-theme=light] body .hm-world.dg{background:#0e1016;border-color:#111}
+:root[data-theme=light] body .hm-world.dg .cn{fill:#fff;paint-order:stroke;stroke:#0e1016;stroke-width:10px;stroke-linejoin:round}
+:root[data-theme=light] body .hm-world.dg .oc{fill:#8d96a9;opacity:1}
+:root[data-theme=light] body .hm-world.dg .pole line{stroke:#e9edf5}
+:root[data-theme=light] body .hm-world.dg .pole .dot{stroke:#fff}
+:root[data-theme=light] body .hm-world.dg .pole.on .dot{stroke:#fff}
+:root[data-theme=light] body .hm-world.dg .pole.on line,:root[data-theme=light] body .hm-world.dg .pole:focus-visible line{stroke:#fff}
 
 body:after{content:"TEST SITE";position:fixed;right:10px;bottom:10px;background:#f59e0b;color:#000;font:700 12px/1 system-ui,sans-serif;letter-spacing:.08em;padding:7px 10px;border:2px solid #000;border-radius:6px;z-index:90;pointer-events:none}

@@ -284,3 +284,10 @@
 @@ .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .nl-live{display:inline-flex;align-items:center;gap:8px;margin-left:auto}
 @@ .checker .top .nl-live em{display:inline;color:#0b0b0b}
+@@ .hm-world.dg{background:#0e1016;border-color:#111}
+@@ .hm-world.dg .cn{fill:#fff;paint-order:stroke;stroke:#0e1016;stroke-width:10px;stroke-linejoin:round}
+@@ .hm-world.dg .oc{fill:#8d96a9;opacity:1}
+@@ .hm-world.dg .pole line{stroke:#e9edf5}
+@@ .hm-world.dg .pole .dot{stroke:#fff}
+@@ .hm-world.dg .pole.on .dot{stroke:#fff}
+@@ .hm-world.dg .pole.on line,@@ .hm-world.dg .pole:focus-visible line{stroke:#fff}
