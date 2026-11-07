@@ -360,3 +360,5 @@
 @@ .statchip[hidden]{display:none}
 @@ .cookie{background:#c4c4ce;border:2.5px solid #0b0b0b;color:#0b0b0b;box-shadow:0 0 0 100vmax rgba(0,0,0,.78)}
 @@ .cookie p{color:#2a2a33}
+@@ #rb-btn,@@ #rb-btn.ghost,@@ #sp-rbtn{background:#f97316;color:#0b0b0b}
+@@ #rb-btn:hover,@@ #rb-btn.ghost:hover,@@ #sp-rbtn:hover{background:#fb8a3c}

@@ -360,5 +360,7 @@
 :root[data-theme=light] body .statchip[hidden]{display:none}
 :root[data-theme=light] body .cookie{background:#c4c4ce;border:2.5px solid #0b0b0b;color:#0b0b0b;box-shadow:0 0 0 100vmax rgba(0,0,0,.78)}
 :root[data-theme=light] body .cookie p{color:#2a2a33}
+:root[data-theme=light] body #rb-btn,:root[data-theme=light] body #rb-btn.ghost,:root[data-theme=light] body #sp-rbtn{background:#f97316;color:#0b0b0b}
+:root[data-theme=light] body #rb-btn:hover,:root[data-theme=light] body #rb-btn.ghost:hover,:root[data-theme=light] body #sp-rbtn:hover{background:#fb8a3c}
 
 body:after{content:"TEST SITE";position:fixed;right:10px;bottom:10px;background:#f59e0b;color:#000;font:700 12px/1 system-ui,sans-serif;letter-spacing:.08em;padding:7px 10px;border:2px solid #000;border-radius:6px;z-index:90;pointer-events:none}
