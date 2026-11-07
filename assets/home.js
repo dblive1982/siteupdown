@@ -243,6 +243,7 @@
     var range = getRange ? getRange() : '24h';
     fetch('/api/reports.php?host=' + encodeURIComponent(host) + '&range=' + range).then(function (r) { return r.ok ? r.json() : null; }).then(function (j) {
       if (!j || host !== repHost) return;
+      S.repFeed($('#rb-feed'), host, false);
       var total = j.total || 0, rt = S.repRangeText(range);
       $('#rb-title').textContent = total ? total + (total === 1 ? ' problem report' : ' problem reports') + ' for ' + host + ' in ' + rt : 'No problem reports for ' + host + ' in ' + rt;
       HS.rep = j.last3h; hsRender();
