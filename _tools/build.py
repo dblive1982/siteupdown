@@ -185,7 +185,7 @@ def home():
 <h1>Is it down, or is it just you?</h1>
 <p class="lead">Paste any website. We check it from our server and from around the world.</p>
 <form class="card checker" id="chk-form" aria-labelledby="checker-title" novalidate>
-<div class="nl-wbar" aria-hidden="true"><span>&lsaquo;</span><i></i><span>&rsaquo;</span></div><div class="nl-wbody">
+<div class="nl-wbar" aria-hidden="true"><span>&lsaquo;</span><i><b class="nl-beacon"></b><em>LIVE CHECK</em></i><span>&rsaquo;</span></div><div class="nl-wbody">
 <div class="top"><span id="checker-title">{I_RADIO}Check a website</span></div>
 <div class="chk-row">
 <div class="field">{I_GLOBE}<input id="chk-input" name="address" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="e.g. netflix.com" maxlength="300" aria-label="Website address"></div>
