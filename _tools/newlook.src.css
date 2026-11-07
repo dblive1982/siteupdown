@@ -366,3 +366,25 @@
 @@ .prose dl{margin:0 0 18px}
 @@ .prose dt{font-weight:800;margin-top:14px}
 @@ .prose dd{margin:2px 0 0;color:var(--muted)}
+/* More reports (Outages tab) */
+@@ #recent-outages .ins-tabs{margin:8px 18px 4px}
+@@ #recent-outages .ins-body{margin:0 18px}
+@@ #recent-outages .ins-body .ro-list{margin-left:0;margin-right:0}
+@@ #recent-outages .ins-h{font-size:15px;font-weight:700;margin:20px 0 6px}
+@@ #recent-outages .ins-n{margin:0 0 8px}
+@@ #recent-outages .ins-body .fine{margin-left:0;margin-right:0}
+@@ .ro-list li.ro-up{border-left-color:#2f8f2f}
+@@ .ins-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:10px}
+@@ .ins-stats div{border:1px solid #d9d2b8;border-radius:12px;padding:12px 14px;background:#fffdf3}
+@@ .ins-stats b{display:block;font-size:26px;line-height:1.1}
+@@ .ins-stats span{display:block;font-size:13px;color:#555;margin-top:4px}
+@@ .ins-bars{list-style:none;margin:6px 0 0;padding:0}
+@@ .ins-bars li{display:grid;grid-template-columns:minmax(80px,32%) 1fr auto;gap:10px;align-items:center;margin:7px 0;font-size:14px}
+@@ .ib-b{height:12px;background:#ece6cf;border-radius:7px;overflow:hidden}
+@@ .ib-b i{display:block;height:100%;background:#f97316;border-radius:7px}
+@@ .ib-n{font-weight:700;min-width:2ch;text-align:right}
+@@ .ins-trend{width:100%;height:auto;display:block;margin-top:6px}
+@@ .ins-trend rect{fill:#f97316}
+@@ .ins-trend text{font-size:9px;fill:#666}
+@@ #recent-outages .ins-tabs{border:0;border-radius:0;overflow:visible}
+@@ .ins-stats div:last-child:nth-child(odd){grid-column:1/-1}

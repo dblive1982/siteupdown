@@ -417,6 +417,78 @@
       });
     }).catch(function () { ul.innerHTML = '<li class="ro-none">Could not load this just now.</li>'; });
   }
+  // ---- More reports (Today, Reliability, Speed, Outages, Visitor reports) from /api/insights.php
+  var insData = null, insTab = 'today';
+  function insMs(ms) { return ms >= 1000 ? (ms / 1000).toFixed(1) + ' s' : ms + ' ms'; }
+  function insDur(sec) { var m = Math.round(sec / 60); if (m < 2) return 'under 2 min'; if (m < 90) return m + ' min'; var h = Math.floor(m / 60); return h < 48 ? h + ' h' + (m % 60 ? ' ' + (m % 60) + ' min' : '') : Math.floor(h / 24) + ' days'; }
+  function insAgo(iso) { var m = Math.max(0, Math.round((Date.now() - new Date(iso)) / 60000)); if (m < 2) return 'just now'; if (m < 90) return m + ' min ago'; var h = Math.round(m / 60); return h < 48 ? h + ' h ago' : Math.round(h / 24) + ' days ago'; }
+  function insName(o) { return o.page ? '<a class="ro-name" href="' + esc(o.page) + '">' + esc(o.name) + '</a>' : '<span class="ro-name">' + esc(o.name) + '</span>'; }
+  function insList(title, note, items, fn, none) {
+    var h = '<h4 class="ins-h">' + esc(title) + '</h4>' + (note ? '<p class="fine ins-n">' + esc(note) + '</p>' : '');
+    if (!items || !items.length) return h + '<ul class="ro-list"><li class="ro-none">' + esc(none || 'Nothing to show right now.') + '</li></ul>';
+    return h + '<ul class="ro-list">' + items.map(function (o) { var r = fn(o); return '<li class="' + (r[2] || 'ro-end') + '">' + insName(o) + '<span class="ro-st">' + r[0] + '</span>' + (r[1] ? '<small>' + r[1] + '</small>' : '') + '</li>'; }).join('') + '</ul>';
+  }
+  function insCountry(c) { try { return new Intl.DisplayNames(undefined, { type: 'region' }).of(c) || c; } catch (e) { return c; } }
+  function insBars(rows, fmt) {
+    var mx = Math.max.apply(null, rows.map(function (r) { return r.n; })) || 1;
+    return '<ul class="ins-bars">' + rows.map(function (r) { return '<li><span class="ib-l">' + esc(r.l) + '</span><span class="ib-b"><i style="width:' + Math.max(4, Math.round(100 * r.n / mx)) + '%"></i></span><span class="ib-n">' + esc(fmt ? fmt(r.n) : String(r.n)) + '</span></li>'; }).join('') + '</ul>';
+  }
+  function insTrend(t) {
+    var mx = Math.max.apply(null, t.map(function (d) { return d.n; })) || 1, w = 300, h = 70, bw = w / t.length;
+    return '<svg class="ins-trend" viewBox="0 0 ' + w + ' ' + (h + 14) + '" role="img" aria-label="Outages per day over the last 30 days">' + t.map(function (d, i) {
+      var bh = d.n ? Math.max(3, Math.round(h * d.n / mx)) : 1;
+      return '<rect x="' + (i * bw + 1).toFixed(1) + '" y="' + (h - bh) + '" width="' + (bw - 2).toFixed(1) + '" height="' + bh + '" rx="1.5"><title>' + d.day + ': ' + d.n + ' outage' + (d.n === 1 ? '' : 's') + '</title></rect>';
+    }).join('') + '<text x="0" y="' + (h + 11) + '">30 days ago</text><text x="' + w + '" y="' + (h + 11) + '" text-anchor="end">Today</text></svg>';
+  }
+  function drawIns() {
+    var b = $('#ins-body'), d = insData; if (!b) return;
+    if (!d) { b.innerHTML = '<p class="ro-none">Could not load these reports just now.</p>'; return; }
+    var h = '';
+    if (insTab === 'today') {
+      var g = d.glance || {}, diff = '';
+      if (g.avg && g.avg_prev) { var p = Math.round(100 * (g.avg - g.avg_prev) / g.avg_prev); diff = Math.abs(p) < 3 ? 'about the same as the day before' : (p > 0 ? p + '% slower than the day before' : Math.abs(p) + '% faster than the day before'); }
+      h += '<div class="ins-stats"><div><b>' + (g.checked || 0) + '</b><span>sites checked in the last 24 hours</span></div><div><b>' + (g.outages || 0) + '</b><span>outage' + (g.outages === 1 ? '' : 's') + ' started in the last 24 hours</span></div><div><b>' + (g.avg ? insMs(g.avg) : '–') + '</b><span>average response time' + (diff ? ', ' + diff : '') + '</span></div></div>';
+      h += '<h4 class="ins-h">Outages per day, last 30 days</h4>' + insTrend(d.trend || []);
+    } else if (insTab === 'rel') {
+      h += insList('Most reliable this week', d.tracked ? d.perfect + ' of the ' + d.tracked + ' sites we track had no outages in the last 7 days.' : '', d.reliable, function (o) { return [o.pct.toFixed(2).replace(/\.?0+$/, '') + '% uptime', o.ms ? 'Average response ' + insMs(o.ms) : '', 'ro-up']; }, 'We need a little more history before we can rank sites.');
+      h += insList('Least reliable this week', 'Sites with the most downtime in the last 7 days.', d.unreliable, function (o) { return [o.pct.toFixed(2) + '% uptime', o.outages + ' outage' + (o.outages === 1 ? '' : 's') + ', about ' + insDur(o.down) + ' down in total']; }, 'No outages across the sites we watch this week.');
+      h += insList('Security certificates running out soon', 'A certificate that expires makes browsers show a warning. These have 14 days or fewer left.', d.certs, function (o) { return [o.days + ' day' + (o.days === 1 ? '' : 's') + ' left', '', o.days <= 3 ? 'ro-on' : 'ro-end']; }, 'No certificates are close to expiring.');
+    } else if (insTab === 'speed') {
+      h += insList('Slowest right now', 'The sites taking longest to answer our latest check.', d.slowest, function (o) { return [insMs(o.ms), '']; });
+      h += insList('Fastest right now', 'The sites that answered quickest.', d.fastest, function (o) { return [insMs(o.ms), '', 'ro-up']; });
+      h += '<p class="fine">Times are measured from our server, so they show how quickly each site responds, not how fast it feels on your connection.</p>';
+    } else if (insTab === 'out') {
+      h += insList('Recovered in the last 24 hours', '', d.recovered, function (o) { return ['Back up · was down about ' + insDur(o.seconds), 'Ended ' + insAgo(o.ended)]; }, 'No outages ended in the last 24 hours.');
+      h += insList('Longest outages this month', 'The biggest incidents we have recorded in the last 30 days.', d.longest, function (o) { return ['Down about ' + insDur(o.seconds), new Date(o.started).toLocaleDateString([], { day: 'numeric', month: 'short' }) + ', ' + new Date(o.started).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })]; }, 'No outages recorded this month.');
+      var hr = d.hours || [], tot = d.hours_total || 0;
+      h += '<h4 class="ins-h">When outages tend to start</h4>';
+      if (tot < 5) h += '<p class="fine ins-n">We need a few more outages before a pattern shows.</p>';
+      else {
+        var off = -new Date().getTimezoneOffset() / 60, loc = new Array(24).fill(0);
+        hr.forEach(function (n, u) { loc[((u + Math.round(off)) % 24 + 24) % 24] += n; });
+        var best = loc.indexOf(Math.max.apply(null, loc)); function hh(x) { return ('0' + ((x % 24 + 24) % 24)).slice(-2) + ':00'; }
+        h += '<p class="fine ins-n">Most outages in the last 30 days started around ' + hh(best) + ' to ' + hh(best + 1) + ' your time (' + tot + ' outages counted).</p>';
+        h += insBars(loc.map(function (n, i) { return { l: hh(i), n: n }; }).filter(function (r) { return r.n > 0; }).sort(function (a, c) { return c.n - a.n; }).slice(0, 5), function (n) { return n + ''; });
+      }
+    } else if (insTab === 'rep') {
+      h += insList('Most reported right now', 'Sites with a spike in problem reports over the last 3 hours (3 or more), even if our own check still reaches them.', d.reported, function (o) { return [o.count + ' reports', 'Last 3 hours', 'ro-on']; }, 'No site has a spike in reports right now.');
+      h += '<h4 class="ins-h">Reports by category, last 24 hours</h4>';
+      h += d.by_cat && d.by_cat.length ? insBars(d.by_cat.map(function (c) { return { l: c.cat.charAt(0).toUpperCase() + c.cat.slice(1), n: c.count }; })) : '<p class="fine ins-n">No reports in the last 24 hours.</p>';
+      h += '<h4 class="ins-h">Reports by country, last 24 hours</h4><p class="fine ins-n">Only countries with at least 3 reports are shown.</p>';
+      h += d.by_area && d.by_area.length ? insBars(d.by_area.map(function (c) { return { l: insCountry(c.country), n: c.count }; })) : '<p class="fine ins-n">Not enough reports yet to show any country.</p>';
+    }
+    b.innerHTML = h;
+  }
+  function loadIns() {
+    if (!$('#ins-body')) return;
+    fetch('/api/insights.php').then(function (r) { return r.json(); }).then(function (j) { insData = j && !j.error ? j : null; drawIns(); }).catch(function () { insData = null; drawIns(); });
+  }
+  var insT = $('#ins-tabs');
+  if (insT) insT.addEventListener('click', function (e) {
+    var b = e.target.closest('[data-t]'); if (!b) return; insTab = b.getAttribute('data-t');
+    S.$$('#ins-tabs [data-t]').forEach(function (x) { x.setAttribute('aria-pressed', x === b); }); drawIns();
+  });
+  setTimeout(loadIns, 700); setInterval(loadIns, 120000);
   setTimeout(loadSlow, 500); setInterval(loadSlow, 120000);
   setTimeout(loadOutages, 300); setInterval(loadOutages, 60000);
   function loadTop() {
