@@ -348,4 +348,5 @@
 @@ .hs-daybtn{all:unset;cursor:pointer;font-weight:800;text-decoration:underline;text-decoration-color:#ffb020;text-decoration-thickness:3px;text-underline-offset:3px}
 @@ .hs-daybtn:focus-visible{outline:3px solid #1f5fbf;outline-offset:2px}
 @@ .nl-try .eyebrow{font-weight:800;color:#0b0b0b}
-@@ .checker .top .nl-live{position:relative;top:-5px}
+@@ .checker .top{position:relative}
+@@ .checker .top .nl-live{position:absolute;top:0;right:0}
