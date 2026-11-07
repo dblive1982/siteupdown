@@ -358,21 +358,3 @@
 :root[data-theme=light] body .pulse-card .strip .cell:first-child{padding-left:26px}
 :root[data-theme=light] body .pulse-card .strip .cell{padding-top:18px;padding-bottom:18px}
 :root[data-theme=light] body .statchip[hidden]{display:none}
-/* map, charts and bars use the site's comic colours */
-:root[data-theme=light]{--gf:#7ed957;--of:#f97316;--rf:#e84a4a}
-:root[data-theme=light] body .map-land{fill:var(--gf);opacity:.55}
-:root[data-theme=light] body .mk{stroke:#0b0b0b;stroke-width:2}
-:root[data-theme=light] body .mk.none{fill:#fff;stroke:#0b0b0b}
-:root[data-theme=light] body .mk.ok{fill:var(--gf)}:root[data-theme=light] body .mk.blocked{fill:var(--of)}:root[data-theme=light] body .mk.error{fill:var(--rf)}
-:root[data-theme=light] body .mk-ring.ok{stroke:#4cc35a}:root[data-theme=light] body .mk-ring.blocked{stroke:var(--of)}:root[data-theme=light] body .mk-ring.error{stroke:var(--rf)}
-:root[data-theme=light] body .mk-wait{fill:var(--gf)}
-:root[data-theme=light] body .lc .ln{stroke:#0b0b0b;stroke-width:2.2}
-:root[data-theme=light] body .lc .ar{fill:var(--gf);opacity:.55}
-:root[data-theme=light] body .upbar i.up{background:var(--gf)}:root[data-theme=light] body .upbar i.down{background:var(--rf)}:root[data-theme=light] body .upbar i.partial{background:var(--of)}
-:root[data-theme=light] body .sp-chart .bar.has{background:var(--gf);box-shadow:inset 0 0 0 1.5px #0b0b0b}
-:root[data-theme=light] body .seg button[aria-selected=true],:root[data-theme=light] body .seg2 button[aria-pressed=true],:root[data-theme=light] body .sp-ranges .rg.on{background:var(--gf);color:#0b0b0b;border-color:#0b0b0b}
-:root[data-theme=light] body .seg2 button[aria-selected=true]{background:var(--gf);color:#0b0b0b;border-color:#0b0b0b}
-:root[data-theme=light] body .tabs button[aria-selected=true]{color:#0b0b0b;border-bottom-color:var(--gf)}
-:root[data-theme=light] body .sp-pill.up{background:var(--gf);color:#0b0b0b;border-color:#0b0b0b}
-:root[data-theme=light] body .cn-bar u,:root[data-theme=light] body .ssl .bar i{background:var(--gf)}
-:root[data-theme=light] body .statchip i{background:#4cc35a}
