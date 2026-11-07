@@ -363,3 +363,6 @@
 @@ #rb-btn,@@ #rb-btn.ghost,@@ #sp-rbtn{background:#f97316;color:#0b0b0b}
 @@ #rb-btn:hover,@@ #rb-btn.ghost:hover,@@ #sp-rbtn:hover{background:#fb8a3c}
 @@ .seg button[aria-selected=true],@@ .seg2 button[aria-pressed=true],@@ .seg2 button[aria-selected=true],@@ .sp-ranges .rg.on{background:var(--yellow);color:#0b0b0b;border-color:#0b0b0b;font-weight:800}
+@@ .prose dl{margin:0 0 18px}
+@@ .prose dt{font-weight:800;margin-top:14px}
+@@ .prose dd{margin:2px 0 0;color:var(--muted)}

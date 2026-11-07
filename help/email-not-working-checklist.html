@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Email not arriving or not sending? A checklist for site owners — siteupdown.com</title>
+<meta name="description" content="How email delivery depends on DNS records such as MX, SPF and DKIM, and a step-by-step checklist for finding out why messages are missing.">
+<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
+<meta name="google-adsense-account" content="ca-pub-6517978259411056">
+<link rel="canonical" href="https://siteupdown.com/help/email-not-working-checklist">
+<meta property="og:type" content="website"><meta property="og:site_name" content="siteupdown.com">
+<meta property="og:title" content="Email not arriving or not sending? A checklist for site owners — siteupdown.com"><meta property="og:description" content="How email delivery depends on DNS records such as MX, SPF and DKIM, and a step-by-step checklist for finding out why messages are missing."><meta property="og:url" content="https://siteupdown.com/help/email-not-working-checklist">
+<meta property="og:image" content="https://siteupdown.com/assets/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:locale" content="en_GB">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Email not arriving or not sending? A checklist for site owners — siteupdown.com"><meta name="twitter:description" content="How email delivery depends on DNS records such as MX, SPF and DKIM, and a step-by-step checklist for finding out why messages are missing."><meta name="twitter:image" content="https://siteupdown.com/assets/og.png">
+<meta name="application-name" content="siteupdown.com"><meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="/favicon.ico?v=2" sizes="any"><link rel="icon" href="/favicon-32.png?v=2" type="image/png" sizes="32x32"><link rel="icon" href="/favicon-64.png?v=2" type="image/png" sizes="64x64"><link rel="manifest" href="/site.webmanifest"><link rel="icon" href="/favicon-192.png?v=2" type="image/png" sizes="192x192"><link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/assets/app.css?v=b2d69dc3">
+<link rel="stylesheet" href="/assets/newlook.css?v=b2d69dc3">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Email not arriving or not sending? A checklist for site owners", "description": "How email delivery depends on DNS records such as MX, SPF and DKIM, and a step-by-step checklist for finding out why messages are missing.", "datePublished": "2026-11-02", "dateModified": "2026-11-02", "author": {"@type": "Organization", "name": "siteupdown.com", "url": "https://siteupdown.com/"}, "publisher": {"@type": "Organization", "name": "siteupdown.com", "url": "https://siteupdown.com/"}, "mainEntityOfPage": "https://siteupdown.com/help/email-not-working-checklist"}</script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://siteupdown.com/"}, {"@type": "ListItem", "position": 2, "name": "Help centre", "item": "https://siteupdown.com/help/"}, {"@type": "ListItem", "position": 3, "name": "Email not arriving or not sending? A checklist for site owners", "item": "https://siteupdown.com/help/email-not-working-checklist"}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="nl-head"><div class="nl-bar">
+<a class="nl-logo" href="/" aria-label="siteupdown.com home"><img src="/assets/nl-logo-light.png" alt="Site up down?" width="831" height="391"></a>
+<div class="nl-tools"><div id="auth"></div><button class="nl-menu-btn" id="nl-menu-btn" type="button" aria-expanded="false" aria-controls="nl-drawer" aria-label="Open menu"><span></span><span></span><span></span></button></div>
+</div></header>
+<div class="nl-scrim" id="nl-scrim" hidden></div>
+<nav class="nl-drawer" id="nl-drawer" aria-label="Main menu"><button class="nl-close" id="nl-close" type="button" aria-label="Close menu">&times;</button><h2>Check</h2><a href="/">Website checker<small>Is it down, or just you?</small></a><a href="/is-it-down/">All apps &amp; sites</a><a href="/outage-map">Outage map<small>Reachability around the world</small></a><a href="/outage-history">Outage history<small>What happened on past days</small></a><a href="/monitor">Monitor &amp; alerts<small>Watch up to 25 sites</small></a><h2>Tools</h2><a href="/internet-speed-test">Internet speed test</a><a href="/speed">Website speed test</a><a href="/what-is-my-ip">What is my IP?</a><a href="/game-ping-test">Game ping test</a><a href="/tools/">All tools</a><h2>Learn</h2><a href="/help/">Help centre<small>Plain-English guides</small></a><a href="/how-we-check">How we check</a><a href="/faq">FAQ</a><h2>More</h2><a href="/account" class="nl-sub">Account</a><a href="/about" class="nl-sub">About</a><a href="/business" class="nl-sub">For business</a><a href="/contact" class="nl-sub">Contact</a></nav>
+<main id="main">
+<section class="page"><div class="wrap prose article"><nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/help/">Help centre</a> / For website owners</nav><h1 style="margin:14px 0 20px">Email not arriving or not sending? A checklist for site owners</h1>
+<p class="lead">If your own domain&rsquo;s email stops working, either nothing arrives or what you send lands in spam, and the cause is usually in the DNS records rather than in your mailbox. This checklist works from the simplest causes to the more technical ones. You can check most of it with our <a href="/tools/email-checker">email checker</a> and <a href="/tools/mx-record-lookup">MX record lookup</a>.</p>
+<h2>How email finds you</h2>
+<p>When someone sends a message to you@yourdomain.com, their mail system looks up your domain&rsquo;s <b>MX records</b> in DNS. These list the servers that accept mail for you. The sender connects to one of them and hands the message over. If the records are missing, wrong or point to a service you no longer use, mail has nowhere to go.</p>
+<h2>Step 1: is the domain itself healthy?</h2>
+<ul>
+<li>Has the domain expired? An expired domain stops its DNS working, and email stops with it. See <a href="/help/domain-name-expiry">what happens when a domain expires</a>.</li>
+<li>Does the website load? If the whole domain has disappeared, email will not work either. Check with our <a href="/">website checker</a>.</li>
+<li>Were the name servers changed recently? New name servers need all your records recreated, including mail ones.</li>
+</ul>
+<h2>Step 2: check the MX records</h2>
+<p>Use the MX lookup to see what your domain publishes. You should see the servers your email provider told you to use. Common problems:</p>
+<ul>
+<li><b>No MX records at all.</b> Mail cannot be delivered.</li>
+<li><b>Old provider&rsquo;s records still present.</b> Mail may go to the wrong place, or only some of it arrives.</li>
+<li><b>Typos or wrong priority numbers.</b> Lower numbers are tried first.</li>
+<li><b>Records pointing at an address instead of a name,</b> which is not permitted for MX.</li>
+</ul>
+<p>After a change, allow time for caches to refresh. See <a href="/help/dns-propagation">what DNS propagation means</a>.</p>
+<h2>Step 3: check SPF, DKIM and DMARC</h2>
+<p>These three records are how receiving servers decide whether a message from your domain is genuine. Without them, even legitimate mail is often sent to spam or refused.</p>
+<ul>
+<li><b>SPF</b> lists which servers are allowed to send mail for your domain. It is a TXT record that starts with <code>v=spf1</code>. A domain should have only one.</li>
+<li><b>DKIM</b> adds a digital signature to each message, which the receiver checks against a key published in your DNS. Your email provider supplies the record.</li>
+<li><b>DMARC</b> tells receivers what to do when SPF and DKIM checks fail, and where to send reports. A cautious starting policy is monitoring only, then tightening it once you are sure all your mail passes.</li>
+</ul>
+<h2>Step 4: if mail you send goes to spam or bounces</h2>
+<ul>
+<li>Read the bounce message. It usually says why in plain words, such as a failed SPF check or a blocked address.</li>
+<li>Check that every service sending mail on your behalf, such as a newsletter tool or a contact form, is included in your SPF record and set up for DKIM.</li>
+<li>Avoid sending from your domain through a service that has not been authorised.</li>
+<li>Check whether the sending address is on a public block list, which can happen with shared hosting.</li>
+</ul>
+<h2>Step 5: if mail you expect does not arrive</h2>
+<ul>
+<li>Look in the spam or junk folder.</li>
+<li>Check that the mailbox is not full or suspended.</li>
+<li>Ask the sender for the bounce message if they received one.</li>
+<li>Check filters and forwarding rules in your mailbox for something that diverts or deletes messages.</li>
+<li>Check the email provider&rsquo;s status page for an outage.</li>
+</ul>
+<h2>Step 6: the website form that sends you email</h2>
+<p>If it is a contact form on your website that has stopped sending, the likely culprits are a hosting change that blocked outgoing mail, a form plugin sending from an address that fails SPF checks, or an account password that changed. Sending through an authenticated mail service is more reliable than relying on the web server to send directly.</p>
+<h2>Prevent it happening again</h2>
+<ul>
+<li>Turn on auto-renew for your domain and keep contact details current.</li>
+<li>Keep a copy of your DNS records, especially MX, SPF, DKIM and DMARC, somewhere outside your DNS provider.</li>
+<li>Send yourself a test from an outside address after every DNS change.</li>
+<li>Review your records after you add or remove any service that sends or receives mail.</li>
+</ul>
+<h2>Summary</h2>
+<p>Missing email almost always comes down to the domain, the MX records or the authentication records. Check that the domain is healthy, look up the MX records, confirm SPF, DKIM and DMARC are present and correct, and read any bounce message carefully. It tells you what the receiving server thinks is wrong.</p>
+<div class="cta-box"><b>Check a website now</b><p>Is it down for everyone, or just you? Paste an address and we test it from fifteen places.</p><a class="btn" href="/"><span>Open the checker</span></a></div><h2>Related guides</h2><ul><li><a href="/help/what-is-dns-and-why-it-fails">What is DNS, and why does it fail?</a></li><li><a href="/help/dns-propagation">What is DNS propagation, and why does a change take time?</a></li><li><a href="/help/domain-name-expiry">What happens when a domain name expires?</a></li></ul><p class="note">Last updated 2 November 2026. Written by the siteupdown.com team. <a href="/contact">Spotted a mistake?</a></p><p style="margin-top:20px"><a href="/help/">&larr; All help guides</a></p></div></section></main>
+<footer class="site-foot"><div class="wrap nl-foot">
+<img src="/assets/nl-logo-light.png" alt="Site up down?" width="831" height="391">
+<p class="note">Less refreshing. More knowing.</p>
+<div class="socials" aria-label="Social media">
+<a href="#" title="Facebook" aria-label="Facebook"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M14 8V6.5c0-.7.3-1 1-1h2V2h-3a4 4 0 0 0-4 4.2V8H7.5v3.5H10V22h4V11.5h2.7L17 8z"/></svg></a><a href="#" title="Instagram" aria-label="Instagram"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r=".6" fill="currentColor"/></svg></a><a href="#" title="X" aria-label="X"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.8 3h3.1l-6.8 7.7L22 21h-6.2l-4.9-6.3L5.3 21H2.2l7.2-8.3L2 3h6.4l4.4 5.8zm-1.1 16.2h1.7L7.3 4.7H5.5z"/></svg></a><a href="#" title="TikTok" aria-label="TikTok"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.6 3a5 5 0 0 0 4 4.4v3.3a8 8 0 0 1-4-1.2v6.2a6 6 0 1 1-6-6c.3 0 .7 0 1 .1v3.4a2.7 2.7 0 1 0 1.8 2.5V3z"/></svg></a><a href="#" title="YouTube" aria-label="YouTube"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2C2 8.8 2 12 2 12s0 3.2.4 4.8a2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8c.4-1.6.4-4.8.4-4.8s0-3.2-.4-4.8zM10 15V9l5.2 3z"/></svg></a>
+</div>
+<nav class="nl-fgrid nl-fcard" aria-label="All pages"><div class="nl-fg"><h3>Check</h3><a href="/">Website checker</a><a href="/is-it-down/">Is it down?</a><a href="/outage-map">Outage map</a><a href="/outage-history">Outage history</a><a href="/monitor">Monitor</a></div><div class="nl-fg"><h3>Tools</h3><a href="/internet-speed-test">Internet speed test</a><a href="/speed">Website speed test</a><a href="/what-is-my-ip">What is my IP?</a><a href="/game-ping-test">Game ping test</a><a href="/tools/">All tools</a></div><div class="nl-fg"><h3>Learn</h3><a href="/help/">Help centre</a><a href="/how-we-check">How we check</a><a href="/faq">FAQ</a></div><div class="nl-fg"><h3>Company</h3><a href="/account">Account</a><a href="/about">About</a><a href="/business">For business</a><a href="/contact">Contact</a></div><div class="nl-fg"><h3>Legal</h3><a href="/legal">Terms &amp; legal</a><a href="/privacy">Privacy</a><button type="button" data-cookie-settings>Cookie settings</button></div></nav>
+<p class="fine">&copy; <span data-year>2026</span> siteupdown.com. An independent website checker, not affiliated with the sites it checks. Regional probes use the public <a href="https://globalping.io" rel="noopener">Globalping</a> network.</p>
+</div></footer>
+<script src="/assets/app.js?v=b2d69dc3"></script>
+<script src="/assets/newlook.js?v=b2d69dc3"></script>
+</body>
+</html>
