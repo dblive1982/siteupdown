@@ -284,6 +284,6 @@
 @@ .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .nl-live{display:inline-flex;align-items:center;gap:8px;margin-left:auto}
 @@ .checker .top .nl-live em{display:inline;color:#0b0b0b}
-@@ .hm-world.dg{background:#fffbea;border-color:#111}
-@@ .hm-world.dg .cn{fill:#0b0b0b;paint-order:stroke;stroke:#fffbea;stroke-width:10px;stroke-linejoin:round}
-@@ .hm-world.dg .oc{fill:#a39a7c;opacity:1}
+@@ .hm-world.dg{background:#eaf3fb;border-color:#111}
+@@ .hm-world.dg .cn{fill:#0b0b0b;paint-order:stroke;stroke:#eaf3fb;stroke-width:10px;stroke-linejoin:round}
+@@ .hm-world.dg .oc{fill:#8aa1bd;opacity:1}
