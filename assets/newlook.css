@@ -268,4 +268,3 @@
 
 /* footer-style menu headings + readable links on the login page */
 :root[data-theme=light] body .nl-drawer h2{font:900 15px var(--sans);letter-spacing:.06em;color:#0b0b0b;margin:20px 0 8px;padding-bottom:6px;border-bottom:3px solid #ffd93d;display:inline-block}
-:root[data-theme=light] body .lg-card .links a,:root[data-theme=light] body .lg-card .alt a{color:#0b0b0b;font-weight:700;text-decoration:underline;text-decoration-color:#ffb020;text-decoration-thickness:3px;text-underline-offset:3px;text-decoration-skip-ink:none}
