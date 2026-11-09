@@ -366,3 +366,4 @@
 :root[data-theme=light] body .prose dl{margin:0 0 18px}
 :root[data-theme=light] body .prose dt{font-weight:800;margin-top:14px}
 :root[data-theme=light] body .prose dd{margin:2px 0 0;color:var(--muted)}
+:root[data-theme=light] body .strip .v-ip{display:block;margin-top:4px;font-weight:700;color:#0b0b0b;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;word-break:break-all}

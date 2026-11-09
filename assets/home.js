@@ -107,6 +107,7 @@
     $('#v-pill').innerHTML = S.pill(o.key || 'pending');
     $('#v-big').textContent = o.big || 'Waiting for probes';
     $('#v-sub').textContent = o.sub || 'No address checked yet';
+    var vi = $('#v-ip'); if (vi) { vi.hidden = !o.ip; vi.textContent = o.ip ? 'Server IP: ' + o.ip : ''; }
     $('#s-reach').textContent = o.reach || '0/12';
     $('#s-med').textContent = o.med || '—';
     $('#s-at').textContent = o.at || '—'; if ($('#s-at').nextElementSibling) $('#s-at').nextElementSibling.textContent = o.at ? 'your local time' : 'Not run yet';
@@ -201,7 +202,7 @@
     setPanel({
       key: key, big: host + ' — ' + (BIG[key] || BIG[r.verdict] || 'Checked'), sub: sub,
       reach: reg ? reg.reachable + '/' + (reg.total || 12) : '0/12', med: reg && reg.median_ms != null ? S.ms(reg.median_ms) : '—',
-      at: S.when(at), facts: factsFor(r), ssl: sslFor(r, host), dns: dnsFor(r), host: host, again: true, share: !!(done && reg.total > 0 && share),
+      at: S.when(at), facts: factsFor(r), ip: r && r.extra && r.extra.ip || '', ssl: sslFor(r, host), dns: dnsFor(r), host: host, again: true, share: !!(done && reg.total > 0 && share),
       status: done ? 'Complete' : 'Probing…'
     });
   }
