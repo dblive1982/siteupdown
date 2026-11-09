@@ -11,7 +11,7 @@
   var A = { ax: 3.41904622, bx: -24.79309414, ay: -213.39670053, by: 670.34834736, mix: 0.5, S: 2.5, y0: 690, k: 2400 / 3125 };
   function mil(d) { return 1.25 * Math.log(Math.tan(Math.PI / 4 + 0.4 * d * Math.PI / 180)); }
   function PR(lon, lat) { var f = A.mix * mil(lat) + (1 - A.mix) * lat * Math.PI / 180; return [(A.ax * (lon + 180) + A.bx) * A.S * A.k, ((A.ay * f + A.by) * A.S - A.y0) * A.k]; }
-  var COL = { g: '#2fbf4a', a: '#ffb020', r: '#e84a4a', n: '#bbbbbb' };
+  var COL = { g: '#7ed957', a: '#fbc531', r: '#e84a4a', n: '#d9d9e0' };
   var CN = [['NORTH|AMERICA', -108, 63, 46], ['SOUTH|AMERICA', -76, -3, 46], ['AFRICA', 19, 11, 46], ['EUROPE', 30, 60, 46, 'eu'], ['ASIA', 96, 54, 46], ['MIDDLE|EAST', 43, 20, 46, 'me'], ['AUSTRALIA', 121, -28, 46]];
   var OC = [['ATLANTIC', -35, 30, 30], ['OCEAN', -35, 24, 30], ['PACIFIC', -150, 10, 30], ['OCEAN', -150, 4, 30], ['INDIAN', 78, -20, 30], ['OCEAN', 78, -26, 30], ['ARCTIC OCEAN', -60, 80, 26], ['PACIFIC', 148, -44, 26], ['OCEAN', 148, -50, 26]];
   var labels = '';

@@ -473,4 +473,22 @@
 :root[data-theme=light] body #recent-outages .ins-tabs button:not([aria-pressed=true]):focus-visible,:root[data-theme=light] body .sp-ranges .rg:not(.on):focus-visible,:root[data-theme=light] body .seg2 button:focus-visible,:root[data-theme=light] body .seg button:focus-visible{background:#ffd8b0}
 :root[data-theme=light] body #recent-outages .ins-tabs button,:root[data-theme=light] body .sp-ranges .rg,:root[data-theme=light] body .seg2 button,:root[data-theme=light] body .seg button{transition:background .15s}
 
+/* One status style everywhere: bright green UP, red DOWN, amber SLOW/PARTIAL, orange BLOCKED, grey unsure */
+:root[data-theme=light] body .pill,:root[data-theme=light] body .sp-pill{display:inline-flex;align-items:center;gap:8px;border:2px solid #0b0b0b;border-radius:999px;color:#0b0b0b;font-family:var(--sans);font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:#d9d9e0;box-shadow:none;animation:none}
+:root[data-theme=light] body .sp-pill{font-size:12.5px;padding:6px 14px}
+:root[data-theme=light] body .pill::before,:root[data-theme=light] body .sp-pill::before{background:currentColor;width:8px;height:8px;animation:none}
+:root[data-theme=light] body .pill.up,:root[data-theme=light] body .sp-pill.up{background:#7ed957;color:#0b0b0b;border-color:#0b0b0b}
+:root[data-theme=light] body .pill.down,:root[data-theme=light] body .pill.down-everywhere,:root[data-theme=light] body .sp-pill.down{background:#e84a4a;color:#fff;border-color:#0b0b0b}
+:root[data-theme=light] body .pill.timeout,:root[data-theme=light] body .pill.partial,:root[data-theme=light] body .sp-pill.slow{background:#fbc531;color:#0b0b0b;border-color:#0b0b0b}
+:root[data-theme=light] body .pill.blocked,:root[data-theme=light] body .sp-pill.blocked{background:#f97316;color:#0b0b0b;border-color:#0b0b0b}
+:root[data-theme=light] body .pill.inconclusive,:root[data-theme=light] body .pill.none,:root[data-theme=light] body .pill.pending,:root[data-theme=light] body .sp-pill.unsure{background:#d9d9e0;color:#0b0b0b;border-color:#0b0b0b}
+:root[data-theme=light] body .sp-pill.up::before,:root[data-theme=light] body .pill.up::before{animation:blinkdot 1.6s ease-in-out infinite}
+:root[data-theme=light] body .sp-pill.down::before,:root[data-theme=light] body .pill.down::before{animation:blinkdot .9s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){:root[data-theme=light] body .sp-pill::before,:root[data-theme=light] body .pill::before{animation:none!important}}
+:root[data-theme=light] body .dot-s{border:2px solid #0b0b0b;width:14px;height:14px}
+:root[data-theme=light] body .dot-s.up{background:#7ed957}:root[data-theme=light] body .dot-s.down{background:#e84a4a}:root[data-theme=light] body .dot-s.slow{background:#fbc531}:root[data-theme=light] body .dot-s.unsure{background:#d9d9e0}
+:root[data-theme=light] body .hm-leg i.a,:root[data-theme=light] body .hm-chip.a{background:#fbc531}
+:root[data-theme=light] body .grade.up{color:#0b0b0b;border-color:#0b0b0b;background:#7ed957}:root[data-theme=light] body .grade.slow{color:#0b0b0b;border-color:#0b0b0b;background:#fbc531}
+:root[data-theme=light] body .sp-level.raised{color:#a85d00}:root[data-theme=light] body .sp-level.high{color:#c0272d}:root[data-theme=light] body .dgroup .rep{color:#a85d00}
+
 body:after{content:"TEST SITE";position:fixed;right:10px;bottom:10px;background:#f59e0b;color:#000;font:700 12px/1 system-ui,sans-serif;letter-spacing:.08em;padding:7px 10px;border:2px solid #000;border-radius:6px;z-index:90;pointer-events:none}

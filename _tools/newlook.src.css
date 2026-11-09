@@ -472,3 +472,21 @@
 }
 @@ #recent-outages .ins-tabs button:not([aria-pressed=true]):focus-visible,@@ .sp-ranges .rg:not(.on):focus-visible,@@ .seg2 button:focus-visible,@@ .seg button:focus-visible{background:#ffd8b0}
 @@ #recent-outages .ins-tabs button,@@ .sp-ranges .rg,@@ .seg2 button,@@ .seg button{transition:background .15s}
+
+/* One status style everywhere: bright green UP, red DOWN, amber SLOW/PARTIAL, orange BLOCKED, grey unsure */
+@@ .pill,@@ .sp-pill{display:inline-flex;align-items:center;gap:8px;border:2px solid #0b0b0b;border-radius:999px;color:#0b0b0b;font-family:var(--sans);font-weight:800;letter-spacing:.06em;text-transform:uppercase;background:#d9d9e0;box-shadow:none;animation:none}
+@@ .sp-pill{font-size:12.5px;padding:6px 14px}
+@@ .pill::before,@@ .sp-pill::before{background:currentColor;width:8px;height:8px;animation:none}
+@@ .pill.up,@@ .sp-pill.up{background:#7ed957;color:#0b0b0b;border-color:#0b0b0b}
+@@ .pill.down,@@ .pill.down-everywhere,@@ .sp-pill.down{background:#e84a4a;color:#fff;border-color:#0b0b0b}
+@@ .pill.timeout,@@ .pill.partial,@@ .sp-pill.slow{background:#fbc531;color:#0b0b0b;border-color:#0b0b0b}
+@@ .pill.blocked,@@ .sp-pill.blocked{background:#f97316;color:#0b0b0b;border-color:#0b0b0b}
+@@ .pill.inconclusive,@@ .pill.none,@@ .pill.pending,@@ .sp-pill.unsure{background:#d9d9e0;color:#0b0b0b;border-color:#0b0b0b}
+@@ .sp-pill.up::before,@@ .pill.up::before{animation:blinkdot 1.6s ease-in-out infinite}
+@@ .sp-pill.down::before,@@ .pill.down::before{animation:blinkdot .9s ease-in-out infinite}
+@media(prefers-reduced-motion:reduce){@@ .sp-pill::before,@@ .pill::before{animation:none!important}}
+@@ .dot-s{border:2px solid #0b0b0b;width:14px;height:14px}
+@@ .dot-s.up{background:#7ed957}@@ .dot-s.down{background:#e84a4a}@@ .dot-s.slow{background:#fbc531}@@ .dot-s.unsure{background:#d9d9e0}
+@@ .hm-leg i.a,@@ .hm-chip.a{background:#fbc531}
+@@ .grade.up{color:#0b0b0b;border-color:#0b0b0b;background:#7ed957}@@ .grade.slow{color:#0b0b0b;border-color:#0b0b0b;background:#fbc531}
+@@ .sp-level.raised{color:#a85d00}@@ .sp-level.high{color:#c0272d}@@ .dgroup .rep{color:#a85d00}
