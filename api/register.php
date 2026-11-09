@@ -8,6 +8,7 @@ $pass = (string)($in['password'] ?? '');
 if ($name === '' || mb_strlen($name) > 60) out(422, ['error' => 'Please tell us what to call you.']);
 if (!valid_email($email)) out(422, ['error' => 'Please enter a valid email address.']);
 if (strlen($pass) < 8 || strlen($pass) > 200) out(422, ['error' => 'Your password needs at least 8 characters.']);
+turnstile_check($in);
 throttle('register', 10, 60);
 note_attempt('register');
 $pdo = db();

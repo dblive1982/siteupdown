@@ -315,13 +315,19 @@ def login():
 <label class="fl"><span>Your name</span><div class="field"><input name="name" type="text" autocomplete="name" placeholder="What should we call you?" aria-label="Name" maxlength="60" required></div></label>
 <label class="fl"><span>Email</span><div class="field"><input name="email" type="email" autocomplete="email" placeholder="you@example.com" aria-label="Email" required></div></label>
 <label class="fl"><span>Password</span><div class="field"><input name="password" type="password" autocomplete="new-password" placeholder="Password (8+ characters)" aria-label="Password" minlength="8" required></div></label>
-<button class="btn block" type="submit"><span>Create account</span></button><p class="err" role="alert"></p>
+<div class="cf-slot" data-cf></div><button class="btn block" type="submit"><span>Create account</span></button><p class="err" role="alert"></p>
 <p class="note">By creating an account you agree to our <a href="/legal">legal notice</a> and <a href="/privacy">privacy policy</a>.</p>
 <p class="alt">Already have an account? <a href="#" data-go="signin">Sign in</a></p></form>
 
+<form class="stack" id="v-code" hidden novalidate>
+<p class="note" style="margin:0">We emailed a six-digit code to <b id="tf-email"></b>. It works for 10 minutes.</p>
+<label class="fl"><span>Code</span><div class="field"><input name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6-digit code" aria-label="Six-digit code" required></div></label>
+<button class="btn block" type="submit"><span>Confirm</span></button><p class="err" role="alert"></p>
+<p class="alt"><a href="#" data-go="signin">Back to sign in</a></p></form>
+
 <form class="stack" id="v-forgot" hidden novalidate>
 <label class="fl"><span>Email</span><div class="field"><input name="email" type="email" autocomplete="email" placeholder="you@example.com" aria-label="Email" required></div></label>
-<button class="btn block" type="submit"><span>Send reset link</span></button><p class="err" role="alert"></p>
+<div class="cf-slot" data-cf></div><button class="btn block" type="submit"><span>Send reset link</span></button><p class="err" role="alert"></p>
 <p class="alt"><a href="#" data-go="signin">Back to sign in</a></p></form>
 
 <form class="stack" id="v-reset" hidden novalidate>
@@ -354,6 +360,10 @@ def account():
 <div class="field">{I_LOCK}<input name="cur" type="password" autocomplete="current-password" placeholder="Current password" aria-label="Current password"></div>
 <div class="field">{I_LOCK}<input name="nw" type="password" autocomplete="new-password" placeholder="New password (8+)" aria-label="New password" minlength="8"></div>
 <button class="btn small" type="submit" style="justify-self:start">Change password</button><p class="err" role="alert"></p></form></div>
+<div class="card stack" id="tf-card"><h3>Two-step sign-in</h3><p class="note" style="margin:0" id="tf-state">Add a second lock: after your password we email you a six-digit code.</p>
+<button class="btn small" type="button" id="tf-btn" style="justify-self:start">Turn on</button>
+<form class="stack" id="tf-form" hidden novalidate><div class="field">{I_LOCK}<input name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6-digit code from your email" aria-label="Six-digit code"></div>
+<button class="btn small" type="submit" style="justify-self:start">Confirm</button><p class="err" role="alert"></p></form></div>
 <div class="card stack"><h3>Reset my data</h3><p class="note" style="margin:0">Clears your saved checks and your watchlist. Your account stays.</p><button class="btn small ghost" type="button" id="reset-data" style="justify-self:start">Reset my data</button></div>
 <div class="card stack danger-zone"><h3>Delete account</h3><p class="note" style="margin:0">Permanently deletes your account and everything saved with it. This cannot be undone.</p>
 <button class="btn small danger" type="button" id="del-open" style="justify-self:start">Delete my account</button>

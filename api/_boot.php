@@ -354,6 +354,11 @@ function ensure_schema(PDO $pdo): void {
     }
 }
 
+function ensure_twofa(): void {
+    static $done = false; if ($done) return; $done = true;
+    try { db()->exec('ALTER TABLE users ADD COLUMN twofa TINYINT NOT NULL DEFAULT 0'); } catch (Throwable $e) { /* already there */ }
+}
+
 function start_session(): void {
     if (session_status() === PHP_SESSION_ACTIVE) return;
     $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (config()['force_secure_cookie'] ?? true);
@@ -398,6 +403,21 @@ function throttle(string $kind, int $max, int $mins): void {
 
 function note_attempt(string $kind): void {
     db()->prepare('INSERT INTO attempts (ip_hash, kind, ts) VALUES (?,?,?)')->execute([client_hash(), $kind, sql_now()]);
+}
+
+/* Cloudflare Turnstile bot check. Switched on only when turnstile_site and turnstile_secret are in sud-config.php; otherwise it passes. */
+function turnstile_on(): bool { $c = config(); return !empty($c['turnstile_site']) && !empty($c['turnstile_secret']); }
+function turnstile_check(array $in): void {
+    if (!turnstile_on()) return;
+    $tok = (string)($in['cf'] ?? '');
+    if ($tok === '' || strlen($tok) > 2048) out(422, ['error' => 'Please tick the "I am human" box and try again.']);
+    $ctx = stream_context_create(['http' => ['method' => 'POST', 'timeout' => 6, 'ignore_errors' => true,
+        'header' => "Content-Type: application/x-www-form-urlencoded\r\n",
+        'content' => http_build_query(['secret' => config()['turnstile_secret'], 'response' => $tok])]]);
+    $raw = @file_get_contents('https://challenges.cloudflare.com/turnstile/v0/siteverify', false, $ctx);
+    $j = $raw ? json_decode($raw, true) : null;
+    if ($j === null) return;                       // Cloudflare unreachable: do not lock real people out
+    if (empty($j['success'])) out(422, ['error' => 'The human check did not pass. Please try again.']);
 }
 
 function clean_email(string $e): string { return strtolower(trim($e)); }

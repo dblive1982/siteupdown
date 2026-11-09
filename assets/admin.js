@@ -19,7 +19,7 @@
     function bad(e) { err.textContent = e.message; err.hidden = false; }
     document.getElementById('a-si').addEventListener('submit', function (ev) {
       ev.preventDefault(); err.hidden = true;
-      S.api('login.php', { email: document.getElementById('a-em').value, password: document.getElementById('a-pw').value }).then(function () { S.store.set('sud-in', '1'); location.reload(); }).catch(bad);
+      S.api('login.php', { email: document.getElementById('a-em').value, password: document.getElementById('a-pw').value }).then(function (j) { if (j && j.twofa) { bad(new Error('Two-step sign-in is on for this account. Sign in on the main sign-in page first, then come back here.')); return; } S.store.set('sud-in', '1'); location.reload(); }).catch(bad);
     });
     S.onReady(function (u) {
       if (u) { start(); return; }

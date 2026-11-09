@@ -6,7 +6,8 @@ $pass = (string)($in['password'] ?? '');
 if (!valid_email($email) || $pass === '') out(422, ['error' => 'Please enter your email and password.']);
 throttle('login', 8, 15);
 $pdo = db();
-$s = $pdo->prepare('SELECT id, name, email, pass_hash FROM users WHERE email=?');
+ensure_twofa();
+$s = $pdo->prepare('SELECT id, name, email, pass_hash, twofa FROM users WHERE email=?');
 $s->execute([$email]);
 $u = $s->fetch();
 // Always run a hash check so a wrong email takes as long as a wrong password.
@@ -18,6 +19,12 @@ if (!$ok) {
 }
 if (password_needs_rehash($u['pass_hash'], PASSWORD_DEFAULT)) {
     $pdo->prepare('UPDATE users SET pass_hash=? WHERE id=?')->execute([password_hash($pass, PASSWORD_DEFAULT), $u['id']]);
+}
+if (!empty($u['twofa'])) {
+    require_once __DIR__ . '/_twofa.php';
+    start_session();
+    twofa_send((int)$u['id'], $u['email'], $u['name'], 'login');
+    out(200, ['twofa' => true, 'email' => $u['email']]);
 }
 $pdo->prepare('UPDATE users SET last_login=? WHERE id=?')->execute([sql_now(), $u['id']]);
 start_session();
