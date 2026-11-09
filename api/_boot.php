@@ -139,6 +139,50 @@ function ensure_schema(PDO $pdo): void {
         down_s INT NOT NULL DEFAULT 0,
         PRIMARY KEY (day, host)
     )$cs");
+    // Visit counts, no personal data: page views per day by page, country, device and source; views by hour; and a one-day-only set of hashes so visitors can be counted without being kept.
+    $pdo->exec("CREATE TABLE IF NOT EXISTS pv_daily (
+        day CHAR(10) NOT NULL,
+        path VARCHAR(160) NOT NULL,
+        country CHAR(2) NOT NULL DEFAULT '',
+        device CHAR(1) NOT NULL DEFAULT 'd',
+        ref VARCHAR(60) NOT NULL DEFAULT '',
+        views INT NOT NULL DEFAULT 0,
+        PRIMARY KEY (day, path, country, device, ref)
+    )$cs");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS pv_hour (
+        day CHAR(10) NOT NULL,
+        hr TINYINT NOT NULL,
+        views INT NOT NULL DEFAULT 0,
+        visitors INT NOT NULL DEFAULT 0,
+        PRIMARY KEY (day, hr)
+    )$cs");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS pv_seen (
+        day CHAR(10) NOT NULL,
+        h CHAR(32) NOT NULL,
+        PRIMARY KEY (day, h)
+    )$cs");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS pv_visitors (
+        day CHAR(10) NOT NULL,
+        country CHAR(2) NOT NULL DEFAULT '',
+        device CHAR(1) NOT NULL DEFAULT 'd',
+        visitors INT NOT NULL DEFAULT 0,
+        PRIMARY KEY (day, country, device)
+    )$cs");
+    // Where the time goes on each check (DNS, connect, secure handshake, first byte), one row per site per five minutes, kept 35 days. And who runs the infrastructure in front of each site.
+    $pdo->exec("CREATE TABLE IF NOT EXISTS site_timing (
+        host VARCHAR(253) NOT NULL,
+        ts DATETIME NOT NULL,
+        dns_ms INT NOT NULL DEFAULT 0,
+        conn_ms INT NOT NULL DEFAULT 0,
+        tls_ms INT NOT NULL DEFAULT 0,
+        ttfb_ms INT NOT NULL DEFAULT 0,
+        PRIMARY KEY (host, ts)
+    )$cs");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS site_prov (
+        host VARCHAR(253) NOT NULL PRIMARY KEY,
+        provider VARCHAR(40) NOT NULL,
+        seen DATETIME NOT NULL
+    )$cs");
     // Which site each visitor is watching live (one at a time), and sites outside the built-in list that people have checked, so history starts building for them.
     $pdo->exec("CREATE TABLE IF NOT EXISTS live_viewer (
         viewer CHAR(64) NOT NULL PRIMARY KEY,

@@ -84,6 +84,34 @@ if ($a === 'overview') {
         'db' => is_sqlite($pdo) ? 'sqlite' : 'mysql',
     ]);
 }
+if ($a === 'traffic') {                                         // who is visiting: page views and visitors, by day, country, page, source, device and hour (counts only)
+    $days = in_array((int)($_GET['days'] ?? 30), [7, 30, 90], true) ? (int)$_GET['days'] : 30;
+    $from = $day($days - 1); $y = $day(1); $today = $day(0);
+    $rows = function (string $sql, array $args = []) use ($pdo) { $q = $pdo->prepare($sql); $q->execute($args); return $q->fetchAll(); };
+    $sum = fn(string $tbl, string $col, string $since) => (int)$one("SELECT COALESCE(SUM($col),0) FROM $tbl WHERE day >= ?", [$since]);
+    $views = $rows('SELECT day AS d, SUM(views) AS n FROM pv_daily WHERE day >= ? GROUP BY day', [$from]);
+    $vis = $rows('SELECT day AS d, SUM(visitors) AS n FROM pv_visitors WHERE day >= ? GROUP BY day', [$from]);
+    $mk = function (array $r) use ($days) { $m = []; foreach ($r as $x) $m[$x['d']] = (int)$x['n']; $o = []; for ($i = $days - 1; $i >= 0; $i--) { $d = gmdate('Y-m-d', time() - $i * 86400); $o[] = ['d' => $d, 'n' => $m[$d] ?? 0]; } return $o; };
+    $cv = []; foreach ($rows('SELECT country, SUM(visitors) AS n FROM pv_visitors WHERE day >= ? GROUP BY country', [$from]) as $r) $cv[$r['country']] = (int)$r['n'];
+    $countries = [];
+    foreach ($rows('SELECT country, SUM(views) AS n FROM pv_daily WHERE day >= ? GROUP BY country ORDER BY n DESC LIMIT 20', [$from]) as $r) $countries[] = ['code' => $r['country'], 'views' => (int)$r['n'], 'visitors' => $cv[$r['country']] ?? 0];
+    $hours = array_fill(0, 24, 0); foreach ($rows('SELECT hr, SUM(views) AS n FROM pv_hour WHERE day >= ? GROUP BY hr', [$from]) as $r) $hours[(int)$r['hr']] = (int)$r['n'];
+    $dev = ['d' => 0, 'm' => 0, 't' => 0]; foreach ($rows('SELECT device, SUM(views) AS n FROM pv_daily WHERE day >= ? GROUP BY device', [$from]) as $r) $dev[$r['device']] = (int)$r['n'];
+    out(200, [
+        'days' => $days,
+        'tiles' => ['views_today' => $sum('pv_daily', 'views', $today), 'visitors_today' => $sum('pv_visitors', 'visitors', $today), 'views_yesterday' => (int)$one('SELECT COALESCE(SUM(views),0) FROM pv_daily WHERE day = ?', [$y]), 'visitors_yesterday' => (int)$one('SELECT COALESCE(SUM(visitors),0) FROM pv_visitors WHERE day = ?', [$y]),
+            'views_range' => $sum('pv_daily', 'views', $from), 'visitors_range' => $sum('pv_visitors', 'visitors', $from), 'countries' => count(array_filter(array_column($countries, 'code')))],
+        'views' => $mk($views), 'visitors' => $mk($vis), 'countries' => $countries,
+        'pages' => array_map(fn($r) => ['path' => $r['path'], 'views' => (int)$r['n']], $rows('SELECT path, SUM(views) AS n FROM pv_daily WHERE day >= ? GROUP BY path ORDER BY n DESC LIMIT 25', [$from])),
+        'refs' => array_map(fn($r) => ['ref' => $r['ref'] ?: 'Direct or unknown', 'views' => (int)$r['n']], $rows('SELECT ref, SUM(views) AS n FROM pv_daily WHERE day >= ? GROUP BY ref ORDER BY n DESC LIMIT 12', [$from])),
+        'devices' => $dev, 'hours' => $hours,
+        'since' => $pdo->query('SELECT MIN(day) FROM pv_daily')->fetchColumn() ?: null,
+    ]);
+}
+if ($a === 'seo') {                                             // the page-by-page search audit written by the site build
+    $f = __DIR__ . '/_seo.json';
+    out(200, is_file($f) ? (json_decode((string)file_get_contents($f), true) ?: ['pages' => []]) : ['pages' => [], 'missing' => true]);
+}
 if ($a === 'users') {
     $qs = trim((string)($_GET['q'] ?? '')); $page = max(1, (int)($_GET['page'] ?? 1)); $per = 25;
     $where = $qs !== '' ? 'WHERE u.email LIKE ? OR u.name LIKE ?' : ''; $args = $qs !== '' ? ['%' . $qs . '%', '%' . $qs . '%'] : [];

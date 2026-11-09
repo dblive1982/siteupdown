@@ -86,6 +86,32 @@ $q = $pdo->prepare('SELECT day, SUM(outages) o FROM site_daily WHERE day >= ? GR
 $q->execute([gmdate('Y-m-d', $now - 29 * 86400)]);
 $m = []; foreach ($q->fetchAll() as $r) $m[$r['day']] = (int)$r['o'];
 $R['trend'] = []; for ($i = 29; $i >= 0; $i--) { $d = gmdate('Y-m-d', $now - $i * 86400); $R['trend'][] = ['day' => $d, 'n' => $m[$d] ?? 0]; }
+// Reliability by category (7 days) and a 13-week outage calendar.
+$cr = [];
+foreach ($up7 as $h => $v) { $c = $pg[$h]['cat'] ?? 'other'; $cr[$c]['pct'][] = $v['pct']; $cr[$c]['out'] = ($cr[$c]['out'] ?? 0) + $v['out']; }
+$R['cats_rel'] = [];
+foreach ($cr as $c => $d) if (count($d['pct']) >= 3) $R['cats_rel'][] = ['cat' => $c, 'sites' => count($d['pct']), 'pct' => round(array_sum($d['pct']) / count($d['pct']), 2), 'outages' => $d['out']];
+usort($R['cats_rel'], fn($a, $b) => $b['pct'] <=> $a['pct']);
+$q = $pdo->prepare('SELECT day, SUM(outages) o FROM site_daily WHERE day >= ? GROUP BY day ORDER BY day');
+$q->execute([gmdate('Y-m-d', $now - 90 * 86400)]);
+$m2 = []; foreach ($q->fetchAll() as $r) $m2[$r['day']] = (int)$r['o'];
+$R['cal'] = []; for ($i = 90; $i >= 0; $i--) { $d = gmdate('Y-m-d', $now - $i * 86400); $R['cal'][] = ['day' => $d, 'n' => $m2[$d] ?? 0]; }
+
+// Shared-provider trouble: three or more sites behind the same provider down or unusually slow at the same time.
+$prov = [];
+foreach ($pdo->query('SELECT host, provider FROM site_prov')->fetchAll() as $r) if (isset($pg[$r['host']])) $prov[$r['host']] = $r['provider'];
+$avg = []; $q = $pdo->prepare("SELECT host, AVG(ms) a FROM site_log WHERE ts > ? AND verdict='up' AND ms IS NOT NULL GROUP BY host HAVING COUNT(*) >= 12"); $q->execute([$ts($now - 86400)]);
+foreach ($q->fetchAll() as $r) $avg[$r['host']] = (float)$r['a'];
+$flag = [];
+foreach ($pdo->query('SELECT host, verdict, ms, checked_at FROM site_status')->fetchAll() as $r) {
+    $h = $r['host']; if (!isset($prov[$h]) || strtotime($r['checked_at'] . ' UTC') < $now - 3600) continue;
+    $bad = in_array($r['verdict'], ['down', 'timeout'], true);
+    $slow = $r['verdict'] === 'up' && isset($avg[$h]) && (int)$r['ms'] >= 2 * $avg[$h] && (int)$r['ms'] - $avg[$h] >= 300;
+    if ($bad || $slow) $flag[$prov[$h]][] = ['name' => $pg[$h]['name'], 'page' => $pg[$h]['page'], 'state' => $bad ? 'down' : 'slow'];
+}
+$R['cascade'] = [];
+foreach ($flag as $p => $list) if (count($list) >= 3) $R['cascade'][] = ['provider' => $p, 'count' => count($list), 'sites' => array_slice($list, 0, 5)];
+usort($R['cascade'], fn($a, $b) => $b['count'] <=> $a['count']);
 $R['now'] = gmdate('Y-m-d\TH:i:s\Z');
 
 $json = json_encode($R);
