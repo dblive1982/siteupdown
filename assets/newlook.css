@@ -446,5 +446,8 @@
 :root[data-theme=light] body .adm-chk li{padding:6px 0;font-size:14px;line-height:1.45}
 :root[data-theme=light] body .adm-chk li.ok{color:#1f6b1f}:root[data-theme=light] body .adm-chk li.no{color:#b3261e;font-weight:700}
 :root[data-theme=light] body .adm-chk code{background:#f1ecd2;padding:1px 5px;border-radius:5px}
+/* range and filter pills: clearer text and outline everywhere */
+:root[data-theme=light] body .sp-ranges .rg,:root[data-theme=light] body .seg2 button,:root[data-theme=light] body .seg button{color:#0b0b0b;border:2px solid #0b0b0b;background:#fff;font-weight:700}
+:root[data-theme=light] body .sp-ranges .rg.on,:root[data-theme=light] body .seg2 button[aria-pressed=true],:root[data-theme=light] body .seg2 button[aria-selected=true],:root[data-theme=light] body .seg button[aria-selected=true]{background:var(--yellow);color:#0b0b0b}
 
 body:after{content:"TEST SITE";position:fixed;right:10px;bottom:10px;background:#f59e0b;color:#000;font:700 12px/1 system-ui,sans-serif;letter-spacing:.08em;padding:7px 10px;border:2px solid #000;border-radius:6px;z-index:90;pointer-events:none}
