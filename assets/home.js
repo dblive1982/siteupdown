@@ -434,12 +434,17 @@
     var mx = Math.max.apply(null, rows.map(function (r) { return r.n; })) || 1;
     return '<ul class="ins-bars">' + rows.map(function (r) { return '<li><span class="ib-l">' + esc(r.l) + '</span><span class="ib-b"><i style="width:' + Math.max(4, Math.round(100 * r.n / mx)) + '%"></i></span><span class="ib-n">' + esc(r.t != null ? r.t : (fmt ? fmt(r.n) : String(r.n))) + '</span></li>'; }).join('') + '</ul>';
   }
+  function insDay(d) { return new Date(d + 'T12:00:00Z').toLocaleDateString([], { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' }); }
   function insTrend(t) {
-    var mx = Math.max.apply(null, t.map(function (d) { return d.n; })) || 1, w = 300, h = 70, bw = w / t.length;
-    return '<svg class="ins-trend" viewBox="0 0 ' + w + ' ' + (h + 14) + '" role="img" aria-label="Outages per day over the last 30 days">' + t.map(function (d, i) {
-      var bh = d.n ? Math.max(3, Math.round(h * d.n / mx)) : 1;
-      return '<rect x="' + (i * bw + 1).toFixed(1) + '" y="' + (h - bh) + '" width="' + (bw - 2).toFixed(1) + '" height="' + bh + '" rx="1.5"><title>' + d.day + ': ' + d.n + ' outage' + (d.n === 1 ? '' : 's') + '</title></rect>';
-    }).join('') + '<text x="0" y="' + (h + 11) + '">30 days ago</text><text x="' + w + '" y="' + (h + 11) + '" text-anchor="end">Today</text></svg>';
+    if (!t.length) return '';
+    var mx = Math.max.apply(null, t.map(function (d) { return d.n; })), tot = t.reduce(function (a, d) { return a + d.n; }, 0), quiet = t.filter(function (d) { return !d.n; }).length;
+    var top = t.filter(function (d) { return d.n === mx; })[mx ? 0 : 0], avg = tot / t.length, m1 = mx || 1;
+    var sum = tot ? '<p class="ins-n"><b>' + tot + '</b> outage' + (tot === 1 ? '' : 's') + ' started in the last 30 days. Busiest day: <b>' + insDay(top.day) + '</b> with ' + mx + '. Quiet days with none: ' + quiet + '.</p>' : '<p class="ins-n">No outages started in the last 30 days.</p>';
+    return sum + '<div class="trend2"><span class="tr-y">' + mx + '</span><div class="tr-bars" role="img" aria-label="Outages per day over the last 30 days">' + t.map(function (d) {
+      var tip = insDay(d.day) + ': ' + (d.n ? d.n + ' outage' + (d.n === 1 ? '' : 's') + ' started' + (d.n > avg * 1.5 ? ', more than usual' : '') + '.' : 'no outages started.');
+      return '<i class="has-tip' + (d.n ? '' : ' z') + '" tabindex="0" style="height:' + (d.n ? Math.max(8, Math.round(100 * d.n / m1)) : 2) + '%" data-tip="' + esc(tip) + '"></i>';
+    }).join('') + '</div></div><div class="tr-x"><span>30 days ago</span><span>Today</span></div>' +
+      '<p class="fine ins-n">How to read this: each bar is one day, oldest on the left. A taller bar means more sites went down that day (the tallest is ' + mx + '). A flat line means a quiet day. Tap or hover a bar for the date and count.</p>';
   }
   function drawIns() {
     var b = $('#ins-body'), d = insData; if (!b) return;
@@ -484,7 +489,7 @@
       h += '<h4 class="ins-h">Shared provider trouble</h4>';
       h += d.cascade && d.cascade.length ? d.cascade.map(function (c) { return '<p class="ins-n"><b>' + esc(c.provider) + '</b>: ' + c.count + ' sites behind it look down or slow right now (' + c.sites.map(function (s) { return esc(s.name); }).join(', ') + ').</p>'; }).join('') : '<p class="fine ins-n">No provider is affecting several sites right now.</p>';
       h += '<h4 class="ins-h">Outage calendar, last 13 weeks</h4>';
-      if (d.cal) { var cm = Math.max.apply(null, d.cal.map(function (x) { return x.n; })) || 1; h += '<div class="cal" role="img" aria-label="Outages per day over 13 weeks">' + d.cal.map(function (x) { var l = x.n ? Math.min(4, 1 + Math.floor(3 * x.n / cm)) : 0; return '<i class="c' + l + '" title="' + x.day + ': ' + x.n + ' outage' + (x.n === 1 ? '' : 's') + '"></i>'; }).join('') + '</div><p class="fine ins-n">Darker means more outages that day.</p>'; }
+      if (d.cal) { var cm = Math.max.apply(null, d.cal.map(function (x) { return x.n; })) || 1; h += '<div class="cal" role="img" aria-label="Outages per day over 13 weeks">' + d.cal.map(function (x) { var l = x.n ? Math.min(4, 1 + Math.floor(3 * x.n / cm)) : 0; return '<i class="c' + l + ' has-tip" tabindex="0" data-tip="' + esc(insDay(x.day) + ': ' + (x.n ? x.n + ' outage' + (x.n === 1 ? '' : 's') : 'no outages')) + '"></i>'; }).join('') + '</div><p class="fine ins-n">Darker means more outages that day.</p>'; }
       h += '<p class="fine"><a href="/state-of-the-internet">Read this week\'s full state of the internet &rarr;</a> &middot; <a href="/compare">Compare two sites</a></p>';
     }
     b.innerHTML = h;
