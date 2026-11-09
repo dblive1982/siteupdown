@@ -146,6 +146,35 @@ $pdo->prepare('DELETE FROM checks WHERE checked_at < ?')->execute([gmdate('Y-m-d
 $pdo->prepare('DELETE FROM site_log WHERE ts < ?')->execute([gmdate('Y-m-d H:i:s', time() - 35 * 86400)]);
 try { $pdo->prepare('DELETE FROM pv_seen WHERE day < ?')->execute([gmdate('Y-m-d', time() - 2 * 86400)]); $pdo->prepare('DELETE FROM pv_daily WHERE day < ?')->execute([gmdate('Y-m-d', time() - 400 * 86400)]); } catch (Throwable $e) {}
 try { $pdo->prepare('DELETE FROM site_timing WHERE ts < ?')->execute([gmdate('Y-m-d H:i:s', time() - 35 * 86400)]); } catch (Throwable $e) {}
+// Security alerts: email the admin when failed admin attempts or sign-ups spike (at most one email a day per kind; counts only, no personal data).
+try {
+    require_once __DIR__ . '/_mail.php';
+    $since = gmdate('Y-m-d H:i:s', time() - 3600);
+    $cnt = function (array $kinds) use ($pdo, $since): int {
+        $in = implode(',', array_fill(0, count($kinds), '?'));
+        $q = $pdo->prepare("SELECT COUNT(*) FROM attempts WHERE kind IN ($in) AND ts > ?");
+        $q->execute(array_merge($kinds, [$since]));
+        return (int)$q->fetchColumn();
+    };
+    $rules = [
+        'adm'  => [$cnt(['adm', 'admver', 'admcode']), 10, 'Failed or blocked admin-area attempts', 'Someone has been trying the admin area or its sign-in code.'],
+        'reg'  => [$cnt(['register']), 40, 'Sign-up spike', 'Many accounts are being created. It may be a bot.'],
+        'log'  => [$cnt(['login']), 60, 'Many failed sign-ins', 'Lots of wrong passwords in the last hour. It may be someone guessing.'],
+    ];
+    $admins = (array)(config()['admin_emails'] ?? ['dblive1982@gmail.com']);
+    foreach ($rules as $k => [$n, $limit, $title, $note]) {
+        if ($n < $limit || !$admins) continue;
+        $key = 'alert_' . $k;
+        $q = $pdo->prepare('SELECT v FROM kv WHERE k=?'); $q->execute([$key]);
+        $last = (int)($q->fetchColumn() ?: 0);
+        if (time() - $last < 86400) continue;
+        sud_email((string)$admins[0], 'siteupdown.com alert: ' . $title, $title,
+            '<p style="margin:0 0 12px">' . $note . ' <b>' . $n . '</b> in the last hour.</p><p style="margin:0">Our limits are already blocking repeats. If this keeps happening, put Cloudflare in front of the site and turn on its bot protection.</p>',
+            "$note $n in the last hour.\n\nOur limits are already blocking repeats. If this keeps happening, put Cloudflare in front of the site.");
+        $pdo->prepare('DELETE FROM kv WHERE k=?')->execute([$key]);
+        $pdo->prepare('INSERT INTO kv (k, v) VALUES (?,?)')->execute([$key, (string)time()]);
+    }
+} catch (Throwable $e) { error_log('alerts: ' . $e->getMessage()); }
 // Problem reports are kept for three years; the one-way address hash is only needed for the 30-minute duplicate check, so it is wiped after two days.
 $pdo->prepare('DELETE FROM reports WHERE ts < ?')->execute([gmdate('Y-m-d H:i:s', time() - 1095 * 86400)]);
 $pdo->prepare("UPDATE reports SET ip_hash='' WHERE ts < ? AND ip_hash <> ''")->execute([gmdate('Y-m-d H:i:s', time() - 2 * 86400)]);

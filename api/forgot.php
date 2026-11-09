@@ -4,6 +4,7 @@ require __DIR__ . '/_mail.php';
 $in = read_post();
 $email = clean_email((string)($in['email'] ?? ''));
 if (!valid_email($email)) out(422, ['error' => 'Please enter a valid email address.']);
+turnstile_check($in);
 throttle('forgot', 5, 60);
 note_attempt('forgot');
 $pdo = db();
