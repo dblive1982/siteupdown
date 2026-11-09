@@ -93,7 +93,7 @@ def head(title, desc, path, extra_head='', noindex=False):
 <meta property="og:image" content="{SITE}/assets/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:locale" content="en_GB">
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{t}"><meta name="twitter:description" content="{d}"><meta name="twitter:image" content="{SITE}/assets/og.png">
 <meta name="application-name" content="siteupdown.com"><meta name="format-detection" content="telephone=no">
-<meta name="theme-color" content="#2b2b2f">
+<meta name="theme-color" content="#ffde59">
 <link rel="icon" href="/favicon.ico?v=3" sizes="any"><link rel="icon" href="/favicon-32.png?v=3" type="image/png" sizes="32x32"><link rel="icon" href="/favicon-64.png?v=3" type="image/png" sizes="64x64"><link rel="manifest" href="/site.webmanifest"><link rel="icon" href="/favicon-192.png?v=3" type="image/png" sizes="192x192"><link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
@@ -104,7 +104,7 @@ def head(title, desc, path, extra_head='', noindex=False):
 <body{{BODYATTR}}>
 <a class="skip" href="#main">Skip to content</a>
 <header class="nl-head"><div class="nl-bar">
-<a class="nl-logo" href="/" aria-label="siteupdown.com home"><img src="/assets/nl-logo-light.png" alt="Site up down?" width="831" height="391"></a>
+<a class="nl-logo" href="/" aria-label="siteupdown.com home"><img src="/assets/nl-logo.png" alt="Site up down?" width="831" height="391"></a>
 <div class="nl-tools"><div id="auth"></div><button class="nl-menu-btn" id="nl-menu-btn" type="button" aria-expanded="false" aria-controls="nl-drawer" aria-label="Open menu"><span></span><span></span><span></span></button></div>
 </div></header>
 <div class="nl-scrim" id="nl-scrim" hidden></div>
@@ -117,7 +117,7 @@ def foot(scripts):
     fgrid = ''.join('<div class="nl-fg"><h3>%s</h3>%s%s</div>' % (g, ''.join('<a href="%s">%s</a>' % (h, l) for l, h in items), '<button type="button" data-cookie-settings>Cookie settings</button>' if g == 'Legal' else '') for g, items in groups)
     return f'''</main>
 <footer class="site-foot"><div class="wrap nl-foot">
-<img src="/assets/nl-logo-light.png" alt="Site up down?" width="831" height="391">
+<img src="/assets/nl-logo.png" alt="Site up down?" width="831" height="391">
 <p class="note">Less refreshing. More knowing.</p>
 <div class="socials" aria-label="Social media">
 <a href="#" title="Facebook" aria-label="Facebook">{I_FB}</a><a href="#" title="Instagram" aria-label="Instagram">{I_IG}</a><a href="#" title="X" aria-label="X">{I_X}</a><a href="#" title="TikTok" aria-label="TikTok">{I_TT}</a><a href="#" title="YouTube" aria-label="YouTube">{I_YT}</a>
