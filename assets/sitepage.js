@@ -184,6 +184,42 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hide(); });
   })();
 
+  /* Deeper insight: grade, where the time goes, typical day, outage timeline, who runs it. All from our own checks. */
+  getJSON('/api/sitestats.php?host=' + encodeURIComponent(host)).then(function (r) {
+    var d = r.ok && r.j; if (!d || d.error || !d.u30) return;
+    var box = $('#sp-deepc'); if (!box) return;
+    function dur(sec) { var m = Math.round(sec / 60); if (m < 2) return 'under 2 min'; if (m < 90) return m + ' min'; var h = Math.floor(m / 60); return h < 48 ? h + ' h' + (m % 60 ? ' ' + (m % 60) + ' min' : '') : Math.floor(h / 24) + ' days'; }
+    function pct(v) { return v == null ? '–' : (v >= 99.995 ? '100' : v.toFixed(2).replace(/0$/, '').replace(/\.0$/, '')) + '%'; }
+    var h = '', G = { A: 'Excellent', B: 'Very good', C: 'Good', D: 'Patchy', F: 'Poor' };
+    var capName = d.cat ? d.cat.charAt(0).toUpperCase() + d.cat.slice(1) : '';
+    if (d.grade) {
+      h += '<div class="dp-top"><div class="dp-grade g' + d.grade + '" aria-label="Reliability grade ' + d.grade + '">' + d.grade + '</div><div><b>' + G[d.grade] + ' reliability</b><p class="note" style="margin:2px 0 0">' + pct(d.u30.pct) + ' uptime over 30 days, ' + pct(d.u7.pct) + ' over 7 days. ' + d.u30.outages + (d.u30.outages === 1 ? ' outage' : ' outages') + (d.u30.down ? ', about ' + dur(d.u30.down) + ' down in total' : '') + '.' + (d.rank ? ' Ranked ' + d.rank.n + ' of ' + d.rank.of + ' in ' + esc(capName.toLowerCase()) + '.' : '') + '</p></div></div>';
+      h += '<p class="note">Grade from our own checks over 30 days: A is 99.9% or better, B 99.5%, C 99%, D 97%, F below that. A site that blocks automated checks is never marked down for it.</p>';
+    } else {
+      h += '<p class="note" style="margin-top:0">We need a little more history before we can grade ' + esc(d.name) + '. So far: ' + (d.u30.checks || 0) + ' checks recorded.</p>';
+    }
+    var t = d.timing;
+    if (t) {
+      var tot = t.dns + t.conn + t.tls + t.ttfb || 1, seg = [['dns', 'DNS lookup', t.dns], ['conn', 'Connecting', t.conn], ['tls', 'Secure handshake', t.tls], ['ttfb', 'Waiting for the site', t.ttfb]];
+      h += '<h3 class="dp-h">Where the time goes</h3><div class="dp-bar" role="img" aria-label="Time breakdown">' + seg.map(function (x) { return x[2] > 0 ? '<i class="s-' + x[0] + '" style="flex:' + x[2] + '" title="' + x[1] + ': ' + x[2] + ' ms"></i>' : ''; }).join('') + '</div><ul class="dp-leg">' + seg.map(function (x) { return '<li><i class="s-' + x[0] + '"></i>' + x[1] + ' <b>' + x[2] + ' ms</b></li>'; }).join('') + '</ul><p class="note">Average of our last 24 hours of checks (' + t.n + ' readings), measured from our server. If \"Waiting for the site\" is the biggest part, the site itself is the slow bit.</p>';
+    }
+    var hs = d.hours || [], have = hs.filter(function (x) { return x != null; });
+    if (have.length >= 12) {
+      var off = Math.round(-new Date().getTimezoneOffset() / 60), loc = new Array(24).fill(null);
+      hs.forEach(function (v, u) { loc[((u + off) % 24 + 24) % 24] = v; });
+      var mx = Math.max.apply(null, have), mn = Math.min.apply(null, have), hi = loc.indexOf(mx), lo = loc.indexOf(mn);
+      function hh(x) { return ('0' + x).slice(-2) + ':00'; }
+      h += '<h3 class="dp-h">Typical day</h3><div class="dp-day" role="img" aria-label="Average response time by hour of day">' + loc.map(function (v, i) { return '<i style="height:' + (v == null ? 2 : Math.max(6, Math.round(100 * v / mx))) + '%" class="' + (i === hi ? 'hi' : i === lo ? 'lo' : '') + '" title="' + hh(i) + ': ' + (v == null ? 'no data' : v + ' ms') + '"></i>'; }).join('') + '</div><div class="dp-axis"><span>00:00</span><span>12:00</span><span>23:00</span></div><p class="note">Usually slowest around ' + hh(hi) + ' (about ' + mx + ' ms) and quickest around ' + hh(lo) + ' (about ' + mn + ' ms), in your time zone, over the last 5 weeks.</p>';
+    }
+    h += '<h3 class="dp-h">Outage timeline</h3>';
+    if (d.outages && d.outages.length) {
+      h += '<ul class="dp-out">' + d.outages.map(function (o) { var dt = new Date(o.started); return '<li><span>' + dt.toLocaleDateString([], { day: 'numeric', month: 'short' }) + ', ' + dt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) + '</span><b>' + (o.ended ? dur(o.seconds) : 'Ongoing, ' + dur(o.seconds) + ' so far') + '</b></li>'; }).join('') + '</ul>' + (d.mtbf_h ? '<p class="note">' + d.outages_90 + ' outages in the last 90 days. On average one every ' + (d.mtbf_h >= 48 ? Math.round(d.mtbf_h / 24) + ' days' : d.mtbf_h + ' hours') + '.</p>' : '');
+    } else h += '<p class="note" style="margin-top:0">No outages recorded in the last 90 days.</p>';
+    if (d.provider) h += '<h3 class="dp-h">What is behind it</h3><p class="note" style="margin-top:0">Its responses carry the marks of <b>' + esc(d.provider) + '</b>. When that provider has trouble, many sites can be affected at once. This is a guess from the response headers, not a confirmed fact.</p>';
+    h += '<div class="dp-act"><a class="btn small ghost" href="/compare?a=' + encodeURIComponent(host) + '"><span>Compare with another site</span></a> <a class="btn small ghost" href="/site-report?host=' + encodeURIComponent(host) + '"><span>Printable report</span></a> <a class="btn small ghost" href="/api/export.php?host=' + encodeURIComponent(host) + '&days=30" download><span>Download CSV</span></a></div>';
+    box.innerHTML = h; $('#sp-deep').hidden = false;
+  }).catch(function () {});
+
   /* Latest worldwide snapshot from the background sweep, if there is one */
   getJSON('/api/world.php?host=' + encodeURIComponent(host)).then(function (r) {
     var w = r.ok && r.j.world; if (!w || !w.probes || !w.probes.length) return;

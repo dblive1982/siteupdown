@@ -41,6 +41,7 @@ $probe = function (string $h) use ($pdo, $up, &$n) {
     if (in_array($r['verdict'], ['inconclusive', 'timeout'], true) && world_says_up($pdo, $h)) { $r['verdict'] = 'up'; $r['note'] = 'Our own check could not confirm, but the worldwide check reached it from most places.'; }
     $up->execute([$h, $r['verdict'], $r['http_code'], $r['ms'], sql_now()]);
     track_result($pdo, $h, $r['verdict'], $r['ms']);
+    save_timing($pdo, $h, $r);
     $n++;
 };
 // 1) Sites on someone's watchlist: every minute, stalest first. If there are more than fit in a minute, the stalest simply wait their turn.
@@ -143,6 +144,7 @@ try {
 } catch (Throwable $e) { error_log('history archive: ' . $e->getMessage()); }
 $pdo->prepare('DELETE FROM checks WHERE checked_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - 3 * 86400)]);
 $pdo->prepare('DELETE FROM site_log WHERE ts < ?')->execute([gmdate('Y-m-d H:i:s', time() - 35 * 86400)]);
+try { $pdo->prepare('DELETE FROM site_timing WHERE ts < ?')->execute([gmdate('Y-m-d H:i:s', time() - 35 * 86400)]); } catch (Throwable $e) {}
 // Problem reports are kept for three years; the one-way address hash is only needed for the 30-minute duplicate check, so it is wiped after two days.
 $pdo->prepare('DELETE FROM reports WHERE ts < ?')->execute([gmdate('Y-m-d H:i:s', time() - 1095 * 86400)]);
 $pdo->prepare("UPDATE reports SET ip_hash='' WHERE ts < ? AND ip_hash <> ''")->execute([gmdate('Y-m-d H:i:s', time() - 2 * 86400)]);

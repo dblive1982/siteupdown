@@ -103,3 +103,15 @@ function notify_watchers(PDO $pdo, string $host, bool $down, string $now, ?strin
         }
     }
 }
+
+
+/** Keep the timing breakdown and the detected provider from a check (one timing row per host per five minutes). */
+function save_timing(PDO $pdo, string $host, array $r): void {
+    try {
+        if (!empty($r['prov'])) $pdo->prepare('REPLACE INTO site_prov (host, provider, seen) VALUES (?,?,?)')->execute([$host, $r['prov'], sql_now()]);
+        $t = $r['timing'] ?? null; if (!$t || ($r['verdict'] ?? '') !== 'up') return;
+        $q = $pdo->prepare('SELECT ts FROM site_timing WHERE host=? ORDER BY ts DESC LIMIT 1'); $q->execute([$host]); $last = $q->fetchColumn();
+        if ($last && intdiv(strtotime($last . ' UTC'), 300) === intdiv(time(), 300)) return;
+        $pdo->prepare('INSERT INTO site_timing (host, ts, dns_ms, conn_ms, tls_ms, ttfb_ms) VALUES (?,?,?,?,?,?)')->execute([$host, sql_now(), (int)$t['dns'], (int)$t['conn'], (int)$t['tls'], (int)$t['ttfb']]);
+    } catch (Throwable $e) { /* extra detail only, never break a check */ }
+}

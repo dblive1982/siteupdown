@@ -46,7 +46,7 @@ NAV = [('Regional map', '/#global-pulse'), ('Top websites', '/#top-sites'), ('Ga
 
 
 MENU = [
- ('Check', [('Website checker', '/', 'Is it down, or just you?'), ('All apps &amp; sites', '/is-it-down/', ''), ('Outage map', '/outage-map', 'Reachability around the world'), ('Outage history', '/outage-history', 'What happened on past days'), ('Monitor &amp; alerts', '/monitor', 'Watch up to 25 sites')]),
+ ('Check', [('Website checker', '/', 'Is it down, or just you?'), ('All apps &amp; sites', '/is-it-down/', ''), ('Outage map', '/outage-map', 'Reachability around the world'), ('Outage history', '/outage-history', 'What happened on past days'), ('State of the internet', '/state-of-the-internet', 'This week in outages'), ('Compare sites', '/compare', 'Two services side by side'), ('Monitor &amp; alerts', '/monitor', 'Watch up to 25 sites')]),
  ('Tools', [('Internet speed test', '/internet-speed-test', ''), ('Website speed test', '/speed', ''), ('What is my IP?', '/what-is-my-ip', ''), ('Game ping test', '/game-ping-test', ''), ('All tools', '/tools/', '')]),
  ('Learn', [('Help centre', '/help/', 'Plain-English guides'), ('How we check', '/how-we-check', ''), ('FAQ', '/faq', '')]),
  ('More', [('Account', '/account', ''), ('About', '/about', ''), ('For business', '/business', ''), ('Contact', '/contact', '')]),
@@ -94,7 +94,7 @@ def head(title, desc, path, extra_head='', noindex=False):
 '''
 
 def foot(scripts):
-    groups = [('Check', [('Website checker', '/'), ('Is it down?', '/is-it-down/'), ('Outage map', '/outage-map'), ('Outage history', '/outage-history'), ('Monitor', '/monitor')]), ('Tools', [('Internet speed test', '/internet-speed-test'), ('Website speed test', '/speed'), ('What is my IP?', '/what-is-my-ip'), ('Game ping test', '/game-ping-test'), ('All tools', '/tools/')]), ('Learn', [('Help centre', '/help/'), ('How we check', '/how-we-check'), ('FAQ', '/faq')]), ('Company', [('Account', '/account'), ('About', '/about'), ('For business', '/business'), ('Contact', '/contact')]), ('Legal', [('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')])]
+    groups = [('Check', [('Website checker', '/'), ('Is it down?', '/is-it-down/'), ('Outage map', '/outage-map'), ('Outage history', '/outage-history'), ('State of the internet', '/state-of-the-internet'), ('Compare sites', '/compare'), ('Monitor', '/monitor')]), ('Tools', [('Internet speed test', '/internet-speed-test'), ('Website speed test', '/speed'), ('What is my IP?', '/what-is-my-ip'), ('Game ping test', '/game-ping-test'), ('All tools', '/tools/')]), ('Learn', [('Help centre', '/help/'), ('How we check', '/how-we-check'), ('FAQ', '/faq')]), ('Company', [('Account', '/account'), ('About', '/about'), ('For business', '/business'), ('Contact', '/contact')]), ('Legal', [('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')])]
     fgrid = ''.join('<div class="nl-fg"><h3>%s</h3>%s%s</div>' % (g, ''.join('<a href="%s">%s</a>' % (h, l) for l, h in items), '<button type="button" data-cookie-settings>Cookie settings</button>' if g == 'Legal' else '') for g, items in groups)
     return f'''</main>
 <footer class="site-foot"><div class="wrap nl-foot">
@@ -245,7 +245,7 @@ def home():
 <ul class="ro-list" id="ro-list"><li class="skeleton">Loading&hellip;</li></ul>
 <h3 class="ro-sub">Running slower than usual</h3><ul class="ro-list" id="ro-slow"><li class="skeleton">Loading&hellip;</li></ul>
 <h3 class="ro-sub">More reports</h3>
-<div class="seg2 ins-tabs" id="ins-tabs" role="tablist"><button type="button" data-t="today" aria-pressed="true">Today</button><button type="button" data-t="rel" aria-pressed="false">Reliability</button><button type="button" data-t="speed" aria-pressed="false">Speed</button><button type="button" data-t="out" aria-pressed="false">Outages</button><button type="button" data-t="rep" aria-pressed="false">Visitor reports</button></div>
+<div class="seg2 ins-tabs" id="ins-tabs" role="tablist"><button type="button" data-t="today" aria-pressed="true">Today</button><button type="button" data-t="rel" aria-pressed="false">Reliability</button><button type="button" data-t="speed" aria-pressed="false">Speed</button><button type="button" data-t="out" aria-pressed="false">Outages</button><button type="button" data-t="rep" aria-pressed="false">Visitor reports</button><button type="button" data-t="trend" aria-pressed="false">Trends</button></div>
 <div id="ins-body" class="ins-body"><p class="ro-none">Loading&hellip;</p></div>
 <p class="fine" style="margin-top:14px">A site counts as down after two failed checks in a row, so times are approximate and shown in your time zone. These reports use our own checks of the sites we watch and the problem reports visitors send us.</p>
 </div></div></div>
@@ -609,6 +609,7 @@ def site_pages_build():
             '<div class="sp-report"><button type="button" class="btn small" id="sp-rbtn"><span>I am having a problem with %s</span></button> <button type="button" class="btn small ghost" id="sp-fix"><span>It is working for me now</span></button>' % n +
             '<div class="sp-rpick" id="sp-rpick" hidden><p>What is going wrong? Pick everything that applies.</p><div class="sp-rbtns">%s</div><label class="rloc"><input type="checkbox"> <span>Also add my approximate area to the local outage map <small>Optional. Your browser will ask first. Rounded to about 10 km, never your exact spot.</small></span></label><p class="sp-rsendrow"><button type="button" class="btn small rsend" disabled><span>Send report</span></button></p></div><p class="sp-rmsg" id="sp-rmsg" role="status"></p></div>' % kinds +
             '<p class="note">Reports are anonymous and unverified, and each visitor can report each problem once every 30 minutes. They show how many people say they are affected, not why. <a href="/outage-history?host=' + hh + '">See what happened on past days</a>.</p></div>' +
+            '<div id="sp-deep" hidden><h2>How reliable is %s?</h2><div class="sp-card sp-deepc" id="sp-deepc"></div></div>' % n +
             '<h2>If %s is not loading for you</h2><ul>%s</ul>' % (n, tipsli) +
             '<p>Still stuck? Work through our <a href="/help/website-not-loading-checklist">website not loading checklist</a>, or read <a href="/help/down-for-some-people-not-others">why a site can be down for some people and not others</a>.</p>'
             '<div class="sp-card" id="sp-world" hidden><div class="sp-rhead"><b>Seen from around the world</b><span class="sp-level" id="sp-wwhen"></span></div><p id="sp-wsum" class="note"></p><div class="sp-wmap"><svg id="sp-wsvg" role="img" aria-label="World map of where this site was reached" preserveAspectRatio="xMidYMid meet"></svg></div><div class="rt-wrap"><table class="rt" id="sp-wtab"><thead><tr><th>Place</th><th>Result</th><th>Time</th></tr></thead><tbody></tbody></table></div><p class="note">A snapshot from probes on the public Globalping network, refreshed every few hours. It shows whether the site answers from other countries, not what every visitor sees.</p></div>' +
@@ -688,7 +689,7 @@ def help_pages():
                 '<p style="margin-top:20px"><a href="/help/">&larr; All help guides</a></p></div></section>')
         write('help/' + a['slug'] + '.html', h + body + foot('<script src="/assets/app.js"></script>'))
     # sitemap
-    urls = [('/', 'daily', '1.0'), ('/speed', 'monthly', '0.8'), ('/internet-speed-test', 'monthly', '0.8'), ('/what-is-my-ip', 'monthly', '0.8'), ('/game-ping-test', 'monthly', '0.8'), ('/outage-map', 'daily', '0.7'), ('/outage-history', 'daily', '0.6'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8'), ('/tools/', 'monthly', '0.8')] + [('/tools/' + t['slug'], 'monthly', '0.7') for t in TOOLS] + [('/tools/uptime-sla-calculator', 'monthly', '0.7'), ('/how-we-check', 'monthly', '0.6'), ('/faq', 'monthly', '0.6')] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES if n not in HIDDEN] + [('/about', 'monthly', '0.5'), ('/business', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
+    urls = [('/', 'daily', '1.0'), ('/speed', 'monthly', '0.8'), ('/internet-speed-test', 'monthly', '0.8'), ('/what-is-my-ip', 'monthly', '0.8'), ('/game-ping-test', 'monthly', '0.8'), ('/outage-map', 'daily', '0.7'), ('/outage-history', 'daily', '0.6'), ('/state-of-the-internet', 'daily', '0.7'), ('/compare', 'weekly', '0.6'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8'), ('/tools/', 'monthly', '0.8')] + [('/tools/' + t['slug'], 'monthly', '0.7') for t in TOOLS] + [('/tools/uptime-sla-calculator', 'monthly', '0.7'), ('/how-we-check', 'monthly', '0.6'), ('/faq', 'monthly', '0.6')] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES if n not in HIDDEN] + [('/about', 'monthly', '0.5'), ('/business', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
     sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join('<url><loc>%s%s</loc><lastmod>2026-11-02</lastmod><changefreq>%s</changefreq><priority>%s</priority></url>\n' % (SITE, u, c, p) for u, c, p in urls) + '</urlset>\n'
     open(os.path.join(ROOT, 'sitemap.xml'), 'w').write(sm)
 
@@ -842,6 +843,41 @@ def heatmap_page():
             '<p style="margin-top:20px"><a href="/">&larr; Back to the website checker</a></p></div></section>')
     write('outage-map.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/heatmap.js"></script><script src="/assets/localmap.js"></script>'))
 
+
+def insight_pages():
+    """Compare two sites, the weekly state of the internet, and a printable per-site report. All data comes from the API at view time."""
+    opts = ''
+    for cat in ['social', 'video', 'gaming', 'ai', 'shopping', 'delivery', 'news', 'health', 'telecom', 'travel', 'search', 'work']:
+        items = [(n, h) for n, h, c, _ in SP.SITES if c == cat and n not in HIDDEN]
+        if items: opts += '<optgroup label="%s">%s</optgroup>' % (html.escape(SP.CATS[cat][0]), ''.join('<option value="%s">%s</option>' % (html.escape(h), html.escape(n)) for n, h in sorted(items)))
+    # compare
+    path = '/compare'
+    h = head('Compare two websites: reliability, speed and outages | siteupdown.com', 'Put two popular websites side by side: uptime, outages, response time and reliability grade, measured by our own checks.', path).replace('{BODYATTR}', '')
+    body = ('<section class="page"><div class="wrap prose toolpage" id="cmp"><nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / Compare</nav>'
+            '<h1 style="margin:14px 0 8px">Compare two sites<span class="dot">.</span></h1>'
+            '<p class="lead">Pick two services and see which one has been more reliable and faster, based on our own checks over the last 30 days.</p>'
+            '<form class="card cmp-pick" id="cmp-form"><label>First site<select id="cmp-a" aria-label="First site"><option value="">Choose a site</option>%s</select></label><span class="cmp-vs">vs</span><label>Second site<select id="cmp-b" aria-label="Second site"><option value="">Choose a site</option>%s</select></label></form>' % (opts, opts) +
+            '<div id="cmp-out" aria-live="polite"><p class="note">Choose two sites above.</p></div>'
+            '<p class="note">Measured from our own server. A site that blocks automated checks is never marked down for it, and uptime is a guide, not a service guarantee. Sites need a little history before they can be graded.</p>'
+            '<p style="margin-top:20px"><a href="/is-it-down/">&larr; All site status pages</a></p></div></section>')
+    write('compare.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/compare.js"></script>'))
+    # weekly
+    path = '/state-of-the-internet'
+    h = head('State of the internet this week: outages, reliability and trends | siteupdown.com', 'A weekly summary of outages, the most and least reliable popular sites and how each category is doing, from our own checks.', path).replace('{BODYATTR}', '')
+    body = ('<section class="page"><div class="wrap prose toolpage" id="st"><nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / State of the internet</nav>'
+            '<h1 style="margin:14px 0 8px">State of the internet<span class="dot">.</span></h1>'
+            '<p class="lead" id="st-lead">A summary of the last seven days across the popular sites we check, updated automatically.</p>'
+            '<div id="st-out" aria-live="polite"><p class="note">Loading&hellip;</p></div>'
+            '<h2>How we measure</h2><p>Every number here comes from our own checks of the sites on our public lists, repeated through the day, plus the problem reports visitors send us. We count a site as down only after repeated failed checks, and we never mark a site down just because it blocks automated visitors. These are guides, not official figures.</p>'
+            '<p style="margin-top:20px"><a href="/outage-history">See the full outage history &rarr;</a></p></div></section>')
+    write('state-of-the-internet.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/state.js"></script>'))
+    # printable report
+    path = '/site-report'
+    h = head('Site reliability report | siteupdown.com', 'A printable reliability report for one website, from our own checks.', path, noindex=True).replace('{BODYATTR}', '')
+    body = ('<section class="page"><div class="wrap prose toolpage" id="rp"><nav class="crumbs no-print" aria-label="Breadcrumb"><a href="/">Home</a> / Report</nav>'
+            '<div id="rp-out" aria-live="polite"><p class="note">Loading&hellip;</p></div></div></section>')
+    write('site-report.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/report.js"></script>'))
+
 def history_page():
     path = '/outage-history'
     h = head('Outage history — what was reported and detected on any day | siteupdown.com', 'A permanent day-by-day record of the problems visitors reported and the outages our own checks detected, for popular websites and apps.', path).replace('{BODYATTR}', '')
@@ -908,4 +944,4 @@ def gameping_page():
 
 
 if __name__ == '__main__':
-    build_newlook_css(); home(); login(); account(); monitor(); speed(); status(); static_pages(); help_pages(); tools_pages(); sla_page(); internet_speed_page(); heatmap_page(); history_page(); ip_page(); gameping_page(); site_pages_build()
+    build_newlook_css(); home(); login(); account(); monitor(); speed(); status(); static_pages(); help_pages(); tools_pages(); sla_page(); internet_speed_page(); heatmap_page(); history_page(); insight_pages(); ip_page(); gameping_page(); site_pages_build()

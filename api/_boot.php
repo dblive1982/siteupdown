@@ -139,6 +139,21 @@ function ensure_schema(PDO $pdo): void {
         down_s INT NOT NULL DEFAULT 0,
         PRIMARY KEY (day, host)
     )$cs");
+    // Where the time goes on each check (DNS, connect, secure handshake, first byte), one row per site per five minutes, kept 35 days. And who runs the infrastructure in front of each site.
+    $pdo->exec("CREATE TABLE IF NOT EXISTS site_timing (
+        host VARCHAR(253) NOT NULL,
+        ts DATETIME NOT NULL,
+        dns_ms INT NOT NULL DEFAULT 0,
+        conn_ms INT NOT NULL DEFAULT 0,
+        tls_ms INT NOT NULL DEFAULT 0,
+        ttfb_ms INT NOT NULL DEFAULT 0,
+        PRIMARY KEY (host, ts)
+    )$cs");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS site_prov (
+        host VARCHAR(253) NOT NULL PRIMARY KEY,
+        provider VARCHAR(40) NOT NULL,
+        seen DATETIME NOT NULL
+    )$cs");
     // Which site each visitor is watching live (one at a time), and sites outside the built-in list that people have checked, so history starts building for them.
     $pdo->exec("CREATE TABLE IF NOT EXISTS live_viewer (
         viewer CHAR(64) NOT NULL PRIMARY KEY,

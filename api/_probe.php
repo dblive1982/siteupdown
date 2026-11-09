@@ -78,6 +78,24 @@ function resolve_public(string $host): array {
     return ['ips' => array_values(array_unique($ips)), 'error' => null];
 }
 
+/** Best guess at who runs the infrastructure in front of a site, from its response headers only. Null when nothing is recognisable. */
+function sud_provider(array $h): ?string {
+    $sv = strtolower($h['server'] ?? ''); $via = strtolower(($h['via'] ?? '') . ' ' . ($h['x-served-by'] ?? ''));
+    if (isset($h['cf-ray']) || str_contains($sv, 'cloudflare')) return 'Cloudflare';
+    if (isset($h['x-amz-cf-id']) || str_contains($via, 'cloudfront')) return 'Amazon CloudFront';
+    if (isset($h['x-amz-request-id']) || isset($h['x-amzn-requestid']) || str_contains($sv, 'amazons3') || str_contains($sv, 'awselb')) return 'Amazon Web Services';
+    if (isset($h['x-azure-ref']) || str_contains($sv, 'microsoft-iis') && isset($h['x-msedge-ref'])) return 'Microsoft Azure';
+    if (isset($h['x-goog-generation']) || str_contains($sv, 'gws') || str_contains($sv, 'gse') || str_contains($sv, 'esf') || isset($h['x-cloud-trace-context'])) return 'Google';
+    if (isset($h['x-fastly-request-id']) || str_contains($via, 'fastly') || str_contains($sv, 'fastly')) return 'Fastly';
+    if (isset($h['x-akamai-transformed']) || str_contains($sv, 'akamai')) return 'Akamai';
+    if (isset($h['x-vercel-id']) || str_contains($sv, 'vercel')) return 'Vercel';
+    if (isset($h['x-nf-request-id']) || str_contains($sv, 'netlify')) return 'Netlify';
+    if (isset($h['x-github-request-id'])) return 'GitHub Pages';
+    if (isset($h['x-sucuri-id'])) return 'Sucuri';
+    if (str_contains($sv, 'envoy') && str_contains($via, 'google')) return 'Google';
+    return null;
+}
+
 /**
  * One request (following up to 5 redirects). Returns:
  * code, ms, err (dns|blocked|timeout|ssl|connect|redirects|null), final, title, headings[], server, https
@@ -87,7 +105,9 @@ function http_probe(string $host, string $path, bool $https, bool $thorough, int
     $start = microtime(true);
     $curHost = $host; $curPath = $path; $curHttps = $https;
     for ($hop = 0; $hop <= 5; $hop++) {
+        $dns0 = microtime(true);
         $r = resolve_public($curHost);
+        $dnsMs = (int)round((microtime(true) - $dns0) * 1000);
         if ($r['error']) { $res['err'] = $r['error']; break; }
         $port = $curHttps ? 443 : 80;
         $urlPort = '';
@@ -124,7 +144,13 @@ function http_probe(string $host, string $path, bool $https, bool $thorough, int
         $errno = curl_errno($ch);
         $code = (int)curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
         $ci = ($thorough && $curHttps) ? curl_getinfo($ch, CURLINFO_CERTINFO) : [];
+        $inf = curl_getinfo($ch);
         curl_close($ch);
+        if ($code > 0) {   // where the time went on this request: DNS lookup, connecting, secure handshake, waiting for the first byte
+            $cn = (int)round(($inf['connect_time'] ?? 0) * 1000); $ap = (int)round(($inf['appconnect_time'] ?? 0) * 1000);
+            $res['t'] = ['dns' => $dnsMs, 'conn' => $cn, 'tls' => $curHttps && $ap > $cn ? $ap - $cn : 0, 'ttfb' => max(0, (int)round((($inf['starttransfer_time'] ?? 0) - ($inf['pretransfer_time'] ?? 0)) * 1000))];
+            $res['prov'] = sud_provider($headers);
+        }
         $res['ms'] = (int)round((microtime(true) - $start) * 1000);
         if ($code === 0) {
             if ($errno === 28) $res['err'] = 'timeout';
@@ -248,6 +274,7 @@ function check_site_once(string $host, string $path = '/', bool $thorough = fals
         'title' => $r['title'], 'headings' => $r['headings'], 'server' => $r['server'], 'https' => $r['https'],
         'redirected' => ($r['hops'] ?? 0) > 0, 'attempts' => $attempts,
         'chain' => count($r['chain']) > 1 ? $r['chain'] : [],
+        'timing' => $r['t'] ?? null, 'prov' => $r['prov'] ?? null,
         'extra' => ['final' => $r['final'], 'ip' => $r['ip'], 'ctype' => $r['ctype'], 'bytes' => $r['bytes'], 'desc' => $r['desc'], 'lang' => $r['lang'], 'sec' => $r['sec'], 'tls_expires' => $r['tls_expires'], 'tls_issuer' => $r['tls_issuer']],
     ];
 }
