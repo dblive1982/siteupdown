@@ -467,3 +467,8 @@
 :root[data-theme=light] body #recent-outages .ins-body .ins-h+.ins-n{margin-bottom:6px}
 :root[data-theme=light] body #recent-outages .ins-body{padding-bottom:10px}
 :root[data-theme=light] body .tr-y{line-height:1;margin-top:-2px}
+@media (hover:hover){
+:root[data-theme=light] body #recent-outages .ins-tabs button:not([aria-pressed=true]):hover,:root[data-theme=light] body .sp-ranges .rg:not(.on):hover,:root[data-theme=light] body .seg2 button:not([aria-pressed=true]):not([aria-selected=true]):hover,:root[data-theme=light] body .seg button:not([aria-selected=true]):hover{background:#ffd8b0;border-color:#0b0b0b;color:#0b0b0b}
+}
+:root[data-theme=light] body #recent-outages .ins-tabs button:not([aria-pressed=true]):focus-visible,:root[data-theme=light] body .sp-ranges .rg:not(.on):focus-visible,:root[data-theme=light] body .seg2 button:focus-visible,:root[data-theme=light] body .seg button:focus-visible{background:#ffd8b0}
+:root[data-theme=light] body #recent-outages .ins-tabs button,:root[data-theme=light] body .sp-ranges .rg,:root[data-theme=light] body .seg2 button,:root[data-theme=light] body .seg button{transition:background .15s}
