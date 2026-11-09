@@ -74,8 +74,40 @@ echo json_encode([
  'reported' => [$n('Instagram','instagram',['count'=>14]), $n('WhatsApp','whatsapp',['count'=>8]), $n('Netflix','netflix',['count'=>5])],
  'by_cat' => [['cat'=>'social','count'=>61],['cat'=>'streaming','count'=>34],['cat'=>'gaming','count'=>19]],
  'by_area' => [['country'=>'GB','count'=>48],['country'=>'US','count'=>31],['country'=>'IN','count'=>12]],
+ 'cats_rel' => [['cat'=>'search','sites'=>6,'pct'=>99.98,'outages'=>0],['cat'=>'video','sites'=>11,'pct'=>99.9,'outages'=>2],['cat'=>'gaming','sites'=>20,'pct'=>99.5,'outages'=>8]],
+ 'cascade' => [['provider'=>'Cloudflare','count'=>4,'sites'=>[['name'=>'Discord','page'=>'/is-discord-down','state'=>'slow'],['name'=>'Roblox','page'=>'/is-roblox-down','state'=>'slow'],['name'=>'Canva','page'=>'/is-canva-down','state'=>'down'],['name'=>'Medium','page'=>'/is-medium-down','state'=>'slow']]]],
+ 'cal' => array_map(fn($i) => ['day' => gmdate('Y-m-d', $t - (90 - $i) * 86400), 'n' => ($i * 7) % 5 === 0 ? ($i % 6) : 0], range(0, 90)),
  'glance' => ['checked'=>132,'outages'=>3,'avg'=>312,'avg_prev'=>287], 'trend' => $trend, 'now' => $d(0)
 ]);
+''')
+open(p('api', 'sitestats.php'), 'w').write('''<?php
+// TEST SITE ONLY: sample numbers for the deeper-insight section. Not real results.
+header('Content-Type: application/json');
+$h = strtolower((string)($_GET['host'] ?? 'example.com')); $t = time(); $d = fn($ago) => gmdate('Y-m-d\\\\TH:i:s\\\\Z', $t - $ago);
+$bad = in_array($h, ['discord.com', 'roblox.com'], true);
+$hours = [210,205,198,190,185,180,190,230,260,280,270,260,255,250,260,270,290,330,420,470,440,380,300,240];
+echo json_encode(['host' => $h, 'name' => ucfirst(explode('.', $h)[0]), 'page' => '/is-' . explode('.', $h)[0] . '-down', 'cat' => 'video',
+ 'u7' => ['checks' => 2000, 'pct' => $bad ? 99.4 : 99.98, 'outages' => $bad ? 2 : 0, 'down' => $bad ? 3600 : 0, 'avg' => 250],
+ 'u30' => ['checks' => 8000, 'pct' => $bad ? 99.2 : 99.96, 'outages' => $bad ? 5 : 1, 'down' => $bad ? 9000 : 900, 'avg' => 262],
+ 'grade' => $bad ? 'C' : 'A', 'rank' => ['n' => 3, 'of' => 11], 'timing' => ['dns' => 12, 'conn' => 31, 'tls' => 58, 'ttfb' => 164, 'n' => 288],
+ 'hours' => $hours, 'outages' => [['started' => $d(400000), 'ended' => $d(396400), 'seconds' => 3600], ['started' => $d(1200000), 'ended' => $d(1198800), 'seconds' => 1200], ['started' => $d(3000000), 'ended' => $d(2995000), 'seconds' => 5000]],
+ 'outages_90' => 3, 'mtbf_h' => 612.0, 'provider' => 'Cloudflare', 'now' => $d(0)]);
+''')
+open(p('api', 'weekly.php'), 'w').write('''<?php
+// TEST SITE ONLY: sample weekly summary. Not real results.
+header('Content-Type: application/json');
+$n = fn($name, $slug, $x) => array_merge(['host' => $slug . '.com', 'name' => $name, 'page' => '/is-' . $slug . '-down', 'cat' => 'social', 'ms' => 200], $x);
+$t = time();
+echo json_encode(['from' => gmdate('Y-m-d', $t - 6 * 86400), 'to' => gmdate('Y-m-d', $t), 'outages' => 14, 'outages_prev' => 19, 'down_s' => 31200, 'worst_day' => ['day' => gmdate('Y-m-d', $t - 2 * 86400), 'n' => 6], 'tracked' => 132, 'perfect' => 91,
+ 'best' => [$n('Google','google',['pct'=>100,'outages'=>0,'down'=>0]), $n('Wikipedia','wikipedia',['pct'=>100,'outages'=>0,'down'=>0]), $n('Amazon','amazon',['pct'=>99.99,'outages'=>0,'down'=>0])],
+ 'worst' => [$n('Discord','discord',['pct'=>98.9,'outages'=>4,'down'=>7200]), $n('Roblox','roblox',['pct'=>99.3,'outages'=>2,'down'=>4300])],
+ 'cats' => [['cat'=>'search','sites'=>6,'pct'=>99.98,'outages'=>0],['cat'=>'video','sites'=>11,'pct'=>99.9,'outages'=>2],['cat'=>'gaming','sites'=>20,'pct'=>99.5,'outages'=>8]],
+ 'longest' => ['name' => 'Discord', 'page' => '/is-discord-down', 'started' => gmdate('Y-m-d\\\\TH:i:s\\\\Z', $t - 3 * 86400), 'seconds' => 5400], 'reports' => 412, 'now' => gmdate('Y-m-d\\\\TH:i:s\\\\Z')]);
+''')
+open(p('api', 'export.php'), 'w').write('''<?php
+// TEST SITE ONLY: sample CSV.
+header('Content-Type: text/csv; charset=utf-8'); header('Content-Disposition: attachment; filename="sample-uptime.csv"');
+echo "site,date_utc,checks,successful_checks,uptime_percent,average_response_ms,outages,minutes_down\\nSample,2026-11-01,288,288,100,250,0,0\\nSample,2026-11-02,288,286,99.31,262,1,10\\n";
 ''')
 open(p('robots.txt'), 'w').write('User-agent: *\nDisallow: /\n')
 for f in ('sitemap.xml', 'ads.txt'):

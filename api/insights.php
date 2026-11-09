@@ -18,5 +18,8 @@ echo json_encode([
  'reported' => [$n('Instagram','instagram',['count'=>14]), $n('WhatsApp','whatsapp',['count'=>8]), $n('Netflix','netflix',['count'=>5])],
  'by_cat' => [['cat'=>'social','count'=>61],['cat'=>'streaming','count'=>34],['cat'=>'gaming','count'=>19]],
  'by_area' => [['country'=>'GB','count'=>48],['country'=>'US','count'=>31],['country'=>'IN','count'=>12]],
+ 'cats_rel' => [['cat'=>'search','sites'=>6,'pct'=>99.98,'outages'=>0],['cat'=>'video','sites'=>11,'pct'=>99.9,'outages'=>2],['cat'=>'gaming','sites'=>20,'pct'=>99.5,'outages'=>8]],
+ 'cascade' => [['provider'=>'Cloudflare','count'=>4,'sites'=>[['name'=>'Discord','page'=>'/is-discord-down','state'=>'slow'],['name'=>'Roblox','page'=>'/is-roblox-down','state'=>'slow'],['name'=>'Canva','page'=>'/is-canva-down','state'=>'down'],['name'=>'Medium','page'=>'/is-medium-down','state'=>'slow']]]],
+ 'cal' => array_map(fn($i) => ['day' => gmdate('Y-m-d', $t - (90 - $i) * 86400), 'n' => ($i * 7) % 5 === 0 ? ($i % 6) : 0], range(0, 90)),
  'glance' => ['checked'=>132,'outages'=>3,'avg'=>312,'avg_prev'=>287], 'trend' => $trend, 'now' => $d(0)
 ]);
