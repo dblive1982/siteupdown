@@ -427,3 +427,22 @@
 @media print{.site-foot,.nl-head,.crumbs,.no-print,.cookie-banner,[id*=cookie],body:after{display:none!important}body{background:#fff!important}.card{box-shadow:none!important}}
 :root[data-theme=light] body .cmp-t th[scope=row]{width:30%;font-size:13px}
 :root[data-theme=light] body .cmp-t td{word-break:normal;overflow-wrap:anywhere;font-size:14px}
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* Admin traffic and SEO */
+:root[data-theme=light] body .adm-range{margin:6px 0 14px}
+:root[data-theme=light] body .adm-line{width:100%;height:auto;display:block}
+:root[data-theme=light] body .adm-line .gr line{stroke:#d9d2b8;stroke-width:1}
+:root[data-theme=light] body .adm-line text{font-size:10px;fill:#666}
+:root[data-theme=light] body .adm-line .area{fill:rgba(249,115,22,.14);stroke:none}
+:root[data-theme=light] body .adm-line .l1{fill:none;stroke:#f97316;stroke-width:3;stroke-linejoin:round}
+:root[data-theme=light] body .adm-line .l2{fill:none;stroke:#0b0b0b;stroke-width:2.5;stroke-dasharray:5 4;stroke-linejoin:round}
+:root[data-theme=light] body .adm-line .hit{fill:transparent;cursor:pointer}:root[data-theme=light] body .adm-line .hit:hover{fill:rgba(249,115,22,.3)}
+:root[data-theme=light] body .adm-key{display:flex;gap:14px;align-items:center;font-size:13px;margin:6px 0 0}
+:root[data-theme=light] body .adm-key i{display:inline-block;width:18px;height:4px;border-radius:2px;margin-right:6px;vertical-align:middle}
+:root[data-theme=light] body .adm-key .k1{background:#f97316}:root[data-theme=light] body .adm-key .k2{background:#0b0b0b}
+:root[data-theme=light] body .adm-hb li{grid-template-columns:minmax(90px,42%) 1fr auto}
+:root[data-theme=light] body .adm-hb .ib-l{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+:root[data-theme=light] body .adm-chk{list-style:none;margin:0;padding:0}
+:root[data-theme=light] body .adm-chk li{padding:6px 0;font-size:14px;line-height:1.45}
+:root[data-theme=light] body .adm-chk li.ok{color:#1f6b1f}:root[data-theme=light] body .adm-chk li.no{color:#b3261e;font-weight:700}
+:root[data-theme=light] body .adm-chk code{background:#f1ecd2;padding:1px 5px;border-radius:5px}

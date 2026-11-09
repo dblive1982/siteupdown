@@ -144,6 +144,7 @@ try {
 } catch (Throwable $e) { error_log('history archive: ' . $e->getMessage()); }
 $pdo->prepare('DELETE FROM checks WHERE checked_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - 3 * 86400)]);
 $pdo->prepare('DELETE FROM site_log WHERE ts < ?')->execute([gmdate('Y-m-d H:i:s', time() - 35 * 86400)]);
+try { $pdo->prepare('DELETE FROM pv_seen WHERE day < ?')->execute([gmdate('Y-m-d', time() - 2 * 86400)]); $pdo->prepare('DELETE FROM pv_daily WHERE day < ?')->execute([gmdate('Y-m-d', time() - 400 * 86400)]); } catch (Throwable $e) {}
 try { $pdo->prepare('DELETE FROM site_timing WHERE ts < ?')->execute([gmdate('Y-m-d H:i:s', time() - 35 * 86400)]); } catch (Throwable $e) {}
 // Problem reports are kept for three years; the one-way address hash is only needed for the 30-minute duplicate check, so it is wiped after two days.
 $pdo->prepare('DELETE FROM reports WHERE ts < ?')->execute([gmdate('Y-m-d H:i:s', time() - 1095 * 86400)]);
