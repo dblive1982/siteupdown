@@ -138,6 +138,52 @@
     headline();
   }).catch(function () { headline(); });
 
+  /* Plain-English explanation of each result code, shown on hover, keyboard focus or tap */
+  var CODES = {
+    200: 'OK. The page loaded normally.', 201: 'Created. The request worked and something new was made.', 204: 'No content. The server answered fine but sent nothing back.',
+    301: 'Moved permanently. The site sent us to a new address and we followed it.', 302: 'Temporary redirect. The site sent us to another page for now and we followed it.',
+    303: 'See other. The site sent us to a different page and we followed it.', 304: 'Not modified. Nothing has changed since we last looked.',
+    307: 'Temporary redirect. The site sent us to another address for now and we followed it.', 308: 'Permanent redirect. The site has moved for good and sent us to its new address. This is normal and means the site answered.',
+    400: 'Bad request. The server did not understand the request.', 401: 'Login needed. The page is private, but the site itself is answering.',
+    403: 'Forbidden. The site answered but refused our check. This often happens when a site blocks automated visitors, so it is not necessarily down.',
+    404: 'Not found. The server answered but could not find that page.', 405: 'Method not allowed. The server answered but did not accept this kind of request.',
+    408: 'Request timeout. The server gave up waiting for the request.', 410: 'Gone. That page has been removed for good.', 418: 'The server answered with a joke code. It is up.',
+    429: 'Too many requests. The site is up but asked us to slow down, so it may be limiting automated checks.', 451: 'Unavailable for legal reasons. The site is blocking access from here.',
+    500: 'Server error. Something went wrong on the website\'s own server.', 501: 'Not implemented. The server does not support this request.',
+    502: 'Bad gateway. A server in front of the site got a bad answer from the main server. Usually a sign of an outage.', 503: 'Service unavailable. The site is overloaded or down for maintenance.',
+    504: 'Gateway timeout. A server in front of the site waited too long for the main server to answer.', 520: 'Unknown error from Cloudflare, the service in front of the site.',
+    521: 'Web server is down. Cloudflare could not reach the site\'s own server.', 522: 'Connection timed out between Cloudflare and the site\'s own server.',
+    523: 'Origin unreachable. Cloudflare could not find the route to the site\'s own server.', 524: 'Timeout. The site\'s own server took too long to answer Cloudflare.',
+    525: 'Secure connection failed between Cloudflare and the site\'s own server.', 526: 'Invalid certificate on the site\'s own server.'
+  };
+  function codeTip(p) {
+    var c = +p.code, t = CODES[c];
+    if (!t && c >= 200 && c < 300) t = 'Success. The page answered normally.';
+    if (!t && c >= 300 && c < 400) t = 'Redirect. The site sent us to another address and we followed it.';
+    if (!t && c >= 400 && c < 500) t = 'Client error. The server answered but refused or could not find the request.';
+    if (!t && c >= 500) t = 'Server error. Something went wrong on the website\'s own server.';
+    if (!t) t = p.state === 'none' ? 'No answer. This place could not reach the site before our check timed out.' : p.state === 'blocked' ? 'The site answered but turned our check away.' : 'Our probe reached the site.';
+    return (p.code ? 'Code ' + p.code + ': ' : '') + t;
+  }
+  (function () {
+    var tip = document.createElement('div'); tip.className = 'sp-tip'; tip.setAttribute('role', 'tooltip'); tip.hidden = true; document.body.appendChild(tip);
+    var cur = null;
+    function show(el) {
+      cur = el; tip.textContent = el.getAttribute('data-tip'); tip.hidden = false;
+      var r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+      var x = Math.max(8, Math.min(window.innerWidth - w - 8, r.left + r.width / 2 - w / 2));
+      var y = r.top - h - 8; if (y < 8) y = r.bottom + 8;
+      tip.style.left = (x + window.pageXOffset) + 'px'; tip.style.top = (y + window.pageYOffset) + 'px';
+    }
+    function hide() { tip.hidden = true; cur = null; }
+    document.addEventListener('mouseover', function (e) { var t = e.target.closest && e.target.closest('.has-tip'); if (t) show(t); else if (cur && !tip.contains(e.target)) hide(); });
+    document.addEventListener('focusin', function (e) { var t = e.target.closest && e.target.closest('.has-tip'); if (t) show(t); });
+    document.addEventListener('focusout', hide);
+    document.addEventListener('click', function (e) { var t = e.target.closest && e.target.closest('.has-tip'); if (t) show(t); else hide(); });
+    window.addEventListener('scroll', function () { if (cur) hide(); }, { passive: true });
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hide(); });
+  })();
+
   /* Latest worldwide snapshot from the background sweep, if there is one */
   getJSON('/api/world.php?host=' + encodeURIComponent(host)).then(function (r) {
     var w = r.ok && r.j.world; if (!w || !w.probes || !w.probes.length) return;
@@ -145,7 +191,7 @@
     var LBL = { ok: ['up', 'Reached'], error: ['down', 'Server error'], blocked: ['unsure', 'Blocked our check'], none: ['slow', 'No answer'] };
     var rows = w.probes.slice().sort(function (a, b) { return (a.country || '').localeCompare(b.country || ''); }).map(function (p) {
       var l = LBL[p.state] || LBL.none, nm = p.country ? (dn ? (dn.of(p.country) || p.country) : p.country) : (p.continent || '');
-      return '<tr><td data-l="Place">' + esc(nm) + (p.city ? ' <span class="sp-ms">' + esc(p.city) + '</span>' : '') + '</td><td data-l="Result"><span class="sp-pill ' + l[0] + '">' + l[1] + (p.code ? ' ' + p.code : '') + '</span></td><td data-l="Time">' + (p.ms != null && p.state !== 'none' ? p.ms + ' ms' : '') + '</td></tr>';
+      return '<tr><td data-l="Place">' + esc(nm) + (p.city ? ' <span class="sp-ms">' + esc(p.city) + '</span>' : '') + '</td><td data-l="Result"><span class="sp-pill ' + l[0] + ' has-tip" tabindex="0" role="button" data-tip="' + esc(codeTip(p)) + '">' + l[1] + (p.code ? ' ' + p.code : '') + '</span></td><td data-l="Time">' + (p.ms != null && p.state !== 'none' ? p.ms + ' ms' : '') + '</td></tr>';
     });
     $('#sp-wtab tbody').innerHTML = rows.join('');
     /* small dotted world map with one marker per place */
