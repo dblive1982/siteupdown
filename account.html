@@ -16,8 +16,8 @@
 <link rel="icon" href="/favicon.ico?v=2" sizes="any"><link rel="icon" href="/favicon-32.png?v=2" type="image/png" sizes="32x32"><link rel="icon" href="/favicon-64.png?v=2" type="image/png" sizes="64x64"><link rel="manifest" href="/site.webmanifest"><link rel="icon" href="/favicon-192.png?v=2" type="image/png" sizes="192x192"><link rel="apple-touch-icon" href="/apple-touch-icon.png?v=2">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="/assets/app.css?v=1acd5c75">
-<link rel="stylesheet" href="/assets/newlook.css?v=1acd5c75">
+<link rel="stylesheet" href="/assets/app.css?v=714ef2c2">
+<link rel="stylesheet" href="/assets/newlook.css?v=714ef2c2">
 
 </head>
 <body data-page="account">
@@ -46,6 +46,10 @@
 <div class="field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><input name="cur" type="password" autocomplete="current-password" placeholder="Current password" aria-label="Current password"></div>
 <div class="field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><input name="nw" type="password" autocomplete="new-password" placeholder="New password (8+)" aria-label="New password" minlength="8"></div>
 <button class="btn small" type="submit" style="justify-self:start">Change password</button><p class="err" role="alert"></p></form></div>
+<div class="card stack" id="tf-card"><h3>Two-step sign-in</h3><p class="note" style="margin:0" id="tf-state">Add a second lock: after your password we email you a six-digit code.</p>
+<button class="btn small" type="button" id="tf-btn" style="justify-self:start">Turn on</button>
+<form class="stack" id="tf-form" hidden novalidate><div class="field"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg><input name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6-digit code from your email" aria-label="Six-digit code"></div>
+<button class="btn small" type="submit" style="justify-self:start">Confirm</button><p class="err" role="alert"></p></form></div>
 <div class="card stack"><h3>Reset my data</h3><p class="note" style="margin:0">Clears your saved checks and your watchlist. Your account stays.</p><button class="btn small ghost" type="button" id="reset-data" style="justify-self:start">Reset my data</button></div>
 <div class="card stack danger-zone"><h3>Delete account</h3><p class="note" style="margin:0">Permanently deletes your account and everything saved with it. This cannot be undone.</p>
 <button class="btn small danger" type="button" id="del-open" style="justify-self:start">Delete my account</button>
@@ -64,8 +68,8 @@
 <nav class="nl-fgrid nl-fcard" aria-label="All pages"><div class="nl-fg"><h3>Check</h3><a href="/">Website checker</a><a href="/is-it-down/">Is it down?</a><a href="/outage-map">Outage map</a><a href="/outage-history">Outage history</a><a href="/state-of-the-internet">State of the internet</a><a href="/compare">Compare sites</a><a href="/monitor">Monitor</a></div><div class="nl-fg"><h3>Tools</h3><a href="/internet-speed-test">Internet speed test</a><a href="/speed">Website speed test</a><a href="/what-is-my-ip">What is my IP?</a><a href="/game-ping-test">Game ping test</a><a href="/tools/">All tools</a></div><div class="nl-fg"><h3>Learn</h3><a href="/help/">Help centre</a><a href="/how-we-check">How we check</a><a href="/faq">FAQ</a></div><div class="nl-fg"><h3>Company</h3><a href="/account">Account</a><a href="/about">About</a><a href="/business">For business</a><a href="/contact">Contact</a></div><div class="nl-fg"><h3>Legal</h3><a href="/legal">Terms &amp; legal</a><a href="/privacy">Privacy</a><button type="button" data-cookie-settings>Cookie settings</button></div></nav>
 <p class="fine">&copy; <span data-year>2026</span> siteupdown.com. An independent website checker, not affiliated with the sites it checks. Regional probes use the public <a href="https://globalping.io" rel="noopener">Globalping</a> network.</p>
 </div></footer>
-<script src="/assets/app.js?v=1acd5c75"></script>
-<script src="/assets/pages.js?v=1acd5c75"></script>
-<script src="/assets/newlook.js?v=1acd5c75"></script>
+<script src="/assets/app.js?v=714ef2c2"></script>
+<script src="/assets/pages.js?v=714ef2c2"></script>
+<script src="/assets/newlook.js?v=714ef2c2"></script>
 </body>
 </html>

@@ -450,4 +450,6 @@
 :root[data-theme=light] body .sp-ranges .rg,:root[data-theme=light] body .seg2 button,:root[data-theme=light] body .seg button{color:#0b0b0b;border:2px solid #0b0b0b;background:#fff;font-weight:700}
 :root[data-theme=light] body .sp-ranges .rg.on,:root[data-theme=light] body .seg2 button[aria-pressed=true],:root[data-theme=light] body .seg2 button[aria-selected=true],:root[data-theme=light] body .seg button[aria-selected=true]{background:var(--yellow);color:#0b0b0b}
 
+:root[data-theme=light] body .dp-day i.has-tip,:root[data-theme=light] body .dp-bar i.has-tip{cursor:pointer}:root[data-theme=light] body .dp-day i.has-tip:hover,:root[data-theme=light] body .dp-day i.has-tip:focus{outline:2px solid #0b0b0b;outline-offset:1px}:root[data-theme=light] body .dp-bar i.has-tip:hover,:root[data-theme=light] body .dp-bar i.has-tip:focus{filter:brightness(.85);outline:none}
+
 body:after{content:"TEST SITE";position:fixed;right:10px;bottom:10px;background:#f59e0b;color:#000;font:700 12px/1 system-ui,sans-serif;letter-spacing:.08em;padding:7px 10px;border:2px solid #000;border-radius:6px;z-index:90;pointer-events:none}

@@ -14,11 +14,12 @@
       create: ['Create account.', 'Free, takes a few seconds. Your checks and watchlist are saved and private to you.'],
       forgot: ['Reset password.', 'Enter your email and we will send you a link to choose a new password.'],
       reset: ['New password.', 'Choose a new password for your account.'],
+      code: ['Enter your code.', 'Two-step sign-in is on for this account.'],
       sent: ['Check your email.', 'If that address has an account, a reset link is on its way. It works for one hour.'] };
     function show(v) {
       view = v;
       $('#t-h').innerHTML = esc(T[v][0]).replace(/\.$/, '<span class="dot">.</span>'); $('#t-p').textContent = T[v][1];
-      ['signin', 'create', 'forgot', 'reset', 'sent'].forEach(function (x) { var f = $('#v-' + x); if (f) f.hidden = x !== v; });
+      ['signin', 'create', 'forgot', 'reset', 'code', 'sent'].forEach(function (x) { var f = $('#v-' + x); if (f) f.hidden = x !== v; });
       $('#gwrap').hidden = !(S.google && (v === 'signin' || v === 'create'));
       S.$$('#seg button').forEach(function (b) { b.setAttribute('aria-selected', b.getAttribute('data-v') === v); });
       S.$$('.err').forEach(function (e) { e.textContent = ''; });
@@ -30,11 +31,26 @@
       $(id).addEventListener('submit', function (e) {
         e.preventDefault(); var f = e.target, btn = $('button[type=submit]', f), er = $('.err', f), lbl = btn.textContent;
         er.textContent = ''; btn.disabled = true; btn.firstElementChild ? btn.firstElementChild.textContent = 'Please wait…' : null;
-        S.api(path, body(f)).then(ok).catch(function (x) { er.textContent = x.message; }).then(function () { btn.disabled = false; if (btn.firstElementChild) btn.firstElementChild.textContent = lbl.trim(); });
+        S.api(path, cfBody(f, body(f))).then(ok).catch(function (x) { er.textContent = x.message; }).then(function () { btn.disabled = false; if (btn.firstElementChild) btn.firstElementChild.textContent = lbl.trim(); });
       });
     }
+    /* Optional Cloudflare bot check: only appears when the site has it switched on. */
+    var cfTok = new WeakMap(), cfIds = [];
+    function cfBody(f, b) { var t = cfTok.get(f); if (t) { b.cf = t; cfTok.delete(f); } return b; }
+    function cfLoad(key) {
+      var slots = S.$$('[data-cf]'); if (!key || !slots.length) return;
+      window.sudCf = function () {
+        slots.forEach(function (sl) { var f = sl.closest('form'); var id = window.turnstile.render(sl, { sitekey: key, theme: 'light', callback: function (t) { cfTok.set(f, t); }, 'expired-callback': function () { cfTok.delete(f); } }); cfIds.push([f, id]); });
+      };
+      var sc = document.createElement('script'); sc.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=sudCf'; sc.async = true; document.head.appendChild(sc);
+      document.addEventListener('submit', function (e) { setTimeout(function () { cfIds.forEach(function (p) { if (p[0] === e.target && window.turnstile) try { window.turnstile.reset(p[1]); } catch (x) { /* ignore */ } }); }, 800); }, true);
+    }
     var v = function (f, n) { return f.elements[n].value; };
-    wire('#v-signin', 'login.php', function (f) { return { email: v(f, 'email'), password: v(f, 'password') }; }, function (j) { done(j.user, 'Signed in as ' + j.user.email); });
+    wire('#v-signin', 'login.php', function (f) { return { email: v(f, 'email'), password: v(f, 'password') }; }, function (j) {
+      if (j.twofa) { $('#tf-email').textContent = j.email; show('code'); return; }
+      done(j.user, 'Signed in as ' + j.user.email);
+    });
+    wire('#v-code', 'twofa.php', function (f) { return { action: 'verify', code: v(f, 'code') }; }, function (j) { done(j.user, 'Signed in as ' + j.user.email); });
     wire('#v-create', 'register.php', function (f) { return { name: v(f, 'name'), email: v(f, 'email'), password: v(f, 'password') }; }, function (j) { done(j.user, 'Welcome, ' + j.user.name + '! Your account is ready.'); });
     wire('#v-forgot', 'forgot.php', function (f) { return { email: v(f, 'email') }; }, function () { show('sent'); });
     wire('#v-reset', 'reset.php', function (f) { return { token: token, password: v(f, 'password') }; }, function () { history.replaceState(null, '', '/login'); show('signin'); S.toast('Password changed. You can sign in now.'); });
@@ -44,6 +60,7 @@
       if (S.enabled === false) { $('#off').hidden = false; $('#card').hidden = true; return; }
       show(token ? 'reset' : (location.hash === '#create' ? 'create' : 'signin'));
       if (S.google) loadGoogle();
+      cfLoad(S.me && S.me.turnstile);
     });
     function loadGoogle() {
       var s = document.createElement('script'); s.src = 'https://accounts.google.com/gsi/client'; s.async = true;
@@ -65,6 +82,14 @@
       if (!u) { location.replace('/login?next=' + encodeURIComponent('/account')); return; }
       $('#acct').hidden = false;
       $('#a-name').value = u.name; $('#a-email').textContent = u.email; $('#a-since').textContent = u.since ? 'Member since ' + u.since.split('-').reverse().join('/') : '';
+      (function () {
+        var st = $('#tf-state'), bt = $('#tf-btn'), fm = $('#tf-form'), on = !!S.me.user.twofa;
+        function paint() { st.textContent = on ? 'On. After your password we email you a six-digit code.' : 'Add a second lock: after your password we email you a six-digit code.'; bt.textContent = on ? 'Turn off' : 'Turn on'; fm.hidden = true; }
+        paint();
+        bt.addEventListener('click', function () { bt.disabled = true; $('.err', fm).textContent = ''; S.api('twofa.php', { action: 'send' }).then(function () { fm.hidden = false; st.textContent = 'We emailed you a code. Enter it to confirm.'; fm.elements.code.focus(); }).catch(function (x) { S.toast(x.message); }).then(function () { bt.disabled = false; });
+        });
+        fm.addEventListener('submit', function (e) { e.preventDefault(); S.api('twofa.php', { action: 'confirm', code: fm.elements.code.value }).then(function (j) { on = j.twofa; S.me.user.twofa = on; fm.reset(); paint(); S.toast(on ? 'Two-step sign-in is on.' : 'Two-step sign-in is off.'); }).catch(function (x) { $('.err', fm).textContent = x.message; }); });
+      })();
       $('#pw-card').hidden = !S.me.user.pw; $('#del-pw-wrap').hidden = !S.me.user.pw;
       tab(location.hash === '#settings' ? 'settings' : 'checks');
       loadChecks();
