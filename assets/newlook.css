@@ -390,3 +390,4 @@
 :root[data-theme=light] body .ins-stats div:last-child:nth-child(odd){grid-column:1/-1}
 :root[data-theme=light] body #recent-outages .ins-tabs button{border:2px solid #0b0b0b;color:#0b0b0b;background:#fff;font-weight:700}
 :root[data-theme=light] body #recent-outages .ins-tabs button[aria-pressed=true]{background:var(--yellow);color:#0b0b0b}
+:root[data-theme=light] body .strip .v-ip{display:block;margin-top:4px;font-weight:700;color:#0b0b0b;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;word-break:break-all}
