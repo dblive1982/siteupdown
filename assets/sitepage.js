@@ -165,24 +165,6 @@
     if (!t) t = p.state === 'none' ? 'No answer. This place could not reach the site before our check timed out.' : p.state === 'blocked' ? 'The site answered but turned our check away.' : 'Our probe reached the site.';
     return (p.code ? 'Code ' + p.code + ': ' : '') + t;
   }
-  (function () {
-    var tip = document.createElement('div'); tip.className = 'sp-tip'; tip.setAttribute('role', 'tooltip'); tip.hidden = true; document.body.appendChild(tip);
-    var cur = null;
-    function show(el) {
-      cur = el; tip.textContent = el.getAttribute('data-tip'); tip.hidden = false;
-      var r = el.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
-      var x = Math.max(8, Math.min(window.innerWidth - w - 8, r.left + r.width / 2 - w / 2));
-      var y = r.top - h - 8; if (y < 8) y = r.bottom + 8;
-      tip.style.left = (x + window.pageXOffset) + 'px'; tip.style.top = (y + window.pageYOffset) + 'px';
-    }
-    function hide() { tip.hidden = true; cur = null; }
-    document.addEventListener('mouseover', function (e) { var t = e.target.closest && e.target.closest('.has-tip'); if (t) show(t); else if (cur && !tip.contains(e.target)) hide(); });
-    document.addEventListener('focusin', function (e) { var t = e.target.closest && e.target.closest('.has-tip'); if (t) show(t); });
-    document.addEventListener('focusout', hide);
-    document.addEventListener('click', function (e) { var t = e.target.closest && e.target.closest('.has-tip'); if (t) show(t); else hide(); });
-    window.addEventListener('scroll', function () { if (cur) hide(); }, { passive: true });
-    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hide(); });
-  })();
 
   /* Deeper insight: grade, where the time goes, typical day, outage timeline, who runs it. All from our own checks. */
   getJSON('/api/sitestats.php?host=' + encodeURIComponent(host)).then(function (r) {
