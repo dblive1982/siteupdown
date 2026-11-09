@@ -467,3 +467,8 @@
 @@ #recent-outages .ins-body .ins-h+.ins-n{margin-bottom:6px}
 @@ #recent-outages .ins-body{padding-bottom:10px}
 @@ .tr-y{line-height:1;margin-top:-2px}
+@media (hover:hover){
+@@ #recent-outages .ins-tabs button:not([aria-pressed=true]):hover,@@ .sp-ranges .rg:not(.on):hover,@@ .seg2 button:not([aria-pressed=true]):not([aria-selected=true]):hover,@@ .seg button:not([aria-selected=true]):hover{background:#ffd8b0;border-color:#0b0b0b;color:#0b0b0b}
+}
+@@ #recent-outages .ins-tabs button:not([aria-pressed=true]):focus-visible,@@ .sp-ranges .rg:not(.on):focus-visible,@@ .seg2 button:focus-visible,@@ .seg button:focus-visible{background:#ffd8b0}
+@@ #recent-outages .ins-tabs button,@@ .sp-ranges .rg,@@ .seg2 button,@@ .seg button{transition:background .15s}
