@@ -56,7 +56,7 @@
 
   function shell() {
     box('<div class="adm"><aside class="adm-nav"><b class="adm-brand">Admin</b>'
-      + '<button type="button" data-t="overview" class="on">Overview</button><button type="button" data-t="users">Users</button><button type="button" data-t="data">Data &amp; export</button><button type="button" data-t="log">Activity log</button>'
+      + '<button type="button" data-t="overview" class="on">Overview</button><button type="button" data-t="traffic">Traffic</button><button type="button" data-t="seo">SEO</button><button type="button" data-t="users">Users</button><button type="button" data-t="data">Data &amp; export</button><button type="button" data-t="log">Activity log</button>'
       + '<button type="button" data-t="lock" class="adm-lockbtn">Lock admin</button></aside><div class="adm-main" id="adm-main"></div></div>');
     root.querySelector('.adm-nav').addEventListener('click', function (e) {
       var b = e.target.closest('button'); if (!b) return;
@@ -67,7 +67,7 @@
     });
     view();
   }
-  function view() { var m = document.getElementById('adm-main'); m.innerHTML = '<p class="lead">Loading&hellip;</p>'; ({ users: users, data: dataTab, log: logTab }[tab] || overview)(m); }
+  function view() { var m = document.getElementById('adm-main'); m.innerHTML = '<p class="lead">Loading&hellip;</p>'; ({ users: users, data: dataTab, log: logTab, traffic: traffic, seo: seo }[tab] || overview)(m); }
   var n = function (v) { return Number(v || 0).toLocaleString(); };
 
   function chart(title, ser, cls) {
@@ -101,6 +101,75 @@
     }).catch(fail);
   }
 
+
+  /* ---- Traffic: who visits, from where, on what (counts only; nothing identifying is stored) ---- */
+  function flag(c) { if (!/^[A-Z]{2}$/.test(c || '')) return '🌐'; return String.fromCodePoint(c.charCodeAt(0) + 127397, c.charCodeAt(1) + 127397); }
+  function cname(c) { if (!c) return 'Unknown'; try { return new Intl.DisplayNames(undefined, { type: 'region' }).of(c) || c; } catch (e) { return c; } }
+  function hbars(rows) {
+    var mx = Math.max.apply(null, rows.map(function (r) { return r.n; }).concat([1]));
+    return '<ul class="ins-bars adm-hb">' + rows.map(function (r) { return '<li><span class="ib-l" title="' + esc(r.l) + '">' + (r.pre || '') + esc(r.l) + '</span><span class="ib-b"><i style="width:' + Math.max(3, Math.round(100 * r.n / mx)) + '%"></i></span><span class="ib-n">' + esc(r.t != null ? r.t : n(r.n)) + '</span></li>'; }).join('') + '</ul>';
+  }
+  function lineChart(a, b, la, lb) {
+    var W = 640, H = 190, pl = 34, pb = 22, mx = Math.max.apply(null, a.map(function (x) { return x.n; }).concat(b.map(function (x) { return x.n; })).concat([1]));
+    var step = (W - pl - 6) / Math.max(1, a.length - 1);
+    function pts(ser) { return ser.map(function (x, i) { return [pl + i * step, H - pb - (H - pb - 8) * x.n / mx]; }); }
+    function path(P) { return P.map(function (q, i) { return (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1); }).join(' '); }
+    var pa = pts(a), pb2 = pts(b), grid = '';
+    for (var g = 0; g <= 4; g++) { var y = 8 + (H - pb - 8) * g / 4; grid += '<line x1="' + pl + '" x2="' + (W - 6) + '" y1="' + y + '" y2="' + y + '"/><text x="' + (pl - 5) + '" y="' + (y + 3) + '" text-anchor="end">' + n(Math.round(mx * (1 - g / 4))) + '</text>'; }
+    var dots = a.map(function (x, i) { var d = new Date(x.d + 'T00:00:00Z').toLocaleDateString([], { day: 'numeric', month: 'short', timeZone: 'UTC' }); return '<circle class="hit" cx="' + pa[i][0].toFixed(1) + '" cy="' + pa[i][1].toFixed(1) + '" r="9"><title>' + d + ': ' + n(x.n) + ' ' + la.toLowerCase() + ', ' + n(b[i].n) + ' ' + lb.toLowerCase() + '</title></circle>'; }).join('');
+    var d0 = new Date(a[0].d + 'T00:00:00Z').toLocaleDateString([], { day: 'numeric', month: 'short', timeZone: 'UTC' });
+    return '<svg class="adm-line" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(la + ' and ' + lb + ' per day') + '"><g class="gr">' + grid + '</g>'
+      + '<path class="area" d="' + path(pa) + ' L' + pa[pa.length - 1][0].toFixed(1) + ' ' + (H - pb) + ' L' + pa[0][0].toFixed(1) + ' ' + (H - pb) + 'Z"/><path class="l1" d="' + path(pa) + '"/><path class="l2" d="' + path(pb2) + '"/>' + dots
+      + '<text class="ax" x="' + pl + '" y="' + (H - 5) + '">' + d0 + '</text><text class="ax" x="' + (W - 6) + '" y="' + (H - 5) + '" text-anchor="end">Today</text></svg>'
+      + '<p class="adm-key"><i class="k1"></i>' + esc(la) + ' <i class="k2"></i>' + esc(lb) + '</p>';
+  }
+  function traffic(m) {
+    var days = +(m.getAttribute('data-days') || 30);
+    S.api('admin.php?a=traffic&days=' + days).then(function (j) {
+      var t = j.tiles, d = function (a, b) { return b ? (a >= b ? '▲ ' : '▼ ') + Math.abs(Math.round(100 * (a - b) / b)) + '% vs yesterday' : ''; };
+      var off = Math.round(-new Date().getTimezoneOffset() / 60), loc = new Array(24).fill(0);
+      j.hours.forEach(function (v, u) { loc[((u + off) % 24 + 24) % 24] += v; });
+      var hmx = Math.max.apply(null, loc.concat([1])), hi = loc.indexOf(Math.max.apply(null, loc));
+      var tot = j.devices.d + j.devices.m + j.devices.t || 1, pc = function (v) { return Math.round(100 * v / tot); };
+      var cnt = j.countries.map(function (c) { return { l: cname(c.code), pre: flag(c.code) + ' ', n: c.views, t: n(c.views) + ' views · ' + n(c.visitors) + ' visitors' }; });
+      m.innerHTML = '<h1>Traffic<span class="dot">.</span></h1>'
+        + '<div class="seg2 adm-range" id="t-range">' + [7, 30, 90].map(function (x) { return '<button type="button" data-d="' + x + '" aria-pressed="' + (x === days) + '">' + x + ' days</button>'; }).join('') + '</div>'
+        + '<div class="adm-tiles">' + tile('Visitors today', t.visitors_today, d(t.visitors_today, t.visitors_yesterday)) + tile('Page views today', t.views_today, d(t.views_today, t.views_yesterday)) + tile('Visitors, ' + days + ' days', t.visitors_range) + tile('Page views, ' + days + ' days', t.views_range) + tile('Countries', t.countries) + '</div>'
+        + (j.since ? '<p class="note">Counting since ' + esc(j.since) + '. Visitors are counted once a day without keeping any address, and anyone who declines analytics or sends Do Not Track is not counted. Country is the network’s country where available, otherwise guessed from the visitor’s time zone, so treat it as a close guide.</p>' : '<p class="note">No visits counted yet. Counting starts once this version of the site is live and people browse it.</p>')
+        + '<div class="sp-card"><div class="sp-rhead"><b>Visitors and page views per day</b></div>' + lineChart(j.views, j.visitors, 'Page views', 'Visitors') + '</div>'
+        + '<div class="adm-grid"><div class="sp-card"><div class="sp-rhead"><b>Where visitors are</b></div>' + (cnt.length ? hbars(cnt) : '<p class="note">Nothing yet.</p>') + '</div>'
+        + '<div class="sp-card"><div class="sp-rhead"><b>Top pages</b></div>' + (j.pages.length ? hbars(j.pages.map(function (p) { return { l: p.path, n: p.views }; })) : '<p class="note">Nothing yet.</p>') + '</div></div>'
+        + '<div class="adm-grid"><div class="sp-card"><div class="sp-rhead"><b>Where they came from</b></div>' + (j.refs.length ? hbars(j.refs.map(function (r) { return { l: r.ref, n: r.views }; })) : '<p class="note">Nothing yet.</p>') + '</div>'
+        + '<div class="sp-card"><div class="sp-rhead"><b>Devices</b></div><div class="dp-bar" role="img" aria-label="Device split"><i class="s-dns" style="flex:' + j.devices.m + '"></i><i class="s-conn" style="flex:' + j.devices.t + '"></i><i class="s-tls" style="flex:' + j.devices.d + '"></i></div>'
+        + '<ul class="dp-leg"><li><i class="s-dns"></i>Mobile <b>' + pc(j.devices.m) + '%</b></li><li><i class="s-conn"></i>Tablet <b>' + pc(j.devices.t) + '%</b></li><li><i class="s-tls"></i>Desktop <b>' + pc(j.devices.d) + '%</b></li></ul>'
+        + '<div class="sp-rhead" style="margin-top:18px"><b>Busiest hours</b></div><div class="dp-day" role="img" aria-label="Page views by hour of day">' + loc.map(function (v, i) { return '<i style="height:' + Math.max(3, Math.round(100 * v / hmx)) + '%"' + (i === hi && v ? ' class="hi"' : '') + ' title="' + ('0' + i).slice(-2) + ':00: ' + n(v) + ' views"></i>'; }).join('') + '</div><div class="dp-axis"><span>00:00</span><span>12:00</span><span>23:00</span></div><p class="note">Your time zone.</p></div></div>';
+      m.querySelector('#t-range').addEventListener('click', function (e) { var b = e.target.closest('[data-d]'); if (!b) return; m.setAttribute('data-days', b.getAttribute('data-d')); traffic(m); });
+    }).catch(fail);
+  }
+
+  /* ---- SEO: page-by-page search audit from the last site build, plus what only you can do ---- */
+  function seo(m) {
+    S.api('admin.php?a=seo').then(function (j) {
+      var ps = j.pages || [];
+      if (!ps.length) { m.innerHTML = '<h1>SEO<span class="dot">.</span></h1><p class="lead">The audit is written each time the site is built, and none has been uploaded yet.</p>'; return; }
+      var bad = ps.filter(function (p) { return p.issues && p.issues.length; });
+      var kinds = {}; bad.forEach(function (p) { p.issues.forEach(function (i) { var k = i.replace(/ \(.*$/, '').replace(/\d+/g, 'N'); kinds[k] = (kinds[k] || 0) + 1; }); });
+      var krows = Object.keys(kinds).sort(function (a, b) { return kinds[b] - kinds[a]; }).map(function (k) { return { l: k, n: kinds[k] }; });
+      var lens = [0, 0, 0, 0]; ps.filter(function (p) { return !p.noindex; }).forEach(function (p) { lens[p.tl < 25 ? 0 : p.tl <= 62 ? 1 : 2]++; });
+      var sc = j.score;
+      var site = j.site || {}, chk = function (ok, y, no) { return '<li class="' + (ok ? 'ok' : 'no') + '">' + (ok ? '✔ ' + y : '✖ ' + no) + '</li>'; };
+      m.innerHTML = '<h1>SEO<span class="dot">.</span></h1>'
+        + '<div class="adm-tiles">' + tile('SEO health', sc, 'out of 100') + tile('Pages Google can index', j.indexable) + tile('Pages with no problems', j.clean) + tile('Pages in the sitemap', j.in_sitemap) + tile('Kept out of search', j.noindex) + '</div>'
+        + '<p class="note">Checked at the last site build (' + esc(S.ago(j.built)) + '): titles, descriptions, headings, images, canonical links and social previews on every page.</p>'
+        + '<div class="adm-grid"><div class="sp-card"><div class="sp-rhead"><b>Problems found</b></div>' + (krows.length ? hbars(krows) : '<p class="note">None. Every indexable page passes our checks.</p>') + '</div>'
+        + '<div class="sp-card"><div class="sp-rhead"><b>Site basics</b></div><ul class="adm-chk">' + chk(site.robots, 'robots.txt is in place', 'robots.txt is missing') + chk(site.sitemap, 'sitemap.xml lists ' + j.in_sitemap + ' pages', 'No sitemap') + chk(site.ads_txt, 'ads.txt is in place', 'ads.txt is missing') + chk(true, 'Every page has a canonical link, social preview and structured data where it helps', '') + '</ul></div></div>'
+        + (bad.length ? '<div class="sp-card"><div class="sp-rhead"><b>Pages to fix (' + bad.length + ')</b></div><ul class="adm-list">' + bad.slice(0, 60).map(function (p) { return '<li><span><a href="' + esc(p.url) + '" target="_blank" rel="noopener">' + esc(p.url) + '</a><br><small>' + p.issues.map(esc).join(' · ') + '</small></span></li>'; }).join('') + '</ul></div>' : '')
+        + '<div class="sp-card"><div class="sp-rhead"><b>Only you can do these</b></div><ul class="adm-chk todo"><li>☐ In Google Search Console, open Sitemaps and submit <code>https://siteupdown.com/sitemap.xml</code>, then check Pages for anything marked not indexed.</li>'
+        + '<li>☐ Add the site to Bing Webmaster Tools. You can import it straight from Search Console, and it also covers DuckDuckGo and Yahoo.</li>'
+        + '<li>☐ Run a page through PageSpeed Insights. Speed on a phone is a ranking factor.</li><li>☐ Get real links to the site: the Chrome extension listing, a short post on Reddit or a forum when it is useful, and any directories that fit. Links from other sites are the biggest ranking factor we cannot build ourselves.</li>'
+        + '<li>☐ Add the social links to the footer once the accounts exist.</li></ul></div>';
+    }).catch(fail);
+  }
   function users(m) {
     var q = '', page = 1;
     function load() {

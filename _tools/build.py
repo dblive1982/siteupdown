@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Builds the static pages (index, login, account, monitor, privacy, legal, contact, 404) with a shared header and footer.
 Run:  python3 _tools/build.py   (from the project folder)"""
+import datetime as _dt
 import os, html
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
@@ -53,9 +54,27 @@ MENU = [
 ]
 DRAWER_HTML = '<button class="nl-close" id="nl-close" type="button" aria-label="Close menu">&times;</button>' + ''.join('<h2>%s</h2>%s' % (g, ''.join('<a href="%s"%s>%s%s</a>' % (h, '' if g != 'More' else ' class="nl-sub"', l, ('<small>%s</small>' % sm) if sm else '') for l, h, sm in items)) for g, items in MENU)
 
+def fit_title(t, limit=60):
+    """Search results cut titles at about 60 characters: drop the brand suffix first, then trim at a word."""
+    if len(t) <= limit: return t
+    for suf in (' \u2014 siteupdown.com', ' | siteupdown.com'):
+        if t.endswith(suf):
+            t = t[:-len(suf)]
+            break
+    if len(t) <= limit: return t
+    cut = t[:limit].rsplit(' ', 1)[0].rstrip(' ,:;-\u2014|')
+    return cut
+
+def fit_desc(d, limit=158):
+    """Descriptions are cut at about 160 characters: end on a sentence or word instead."""
+    if len(d) <= limit: return d
+    cut = d[:limit]
+    if '. ' in cut[80:]: return cut[:cut.rindex('. ') + 1]
+    return cut.rsplit(' ', 1)[0].rstrip(' ,;:-') + '\u2026'
+
 def head(title, desc, path, extra_head='', noindex=False):
-    t = html.escape(title)
-    d = html.escape(desc)
+    t = html.escape(fit_title(title))
+    d = html.escape(fit_desc(desc))
     canon = SITE + path
     drawer = DRAWER_HTML
     robots = '<meta name="robots" content="noindex,follow">' if noindex else '<meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">'
@@ -68,7 +87,7 @@ def head(title, desc, path, extra_head='', noindex=False):
 <meta name="description" content="{d}">
 {robots}
 <meta name="google-adsense-account" content="ca-pub-6517978259411056">
-<link rel="canonical" href="{canon}">
+<link rel="canonical" href="{canon}"><link rel="alternate" hreflang="en-gb" href="{canon}"><link rel="alternate" hreflang="x-default" href="{canon}">
 <meta property="og:type" content="website"><meta property="og:site_name" content="siteupdown.com">
 <meta property="og:title" content="{t}"><meta property="og:description" content="{d}"><meta property="og:url" content="{canon}">
 <meta property="og:image" content="{SITE}/assets/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:locale" content="en_GB">
@@ -353,7 +372,7 @@ def monitor():
     body = f'''
 <section class="page"><div class="wrap">
 <div class="card toplist">
-<div class="pc-head"><div><span class="eyebrow"><i></i>Your watchlist</span><h2>Monitor<span class="dot">.</span></h2>
+<div class="pc-head"><div><span class="eyebrow"><i></i>Your watchlist</span><h1>Monitor<span class="dot">.</span></h1>
 <p class="lead">Keep an eye on the websites you care about. We re-check them every few minutes, keep their uptime history, and email you if one goes down.</p></div></div>
 <div class="pad">
 <div class="card" id="m-out" hidden><h3 style="margin-bottom:8px">Sign in to build your watchlist</h3><p class="note">A free account lets you save up to 25 sites and see their status at a glance. The checker on the home page stays free without one.</p>
@@ -418,8 +437,13 @@ def status():
     write('status.html', h + body + foot('<script src="/assets/app.js"></script>\n<script src="/assets/pages.js"></script>'))
 
 # ---------------------------------------------------------------- legal pages
+SEO_PROSE = {'About': ('About siteupdown.com: a free, independent website checker', 'About siteupdown.com: a free, independent website status, speed and uptime checker that tells you whether a site is down for everyone or just you.'),
+ 'Privacy': ('Privacy policy: how siteupdown.com handles your data', 'How siteupdown.com handles website checks, accounts, cookies and your data, in plain English, including what we keep and what we never collect.'),
+ 'Legal notice': ('Legal notice and terms of use | siteupdown.com', 'Legal notice and terms of use for siteupdown.com, an independent website status checker. Who we are, how to use the service and how to contact us.'),
+ 'Contact': ('Contact siteupdown.com: feedback, reports and questions', 'Get in touch with siteupdown.com: send feedback, report a problem, suggest a site to add or ask about your data. We read every message.')}
 def prose(name, title, desc, path, inner):
-    h = head(title + ' — siteupdown.com', desc, path).replace('{BODYATTR}', '')
+    st, sd = SEO_PROSE.get(title, (title + ' — siteupdown.com', desc))
+    h = head(st, sd, path).replace('{BODYATTR}', '')
     body = f'<section class="page"><div class="wrap prose"><span class="eyebrow"><i></i>siteupdown.com</span><h1 style="margin:14px 0 20px">{title}<span class="dot">.</span></h1>{inner}<p style="margin-top:34px"><a href="/">&larr; Back to the website checker</a></p></div></section>'
     write(name, h + body + foot('<script src="/assets/app.js"></script>'))
 
@@ -462,6 +486,7 @@ def static_pages():
 <p>After a check, and on the &ldquo;Is it down?&rdquo; pages, you can report a problem with a site. A report stores the site, the type of problem, the time, and a one-way hash of your network address, which is used only to limit repeat reports and is erased after two days. The report itself (site, type, time and the country you are in, worked out from your network or your device&rsquo;s time zone, with nothing that identifies you) is kept for up to three years so the report history can be shown. We do not ask for your name or email address for reports, and reports are shown as anonymous counts and as a list of the latest reports (the site, the type of problem, how long ago, and the country when several people reported from it), with no personal details.</p>
 <p><strong>Local outage map (optional).</strong> When you send a report you can tick a box to add your approximate area. If you do, your browser asks for permission first. We then store only your position rounded to one decimal place of latitude and longitude, which is roughly a 10 km square, along with the report, and never your exact location. Reports with an area are shown on the local outage map only as counts in cells of about 20 km, never one by one. The local map loads its code from cdnjs.cloudflare.com and its map pictures from OpenStreetMap, only when you press &ldquo;Show the local map&rdquo;, so those services see your network address and the area you are looking at, as with any website.</p>
 <p><strong>Outage history.</strong> Each day we keep a permanent record of how many reports each site received by type (for example website not loading or cannot log in), how many said it worked again, and how many outages our own checks detected, so anyone can read what happened on a past date. Only counts are kept. The record never contains who reported, network addresses or locations.</p>
+<p><strong>Visit counts.</strong> To see how the site is used, we count page views without cookies and without keeping anyone&rsquo;s address. For each view we keep only the day, the page, the country (from the network or your time zone), the type of device, and the site you came from, as a number. To count visitors once a day, we turn your address and browser into a code that changes every day and is deleted after two days, and cannot be turned back into your address. We do not count anyone who declines analytics in the cookie settings or whose browser sends Do Not Track.</p>
 <h2>Cookies and storage</h2>
 <p>We use essential storage to run the site: your theme, your cookie choice, your recent searches (kept on your device) and a sign-in cookie if you are signed in. Analytics and advertising cookies are optional and off until you allow them in &ldquo;Cookie settings&rdquo;. Google&rsquo;s advertising script is only loaded if you allow advertising cookies.</p>
 <h2>Advertising</h2>
@@ -572,7 +597,7 @@ def site_pages_build():
         path = SP.page_path(name)
         catname, tips = SP.CATS[cat]
         title = 'Is %s down? Live status and outage reports' % name
-        desc = 'Is %s (%s) down right now? See the live status checked from our servers, response time, uptime and problems reported by other visitors in the last 24 hours.' % (name, host)
+        desc = 'Is %s down right now? Live status from our servers, response time, uptime and problems reported by other visitors.' % name
         faqs = [
             ('Is %s down right now?' % name, 'Look at the live status box at the top of this page. It shows the result of our latest automatic check of %s, repeated every few minutes. If it says the site is up but things still fail for you, the problem is probably on your side or limited to one feature or region.' % host),
             ('Why is %s not working for me when it works for others?' % name, 'A site can fail for some people and not others because of DNS caching, regional servers, your internet provider, a firewall or VPN, or a problem with your device or app. Our guide on why a website can be down for some people and not others explains how to tell which one it is.'),
@@ -690,7 +715,7 @@ def help_pages():
         write('help/' + a['slug'] + '.html', h + body + foot('<script src="/assets/app.js"></script>'))
     # sitemap
     urls = [('/', 'daily', '1.0'), ('/speed', 'monthly', '0.8'), ('/internet-speed-test', 'monthly', '0.8'), ('/what-is-my-ip', 'monthly', '0.8'), ('/game-ping-test', 'monthly', '0.8'), ('/outage-map', 'daily', '0.7'), ('/outage-history', 'daily', '0.6'), ('/state-of-the-internet', 'daily', '0.7'), ('/compare', 'weekly', '0.6'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8'), ('/tools/', 'monthly', '0.8')] + [('/tools/' + t['slug'], 'monthly', '0.7') for t in TOOLS] + [('/tools/uptime-sla-calculator', 'monthly', '0.7'), ('/how-we-check', 'monthly', '0.6'), ('/faq', 'monthly', '0.6')] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES if n not in HIDDEN] + [('/about', 'monthly', '0.5'), ('/business', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
-    sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join('<url><loc>%s%s</loc><lastmod>2026-11-02</lastmod><changefreq>%s</changefreq><priority>%s</priority></url>\n' % (SITE, u, c, p) for u, c, p in urls) + '</urlset>\n'
+    sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join('<url><loc>%s%s</loc><lastmod>@@D@@</lastmod><changefreq>%s</changefreq><priority>%s</priority></url>\n' % (SITE, u, c, p) for u, c, p in urls).replace('@@D@@', _dt.date.today().isoformat()) + '</urlset>\n'
     open(os.path.join(ROOT, 'sitemap.xml'), 'w').write(sm)
 
 
@@ -943,5 +968,54 @@ def gameping_page():
     _tool_page('/game-ping-test', 'game-ping-test.html', 'Game ping test — check your ping to game regions | siteupdown.com', 'Free game ping test: see your ping and steadiness to 17 cloud regions around the world that many online games use. No app and no sign-up.', 'gameping', 'Game ping test', 'Game ping test', inner, faq, 'gameping.js')
 
 
+
+def seo_audit():
+    """Scan every built page for common search problems and write the result where the admin area can read it (not public)."""
+    import glob as _g, re
+    pages = []; titles = {}; descs = {}
+    for f in sorted(_g.glob(os.path.join(ROOT, '**', '*.html'), recursive=True)):
+        rel = os.path.relpath(f, ROOT).replace(os.sep, '/')
+        if rel.startswith(('_tools/', 'node_modules/')) or rel in ('403.html', '404.html', '500.html'): continue
+        t = open(f, encoding='utf-8').read()
+        url = '/' if rel == 'index.html' else ('/' + rel[:-10] + '/' if rel.endswith('/index.html') else '/' + rel[:-5])
+        m = re.search(r'<title>(.*?)</title>', t, re.S); title = html.unescape(m.group(1)).strip() if m else ''
+        m = re.search(r'<meta name="description" content="(.*?)"', t); desc = html.unescape(m.group(1)) if m else ''
+        body = re.sub(r'<script.*?</script>|<style.*?</style>', ' ', t, flags=re.S)
+        words = len(re.sub(r'<[^>]+>', ' ', body).split())
+        imgs = re.findall(r'<img [^>]*>', t)
+        noindex = 'noindex' in t[:4000]
+        pg = {'url': url, 'title': title, 'tl': len(title), 'dl': len(desc), 'h1': len(re.findall(r'<h1[ >]', t)), 'words': words, 'noindex': noindex,
+              'canon': 'rel="canonical"' in t, 'og': 'og:image' in t, 'ld': 'application/ld+json' in t, 'noalt': sum(1 for i in imgs if 'alt=' not in i),
+              'links': len(re.findall(r'<a [^>]*href="/', t))}
+        titles.setdefault(title, []).append(url); descs.setdefault(desc, []).append(url)
+        pages.append((pg, title, desc))
+    out_pages = []
+    for pg, title, desc in pages:
+        iss = []
+        if not pg['noindex']:
+            if pg['tl'] == 0: iss.append('Missing title')
+            elif pg['tl'] > 62: iss.append('Title too long (may be cut off)')
+            elif pg['tl'] < 25: iss.append('Title very short')
+            if len(titles[title]) > 1: iss.append('Same title as %d other page%s' % (len(titles[title]) - 1, '' if len(titles[title]) == 2 else 's'))
+            if pg['dl'] == 0: iss.append('Missing description')
+            elif pg['dl'] > 165: iss.append('Description too long (may be cut off)')
+            elif pg['dl'] < 70: iss.append('Description very short')
+            if desc and len(descs[desc]) > 1: iss.append('Same description as %d other page%s' % (len(descs[desc]) - 1, '' if len(descs[desc]) == 2 else 's'))
+            if pg['h1'] != 1: iss.append('Needs exactly one main heading (has %d)' % pg['h1'])
+            if pg['words'] < 250: iss.append('Thin content (%d words)' % pg['words'])
+            if pg['noalt']: iss.append('%d image%s without alt text' % (pg['noalt'], '' if pg['noalt'] == 1 else 's'))
+            if not pg['canon']: iss.append('No canonical link')
+            if not pg['og']: iss.append('No social preview image')
+        pg['issues'] = iss; out_pages.append(pg)
+    idx = [p_ for p_ in out_pages if not p_['noindex']]
+    clean = sum(1 for p_ in idx if not p_['issues'])
+    sm = open(os.path.join(ROOT, 'sitemap.xml')).read() if os.path.exists(os.path.join(ROOT, 'sitemap.xml')) else ''
+    res = {'built': _dt.datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ'), 'indexable': len(idx), 'noindex': len(out_pages) - len(idx), 'clean': clean,
+           'score': round(100 * clean / max(1, len(idx))), 'in_sitemap': sm.count('<url>'),
+           'site': {'robots': os.path.exists(os.path.join(ROOT, 'robots.txt')), 'sitemap': bool(sm), 'ads_txt': os.path.exists(os.path.join(ROOT, 'ads.txt')), 'https_canonical': True},
+           'pages': out_pages}
+    with open(os.path.join(ROOT, 'api', '_seo.json'), 'w') as fh: _json.dump(res, fh, separators=(',', ':'))
+    print('seo audit: %d indexable, %d clean (%d%%)' % (len(idx), clean, res['score']))
+
 if __name__ == '__main__':
-    build_newlook_css(); home(); login(); account(); monitor(); speed(); status(); static_pages(); help_pages(); tools_pages(); sla_page(); internet_speed_page(); heatmap_page(); history_page(); insight_pages(); ip_page(); gameping_page(); site_pages_build()
+    build_newlook_css(); home(); login(); account(); monitor(); speed(); status(); static_pages(); help_pages(); tools_pages(); sla_page(); internet_speed_page(); heatmap_page(); history_page(); insight_pages(); ip_page(); gameping_page(); site_pages_build(); seo_audit()

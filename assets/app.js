@@ -253,6 +253,19 @@
     s.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6517978259411056';
     d.head.appendChild(s);
   }
+  /* Anonymous page-view count: no cookie, no storage, no address kept. Skipped if the visitor declined analytics or sends Do Not Track. */
+  function countView() {
+    try {
+      var c = S.consent(); if (c && c.analytics === false) return;
+      if (navigator.doNotTrack === '1' || navigator.globalPrivacyControl) return;
+      if (/^\/(admin|account|login)/.test(location.pathname)) return;
+      var tz = ''; try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ''; } catch (e) {}
+      var body = JSON.stringify({ p: location.pathname, r: d.referrer || '', tz: tz, w: window.innerWidth || 0 });
+      if (navigator.sendBeacon) navigator.sendBeacon('/api/pv.php', new Blob([body], { type: 'application/json' }));
+      else fetch('/api/pv.php', { method: 'POST', body: body, headers: { 'Content-Type': 'application/json' }, keepalive: true });
+    } catch (e) {}
+  }
+  if (d.readyState === 'complete') setTimeout(countView, 600); else window.addEventListener('load', function () { setTimeout(countView, 600); });
   d.addEventListener('sud:consent', loadAds);
   function initEyes() {
         S.$$('.field input[type=password]').forEach(function (inp) {
