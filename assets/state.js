@@ -24,6 +24,7 @@
     if (d.cats && d.cats.length) h += '<h2>How each category did</h2>' + window.SUD.catChart(d.cats);
     if (ins.cascade && ins.cascade.length) h += '<h2>Shared provider trouble right now</h2>' + ins.cascade.map(function (c) { return '<p><b>' + esc(c.provider) + '</b>: ' + c.count + ' sites behind it look down or slow at the moment (' + c.sites.map(function (s) { return esc(s.name); }).join(', ') + '). When one provider has trouble, many unrelated sites can be affected together.</p>'; }).join('');
     if (ins.cal) h += '<h2>Outage calendar, last 13 weeks</h2>' + window.SUD.calendar(ins.cal);
+    h += '<p class="note">Figures refresh about every 10 minutes. An outage is counted only after it is confirmed from more than one location, so short blips and blocked checks are not counted. <a href="/how-we-check">How we check</a> &middot; <a href="/editorial-policy">Editorial policy</a></p>';
     out.innerHTML = h;
   }).catch(function () { out.innerHTML = '<p class="note">We could not load the summary just now.</p>'; });
 })();
