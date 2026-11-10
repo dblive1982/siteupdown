@@ -104,7 +104,7 @@ def head(title, desc, path, extra_head='', noindex=False):
 <body{{BODYATTR}}>
 <a class="skip" href="#main">Skip to content</a>
 <header class="nl-head"><div class="nl-bar">
-<a class="nl-logo" href="/" aria-label="siteupdown.com home"><img src="/assets/nl-logo.png" alt="Site up down?" width="831" height="391"></a>
+<a class="nl-logo" href="/" aria-label="siteupdown.com home"><img src="/assets/nl-logo.webp" alt="Site up down?" width="831" height="391"></a>
 <div class="nl-tools"><div id="auth"></div><button class="nl-menu-btn" id="nl-menu-btn" type="button" aria-expanded="false" aria-controls="nl-drawer" aria-label="Open menu"><span></span><span></span><span></span></button></div>
 </div></header>
 <div class="nl-scrim" id="nl-scrim" hidden></div>
@@ -121,7 +121,7 @@ def foot(scripts):
 </div>'''
     return f'''</main>
 <footer class="site-foot"><div class="wrap nl-foot">
-<img src="/assets/nl-logo-light.png" alt="Site up down?" width="831" height="391">
+<img src="/assets/nl-logo-light.webp" alt="Site up down?" width="831" height="391">
 <p class="note">Less refreshing. More knowing.</p>
 {SOCIALS_HTML if SHOW_SOCIALS else ''}
 <nav class="nl-fgrid nl-fcard" aria-label="All pages">{fgrid}</nav>
@@ -235,7 +235,7 @@ def home():
 <p class="lead">Paste any website. We check it from our server and from around the world.</p>
 <form class="card checker" id="chk-form" aria-labelledby="checker-title" novalidate>
 <div class="nl-wbar" aria-hidden="true"><span>&lsaquo;</span><i></i><span>&rsaquo;</span></div><div class="nl-wbody">
-<div class="top"><span id="checker-title"><img class="nl-ant" src="/assets/nl-antenna.png?v=1" alt="" width="25" height="26">Check a website</span><span class="nl-live"><svg class="nl-beacon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle class="bb" cx="12" cy="12" r="6" fill="none" stroke="#22c55e" stroke-width="2"/><circle cx="12" cy="12" r="6.5" fill="#22c55e" stroke="#0b0b0b" stroke-width="2.2"/><circle cx="10" cy="10" r="1.8" fill="#fff"/></svg><em>Live Check</em></span></div>
+<div class="top"><span id="checker-title"><img class="nl-ant" src="/assets/nl-antenna.webp?v=1" alt="" width="25" height="26">Check a website</span><span class="nl-live"><svg class="nl-beacon" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><circle class="bb" cx="12" cy="12" r="6" fill="none" stroke="#22c55e" stroke-width="2"/><circle cx="12" cy="12" r="6.5" fill="#22c55e" stroke="#0b0b0b" stroke-width="2.2"/><circle cx="10" cy="10" r="1.8" fill="#fff"/></svg><em>Live Check</em></span></div>
 <div class="chk-row">
 <div class="field">{I_GLOBE}<input id="chk-input" name="address" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="e.g. netflix.com" maxlength="300" aria-label="Website address"></div>
 <button class="btn" id="chk-btn" type="submit"><span>Check website</span>{I_ARROW}</button></div>
@@ -249,7 +249,7 @@ def home():
 
 <section class="nl-tiles"><div class="wrap"><div class="nl-grid">
 <a class="nl-tile" href="/internet-speed-test"><b>Speed test</b><span>How fast is your internet?</span><img src="/assets/nl-tile-speed.svg?v=4" alt="" width="200" height="140" loading="lazy"></a>
-<a class="nl-tile map" href="/outage-map"><b>Outage map</b><span>What is down around the world</span><img src="/assets/nl-map.png" alt="" width="580" height="437" loading="lazy"></a>
+<a class="nl-tile map" href="/outage-map"><b>Outage map</b><span>What is down around the world</span><img src="/assets/nl-map.webp" alt="" width="580" height="437" loading="lazy"></a>
 <a class="nl-tile mon" href="/monitor"><b>Monitor</b><span>Email alerts for up to 25 sites</span><img src="/assets/nl-tile-monitor.svg" alt="" width="200" height="150" loading="lazy"></a>
 <a class="nl-tile help" href="/help/"><b>Help</b><span>Plain-English guides</span><img src="/assets/nl-tile-help.svg" alt="" width="160" height="160" loading="lazy"></a>
 </div></div></section>
@@ -647,10 +647,10 @@ def static_pages():
     h = head('Admin — siteupdown.com', 'Admin area.', '/admin', noindex=True).replace('{BODYATTR}', '')
     write('admin.html', h + '''<section class="page adm-page"><div class="wrap"><div id="adm-root"><p class="lead">Loading&hellip;</p></div></div></section>''' + foot('<script src="/assets/app.js"></script><script src="/assets/admin.js"></script>'))
     h = head('Page not found — siteupdown.com', 'That page could not be found.', '/404', noindex=True).replace('{BODYATTR}', '')
-    write('404.html', h + '<section class="page"><div class="wrap narrow center"><img class="nl-404mon" src="/assets/nl-monster-blue.png" alt="" width="800" height="800"><span class="eyebrow"><i></i>Error 404</span><h1 style="margin:14px 0">Not found<span class="dot">.</span></h1><p class="lead">We checked everywhere. This page is down for everyone.</p><p style="margin-top:24px"><a class="btn" href="/"><span>Back to the checker</span></a></p></div></section>' + foot('<script src="/assets/app.js"></script>'))
+    write('404.html', h + '<section class="page"><div class="wrap narrow center"><img class="nl-404mon" src="/assets/nl-monster-blue.webp" alt="" width="800" height="800"><span class="eyebrow"><i></i>Error 404</span><h1 style="margin:14px 0">Not found<span class="dot">.</span></h1><p class="lead">We checked everywhere. This page is down for everyone.</p><p style="margin-top:24px"><a class="btn" href="/"><span>Back to the checker</span></a></p></div></section>' + foot('<script src="/assets/app.js"></script>'))
     for code, ttl, big, msg in (('403', 'Access denied', 'No entry', 'You do not have permission to open this page.'), ('500', 'Something went wrong', 'Oops', 'That one is on us, not you. Please try again in a minute.')):
         h = head('%s — siteupdown.com' % ttl, 'An error occurred.', '/' + code, noindex=True).replace('{BODYATTR}', '')
-        write(code + '.html', h + '<section class="page"><div class="wrap narrow center"><img class="nl-404mon" src="/assets/nl-monster-blue.png" alt="" width="800" height="800"><span class="eyebrow"><i></i>Error %s</span><h1 style="margin:14px 0">%s<span class="dot">.</span></h1><p class="lead">%s</p><p style="margin-top:24px"><a class="btn" href="/"><span>Back to the checker</span></a></p></div></section>' % (code, big, msg) + foot('<script src="/assets/app.js"></script>'))
+        write(code + '.html', h + '<section class="page"><div class="wrap narrow center"><img class="nl-404mon" src="/assets/nl-monster-blue.webp" alt="" width="800" height="800"><span class="eyebrow"><i></i>Error %s</span><h1 style="margin:14px 0">%s<span class="dot">.</span></h1><p class="lead">%s</p><p style="margin-top:24px"><a class="btn" href="/"><span>Back to the checker</span></a></p></div></section>' % (code, big, msg) + foot('<script src="/assets/app.js"></script>'))
 
 
 
