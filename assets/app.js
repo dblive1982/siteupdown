@@ -396,3 +396,22 @@
 if ('serviceWorker' in navigator && location.protocol === 'https:') {
   window.addEventListener('load', function () { try { navigator.serviceWorker.register('/sw.js').catch(function () {}); } catch (e) {} });
 }
+
+/* First-visit welcome (home page only; dismissed once, remembered in this browser). */
+(function () {
+  function go() {
+    var hero = document.querySelector('.nl-hero');
+    if (!hero || location.pathname.replace(/\/index\.html$/, '/') !== '/') return;
+    try { if (localStorage.getItem('sud_welcome')) return; } catch (e) {}
+    var d = document.createElement('section');
+    d.className = 'welcome-card';
+    d.setAttribute('aria-label', 'Welcome');
+    d.innerHTML = '<button type="button" class="wc-x" aria-label="Close welcome guide">&times;</button><h2>New here? Three quick things</h2><ol><li><b>Type any website</b> into the box above. We test it from many places around the world, so you learn if it is down for everyone or just you.</li><li><b>Read the result.</b> Green means up, red means confirmed down, and amber or grey means unclear, usually because the site blocks automated checks. Every code is explained in plain words.</li><li><b>Want a heads-up next time?</b> <a href="/account">Create a free account</a> to watch sites and get an email when one goes down or recovers.</li></ol><p><a href="/help/">Help centre</a> &middot; <a href="/outage-map">Outage map</a> &middot; <a href="/how-we-check">How we check</a></p>';
+    hero.parentNode.insertBefore(d, hero.nextSibling);
+    d.querySelector('.wc-x').addEventListener('click', function () {
+      try { localStorage.setItem('sud_welcome', '1'); } catch (e) {}
+      d.remove();
+    });
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', go); else go();
+})();
