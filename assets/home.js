@@ -386,38 +386,75 @@
     else if (topCat) { mo.hidden = false; mo.innerHTML = '<a class="fine" href="/is-it-down/#' + esc(topCat) + '">Open the full ' + esc(topLabel) + ' list</a>'; }
     else { mo.hidden = false; mo.innerHTML = '<a class="fine" href="/is-it-down/">Browse every site by category</a>'; }
   }
+  // ---- Live panel: outages + slow sites, auto-refresh, ticking clocks, keeps old data if the connection blips
+  var LV = { ok: 0, paused: false, busy: false, seen: {}, down: 0, slow: 0, back: 0, tick: null };
+  function lvDur(sec) { var m = Math.round(sec / 60); if (sec < 60) return Math.max(1, Math.round(sec)) + ' s'; if (m < 90) return m + ' min'; var h = Math.floor(m / 60); if (h < 48) return h + ' h' + (m % 60 ? ' ' + (m % 60) + ' min' : ''); return Math.floor(h / 24) + ' days'; }
+  function lvAgo(iso) { var m = Math.max(0, Math.round((Date.now() - new Date(iso)) / 60000)); if (m < 2) return 'just now'; if (m < 90) return m + ' min ago'; var h = Math.round(m / 60); return h < 48 ? h + ' h ago' : Math.round(h / 24) + ' days ago'; }
+  function lvTiles() {
+    var t = $('#live-tiles'); if (!t) return;
+    function tile(id, n, label, cls) { var e = t.querySelector('[data-k="' + id + '"]'); if (!e) return; var b = e.querySelector('b'); if (b.textContent !== String(n)) { b.textContent = n; e.classList.remove('pop'); void e.offsetWidth; e.classList.add('pop'); } e.querySelector('span').textContent = label; e.className = 'lt ' + cls + (e.classList.contains('pop') ? ' pop' : ''); }
+    tile('down', LV.down, LV.down === 1 ? 'site down now' : 'sites down now', LV.down ? 'bad' : 'good');
+    tile('slow', LV.slow, LV.slow === 1 ? 'running slower than usual' : 'running slower than usual', LV.slow ? 'warn' : 'good');
+    tile('back', LV.back, 'back up in the last 24 h', 'info');
+  }
+  function lvState(msg, cls) { var st = $('#lb-state'); if (!st) return; st.textContent = msg; $('#live-bar').className = 'live-bar ' + (cls || ''); }
+  function lvClock() {
+    var el = $('#lb-age'); if (!el || !LV.ok) return;
+    var sec = Math.round((Date.now() - LV.ok) / 1000);
+    el.textContent = sec < 5 ? 'Updated just now' : 'Updated ' + (sec < 90 ? sec + ' s' : Math.round(sec / 60) + ' min') + ' ago';
+    S.$$('#recent-outages [data-since]').forEach(function (n) { var d = Math.max(0, (Date.now() - new Date(n.getAttribute('data-since'))) / 1000); n.textContent = 'Down now · ' + lvDur(d) + ' so far'; });
+  }
+  function lvRow(o, kind) {
+    var li = document.createElement('li'); li.className = kind === 'on' ? 'ro-on' : 'ro-end';
+    var key = kind + ':' + (o.host || o.name); if (!LV.seen[key] && LV.ok) li.className += ' ro-new'; LV.seen[key] = 1;
+    var a = document.createElement(o.page ? 'a' : 'span'); if (o.page) a.href = o.page; a.className = 'ro-name'; a.textContent = o.name;
+    var st = document.createElement('span'); st.className = 'ro-st'; var t = document.createElement('small');
+    if (kind === 'on') { st.textContent = 'Down now · ' + lvDur(o.seconds) + ' so far'; st.setAttribute('data-since', o.started); t.textContent = 'Since ' + new Date(o.started).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); }
+    else if (kind === 'back') { st.textContent = 'Back up · was down about ' + lvDur(o.seconds); t.textContent = 'Started ' + lvAgo(o.started); }
+    else { st.textContent = 'About ' + o.x + '× slower than usual'; t.textContent = 'Answering in about ' + o.now + ' ms, usually about ' + o.usual + ' ms. Still up.'; }
+    li.appendChild(a); li.appendChild(st); li.appendChild(t);
+    if (o.host) { var b = document.createElement('button'); b.type = 'button'; b.className = 'ro-go'; b.setAttribute('data-h', o.host); b.textContent = 'Check now'; b.setAttribute('aria-label', 'Check ' + o.name + ' now'); li.appendChild(b); }
+    return li;
+  }
   function loadOutages() {
-    var ul = $('#ro-list'); if (!ul) return;
-    function dur(sec) { var m = Math.round(sec / 60); if (m < 2) return 'under 2 min'; if (m < 90) return m + ' min'; var h = Math.floor(m / 60); if (h < 48) return h + ' h' + (m % 60 ? ' ' + (m % 60) + ' min' : ''); return Math.floor(h / 24) + ' days'; }
-    function ago(iso) { var m = Math.max(0, Math.round((Date.now() - new Date(iso)) / 60000)); if (m < 2) return 'just now'; if (m < 90) return m + ' min ago'; var h = Math.round(m / 60); return h < 48 ? h + ' h ago' : Math.round(h / 24) + ' days ago'; }
-    fetch('/api/outages.php?n=5').then(function (r) { return r.json(); }).then(function (j) {
+    var ul = $('#ro-list'); if (!ul) return Promise.resolve();
+    return fetch('/api/outages.php?n=10&_=' + Date.now()).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (j) {
+      var items = j.items || [], on = items.filter(function (o) { return !o.ended; }), back = items.filter(function (o) { return o.ended; });
+      LV.down = on.length; LV.back = back.length;
+      $('#ro-lead').textContent = on.length ? on.length + (on.length === 1 ? ' popular site is' : ' popular sites are') + ' down right now. Sites that came back in the last 24 hours are listed underneath.' : 'Nothing we watch is down right now, which is good news. Sites that had an outage and came back in the last 24 hours are listed underneath.';
       ul.textContent = '';
-      var live = (j.items || []).filter(function (o) { return !o.ended; }).length;
-      $('#ro-lead').textContent = live ? live + (live === 1 ? ' popular site is' : ' popular sites are') + ' down right now. Sites that came back in the last 24 hours are listed underneath.' : 'Nothing we watch is down right now. Sites that had an outage and came back in the last 24 hours are listed underneath.';
-      if (!j.items || !j.items.length) { var li = document.createElement('li'); li.className = 'ro-none'; li.textContent = 'No outages right now, and none in the last 24 hours. All quiet.'; ul.appendChild(li); return; }
-      j.items.forEach(function (o) {
-        var li = document.createElement('li'); li.className = o.ended ? 'ro-end' : 'ro-on';
-        var a = document.createElement(o.page ? 'a' : 'span'); if (o.page) a.href = o.page; a.className = 'ro-name'; a.textContent = o.name;
-        var st = document.createElement('span'); st.className = 'ro-st'; st.textContent = o.ended ? 'Back up \u00b7 was down about ' + dur(o.seconds) : 'Down now \u00b7 ' + dur(o.seconds) + ' so far';
-        var t = document.createElement('small'); t.textContent = o.ended ? 'Started ' + ago(o.started) : 'Since ' + new Date(o.started).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        li.appendChild(a); li.appendChild(st); li.appendChild(t); ul.appendChild(li);
-      });
-    }).catch(function () { ul.innerHTML = '<li class="ro-none">Could not load recent outages.</li>'; });
+      if (!items.length) { var li = document.createElement('li'); li.className = 'ro-none ro-calm'; li.innerHTML = '<b>All quiet.</b> No outages right now and none in the last 24 hours. This list updates by itself, so leave it open and a problem will appear here the moment we confirm it.'; ul.appendChild(li); }
+      on.forEach(function (o) { ul.appendChild(lvRow(o, 'on')); }); back.forEach(function (o) { ul.appendChild(lvRow(o, 'back')); });
+      return true;
+    });
   }
   function loadSlow() {
-    var ul = $('#ro-slow'); if (!ul) return;
-    fetch('/api/slow.php').then(function (r) { return r.json(); }).then(function (j) {
-      ul.textContent = '';
-      if (!j.items || !j.items.length) { var li = document.createElement('li'); li.className = 'ro-none'; li.textContent = 'Nothing we watch is running unusually slow right now.'; ul.appendChild(li); return; }
-      j.items.forEach(function (o) {
-        var li = document.createElement('li'); li.className = 'ro-end';
-        var a = document.createElement(o.page ? 'a' : 'span'); if (o.page) a.href = o.page; a.className = 'ro-name'; a.textContent = o.name;
-        var st = document.createElement('span'); st.className = 'ro-st'; st.textContent = 'About ' + o.x + '\u00d7 slower than usual';
-        var t = document.createElement('small'); t.textContent = 'Answering in about ' + o.now + ' ms, usually about ' + o.usual + ' ms. Still up.';
-        li.appendChild(a); li.appendChild(st); li.appendChild(t); ul.appendChild(li);
-      });
-    }).catch(function () { ul.innerHTML = '<li class="ro-none">Could not load this just now.</li>'; });
+    var ul = $('#ro-slow'); if (!ul) return Promise.resolve();
+    return fetch('/api/slow.php?_=' + Date.now()).then(function (r) { if (!r.ok) throw 0; return r.json(); }).then(function (j) {
+      var items = j.items || []; LV.slow = items.length; ul.textContent = '';
+      if (!items.length) { var li = document.createElement('li'); li.className = 'ro-none ro-calm'; li.innerHTML = '<b>Everything is answering at its usual speed.</b> We compare each site with its own normal pace, so a slowdown shows up here before it becomes an outage.'; ul.appendChild(li); return true; }
+      items.forEach(function (o) { ul.appendChild(lvRow(o, 'slow')); });
+      return true;
+    });
   }
+  function liveRefresh(manual) {
+    if (LV.busy) return; LV.busy = true; lvState('Updating…', 'busy');
+    var btn = $('#lb-refresh'); if (btn) btn.disabled = true;
+    Promise.all([loadOutages(), loadSlow()]).then(function () {
+      LV.ok = Date.now(); lvState(LV.paused ? 'Paused' : 'Live', LV.paused ? 'paused' : ''); lvTiles(); lvClock();
+    }).catch(function () {
+      lvState(LV.ok ? 'Connection lost, showing the last update' : 'Could not load, retrying…', 'warn');
+    }).then(function () { LV.busy = false; if (btn) btn.disabled = false; });
+  }
+  (function () {
+    var r = $('#lb-refresh'), pz = $('#lb-pause'); if (!r) return;
+    r.addEventListener('click', function () { liveRefresh(true); });
+    pz.addEventListener('click', function () { LV.paused = !LV.paused; pz.setAttribute('aria-pressed', LV.paused); pz.textContent = LV.paused ? 'Resume' : 'Pause'; lvState(LV.paused ? 'Paused' : 'Live', LV.paused ? 'paused' : ''); });
+    var tl = $('#live-tiles'); if (tl) tl.addEventListener('click', function (e) { var t = e.target.closest('[data-k]'); if (!t) return; var k = t.getAttribute('data-k'); var tgt = k === 'slow' ? $('#ro-slow') : $('#ro-list'); if (tgt) tgt.scrollIntoView({ behavior: 'smooth', block: 'center' }); });
+    document.addEventListener('visibilitychange', function () { if (!document.hidden && !LV.paused && LV.ok && Date.now() - LV.ok > 20000) liveRefresh(); });
+    setInterval(lvClock, 1000);
+    setInterval(function () { if (!document.hidden && !LV.paused) liveRefresh(); }, 30000);
+  })();
   // ---- More reports (Today, Reliability, Speed, Outages, Visitor reports) from /api/insights.php
   var insData = null, insTab = 'today';
   function insMs(ms) { return ms >= 1000 ? (ms / 1000).toFixed(1) + ' s' : ms + ' ms'; }
@@ -504,8 +541,7 @@
     S.$$('#ins-tabs [data-t]').forEach(function (x) { x.setAttribute('aria-pressed', x === b); }); drawIns();
   });
   setTimeout(loadIns, 700); setInterval(loadIns, 120000);
-  setTimeout(loadSlow, 500); setInterval(loadSlow, 120000);
-  setTimeout(loadOutages, 300); setInterval(loadOutages, 60000);
+  setTimeout(liveRefresh, 300);
   function loadTop() {
     fetch('/api/top.php' + (topCat ? '?cat=' + encodeURIComponent(topCat) : '')).then(function (r) { return r.json(); }).then(function (j) {
       topItems = j.items || []; drawTop();
