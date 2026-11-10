@@ -727,7 +727,8 @@ from help_more_b import ARTICLES_B
 from help_more_c import ARTICLES_C
 from help_more_d import ARTICLES_D
 from help_more_e import ARTICLES_E
-ARTICLES = ARTICLES + ARTICLES_A + ARTICLES_B + ARTICLES_C + ARTICLES_D + ARTICLES_E
+from help_more_f import ARTICLES_F
+ARTICLES = ARTICLES + ARTICLES_A + ARTICLES_B + ARTICLES_C + ARTICLES_D + ARTICLES_E + ARTICLES_F
 from help_deepen import EXTRA
 for _a in ARTICLES:
     if _a['slug'] in EXTRA:
