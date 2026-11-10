@@ -27,11 +27,17 @@
       var long = function (d) { return new Date(d + 'T12:00:00Z').toLocaleDateString([], { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }); };
       h += '<h2>Outage calendar, last 13 weeks</h2><p class="note">Each square is one day, oldest on the left and newest on the right, with each column a week. Darker means more outages started that day. Tap or hover a square for the date and the number.</p>';
       h += '<p>' + (tot ? '<b>' + tot + '</b> outage' + (tot === 1 ? '' : 's') + ' in the last 13 weeks, on <b>' + act + '</b> different day' + (act === 1 ? '' : 's') + '. Busiest day: <b>' + long(top.day) + '</b> with ' + mx + '.' : 'No outages in the last 13 weeks.') + '</p>';
+      var wd = function (d) { return new Date(d + 'T12:00:00Z').getUTCDay(); }, mo = function (d) { return new Date(d + 'T12:00:00Z').toLocaleDateString([], { month: 'short', timeZone: 'UTC' }); };
+      var dn = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], side = '', top = '', pm = '';
+      for (var ri = 0; ri < 7 && ri < cl.length; ri++) side += '<span>' + (ri % 2 === 0 ? dn[wd(cl[ri].day)] : '') + '</span>';
+      for (var ci = 0; ci < cl.length; ci += 7) { var m = mo(cl[ci].day); top += '<span>' + (m !== pm || ci === 0 ? new Date(cl[ci].day + 'T12:00:00Z').getUTCDate() + ' ' + m : '') + '</span>'; pm = m; }
+      h += '<p class="note"><b>' + fd(cl[0].day) + '</b> to <b>' + fd(cl[cl.length - 1].day) + '</b>. Dates run along the top and weekdays down the side.</p>';
+      h += '<div class="cal-wrap"><div class="cal-side" aria-hidden="true">' + side + '</div><div class="cal-scroll"><div class="cal-top" aria-hidden="true">' + top + '</div>';
       h += '<div class="cal" role="img" aria-label="Outages per day over 13 weeks">' + cl.map(function (x) {
         var l = x.n ? Math.min(4, 1 + Math.floor(3 * x.n / mx)) : 0;
         var tip = long(x.day) + ': ' + (x.n ? x.n + ' outage' + (x.n === 1 ? '' : 's') + ' started' + (x.n > avg * 1.5 ? ', busier than usual' : '') + '.' : 'no outages started.');
         return '<i class="c' + l + ' has-tip" tabindex="0" data-tip="' + esc(tip) + '"></i>';
-      }).join('') + '</div>';
+      }).join('') + '</div></div></div>';
       h += '<p class="cal-key" aria-hidden="true"><span>Fewer</span><i></i><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i><span>More</span></p>';
     }
     out.innerHTML = h;
