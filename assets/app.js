@@ -46,6 +46,46 @@
     if (c >= 500) return { n: 'Server error', t: 'Something went wrong on the website\'s own server. The problem is on their side.' };
     return null;
   };
+
+  /* Shared outage-calendar: 13 weeks as a full-width grid with weekday and date labels, a summary line, hover popups and a colour key.
+     Used by both the home page and the State of the internet page. */
+  S.calendar = function (cal) {
+    var h = '', esc = S.esc;
+    function fd(d) { return new Date(d + 'T12:00:00Z').toLocaleDateString([], { day: 'numeric', month: 'long' }); }
+    var cl = cal, mx = Math.max.apply(null, cl.map(function (x) { return x.n; })) || 1, tot = cl.reduce(function (a, x) { return a + x.n; }, 0), act = cl.filter(function (x) { return x.n; }).length, avg = tot / (cl.length || 1);
+    var top = cl.filter(function (x) { return x.n === mx && x.n; })[0];
+    var long = function (d) { return new Date(d + 'T12:00:00Z').toLocaleDateString([], { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }); };
+    h += '<p class="note">Each square is one day, oldest on the left and newest on the right, with each column a week. Darker means more outages started that day. Tap or hover a square for the date and the number.</p>';
+    h += '<p>' + (tot ? '<b>' + tot + '</b> outage' + (tot === 1 ? '' : 's') + ' in the last 13 weeks, on <b>' + act + '</b> different day' + (act === 1 ? '' : 's') + '. Busiest day: <b>' + long(top.day) + '</b> with ' + mx + '.' : 'No outages in the last 13 weeks.') + '</p>';
+    var wd = function (d) { return new Date(d + 'T12:00:00Z').getUTCDay(); }, mo = function (d) { return new Date(d + 'T12:00:00Z').toLocaleDateString([], { month: 'short', timeZone: 'UTC' }); };
+    var dn = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], nw = Math.ceil(cl.length / 7), g = '<span></span>', pm = '';
+    for (var ri = 0; ri < 7; ri++) g += '<span class="cal-d">' + (ri < cl.length ? dn[wd(cl[ri].day)] : '') + '</span>';
+    for (var ci = 0; ci < cl.length; ci += 7) {
+      var m = mo(cl[ci].day);
+      g += '<span class="cal-m">' + (m !== pm || ci === 0 ? new Date(cl[ci].day + 'T12:00:00Z').getUTCDate() + ' ' + m : '') + '</span>'; pm = m;
+      for (var k = ci; k < ci + 7; k++) {
+        var x = cl[k];
+        if (!x) { g += '<b></b>'; continue; }
+        var l = x.n ? Math.min(4, 1 + Math.floor(3 * x.n / mx)) : 0;
+        var tip = long(x.day) + ': ' + (x.n ? x.n + ' outage' + (x.n === 1 ? '' : 's') + ' started' + (x.n > avg * 1.5 ? ', busier than usual' : '') + '.' : 'no outages started.');
+        g += '<i class="c' + l + ' has-tip" tabindex="0" data-tip="' + esc(tip) + '"></i>';
+      }
+    }
+    h += '<p class="note"><b>' + fd(cl[0].day) + '</b> to <b>' + fd(cl[cl.length - 1].day) + '</b>. Dates run along the top and weekdays down the side.</p>';
+    h += '<div class="cal cal-full" style="--w:' + nw + '" role="img" aria-label="Outages per day over 13 weeks">' + g + '</div>';
+    h += '<p class="cal-key" aria-hidden="true"><span>Fewer</span><i></i><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i><span>More</span></p>';
+    return h;
+  };
+  /* Shared category reliability chart: bars coloured by how good the uptime is, with site and outage counts and a popup. */
+  S.catChart = function (cats) {
+    var esc = S.esc, cap = function (x) { return x.charAt(0).toUpperCase() + x.slice(1); }, pct = function (p) { return p.toFixed(2).replace(/\.?0+$/, '') + '%'; };
+    var lv = function (p) { return p >= 99.9 ? 'g' : p >= 99.5 ? 'a' : 'o'; };
+    return '<p class="note">Average uptime across the sites in each category. The bars start at 95% so small differences are visible. Green is 99.9% or better, amber 99.5% or better, orange below that. Hover or tap a bar for details.</p><ul class="ins-bars cat-bars">' + cats.map(function (c) {
+      var w = Math.max(3, Math.round(100 * Math.max(0, c.pct - 95) / 5)), tip = cap(c.cat) + ': ' + pct(c.pct) + ' average uptime' + (c.sites ? ' across ' + c.sites + ' sites' : '') + (c.outages != null ? ', ' + (c.outages ? c.outages + ' outage' + (c.outages === 1 ? '' : 's') + ' this week' : 'no outages this week') : '') + '.';
+      return '<li><span class="ib-l">' + esc(cap(c.cat)) + (c.sites ? '<small>' + c.sites + ' sites' + (c.outages != null ? (c.outages ? ', ' + c.outages + ' outage' + (c.outages === 1 ? '' : 's') : ', no outages') : '') + '</small>' : '') + '</span><span class="ib-b has-tip" tabindex="0" data-tip="' + esc(tip) + '"><i class="lv-' + lv(c.pct) + '" style="width:' + w + '%"></i></span><span class="ib-n">' + esc(pct(c.pct)) + '</span></li>';
+    }).join('') + '</ul>';
+  };
+
   S.codeTag = function (code, opts) {
     var i = S.codeInfo(code), e = function (x) { return String(x).replace(/[&<>"]/g, function (m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[m]; }); };
     if (!i) return e(code);

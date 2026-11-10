@@ -178,11 +178,30 @@
     var s = Math.max(0, Date.now() / 1000 - ts), m = Math.round(s / 60);
     return m < 90 ? m + ' minutes ago' : Math.round(m / 60) + ' hours ago';
   }
+
+  /* Which part of the world each place is in, so the page can show a regional picture as well as individual pins. */
+  var REG = { 'North America': 'US CA MX', 'Central & South America': 'BR AR CL CO PE VE EC UY PY BO CR PA GT SV HN NI CU DO JM PR TT', 'Europe': 'GB IE FR DE ES PT IT NL BE LU CH AT DK SE NO FI IS PL CZ SK HU RO BG GR HR SI RS BA AL MK ME LT LV EE UA BY MD RU CY MT TR', 'Middle East': 'AE SA QA KW BH OM IL JO LB IQ IR YE SY PS', 'Africa': 'ZA NG KE EG MA DZ TN GH ET TZ UG SN CI CM AO MZ ZW ZM NA BW RW LY SD', 'Asia': 'IN JP CN KR SG HK TW TH VN MY ID PH PK BD LK NP KH MM KZ UZ MN AF', 'Oceania': 'AU NZ FJ PG NC' };
+  var C2R = {}; Object.keys(REG).forEach(function (r) { REG[r].split(' ').forEach(function (c) { C2R[c] = r; }); });
+  function regions(j) {
+    var el = $('hm-regions'); if (!el) return;
+    var g = {}; j.places.forEach(function (p) { var r = C2R[p.country] || 'Other places'; (g[r] = g[r] || []).push(p); });
+    var rows = Object.keys(g).map(function (r) {
+      var ps = g[r], ok = ps.reduce(function (t, p) { return t + p.ok; }, 0), n = ps.reduce(function (t, p) { return t + p.n; }, 0), ms = ps.filter(function (p) { return p.median_ms != null; }).map(function (p) { return p.median_ms; }).sort(function (a, b) { return a - b; });
+      return { r: r, places: ps.length, pct: n ? Math.round(100 * ok / n) : 0, ms: ms.length ? ms[Math.floor(ms.length / 2)] : null };
+    }).sort(function (a, b) { return b.pct - a.pct; });
+    var cls = function (v) { return v >= 90 ? 'g' : v >= 70 ? 'a' : 'r'; };
+    var best = rows[0], worst = rows[rows.length - 1];
+    el.innerHTML = '<h2>How each part of the world is doing</h2><p class="note">Average share of sites reached from the places in each region, with the typical response time. ' + (rows.length > 1 && best.pct !== worst.pct ? '<b>' + esc(best.r) + '</b> is doing best right now and <b>' + esc(worst.r) + '</b> has the most trouble, which can mean a network problem there or sites blocking automated checks from that region.' : 'Every region looks about the same right now.') + '</p>'
+      + '<ul class="ins-bars cat-bars">' + rows.map(function (x) {
+        var tip = x.r + ': ' + x.pct + '% of sites reached across ' + x.places + ' place' + (x.places === 1 ? '' : 's') + (x.ms != null ? ', typical response ' + x.ms + ' ms' : '') + '.';
+        return '<li><span class="ib-l">' + esc(x.r) + '<small>' + x.places + ' place' + (x.places === 1 ? '' : 's') + (x.ms != null ? ', ' + x.ms + ' ms' : '') + '</small></span><span class="ib-b has-tip" tabindex="0" data-tip="' + esc(tip) + '"><i class="lv-' + cls(x.pct) + '" style="width:' + Math.max(3, x.pct) + '%"></i></span><span class="ib-n">' + x.pct + '%</span></li>';
+      }).join('') + '</ul>';
+  }
   function load() { return fetch('/api/heatmap.php').then(function (r) { return r.json(); }).then(function (j) {
     if (!j.places || !j.places.length) { $('hm-sum').textContent = 'The first worldwide results are still being collected. Please check back soon.'; return; }
     var sk = sel ? name(sel) : null; data = j; sel = null;
     if (sk) j.places.forEach(function (p) { if (name(p) === sk) sel = p; });
-    draw();
+    draw(); regions(j);
     $('hm-sum').textContent = 'Based on the latest worldwide check of ' + j.sites_count + ' websites and apps from ' + j.places.length + ' places. Results from ' + ago(j.newest) + ' back to ' + ago(j.oldest) + '.';
     if (j.unreachable && j.unreachable.length) {
       $('hm-sites').innerHTML = '<h2>Sites not reached everywhere right now</h2><div class="hm-list">' + j.unreachable.map(function (s) {

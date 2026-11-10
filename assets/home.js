@@ -484,12 +484,12 @@
       h += d.by_area && d.by_area.length ? insBars(d.by_area.map(function (c) { return { l: insCountry(c.country), n: c.count }; })) : '<p class="fine ins-n">Not enough reports yet to show any country.</p>';
     }
     if (insTab === 'trend') {
-      h += '<h4 class="ins-h">Reliability by category, last 7 days</h4><p class="fine ins-n">Average uptime across the sites in each category.</p>';
-      h += d.cats_rel && d.cats_rel.length ? insBars(d.cats_rel.map(function (c) { return { l: c.cat.charAt(0).toUpperCase() + c.cat.slice(1), n: Math.max(0, c.pct - 95), t: c.pct.toFixed(2) + '%' }; })) : '<p class="fine ins-n">We need a little more history to compare categories.</p>';
+      h += '<h4 class="ins-h">Reliability by category, last 7 days</h4>';
+      h += d.cats_rel && d.cats_rel.length ? S.catChart(d.cats_rel) : '<p class="fine ins-n">We need a little more history to compare categories.</p>';
       h += '<h4 class="ins-h">Shared provider trouble</h4>';
       h += d.cascade && d.cascade.length ? d.cascade.map(function (c) { return '<p class="ins-n"><b>' + esc(c.provider) + '</b>: ' + c.count + ' sites behind it look down or slow right now (' + c.sites.map(function (s) { return esc(s.name); }).join(', ') + ').</p>'; }).join('') : '<p class="fine ins-n">No provider is affecting several sites right now.</p>';
       h += '<h4 class="ins-h">Outage calendar, last 13 weeks</h4>';
-      if (d.cal) { var cm = Math.max.apply(null, d.cal.map(function (x) { return x.n; })) || 1; h += '<div class="cal" role="img" aria-label="Outages per day over 13 weeks">' + d.cal.map(function (x) { var l = x.n ? Math.min(4, 1 + Math.floor(3 * x.n / cm)) : 0; return '<i class="c' + l + ' has-tip" tabindex="0" data-tip="' + esc(insDay(x.day) + ': ' + (x.n ? x.n + ' outage' + (x.n === 1 ? '' : 's') : 'no outages')) + '"></i>'; }).join('') + '</div><p class="fine ins-n">Darker means more outages that day.</p>'; }
+      if (d.cal) h += S.calendar(d.cal);
       h += '<p class="fine"><a href="/state-of-the-internet">Read this week\'s full state of the internet &rarr;</a> &middot; <a href="/compare">Compare two sites</a></p>';
     }
     b.innerHTML = h;
