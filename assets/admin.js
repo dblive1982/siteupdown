@@ -56,7 +56,7 @@
 
   function shell() {
     box('<div class="adm"><aside class="adm-nav"><b class="adm-brand">Admin</b>'
-      + '<button type="button" data-t="overview" class="on">Overview</button><button type="button" data-t="traffic">Traffic</button><button type="button" data-t="seo">SEO</button><button type="button" data-t="users">Users</button><button type="button" data-t="data">Data &amp; export</button><button type="button" data-t="log">Activity log</button>'
+      + '<button type="button" data-t="overview" class="on">Overview</button><button type="button" data-t="health">Live health</button><button type="button" data-t="traffic">Traffic</button><button type="button" data-t="seo">SEO</button><button type="button" data-t="users">Users</button><button type="button" data-t="data">Data &amp; export</button><button type="button" data-t="log">Activity log</button>'
       + '<button type="button" data-t="lock" class="adm-lockbtn">Lock admin</button></aside><div class="adm-main" id="adm-main"></div></div>');
     root.querySelector('.adm-nav').addEventListener('click', function (e) {
       var b = e.target.closest('button'); if (!b) return;
@@ -67,7 +67,7 @@
     });
     view();
   }
-  function view() { var m = document.getElementById('adm-main'); m.innerHTML = '<p class="lead">Loading&hellip;</p>'; ({ users: users, data: dataTab, log: logTab, traffic: traffic, seo: seo }[tab] || overview)(m); }
+  function view() { var m = document.getElementById('adm-main'); m.innerHTML = '<p class="lead">Loading&hellip;</p>'; ({ users: users, data: dataTab, log: logTab, traffic: traffic, seo: seo, health: health }[tab] || overview)(m); }
   var n = function (v) { return Number(v || 0).toLocaleString(); };
 
   function chart(title, ser, cls) {
@@ -168,6 +168,36 @@
         + '<li>☐ Add the site to Bing Webmaster Tools. You can import it straight from Search Console, and it also covers DuckDuckGo and Yahoo.</li>'
         + '<li>☐ Run a page through PageSpeed Insights. Speed on a phone is a ranking factor.</li><li>☐ Get real links to the site: the Chrome extension listing, a short post on Reddit or a forum when it is useful, and any directories that fit. Links from other sites are the biggest ranking factor we cannot build ourselves.</li>'
         + '<li>☐ Add the social links to the footer once the accounts exist.</li></ul></div>';
+    }).catch(fail);
+  }
+
+  /* ---- Live health: is everything running, what is down, what is being attacked or used, how big is the database ---- */
+  function health(m) {
+    S.api('admin.php?a=health').then(function (j) {
+      var mo = j.monitor, v = mo.verdicts || {}, sec = j.security, st = j.storage, si = j.site, issues = [];
+      var age = mo.last_age_s;
+      if (age == null) issues.push('No background checks have run yet.'); else if (age > 1800) issues.push('The background checker last ran ' + Math.round(age / 60) + ' minutes ago, which is longer than expected. Check that the scheduled task (cron) is still running.');
+      if (mo.stale > 0) issues.push(n(mo.stale) + ' site' + (mo.stale === 1 ? ' has' : 's have') + ' not been checked for over 3 hours.');
+      if (!sec.turnstile) issues.push('The bot check (Turnstile) is not switched on yet.');
+      if (!si.ads_txt) issues.push('ads.txt is missing.');
+      if (sec.non_admin_tries > 0) issues.push(n(sec.non_admin_tries) + ' signed-in non-admin attempt' + (sec.non_admin_tries === 1 ? '' : 's') + ' to open this area in the last 24 hours.');
+      var okc = !issues.length;
+      var names = { check: 'Website checks', quick: 'Quick checks', tool: 'Tool pages', speed: 'Speed tests', regional: 'Regional checks', xcheck: 'Cross checks', gptool: 'Network tools', report: 'Problem reports', contact: 'Contact messages', login: 'Sign-in attempts', register: 'Sign-ups', forgot: 'Password resets asked', reset: 'Password resets done', google: 'Google sign-ins', chan: 'Alert channel changes', push: 'Push sign-ups', watchprobe: 'Watchlist probes', live_new: 'New live graphs', acct: 'Account changes', adm: 'Blocked admin tries', admcode: 'Admin codes sent', admver: 'Admin code entries', admmail: 'Emails you sent', tfsend: 'Two-step codes sent' };
+      var use = Object.keys(j.usage || {}).map(function (k) { return { l: names[k] || k, n: j.usage[k] }; }).sort(function (a, b) { return b.n - a.n; });
+      var sz = st.db_bytes != null ? (st.db_bytes > 1048576 ? (st.db_bytes / 1048576).toFixed(1) + ' MB' : Math.round(st.db_bytes / 1024) + ' KB') : 'n/a';
+      var chk = function (ok, y, no) { return '<li class="' + (ok ? 'ok' : 'no') + '">' + (ok ? '✔ ' + y : '✖ ' + no) + '</li>'; };
+      m.innerHTML = '<h1>Live health<span class="dot">.</span></h1>'
+        + '<div class="sp-card" style="border-left:6px solid ' + (okc ? '#7ed957' : '#fbc531') + '"><div class="sp-rhead"><b>' + (okc ? 'Everything looks healthy' : issues.length + ' thing' + (issues.length === 1 ? '' : 's') + ' to look at') + '</b><span class="adm-total">Updated ' + esc(S.ago(j.now)) + '</span></div>'
+        + (okc ? '<p class="note">Background checks are running, no sites are stale and the security basics are in place.</p>' : '<ul class="adm-chk todo">' + issues.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>') + '</div>'
+        + '<h2>Monitoring</h2><div class="adm-tiles">' + tile('Sites tracked', mo.tracked) + tile('Up right now', v.up || 0) + tile('Down right now', (v.down || 0) + (v.timeout || 0)) + tile('Unclear / blocked', (v.inconclusive || 0) + (v.slow || 0) + (v.blocked || 0)) + tile('Checks, last hour', mo.checks_1h) + tile('Checks, 24 hours', mo.checks_24h) + '</div>'
+        + '<p class="note">Last background check: ' + (mo.last ? esc(S.ago(mo.last)) : 'never') + '. Outages in the last 24 hours: ' + n(j.incidents.h24) + ', in 7 days: ' + n(j.incidents.d7) + (j.incidents.avg_s ? ', average length ' + Math.max(1, Math.round(j.incidents.avg_s / 60)) + ' min.' : '.') + '</p>'
+        + '<div class="adm-grid">' + list('Down right now', j.down_now, function (r) { return '<li><span>' + esc(r.host) + (r.code ? ' <small>' + S.codeTag(r.code) + '</small>' : '') + '</span><b>' + esc(S.ago(r.at)) + '</b></li>'; })
+        + list('Open incidents', j.open_incidents, function (r) { return '<li><span>' + esc(r.host) + '</span><b>since ' + esc(S.ago(r.since)) + '</b></li>'; }) + '</div>'
+        + '<h2>Security</h2><div class="adm-tiles">' + tile('Sign-in attempts, 24h', sec.logins) + tile('New accounts, 24h', sec.registers) + tile('Password resets, 24h', sec.resets) + tile('Admin codes sent, 24h', sec.admin_codes) + tile('Blocked admin tries', sec.non_admin_tries, 'last 24 hours') + tile('Users with two-step', sec.twofa_users, 'of ' + n(sec.users)) + '</div>'
+        + '<div class="adm-grid"><div class="sp-card"><div class="sp-rhead"><b>Protection in place</b></div><ul class="adm-chk">' + chk(sec.turnstile, 'Bot check (Turnstile) is on for sign-up and password reset', 'Bot check is not on yet. Add the Turnstile keys to sud-config.php') + chk(sec.security_txt, 'security.txt is published', 'security.txt is missing') + chk(si.config, 'Private settings file found', 'Private settings file not found') + chk(true, 'Attempts are rate-limited and expire after 24 hours') + '</ul></div>'
+        + '<div class="sp-card"><div class="sp-rhead"><b>Site basics</b></div><ul class="adm-chk">' + chk(si.ads_txt, 'ads.txt is in place', 'ads.txt is missing') + chk(si.sitemap, 'sitemap.xml is in place', 'sitemap.xml is missing') + chk(si.robots, 'robots.txt is in place', 'robots.txt is missing') + '</ul><p class="note">PHP ' + esc(si.php) + '</p></div></div>'
+        + '<h2>What people are using (last 24 hours)</h2><div class="sp-card">' + (use.length ? hbars(use) : '<p class="note">Nothing yet.</p>') + '<p class="note">Counts of actions in the last 24 hours. Nothing identifying is kept.</p></div>'
+        + '<h2>Storage</h2><div class="adm-grid"><div class="sp-card"><div class="sp-rhead"><b>Rows in each table</b><span class="adm-total">Database ' + esc(sz) + '</span></div>' + hbars(st.tables.map(function (t) { return { l: t.t, n: t.n }; })) + '</div></div>';
     }).catch(fail);
   }
   function users(m) {
