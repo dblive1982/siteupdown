@@ -145,6 +145,42 @@ if ($a === 'seo') {                                             // the page-by-p
     $f = __DIR__ . '/_seo.json';
     out(200, is_file($f) ? (json_decode((string)file_get_contents($f), true) ?: ['pages' => []]) : ['pages' => [], 'missing' => true]);
 }
+if ($a === 'usage') {                                           // daily totals of actions (long-term), for the health trend chart
+    $days = in_array((int)($_GET['days'] ?? 30), [7, 30, 90], true) ? (int)$_GET['days'] : 30; $from = $day($days - 1);
+    $kind = preg_replace('/[^a-z_]/', '', (string)($_GET['kind'] ?? ''));
+    $rows = function (string $sql, array $args = []) use ($pdo) { try { $q = $pdo->prepare($sql); $q->execute($args); return $q->fetchAll(); } catch (Throwable $e) { return []; } };
+    $m = []; foreach ($rows('SELECT day AS d, SUM(n) AS n FROM usage_daily WHERE day >= ?' . ($kind !== '' ? ' AND kind = ?' : '') . ' GROUP BY day', $kind !== '' ? [$from, $kind] : [$from]) as $r) $m[$r['d']] = (int)$r['n'];
+    $ser = []; for ($i = $days - 1; $i >= 0; $i--) { $d = gmdate('Y-m-d', time() - $i * 86400); $ser[] = ['d' => $d, 'n' => $m[$d] ?? 0]; }
+    $tot = []; foreach ($rows('SELECT kind, SUM(n) AS n FROM usage_daily WHERE day >= ? GROUP BY kind ORDER BY n DESC', [$from]) as $r) $tot[] = ['kind' => $r['kind'], 'n' => (int)$r['n']];
+    $since = ''; foreach ($rows('SELECT MIN(day) AS d FROM usage_daily') as $r) $since = $r['d'] ?: '';
+    out(200, ['days' => $days, 'kind' => $kind, 'series' => $ser, 'totals' => $tot, 'since' => $since]);
+}
+if ($a === 'userstats') {                                       // the whole picture of the user base
+    $d = fn(int $ago) => gmdate('Y-m-d H:i:s', time() - $ago * 86400);
+    $rows = function (string $sql, array $args = []) use ($pdo) { $q = $pdo->prepare($sql); $q->execute($args); return $q->fetchAll(); };
+    $total = $one('SELECT COUNT(*) FROM users');
+    $tf = 0; try { $tf = $one('SELECT COUNT(*) FROM users WHERE twofa = 1'); } catch (Throwable $e) {}
+    $cohort = $one('SELECT COUNT(*) FROM users WHERE created_at BETWEEN ? AND ?', [$d(37), $d(7)]);
+    $cohortBack = $one('SELECT COUNT(*) FROM users WHERE created_at BETWEEN ? AND ? AND last_login > ?', [$d(37), $d(7), $d(7)]);
+    $signups = series($pdo, 'SELECT substr(created_at,1,10) AS d, COUNT(*) AS n FROM users WHERE created_at > ? GROUP BY substr(created_at,1,10)', [$d(90)], 90);
+    $before = $one('SELECT COUNT(*) FROM users WHERE created_at <= ?', [$d(90)]); $run = $before; $growth = [];
+    foreach ($signups as $x) { $run += $x['n']; $growth[] = ['d' => $x['d'], 'n' => $run]; }
+    $recent = array_map(fn($r) => ['name' => $r['name'], 'email' => $r['email'], 'created' => iso($r['created_at']), 'last' => iso($r['last_login']), 'google' => (bool)$r['g']],
+        $rows('SELECT name, email, created_at, last_login, (google_sub IS NOT NULL) AS g FROM users ORDER BY id DESC LIMIT 10'));
+    $top = array_map(fn($r) => ['name' => $r['name'], 'email' => $r['email'], 'n' => (int)$r['n']],
+        $rows('SELECT u.name, u.email, COUNT(*) AS n FROM watchlist w JOIN users u ON u.id = w.user_id GROUP BY u.id, u.name, u.email ORDER BY n DESC LIMIT 10'));
+    out(200, [
+        'total' => $total,
+        'new' => ['d1' => $one('SELECT COUNT(*) FROM users WHERE created_at > ?', [$d(1)]), 'd7' => $one('SELECT COUNT(*) FROM users WHERE created_at > ?', [$d(7)]), 'd30' => $one('SELECT COUNT(*) FROM users WHERE created_at > ?', [$d(30)])],
+        'active' => ['d1' => $one('SELECT COUNT(*) FROM users WHERE last_login > ?', [$d(1)]), 'd7' => $one('SELECT COUNT(*) FROM users WHERE last_login > ?', [$d(7)]), 'd30' => $one('SELECT COUNT(*) FROM users WHERE last_login > ?', [$d(30)])],
+        'dormant30' => $one('SELECT COUNT(*) FROM users WHERE last_login IS NOT NULL AND last_login <= ?', [$d(30)]),
+        'never' => $one('SELECT COUNT(*) FROM users WHERE last_login IS NULL'),
+        'method' => ['google' => $one('SELECT COUNT(*) FROM users WHERE google_sub IS NOT NULL AND pass_hash IS NULL'), 'password' => $one('SELECT COUNT(*) FROM users WHERE google_sub IS NULL AND pass_hash IS NOT NULL'), 'both' => $one('SELECT COUNT(*) FROM users WHERE google_sub IS NOT NULL AND pass_hash IS NOT NULL')],
+        'adoption' => ['watching' => $one('SELECT COUNT(DISTINCT user_id) FROM watchlist'), 'channels' => $one('SELECT COUNT(DISTINCT user_id) FROM alert_channels'), 'saved' => $one('SELECT COUNT(DISTINCT user_id) FROM saved_checks'), 'twofa' => $tf],
+        'retention' => ['cohort' => $cohort, 'back' => $cohortBack],
+        'signups' => $signups, 'growth' => $growth, 'recent' => $recent, 'top_watchers' => $top,
+    ]);
+}
 if ($a === 'users') {
     $qs = trim((string)($_GET['q'] ?? '')); $page = max(1, (int)($_GET['page'] ?? 1)); $per = 25;
     $where = $qs !== '' ? 'WHERE u.email LIKE ? OR u.name LIKE ?' : ''; $args = $qs !== '' ? ['%' . $qs . '%', '%' . $qs . '%'] : [];

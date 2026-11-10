@@ -403,6 +403,22 @@ function throttle(string $kind, int $max, int $mins): void {
 
 function note_attempt(string $kind): void {
     db()->prepare('INSERT INTO attempts (ip_hash, kind, ts) VALUES (?,?,?)')->execute([client_hash(), $kind, sql_now()]);
+    count_usage($kind);
+}
+
+/* Daily totals per kind of action, kept for the admin trend charts. Only a day, a kind and a number: nothing that identifies anyone.
+   (The attempts table above is wiped every 24 hours; this one is the long-term record.) */
+function count_usage(string $kind): void {
+    static $ready = false;
+    try {
+        $pdo = db();
+        if (!$ready) {
+            $pdo->exec('CREATE TABLE IF NOT EXISTS usage_daily (day CHAR(10) NOT NULL, kind VARCHAR(16) NOT NULL, n INT NOT NULL DEFAULT 0, PRIMARY KEY (day, kind))');
+            $ready = true;
+        }
+        $up = is_sqlite($pdo) ? 'ON CONFLICT(day, kind) DO UPDATE SET n = n + 1' : 'ON DUPLICATE KEY UPDATE n = n + 1';
+        $pdo->prepare("INSERT INTO usage_daily (day, kind, n) VALUES (?,?,1) $up")->execute([gmdate('Y-m-d'), $kind]);
+    } catch (Throwable $e) { /* counting must never break the request */ }
 }
 
 /* Cloudflare Turnstile bot check. Switched on only when turnstile_site and turnstile_secret are in sud-config.php; otherwise it passes. */
