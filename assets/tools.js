@@ -46,8 +46,8 @@
       return h;
     },
     headers: function (d) {
-      return '<div class="sp-card"><div class="sp-rhead"><b>' + e(d.url) + '</b>' + pill(codeCls(d.code), 'HTTP ' + d.code) + '</div>' +
-        facts([['Protocol', e(d.version)], ['Response time', d.ms + ' ms'], ['Server address', d.ip ? '<code>' + e(d.ip) + '</code>' : ''], ['Redirects followed', d.redirects]]) +
+      return '<div class="sp-card"><div class="sp-rhead"><b>' + e(d.url) + '</b>' + pill(codeCls(d.code), 'HTTP ' + d.code + (window.SUD.codeInfo(d.code) ? ' ' + window.SUD.codeInfo(d.code).n : '')) + '</div>' +
+        (window.SUD.codeInfo(d.code) ? '<p class="note code-say"><b>What ' + e(d.code) + ' means:</b> ' + e(window.SUD.codeInfo(d.code).t) + '</p>' : '') + facts([['Protocol', e(d.version)], ['Response time', d.ms + ' ms'], ['Server address', d.ip ? '<code>' + e(d.ip) + '</code>' : ''], ['Redirects followed', d.redirects]]) +
         (d.note ? '<p class="note">' + e(d.note) + '</p>' : '') + '</div>' +
         '<h3>Response headers</h3>' + table(['Header', 'Value'], d.headers.map(function (h) { return ['<b>' + e(h[0]) + '</b>', '<code>' + e(h[1]) + '</code>']; }));
     },
@@ -68,8 +68,8 @@
       if (d.error) h += '<p>' + e(d.error) + '</p>';
       h += '<p class="note">Total time ' + d.total_ms + ' ms.</p></div><ol class="hops">';
       d.hops.forEach(function (x) {
-        h += '<li><div class="hop-top">' + (x.code ? pill(codeCls(x.code), x.code) : pill('down', x.err || 'error')) + ' <code>' + e(x.url) + '</code>' + (x.ms != null ? ' <span class="sp-ms">' + x.ms + ' ms</span>' : '') + '</div>' +
-          (x.location ? '<div class="hop-next">&darr; redirects to <code>' + e(x.location) + '</code></div>' : '') + '</li>';
+        h += '<li><div class="hop-top">' + (x.code ? pill(codeCls(x.code), x.code + (window.SUD.codeInfo(x.code) ? ' ' + window.SUD.codeInfo(x.code).n : '')) : pill('down', x.err || 'error')) + ' <code>' + e(x.url) + '</code>' + (x.ms != null ? ' <span class="sp-ms">' + x.ms + ' ms</span>' : '') + '</div>' +
+          (x.code && window.SUD.codeInfo(x.code) ? '<div class="hop-say">' + e(window.SUD.codeInfo(x.code).t) + '</div>' : '') + (x.location ? '<div class="hop-next">&darr; redirects to <code>' + e(x.location) + '</code></div>' : '') + '</li>';
       });
       h += '</ol>';
       var first = d.hops[0];
