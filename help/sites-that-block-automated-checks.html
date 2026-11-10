@@ -17,8 +17,8 @@
 <link rel="icon" href="/favicon.ico?v=3" sizes="any"><link rel="icon" href="/favicon-32.png?v=3" type="image/png" sizes="32x32"><link rel="icon" href="/favicon-64.png?v=3" type="image/png" sizes="64x64"><link rel="manifest" href="/site.webmanifest"><link rel="icon" href="/favicon-192.png?v=3" type="image/png" sizes="192x192"><link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="/assets/app.css?v=a0077545">
-<link rel="stylesheet" href="/assets/newlook.css?v=a0077545">
+<link rel="stylesheet" href="/assets/app.css?v=7193c4c2">
+<link rel="stylesheet" href="/assets/newlook.css?v=7193c4c2">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Why some sites block automated checks, and what we say when that happens", "description": "Many big websites refuse requests from monitoring tools. Here is why, how it shows up as a 403, 429 or timeout, and how siteupdown.com avoids calling those sites down.", "datePublished": "2026-11-02", "dateModified": "2026-11-02", "author": {"@type": "Organization", "name": "siteupdown.com", "url": "https://siteupdown.com/"}, "publisher": {"@type": "Organization", "name": "siteupdown.com", "url": "https://siteupdown.com/"}, "mainEntityOfPage": "https://siteupdown.com/help/sites-that-block-automated-checks"}</script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://siteupdown.com/"}, {"@type": "ListItem", "position": 2, "name": "Help centre", "item": "https://siteupdown.com/help/"}, {"@type": "ListItem", "position": 3, "name": "Why some sites block automated checks, and what we say when that happens", "item": "https://siteupdown.com/help/sites-that-block-automated-checks"}]}</script>
 </head>
 <body>
@@ -55,6 +55,24 @@
 <h2>What you can do</h2>
 <p>Open the site in your own browser. If it loads, it is up for you. If it does not, try the <a href="/help/website-not-loading-checklist">checklist</a> and look at the site&rsquo;s official status page or social account, which are the most reliable sources during a large outage.</p>
 <p>We do not disguise our checks as a browser. Being open about what we are is part of how we keep our results honest.</p>
+<h2>Why sites do this</h2>
+<p>Many sites use bot protection from services such as Cloudflare or Akamai to stop scrapers, attackers and fake traffic. These systems look at where a request comes from, how it behaves and whether it looks like a real browser. A monitoring request from a data centre can look like a bot, even though it is harmless.</p>
+<h2>What it looks like in a check</h2>
+<ul>
+<li>A <b>403 Forbidden</b> or <b>429</b> from some or all probes, while the site opens fine in your browser.</li>
+<li>A <b>challenge page</b> asking to prove you are human.</li>
+<li>Different results from different locations, because the protection treats some networks as riskier.</li>
+</ul>
+<h2>How we treat it</h2>
+<p>A block is not an outage. When a site answers us but refuses the request, we show it as blocked or unclear, not down, because the server is clearly alive. We do not try to bypass protection or solve challenges. That would be inappropriate and is not something a monitoring service should do.</p>
+<h2>If you own the site</h2>
+<ol>
+<li>Allow-list your monitoring service, or add a rule that lets known monitors through.</li>
+<li>Monitor a simple page, such as a health-check URL, that bot rules do not cover.</li>
+<li>Check your firewall logs for blocked probe addresses.</li>
+</ol>
+<h2>If you are a visitor</h2>
+<p>If the site opens for you, it is up. Trust your own browser over a blocked probe. See <a href="/help/error-403-forbidden">error 403</a> and <a href="/help/how-our-checks-work">how our checks work</a>.</p>
 <div class="cta-box"><b>Check a website now</b><p>Is it down for everyone, or just you? Paste an address and we test it from fifteen places.</p><a class="btn" href="/"><span>Open the checker</span></a></div><h2>Related guides</h2><ul><li><a href="/help/how-our-checks-work">How siteupdown.com checks a website, and what the verdicts mean</a></li><li><a href="/help/error-403-forbidden">What does a 403 Forbidden error mean?</a></li><li><a href="/help/down-for-some-people-not-others">Why a website can be down for some people and not others</a></li></ul><p class="note">Last updated 2 November 2026. Written by the siteupdown.com team. <a href="/contact">Spotted a mistake?</a></p><p style="margin-top:20px"><a href="/help/">&larr; All help guides</a></p></div></section></main>
 <footer class="site-foot"><div class="wrap nl-foot">
 <img src="/assets/nl-logo-light.png" alt="Site up down?" width="831" height="391">
@@ -63,7 +81,7 @@
 <nav class="nl-fgrid nl-fcard" aria-label="All pages"><div class="nl-fg"><h3>Check</h3><a href="/">Website checker</a><a href="/is-it-down/">Is it down?</a><a href="/outage-map">Outage map</a><a href="/outage-history">Outage history</a><a href="/state-of-the-internet">State of the internet</a><a href="/compare">Compare sites</a><a href="/monitor">Monitor</a></div><div class="nl-fg"><h3>Tools</h3><a href="/internet-speed-test">Internet speed test</a><a href="/speed">Website speed test</a><a href="/what-is-my-ip">What is my IP?</a><a href="/game-ping-test">Game ping test</a><a href="/tools/">All tools</a></div><div class="nl-fg"><h3>Learn</h3><a href="/help/">Help centre</a><a href="/how-we-check">How we check</a><a href="/faq">FAQ</a></div><div class="nl-fg"><h3>Company</h3><a href="/account">Account</a><a href="/about">About</a><a href="/business">For business</a><a href="/contact">Contact</a></div><div class="nl-fg"><h3>Legal</h3><a href="/legal">Terms &amp; legal</a><a href="/privacy">Privacy</a><a href="/editorial-policy">Editorial &amp; ad policy</a><button type="button" data-cookie-settings>Cookie settings</button></div></nav>
 <p class="fine">&copy; <span data-year>2026</span> siteupdown.com. An independent website checker, not affiliated with the sites it checks. Regional probes use the public <a href="https://globalping.io" rel="noopener">Globalping</a> network.</p>
 </div></footer>
-<script src="/assets/app.js?v=a0077545"></script>
-<script src="/assets/newlook.js?v=a0077545"></script>
+<script src="/assets/app.js?v=7193c4c2"></script>
+<script src="/assets/newlook.js?v=7193c4c2"></script>
 </body>
 </html>

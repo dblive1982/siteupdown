@@ -17,8 +17,8 @@
 <link rel="icon" href="/favicon.ico?v=3" sizes="any"><link rel="icon" href="/favicon-32.png?v=3" type="image/png" sizes="32x32"><link rel="icon" href="/favicon-64.png?v=3" type="image/png" sizes="64x64"><link rel="manifest" href="/site.webmanifest"><link rel="icon" href="/favicon-192.png?v=3" type="image/png" sizes="192x192"><link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="/assets/app.css?v=a0077545">
-<link rel="stylesheet" href="/assets/newlook.css?v=a0077545">
+<link rel="stylesheet" href="/assets/app.css?v=7193c4c2">
+<link rel="stylesheet" href="/assets/newlook.css?v=7193c4c2">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Fix &ldquo;server not found&rdquo; and DNS_PROBE_FINISHED_NXDOMAIN", "description": "What the DNS errors in Chrome, Edge, Firefox and Safari mean, and a step-by-step way to fix them on your device, your router or the website itself.", "datePublished": "2026-11-02", "dateModified": "2026-11-02", "author": {"@type": "Organization", "name": "siteupdown.com", "url": "https://siteupdown.com/"}, "publisher": {"@type": "Organization", "name": "siteupdown.com", "url": "https://siteupdown.com/"}, "mainEntityOfPage": "https://siteupdown.com/help/dns-probe-finished-nxdomain"}</script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://siteupdown.com/"}, {"@type": "ListItem", "position": 2, "name": "Help centre", "item": "https://siteupdown.com/help/"}, {"@type": "ListItem", "position": 3, "name": "Fix &ldquo;server not found&rdquo; and DNS_PROBE_FINISHED_NXDOMAIN", "item": "https://siteupdown.com/help/dns-probe-finished-nxdomain"}]}</script>
 </head>
 <body>
@@ -52,6 +52,26 @@
 </ol>
 <h2>If the website is yours</h2>
 <p>Check that the domain has not expired, the nameservers are correct, and the right A or CNAME record exists. Remember that changes can take a while to spread, as explained in <a href="/help/dns-propagation">DNS propagation</a>.</p>
+<h2>What the error really means</h2>
+<p>NXDOMAIN stands for &ldquo;non-existent domain&rdquo;. Your device asked a DNS server for the address of the site and the answer was &ldquo;no such name&rdquo;. The browser never even tried to connect, so this is not a slow server or a blocked page. It is a failed name lookup.</p>
+<h2>Common causes</h2>
+<ul>
+<li><b>A typo</b> in the address, such as a missing letter or the wrong ending (.com instead of .co.uk).</li>
+<li><b>The domain has expired or was never registered.</b> The registry no longer lists it, so every resolver says it does not exist.</li>
+<li><b>DNS records were deleted or are being changed.</b> A site owner who moves host can leave a gap where the records are missing.</li>
+<li><b>Your resolver is wrong or stale.</b> Your router, provider or a filter returns NXDOMAIN for a site that exists. This is the case where the site works for other people.</li>
+<li><b>A security or family filter</b> that deliberately answers &ldquo;does not exist&rdquo; for blocked sites.</li>
+</ul>
+<h2>A worked example</h2>
+<p>A visitor types <code>exmaple.com</code> and sees the error. The domain they wanted was <code>example.com</code>, so the answer is correct: the misspelt name really does not exist. In a second case, the address is right and works on a phone using mobile data but not on the home Wi-Fi. That points to the router&rsquo;s DNS, so changing it to a public resolver fixes it.</p>
+<h2>What to do next</h2>
+<ol>
+<li>Check the spelling and the domain ending.</li>
+<li>Test the same address on another network or device.</li>
+<li><a href="/help/flush-dns-cache">Flush your DNS cache</a>.</li>
+<li>If you own the site, check that the domain is not <a href="/help/domain-name-expiry">expired</a> and that its DNS records exist at your registrar.</li>
+<li>If you only changed the records recently, read about <a href="/help/dns-propagation">DNS propagation</a>; it can take hours.</li>
+</ol>
 <div class="cta-box"><b>Check a website now</b><p>Is it down for everyone, or just you? Paste an address and we test it from fifteen places.</p><a class="btn" href="/"><span>Open the checker</span></a></div><h2>Related guides</h2><ul><li><a href="/help/flush-dns-cache">How to flush your DNS cache on Windows, Mac and Linux</a></li><li><a href="/help/dns-propagation">What is DNS propagation, and why does a change take time?</a></li><li><a href="/help/website-not-loading-checklist">Website not loading? A step-by-step checklist</a></li></ul><p class="note">Last updated 2 November 2026. Written by the siteupdown.com team. <a href="/contact">Spotted a mistake?</a></p><p style="margin-top:20px"><a href="/help/">&larr; All help guides</a></p></div></section></main>
 <footer class="site-foot"><div class="wrap nl-foot">
 <img src="/assets/nl-logo-light.png" alt="Site up down?" width="831" height="391">
@@ -60,7 +80,7 @@
 <nav class="nl-fgrid nl-fcard" aria-label="All pages"><div class="nl-fg"><h3>Check</h3><a href="/">Website checker</a><a href="/is-it-down/">Is it down?</a><a href="/outage-map">Outage map</a><a href="/outage-history">Outage history</a><a href="/state-of-the-internet">State of the internet</a><a href="/compare">Compare sites</a><a href="/monitor">Monitor</a></div><div class="nl-fg"><h3>Tools</h3><a href="/internet-speed-test">Internet speed test</a><a href="/speed">Website speed test</a><a href="/what-is-my-ip">What is my IP?</a><a href="/game-ping-test">Game ping test</a><a href="/tools/">All tools</a></div><div class="nl-fg"><h3>Learn</h3><a href="/help/">Help centre</a><a href="/how-we-check">How we check</a><a href="/faq">FAQ</a></div><div class="nl-fg"><h3>Company</h3><a href="/account">Account</a><a href="/about">About</a><a href="/business">For business</a><a href="/contact">Contact</a></div><div class="nl-fg"><h3>Legal</h3><a href="/legal">Terms &amp; legal</a><a href="/privacy">Privacy</a><a href="/editorial-policy">Editorial &amp; ad policy</a><button type="button" data-cookie-settings>Cookie settings</button></div></nav>
 <p class="fine">&copy; <span data-year>2026</span> siteupdown.com. An independent website checker, not affiliated with the sites it checks. Regional probes use the public <a href="https://globalping.io" rel="noopener">Globalping</a> network.</p>
 </div></footer>
-<script src="/assets/app.js?v=a0077545"></script>
-<script src="/assets/newlook.js?v=a0077545"></script>
+<script src="/assets/app.js?v=7193c4c2"></script>
+<script src="/assets/newlook.js?v=7193c4c2"></script>
 </body>
 </html>
