@@ -117,7 +117,7 @@ def foot(scripts):
     fgrid = ''.join('<div class="nl-fg"><h3>%s</h3>%s%s</div>' % (g, ''.join('<a href="%s">%s</a>' % (h, l) for l, h in items), '<button type="button" data-cookie-settings>Cookie settings</button>' if g == 'Legal' else '') for g, items in groups)
     return f'''</main>
 <footer class="site-foot"><div class="wrap nl-foot">
-<img src="/assets/nl-logo.png" alt="Site up down?" width="831" height="391">
+<img src="/assets/nl-logo-light.png" alt="Site up down?" width="831" height="391">
 <p class="note">Less refreshing. More knowing.</p>
 <div class="socials" aria-label="Social media">
 <a href="#" title="Facebook" aria-label="Facebook">{I_FB}</a><a href="#" title="Instagram" aria-label="Instagram">{I_IG}</a><a href="#" title="X" aria-label="X">{I_X}</a><a href="#" title="TikTok" aria-label="TikTok">{I_TT}</a><a href="#" title="YouTube" aria-label="YouTube">{I_YT}</a>
