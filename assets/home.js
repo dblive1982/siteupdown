@@ -31,7 +31,7 @@
   var HTTPN = { 200: 'OK', 201: 'Created', 204: 'No content', 301: 'Redirect', 302: 'Redirect', 304: 'Not modified', 307: 'Redirect', 308: 'Redirect', 400: 'Bad request', 401: 'Login required', 403: 'Forbidden', 404: 'Not found', 429: 'Too many requests', 500: 'Server error', 502: 'Bad gateway', 503: 'Unavailable', 504: 'Gateway timeout' };
   function tipHtml(p, st, i, med) {
     var rows = '<div class="tp-r"><span>Checking</span><b>' + esc(state.host || 'this site') + '</b></div>';
-    rows += '<div class="tp-r"><span>HTTP</span><b>' + (p.code ? p.code + (HTTPN[p.code] ? ' ' + esc(HTTPN[p.code]) : '') : 'No reply') + '</b></div>';
+    rows += '<div class="tp-r"><span>HTTP</span><b>' + (p.code ? S.codeTag(p.code) : 'No reply') + '</b></div>';
     if (p.ms != null) {
       var cmp = '';
       if (med && st !== 'none') { var r = p.ms / med; cmp = r >= 1.5 ? ' <i>' + (Math.round(r * 10) / 10) + 'x slower than typical</i>' : r <= 0.67 ? ' <i>' + (Math.round(med / p.ms * 10) / 10) + 'x faster than typical</i>' : ' <i>about typical</i>'; }
@@ -133,11 +133,11 @@
   }
   function factsFor(r) {
     var f = '';
-    if (r.http_code) f += '<div>Server check: <b>HTTP ' + esc(r.http_code) + '</b> in <b>' + esc(S.ms(r.ms)) + '</b>' + (r.redirected ? ' (after a redirect)' : '') + '</div>';
+    if (r.http_code) f += '<div>Server check: <b>HTTP ' + S.codeTag(r.http_code) + '</b> in <b>' + esc(S.ms(r.ms)) + '</b>' + (r.redirected ? ' (after a redirect)' : '') + '</div>' + (S.codeInfo(r.http_code) ? '<div class="code-say"><b>What ' + esc(r.http_code) + ' means:</b> ' + esc(S.codeInfo(r.http_code).t) + '</div>' : '');
     if (r.note) f += '<div>' + esc(r.note) + '</div>';
     // The checked page's own title and headings are deliberately not shown: they can be copied from scam sites.
     if (r.server) f += '<div>Server: <b>' + esc(r.server) + '</b></div>';
-    if (r.chain && r.chain.length > 1) f += '<div>Redirects: ' + r.chain.map(function (c) { return '<b>' + esc(c.url.replace(/^https?:\/\//, '')) + '</b> <small>(' + esc(c.code) + ')</small>'; }).join(' → ') + '</div>';
+    if (r.chain && r.chain.length > 1) f += '<div>Redirects: ' + r.chain.map(function (c) { return '<b>' + esc(c.url.replace(/^https?:\/\//, '')) + '</b> <small>(' + S.codeTag(c.code) + ')</small>'; }).join(' → ') + '</div>';
     var x = r.extra;
     if (x && (x.ip || x.ctype || x.desc || x.tls_expires)) {
       f += '<div class="xt"><div><b>More details</b></div>';
@@ -367,7 +367,7 @@
   function siteCard(x) {
     var v = x.verdict, cls = !v ? 'none' : (v === 'up' ? 'up' : (v === 'down' || v === 'timeout' || !x.code ? 'bad' : 'warn'));
     var say = !v ? 'has not been checked yet.' : v === 'up' ? 'is up.' : v === 'down' ? 'is down.' : v === 'timeout' ? 'timed out.' : x.code ? 'answered, but blocks automated checks.' : 'is not responding.';
-    var right = x.code ? 'HTTP ' + esc(x.code) + (x.ms != null ? ' · ' + esc(S.ms(x.ms)) : '') : (v ? 'No status' : '');
+    var right = x.code ? 'HTTP ' + S.codeTag(x.code) + (x.ms != null ? ' · ' + esc(S.ms(x.ms)) : '') : (v ? 'No status' : '');
     return '<div class="row ' + cls + '"><div class="rl"><b>' + tile(x.name, x.host) + (x.page ? '<a href="' + esc(x.page) + '">' + esc(x.name) + '</a>' : esc(x.name)) + '</b><span class="st"><i></i>' + esc(x.host) + ' ' + say + (x.at ? ' <em>Checked ' + esc(S.ago(x.at)) + '</em>' : '') + '</span></div>'
       + '<div class="rr"><span class="code">' + right + '</span>' + sslTag(x)
       + '<button class="go" type="button" data-h="' + esc(x.host) + '" aria-label="Check ' + esc(x.name) + '" title="Check ' + esc(x.name) + '">↗</button></div></div>';

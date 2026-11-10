@@ -3,6 +3,54 @@
   'use strict';
   var d = document;
   var S = window.SUD = window.SUD || {};
+  /* HTTP status codes in plain English. Every place that shows a code (check results, probe tables, redirect chains) uses this
+     so a visitor never sees a bare number. S.codeInfo(code) gives {n: short name, t: one-sentence meaning};
+     S.codeTag(code) gives ready-to-insert HTML with the name beside the number and the full meaning in a hover/tap popup. */
+  var CODE_TEXT = {
+    200: ['OK', 'The site answered normally. This is the result you want.'],
+    201: ['Created', 'The request worked and something new was created.'],
+    204: ['No content', 'The request worked and there is nothing to show. Normal for some background calls.'],
+    301: ['Moved permanently', 'The page has a new permanent address and the browser was sent there.'],
+    302: ['Moved temporarily', 'The page is temporarily at another address and the browser was sent there.'],
+    304: ['Not modified', 'Your stored copy of the page is still current, so nothing new was sent.'],
+    307: ['Temporary redirect', 'The page is temporarily somewhere else and the browser was sent there.'],
+    308: ['Permanent redirect', 'The page has moved for good and the browser was sent to the new address.'],
+    400: ['Bad request', 'The server could not understand the request. The site is up, but this request was malformed.'],
+    401: ['Login required', 'The page needs you to sign in first. The site itself is working.'],
+    403: ['Forbidden', 'The server is working but refused to let this request in. Many big sites do this to automated checks even when they work fine for people.'],
+    404: ['Not found', 'The server is working but there is nothing at this address. The page is missing, the site is not necessarily down.'],
+    405: ['Method not allowed', 'The page exists but does not accept this kind of request.'],
+    408: ['Request timeout', 'The server gave up waiting for the request to finish arriving.'],
+    410: ['Gone', 'The page was removed on purpose and will not come back.'],
+    429: ['Too many requests', 'The site is asking us to slow down. It is a deliberate limit, not a breakage.'],
+    451: ['Unavailable for legal reasons', 'The page is blocked for legal reasons in this place.'],
+    500: ['Server error', 'Something went wrong on the website\'s own server. The problem is on their side.'],
+    501: ['Not implemented', 'The server does not support the thing that was asked for. The problem is on their side.'],
+    502: ['Bad gateway', 'A server in front of the site got a bad answer from the server behind it. Often a short fault on their side.'],
+    503: ['Unavailable', 'The server is up but cannot take requests right now, usually because it is overloaded or in maintenance.'],
+    504: ['Gateway timeout', 'A server in front of the site gave up waiting for the server behind it. Often overload on their side.'],
+    520: ['Unknown error', 'The service in front of the site got an empty or unexpected answer from the site\'s own server.'],
+    521: ['Web server is down', 'The service in front of the site could not reach the site\'s own server.'],
+    522: ['Connection timed out', 'The service in front of the site could not connect to the site\'s own server in time.'],
+    523: ['Origin unreachable', 'The service in front of the site could not find a route to the site\'s own server.'],
+    524: ['Timeout', 'The site\'s own server took too long to answer the service in front of it.'],
+    525: ['Secure connection failed', 'The secure handshake with the site\'s own server failed.'],
+    526: ['Invalid certificate', 'The site\'s own server has a certificate that does not check out.']
+  };
+  S.codeInfo = function (code) {
+    var c = +code; if (!c) return null;
+    var h = CODE_TEXT[c]; if (h) return { n: h[0], t: h[1] };
+    if (c >= 200 && c < 300) return { n: 'Success', t: 'The site answered and the request worked.' };
+    if (c >= 300 && c < 400) return { n: 'Redirect', t: 'The site sent the browser to another address.' };
+    if (c >= 400 && c < 500) return { n: 'Request refused', t: 'The server answered but refused the request or could not find what was asked for. The site itself is working.' };
+    if (c >= 500) return { n: 'Server error', t: 'Something went wrong on the website\'s own server. The problem is on their side.' };
+    return null;
+  };
+  S.codeTag = function (code, opts) {
+    var i = S.codeInfo(code), e = function (x) { return String(x).replace(/[&<>"]/g, function (m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[m]; }); };
+    if (!i) return e(code);
+    return '<span class="code-x has-tip" tabindex="0" data-tip="' + e(code + ' ' + i.n + ': ' + i.t) + '">' + e(code) + ' <small>' + e(i.n) + '</small></span>';
+  };
   S.user = null; S.google = ''; S.ready = []; S.me = null;
 
   /* ---- helpers ---- */
