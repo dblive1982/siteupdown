@@ -728,4 +728,8 @@ from help_more_c import ARTICLES_C
 from help_more_d import ARTICLES_D
 from help_more_e import ARTICLES_E
 ARTICLES = ARTICLES + ARTICLES_A + ARTICLES_B + ARTICLES_C + ARTICLES_D + ARTICLES_E
+from help_deepen import EXTRA
+for _a in ARTICLES:
+    if _a['slug'] in EXTRA:
+        _a['body'] = _a['body'].rstrip() + '\n' + EXTRA[_a['slug']].strip() + '\n'
 BY_SLUG = {a['slug']: a for a in ARTICLES}

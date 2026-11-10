@@ -51,6 +51,7 @@
      Used by both the home page and the State of the internet page. */
   S.calendar = function (cal) {
     var h = '', esc = S.esc;
+    if (!cal || !cal.length) return '<p class="note empty-note">No outage calendar yet. It fills in day by day as our checks run, and a calendar full of green is a good sign.</p>';
     function fd(d) { return new Date(d + 'T12:00:00Z').toLocaleDateString([], { day: 'numeric', month: 'long' }); }
     var cl = cal, mx = Math.max.apply(null, cl.map(function (x) { return x.n; })) || 1, tot = cl.reduce(function (a, x) { return a + x.n; }, 0), act = cl.filter(function (x) { return x.n; }).length, avg = tot / (cl.length || 1);
     var top = cl.filter(function (x) { return x.n === mx && x.n; })[0];
@@ -78,6 +79,7 @@
   };
   /* Shared category reliability chart: bars coloured by how good the uptime is, with site and outage counts and a popup. */
   S.catChart = function (cats) {
+    if (!cats || !cats.length) return '<p class="note empty-note">No category figures yet. They appear once enough checks have run for each group of sites.</p>';
     var esc = S.esc, cap = function (x) { return x.charAt(0).toUpperCase() + x.slice(1); }, pct = function (p) { return p.toFixed(2).replace(/\.?0+$/, '') + '%'; };
     var lv = function (p) { return p >= 99.9 ? 'g' : p >= 99.5 ? 'a' : 'o'; };
     return '<p class="note">Average uptime across the sites in each category. The bars start at 95% so small differences are visible. Green is 99.9% or better, amber 99.5% or better, orange below that. Hover or tap a bar for details.</p><ul class="ins-bars cat-bars">' + cats.map(function (c) {

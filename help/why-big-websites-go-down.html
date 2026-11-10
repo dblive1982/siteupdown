@@ -16,8 +16,8 @@
 <link rel="icon" href="/favicon.ico?v=3" sizes="any"><link rel="icon" href="/favicon-32.png?v=3" type="image/png" sizes="32x32"><link rel="icon" href="/favicon-64.png?v=3" type="image/png" sizes="64x64"><link rel="manifest" href="/site.webmanifest"><link rel="icon" href="/favicon-192.png?v=3" type="image/png" sizes="192x192"><link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
-<link rel="stylesheet" href="/assets/app.css?v=2b34ea7a">
-<link rel="stylesheet" href="/assets/newlook.css?v=2b34ea7a">
+<link rel="stylesheet" href="/assets/app.css?v=02825458">
+<link rel="stylesheet" href="/assets/newlook.css?v=02825458">
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "Why big websites go down: cloud, CDN and DNS failures", "description": "Even huge services have outages. The usual causes are configuration mistakes, overloaded servers, cloud and CDN failures and DNS problems. Here is how they work and why they spread.", "datePublished": "2026-11-02", "dateModified": "2026-11-02", "author": {"@type": "Organization", "name": "siteupdown.com", "url": "https://siteupdown.com/"}, "publisher": {"@type": "Organization", "name": "siteupdown.com", "url": "https://siteupdown.com/"}, "mainEntityOfPage": "https://siteupdown.com/help/why-big-websites-go-down"}</script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://siteupdown.com/"}, {"@type": "ListItem", "position": 2, "name": "Help centre", "item": "https://siteupdown.com/help/"}, {"@type": "ListItem", "position": 3, "name": "Why big websites go down: cloud, CDN and DNS failures", "item": "https://siteupdown.com/help/why-big-websites-go-down"}]}</script>
 </head>
 <body>
@@ -51,6 +51,24 @@
 </ul>
 <h2>What you can do as an owner</h2>
 <p>Monitor from several locations, keep certificates and domains renewing automatically, and avoid depending on a single provider for everything. See <a href="/help/uptime-percentages-explained">uptime percentages explained</a> for what different levels mean in practice.</p>
+<h2>The most common causes</h2>
+<ul>
+<li><b>Configuration changes.</b> A routine update with one wrong setting is behind many large outages, because small changes can spread to thousands of servers in seconds.</li>
+<li><b>Shared dependencies.</b> Many sites rely on the same cloud, DNS or content-delivery provider, so one failure there takes down many sites at once.</li>
+<li><b>Traffic spikes.</b> A launch, a sale or a news event can exceed what the system was built for.</li>
+<li><b>Expired certificates or domains,</b> an embarrassingly simple cause that still happens.</li>
+<li><b>Software bugs</b> that appear only at huge scale.</li>
+<li><b>Attacks,</b> such as <a href="/help/what-is-a-ddos-attack">DDoS</a>, though they are less common than self-inflicted faults.</li>
+<li><b>Hardware, power or network faults</b> in a data centre.</li>
+</ul>
+<h2>Why a big fix takes time</h2>
+<p>Large systems are made of many services that depend on each other. Recovery has to be done in order, and restarting everything at once can cause a second overload. Teams also verify each step to avoid making it worse.</p>
+<h2>Why you see it before they say anything</h2>
+<p>Status pages are often updated by hand after engineers confirm the cause. Independent checks like ours see the symptoms immediately, which is why a site can show as down here before an official notice appears.</p>
+<h2>A worked example</h2>
+<p>One cloud provider has a fault in one region. Dozens of unrelated apps fail at the same moment, because they all run there. Our map shows many sites down in the same area and time, which is the sign of a shared cause instead of separate problems.</p>
+<h2>What you can do</h2>
+<p>Not much except wait. Avoid repeated logins and refreshes, and check the <a href="/help/what-to-do-when-an-app-or-service-is-down">what to do guide</a>.</p>
 <div class="cta-box"><b>Check a website now</b><p>Is it down for everyone, or just you? Paste an address and we test it from fifteen places.</p><a class="btn" href="/"><span>Open the checker</span></a></div><h2>Related guides</h2><ul><li><a href="/help/server-errors-500-502-503-504">500, 502, 503 and 504 errors: what server errors mean</a></li><li><a href="/help/dns-propagation">What is DNS propagation, and why does a change take time?</a></li><li><a href="/help/uptime-percentages-explained">Uptime percentages explained: what 99.9% really means</a></li></ul><p class="note">Last updated 2 November 2026. Written by the siteupdown.com team. <a href="/contact">Spotted a mistake?</a></p><p style="margin-top:20px"><a href="/help/">&larr; All help guides</a></p></div></section></main>
 <footer class="site-foot"><div class="wrap nl-foot">
 <img src="/assets/nl-logo-light.png" alt="Site up down?" width="831" height="391">
@@ -59,7 +77,7 @@
 <nav class="nl-fgrid nl-fcard" aria-label="All pages"><div class="nl-fg"><h3>Check</h3><a href="/">Website checker</a><a href="/is-it-down/">Is it down?</a><a href="/outage-map">Outage map</a><a href="/outage-history">Outage history</a><a href="/state-of-the-internet">State of the internet</a><a href="/compare">Compare sites</a><a href="/monitor">Monitor</a></div><div class="nl-fg"><h3>Tools</h3><a href="/internet-speed-test">Internet speed test</a><a href="/speed">Website speed test</a><a href="/what-is-my-ip">What is my IP?</a><a href="/game-ping-test">Game ping test</a><a href="/tools/">All tools</a></div><div class="nl-fg"><h3>Learn</h3><a href="/help/">Help centre</a><a href="/how-we-check">How we check</a><a href="/faq">FAQ</a></div><div class="nl-fg"><h3>Company</h3><a href="/account">Account</a><a href="/about">About</a><a href="/business">For business</a><a href="/contact">Contact</a></div><div class="nl-fg"><h3>Legal</h3><a href="/legal">Terms &amp; legal</a><a href="/privacy">Privacy</a><a href="/editorial-policy">Editorial &amp; ad policy</a><button type="button" data-cookie-settings>Cookie settings</button></div></nav>
 <p class="fine">&copy; <span data-year>2026</span> siteupdown.com. An independent website checker, not affiliated with the sites it checks. Regional probes use the public <a href="https://globalping.io" rel="noopener">Globalping</a> network.</p>
 </div></footer>
-<script src="/assets/app.js?v=2b34ea7a"></script>
-<script src="/assets/newlook.js?v=2b34ea7a"></script>
+<script src="/assets/app.js?v=02825458"></script>
+<script src="/assets/newlook.js?v=02825458"></script>
 </body>
 </html>

@@ -84,7 +84,7 @@
   }
   function tile(label, v, sub) { return '<div class="adm-tile"><span>' + esc(label) + '</span><b>' + n(v) + '</b>' + (sub ? '<em>' + esc(sub) + '</em>' : '') + '</div>'; }
   function list(title, rows, fmt) {
-    return '<div class="sp-card"><div class="sp-rhead"><b>' + esc(title) + '</b></div>' + (rows.length ? '<ul class="adm-list">' + rows.map(fmt).join('') + '</ul>' : '<p class="note">Nothing yet.</p>') + '</div>';
+    return '<div class="sp-card"><div class="sp-rhead"><b>' + esc(title) + '</b></div>' + (rows.length ? '<ul class="adm-list">' + rows.map(fmt).join('') + '</ul>' : '<p class="note adm-empty">Nothing to show yet. This list fills in as the site is used.</p>') + '</div>';
   }
   function overview(m) {
     S.api('admin.php?a=overview').then(function (j) {
@@ -137,9 +137,9 @@
         + '<div class="adm-tiles">' + tile('Visitors today', t.visitors_today, d(t.visitors_today, t.visitors_yesterday)) + tile('Page views today', t.views_today, d(t.views_today, t.views_yesterday)) + tile('Visitors, ' + days + ' days', t.visitors_range) + tile('Page views, ' + days + ' days', t.views_range) + tile('Countries', t.countries) + '</div>'
         + (j.since ? '<p class="note">Counting since ' + esc(j.since) + '. Visitors are counted once a day without keeping any address, and anyone who declines analytics or sends Do Not Track is not counted. Country is the network’s country where available, otherwise guessed from the visitor’s time zone, so treat it as a close guide.</p>' : '<p class="note">No visits counted yet. Counting starts once this version of the site is live and people browse it.</p>')
         + '<div class="sp-card"><div class="sp-rhead"><b>Visitors and page views per day</b></div>' + lineChart(j.views, j.visitors, 'Page views', 'Visitors') + '</div>'
-        + '<div class="adm-grid"><div class="sp-card"><div class="sp-rhead"><b>Where visitors are</b></div>' + (cnt.length ? hbars(cnt) : '<p class="note">Nothing yet.</p>') + '</div>'
-        + '<div class="sp-card"><div class="sp-rhead"><b>Top pages</b></div>' + (j.pages.length ? hbars(j.pages.map(function (p) { return { l: p.path, n: p.views }; })) : '<p class="note">Nothing yet.</p>') + '</div></div>'
-        + '<div class="adm-grid"><div class="sp-card"><div class="sp-rhead"><b>Where they came from</b></div>' + (j.refs.length ? hbars(j.refs.map(function (r) { return { l: r.ref, n: r.views }; })) : '<p class="note">Nothing yet.</p>') + '</div>'
+        + '<div class="adm-grid"><div class="sp-card"><div class="sp-rhead"><b>Where visitors are</b></div>' + (cnt.length ? hbars(cnt) : '<p class="note adm-empty">No visits with a known country yet. This fills in as visitors arrive.</p>') + '</div>'
+        + '<div class="sp-card"><div class="sp-rhead"><b>Top pages</b></div>' + (j.pages.length ? hbars(j.pages.map(function (p) { return { l: p.path, n: p.views }; })) : '<p class="note adm-empty">No page views counted yet. Pages appear here after the first visits.</p>') + '</div></div>'
+        + '<div class="adm-grid"><div class="sp-card"><div class="sp-rhead"><b>Where they came from</b></div>' + (j.refs.length ? hbars(j.refs.map(function (r) { return { l: r.ref, n: r.views }; })) : '<p class="note adm-empty">No referrers yet. Most early visits arrive directly, with no referring site.</p>') + '</div>'
         + '<div class="sp-card"><div class="sp-rhead"><b>Devices</b></div><div class="dp-bar" role="img" aria-label="Device split"><i class="s-dns" style="flex:' + j.devices.m + '"></i><i class="s-conn" style="flex:' + j.devices.t + '"></i><i class="s-tls" style="flex:' + j.devices.d + '"></i></div>'
         + '<ul class="dp-leg"><li><i class="s-dns"></i>Mobile <b>' + pc(j.devices.m) + '%</b></li><li><i class="s-conn"></i>Tablet <b>' + pc(j.devices.t) + '%</b></li><li><i class="s-tls"></i>Desktop <b>' + pc(j.devices.d) + '%</b></li></ul>'
         + '<div class="sp-rhead" style="margin-top:18px"><b>Busiest hours</b></div><div class="dp-day" role="img" aria-label="Page views by hour of day">' + loc.map(function (v, i) { return '<i style="height:' + Math.max(3, Math.round(100 * v / hmx)) + '%"' + (i === hi && v ? ' class="hi"' : '') + ' title="' + ('0' + i).slice(-2) + ':00: ' + n(v) + ' views"></i>'; }).join('') + '</div><div class="dp-axis"><span>00:00</span><span>12:00</span><span>23:00</span></div><p class="note">Your time zone.</p></div></div>';
@@ -197,7 +197,7 @@
         + '<div class="adm-grid"><div class="sp-card"><div class="sp-rhead"><b>Protection in place</b></div><ul class="adm-chk">' + chk(sec.turnstile, 'Bot check (Turnstile) is on for sign-up and password reset', 'Bot check is not on yet. Add the Turnstile keys to sud-config.php') + chk(sec.security_txt, 'security.txt is published', 'security.txt is missing') + chk(si.config, 'Private settings file found', 'Private settings file not found') + chk(true, 'Attempts are rate-limited and expire after 24 hours') + '</ul></div>'
         + '<div class="sp-card"><div class="sp-rhead"><b>Site basics</b></div><ul class="adm-chk">' + chk(si.ads_txt, 'ads.txt is in place', 'ads.txt is missing') + chk(si.sitemap, 'sitemap.xml is in place', 'sitemap.xml is missing') + chk(si.robots, 'robots.txt is in place', 'robots.txt is missing') + '</ul><p class="note">PHP ' + esc(si.php) + '</p></div></div>'
         + '<h2>Daily trend</h2><div id="h-trend"><p class="note">Loading&hellip;</p></div>'
-        + '<h2>What people are using (last 24 hours)</h2><div class="sp-card">' + (use.length ? hbars(use) : '<p class="note">Nothing yet.</p>') + '<p class="note">Counts of actions in the last 24 hours. Nothing identifying is kept.</p></div>'
+        + '<h2>What people are using (last 24 hours)</h2><div class="sp-card">' + (use.length ? hbars(use) : '<p class="note adm-empty">No tool or check activity in the last 24 hours.</p>') + '<p class="note">Counts of actions in the last 24 hours. Nothing identifying is kept.</p></div>'
         + '<h2>Storage</h2><div class="adm-grid"><div class="sp-card"><div class="sp-rhead"><b>Rows in each table</b><span class="adm-total">Database ' + esc(sz) + '</span></div>' + hbars(st.tables.map(function (t) { return { l: t.t, n: t.n }; })) + '</div></div>';
       var tnames = names;
       function trend(kind, days) {
@@ -303,7 +303,7 @@
   function logTab(m) {
     S.api('admin.php?a=log').then(function (j) {
       m.innerHTML = '<h1>Activity log<span class="dot">.</span></h1><div class="adm-table"><table><thead><tr><th>When</th><th>Action</th><th>Detail</th></tr></thead><tbody>'
-        + (j.log.length ? j.log.map(function (x) { return '<tr><td>' + esc(S.when(x.ts)) + '</td><td>' + esc(x.action) + '</td><td>' + esc(x.detail) + '</td></tr>'; }).join('') : '<tr><td colspan="3">Nothing yet.</td></tr>') + '</tbody></table></div>';
+        + (j.log.length ? j.log.map(function (x) { return '<tr><td>' + esc(S.when(x.ts)) + '</td><td>' + esc(x.action) + '</td><td>' + esc(x.detail) + '</td></tr>'; }).join('') : '<tr><td colspan="3">No admin actions recorded yet. Sign-ins, unlocks and changes will be listed here.</td></tr>') + '</tbody></table></div>';
     }).catch(fail);
   }
   start();
