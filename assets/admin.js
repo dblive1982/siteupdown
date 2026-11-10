@@ -116,12 +116,12 @@
     function path(P) { return P.map(function (q, i) { return (i ? 'L' : 'M') + q[0].toFixed(1) + ' ' + q[1].toFixed(1); }).join(' '); }
     var pa = pts(a), pb2 = pts(b), grid = '';
     for (var g = 0; g <= 4; g++) { var y = 8 + (H - pb - 8) * g / 4; grid += '<line x1="' + pl + '" x2="' + (W - 6) + '" y1="' + y + '" y2="' + y + '"/><text x="' + (pl - 5) + '" y="' + (y + 3) + '" text-anchor="end">' + n(Math.round(mx * (1 - g / 4))) + '</text>'; }
-    var dots = a.map(function (x, i) { var d = new Date(x.d + 'T00:00:00Z').toLocaleDateString([], { day: 'numeric', month: 'short', timeZone: 'UTC' }); return '<circle class="hit" cx="' + pa[i][0].toFixed(1) + '" cy="' + pa[i][1].toFixed(1) + '" r="9"><title>' + d + ': ' + n(x.n) + ' ' + la.toLowerCase() + ', ' + n(b[i].n) + ' ' + lb.toLowerCase() + '</title></circle>'; }).join('');
+    var dots = a.map(function (x, i) { var d = new Date(x.d + 'T00:00:00Z').toLocaleDateString([], { day: 'numeric', month: 'short', timeZone: 'UTC' }); return '<circle class="hit" cx="' + pa[i][0].toFixed(1) + '" cy="' + pa[i][1].toFixed(1) + '" r="9"><title>' + d + ': ' + n(x.n) + ' ' + la.toLowerCase() + (lb.trim() ? ', ' + n(b[i].n) + ' ' + lb.toLowerCase() : '') + '</title></circle>'; }).join('');
     var d0 = new Date(a[0].d + 'T00:00:00Z').toLocaleDateString([], { day: 'numeric', month: 'short', timeZone: 'UTC' });
     return '<svg class="adm-line" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(la + ' and ' + lb + ' per day') + '"><g class="gr">' + grid + '</g>'
       + '<path class="area" d="' + path(pa) + ' L' + pa[pa.length - 1][0].toFixed(1) + ' ' + (H - pb) + ' L' + pa[0][0].toFixed(1) + ' ' + (H - pb) + 'Z"/><path class="l1" d="' + path(pa) + '"/><path class="l2" d="' + path(pb2) + '"/>' + dots
       + '<text class="ax" x="' + pl + '" y="' + (H - 5) + '">' + d0 + '</text><text class="ax" x="' + (W - 6) + '" y="' + (H - 5) + '" text-anchor="end">Today</text></svg>'
-      + '<p class="adm-key"><i class="k1"></i>' + esc(la) + ' <i class="k2"></i>' + esc(lb) + '</p>';
+      + '<p class="adm-key"><i class="k1"></i>' + esc(la) + (lb.trim() ? ' <i class="k2"></i>' + esc(lb) : '') + '</p>';
   }
   function traffic(m) {
     var days = +(m.getAttribute('data-days') || 30);
@@ -196,12 +196,47 @@
         + '<h2>Security</h2><div class="adm-tiles">' + tile('Sign-in attempts, 24h', sec.logins) + tile('New accounts, 24h', sec.registers) + tile('Password resets, 24h', sec.resets) + tile('Admin codes sent, 24h', sec.admin_codes) + tile('Blocked admin tries', sec.non_admin_tries, 'last 24 hours') + tile('Users with two-step', sec.twofa_users, 'of ' + n(sec.users)) + '</div>'
         + '<div class="adm-grid"><div class="sp-card"><div class="sp-rhead"><b>Protection in place</b></div><ul class="adm-chk">' + chk(sec.turnstile, 'Bot check (Turnstile) is on for sign-up and password reset', 'Bot check is not on yet. Add the Turnstile keys to sud-config.php') + chk(sec.security_txt, 'security.txt is published', 'security.txt is missing') + chk(si.config, 'Private settings file found', 'Private settings file not found') + chk(true, 'Attempts are rate-limited and expire after 24 hours') + '</ul></div>'
         + '<div class="sp-card"><div class="sp-rhead"><b>Site basics</b></div><ul class="adm-chk">' + chk(si.ads_txt, 'ads.txt is in place', 'ads.txt is missing') + chk(si.sitemap, 'sitemap.xml is in place', 'sitemap.xml is missing') + chk(si.robots, 'robots.txt is in place', 'robots.txt is missing') + '</ul><p class="note">PHP ' + esc(si.php) + '</p></div></div>'
+        + '<h2>Daily trend</h2><div id="h-trend"><p class="note">Loading&hellip;</p></div>'
         + '<h2>What people are using (last 24 hours)</h2><div class="sp-card">' + (use.length ? hbars(use) : '<p class="note">Nothing yet.</p>') + '<p class="note">Counts of actions in the last 24 hours. Nothing identifying is kept.</p></div>'
         + '<h2>Storage</h2><div class="adm-grid"><div class="sp-card"><div class="sp-rhead"><b>Rows in each table</b><span class="adm-total">Database ' + esc(sz) + '</span></div>' + hbars(st.tables.map(function (t) { return { l: t.t, n: t.n }; })) + '</div></div>';
+      var tnames = names;
+      function trend(kind, days) {
+        S.api('admin.php?a=usage&days=' + days + '&kind=' + encodeURIComponent(kind)).then(function (u) {
+          var el = m.querySelector('#h-trend'); if (!el) return;
+          var opts = '<option value="">Everything</option>' + u.totals.map(function (x) { return '<option value="' + esc(x.kind) + '"' + (x.kind === kind ? ' selected' : '') + '>' + esc(tnames[x.kind] || x.kind) + ' (' + n(x.n) + ')</option>'; }).join('');
+          var tot = u.series.reduce(function (a, x) { return a + x.n; }, 0), best = u.series.slice().sort(function (a, b) { return b.n - a.n; })[0];
+          el.innerHTML = '<div class="adm-range-row"><div class="seg2 adm-range" id="h-range">' + [7, 30, 90].map(function (x) { return '<button type="button" data-d="' + x + '" aria-pressed="' + (x === days) + '">' + x + ' days</button>'; }).join('') + '</div> <label class="note">Show <select id="h-kind">' + opts + '</select></label></div>'
+            + '<div class="sp-card"><div class="sp-rhead"><b>' + esc(kind ? (tnames[kind] || kind) : 'All actions') + ' per day</b><span class="adm-total">' + n(tot) + ' in ' + days + ' days</span></div>' + lineChart(u.series, u.series.map(function (x) { return { d: x.d, n: 0 }; }), kind ? (tnames[kind] || kind) : 'All actions', ' ')
+            + '<p class="note">' + (tot ? 'Busiest day: <b>' + esc(new Date(best.d + 'T12:00:00Z').toLocaleDateString([], { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'UTC' })) + '</b> with ' + n(best.n) + '. Average ' + n(Math.round(tot / days)) + ' a day.' : 'Nothing recorded in this period yet.') + (u.since ? ' Daily counts began on ' + esc(u.since) + '.' : ' Daily counting starts from this update, so the chart fills in over the coming days.') + '</p></div>';
+          el.querySelector('#h-range').addEventListener('click', function (e) { var b = e.target.closest('[data-d]'); if (b) trend(kind, +b.getAttribute('data-d')); });
+          el.querySelector('#h-kind').addEventListener('change', function () { trend(this.value, days); });
+        }).catch(function () {});
+      }
+      trend('', 30);
+
     }).catch(fail);
+  }
+
+  /* Whole-picture view of the user base, shown above the user list. */
+  function userOverview(m) {
+    S.api('admin.php?a=userstats').then(function (j) {
+      var el = m.querySelector('#u-sum'); if (!el) return;
+      var pc = function (a, b) { return b ? Math.round(100 * a / b) + '%' : '0%'; }, t = j.total, mt = j.method, ad = j.adoption, r = j.retention;
+      el.innerHTML = '<div class="adm-tiles">' + tile('Total users', t) + tile('New, 24 hours', j.new.d1) + tile('New, 7 days', j.new.d7) + tile('New, 30 days', j.new.d30)
+        + tile('Active, 24 hours', j.active.d1, 'signed in') + tile('Active, 7 days', j.active.d7, pc(j.active.d7, t) + ' of all') + tile('Active, 30 days', j.active.d30, pc(j.active.d30, t) + ' of all')
+        + tile('Dormant 30+ days', j.dormant30, 'not back in a month') + tile('Never signed in again', j.never) + '</div>'
+        + '<div class="adm-grid">' + chart('New users per day (90 days)', j.signups.slice(-30), 's-app').replace('in 30 days', 'in 30 days') + '<div class="sp-card"><div class="sp-rhead"><b>Total users over 90 days</b><span class="adm-total">' + n(t) + ' now</span></div>' + lineChart(j.growth, j.growth.map(function (x) { return { d: x.d, n: 0 }; }), 'Total users', ' ') + '</div></div>'
+        + '<div class="adm-grid"><div class="sp-card"><div class="sp-rhead"><b>How people sign in</b></div>' + hbars([{ l: 'Google only', n: mt.google, t: n(mt.google) + ' · ' + pc(mt.google, t) }, { l: 'Password only', n: mt.password, t: n(mt.password) + ' · ' + pc(mt.password, t) }, { l: 'Both', n: mt.both, t: n(mt.both) + ' · ' + pc(mt.both, t) }]) + '</div>'
+        + '<div class="sp-card"><div class="sp-rhead"><b>What users actually do</b></div>' + hbars([{ l: 'Watch a site', n: ad.watching, t: n(ad.watching) + ' · ' + pc(ad.watching, t) }, { l: 'Set up alerts', n: ad.channels, t: n(ad.channels) + ' · ' + pc(ad.channels, t) }, { l: 'Saved a check', n: ad.saved, t: n(ad.saved) + ' · ' + pc(ad.saved, t) }, { l: 'Two-step sign-in', n: ad.twofa, t: n(ad.twofa) + ' · ' + pc(ad.twofa, t) }]) + '</div></div>'
+        + '<div class="sp-card"><div class="sp-rhead"><b>Do new users come back?</b></div><p>Of the <b>' + n(r.cohort) + '</b> people who joined between 7 and 37 days ago, <b>' + n(r.back) + '</b> (' + pc(r.back, r.cohort) + ') have signed in during the last 7 days.</p><p class="note">A healthy small site often sees 20 to 40 percent. Alerts and watchlists are what bring people back, so the share of users who set them up (above) is the number to grow.</p></div>'
+        + '<div class="adm-grid">' + list('Newest sign-ups', j.recent, function (x) { return '<li><span>' + esc(x.name) + '<br><small>' + esc(x.email) + ' · ' + (x.google ? 'Google' : 'Password') + '</small></span><b>' + esc(S.ago(x.created)) + '</b></li>'; })
+        + list('Most-engaged users (sites watched)', j.top_watchers, function (x) { return '<li><span>' + esc(x.name) + '<br><small>' + esc(x.email) + '</small></span><b>' + n(x.n) + '</b></li>'; }) + '</div>';
+      wireCharts(m);
+    }).catch(function () { var el = m.querySelector('#u-sum'); if (el) el.innerHTML = '<p class="note">Could not load the overview.</p>'; });
   }
   function users(m) {
     var q = '', page = 1;
+    setTimeout(function () { userOverview(m); }, 0);
     function load() {
       S.api('admin.php?a=users&q=' + encodeURIComponent(q) + '&page=' + page).then(function (j) {
         var pages = Math.max(1, Math.ceil(j.total / j.per));
@@ -214,7 +249,7 @@
         m.querySelector('#u-prev').disabled = page <= 1; m.querySelector('#u-next').disabled = page >= pages;
       }).catch(fail);
     }
-    m.innerHTML = '<h1>Users<span class="dot">.</span></h1><form id="u-form" class="adm-search"><div class="field"><input id="u-q" type="search" placeholder="Search by name or email"></div><button class="btn small" type="submit"><span>Search</span></button></form>'
+    m.innerHTML = '<h1>Users<span class="dot">.</span></h1><div id="u-sum"><p class="note">Loading the user overview&hellip;</p></div><h2>All users</h2><form id="u-form" class="adm-search"><div class="field"><input id="u-q" type="search" placeholder="Search by name or email"></div><button class="btn small" type="submit"><span>Search</span></button></form>'
       + '<div class="adm-table"><table><thead><tr><th>User</th><th>Joined</th><th>Last sign-in</th><th>Watching</th><th>Alerts</th><th>Sign-in</th></tr></thead><tbody id="u-body"></tbody></table></div>'
       + '<p class="adm-pager"><button class="btn small ghost" id="u-prev" type="button"><span>Previous</span></button> <span id="u-info"></span> <button class="btn small ghost" id="u-next" type="button"><span>Next</span></button></p>';
     m.querySelector('#u-form').addEventListener('submit', function (e) { e.preventDefault(); q = m.querySelector('#u-q').value.trim(); page = 1; load(); });
