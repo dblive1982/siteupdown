@@ -108,6 +108,39 @@ if ($a === 'traffic') {                                         // who is visiti
         'since' => $pdo->query('SELECT MIN(day) FROM pv_daily')->fetchColumn() ?: null,
     ]);
 }
+if ($a === 'health') {                                          // everything that is happening right now: monitoring, incidents, security, usage, storage
+    $t24 = gmdate('Y-m-d H:i:s', time() - 86400); $t7 = gmdate('Y-m-d H:i:s', time() - 7 * 86400); $t1h = gmdate('Y-m-d H:i:s', time() - 3600);
+    $rows = function (string $sql, array $args = []) use ($pdo) { $q = $pdo->prepare($sql); $q->execute($args); return $q->fetchAll(); };
+    $verdicts = []; foreach ($rows('SELECT verdict, COUNT(*) AS n FROM site_status GROUP BY verdict') as $r) $verdicts[$r['verdict']] = (int)$r['n'];
+    $tracked = array_sum($verdicts);
+    $stale = $one('SELECT COUNT(*) FROM site_status WHERE checked_at < ?', [gmdate('Y-m-d H:i:s', time() - 3 * 3600)]);
+    $downNow = array_map(fn($r) => ['host' => $r['host'], 'verdict' => $r['verdict'], 'code' => $r['http_code'] === null ? null : (int)$r['http_code'], 'at' => iso($r['checked_at'])],
+        $rows("SELECT host, verdict, http_code, checked_at FROM site_status WHERE verdict IN ('down','timeout') ORDER BY checked_at DESC LIMIT 25"));
+    $open = array_map(fn($r) => ['host' => $r['host'], 'since' => iso($r['started_at'])], $rows('SELECT host, started_at FROM incidents WHERE ended_at IS NULL ORDER BY started_at DESC LIMIT 25'));
+    $dur = $rows('SELECT started_at, ended_at FROM incidents WHERE ended_at IS NOT NULL AND started_at > ?', [$t7]); $secs = 0;
+    foreach ($dur as $r) $secs += max(0, strtotime($r['ended_at'] . ' UTC') - strtotime($r['started_at'] . ' UTC'));
+    $kinds = []; foreach ($rows('SELECT kind, COUNT(*) AS n FROM attempts GROUP BY kind ORDER BY n DESC') as $r) $kinds[$r['kind']] = (int)$r['n'];
+    $tbl = []; foreach (['users', 'checks', 'site_log', 'site_daily', 'incidents', 'reports', 'pv_daily', 'watchlist', 'history_days', 'world_checks'] as $t) { try { $tbl[] = ['t' => $t, 'n' => $one("SELECT COUNT(*) FROM $t")]; } catch (Throwable $e) {} }
+    $dbsize = null;
+    try { if (!is_sqlite($pdo)) $dbsize = (int)$one('SELECT COALESCE(SUM(data_length + index_length),0) FROM information_schema.tables WHERE table_schema = DATABASE()'); } catch (Throwable $e) {}
+    $users = (int)$one('SELECT COUNT(*) FROM users'); $tf = 0; try { $tf = (int)$one('SELECT COUNT(*) FROM users WHERE twofa = 1'); } catch (Throwable $e) {}
+    $cfg = config() ?: [];
+    $lastCron = $pdo->query('SELECT MAX(checked_at) FROM site_status')->fetchColumn() ?: null;
+    $ago = $lastCron ? time() - strtotime($lastCron . ' UTC') : null;
+    $root = dirname(__DIR__);
+    out(200, [
+        'now' => gmdate('Y-m-d\TH:i:s\Z'),
+        'monitor' => ['tracked' => $tracked, 'verdicts' => $verdicts, 'stale' => $stale, 'last' => iso($lastCron), 'last_age_s' => $ago,
+            'checks_1h' => $one('SELECT COUNT(*) FROM checks WHERE checked_at > ?', [$t1h]), 'checks_24h' => $one('SELECT COUNT(*) FROM checks WHERE checked_at > ?', [$t24])],
+        'down_now' => $downNow, 'open_incidents' => $open,
+        'incidents' => ['h24' => $one('SELECT COUNT(*) FROM incidents WHERE started_at > ?', [$t24]), 'd7' => count($dur) + count($open), 'avg_s' => $dur ? (int)round($secs / count($dur)) : 0],
+        'security' => ['non_admin_tries' => $kinds['adm'] ?? 0, 'admin_codes' => $kinds['admcode'] ?? 0, 'admin_verifies' => $kinds['admver'] ?? 0, 'logins' => $kinds['login'] ?? 0, 'registers' => $kinds['register'] ?? 0, 'resets' => ($kinds['forgot'] ?? 0) + ($kinds['reset'] ?? 0),
+            'twofa_users' => $tf, 'users' => $users, 'turnstile' => turnstile_on(), 'security_txt' => is_file($root . '/.well-known/security.txt')],
+        'usage' => $kinds,
+        'storage' => ['tables' => $tbl, 'db_bytes' => $dbsize],
+        'site' => ['ads_txt' => is_file($root . '/ads.txt'), 'sitemap' => is_file($root . '/sitemap.xml'), 'robots' => is_file($root . '/robots.txt'), 'config' => !empty($cfg), 'php' => PHP_VERSION],
+    ]);
+}
 if ($a === 'seo') {                                             // the page-by-page search audit written by the site build
     $f = __DIR__ . '/_seo.json';
     out(200, is_file($f) ? (json_decode((string)file_get_contents($f), true) ?: ['pages' => []]) : ['pages' => [], 'missing' => true]);
