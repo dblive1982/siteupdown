@@ -134,7 +134,7 @@ def foot(scripts):
 import hashlib, re as _re
 def _ver():
     h = hashlib.md5()
-    for n in ('app.css', 'app.js', 'home.js', 'pages.js', 'worldmap.js', 'landmask.js', 'live.js', 'sitepage.js', 'tools.js', 'sla.js', 'speedtest.js', 'heatmap.js', 'localmap.js', 'history.js', 'ip.js', 'gameping.js', 'embed.js', 'newlook.js', 'newlook.css'):
+    for n in ('app.css', 'app.js', 'home.js', 'pages.js', 'worldmap.js', 'landmask.js', 'live.js', 'sitepage.js', 'tools.js', 'sla.js', 'speedtest.js', 'heatmap.js', 'localmap.js', 'history.js', 'ip.js', 'gameping.js', 'embed.js', 'state.js', 'newlook.js', 'newlook.css'):
         try: h.update(open(os.path.join(ROOT, 'assets', n), 'rb').read())
         except OSError: pass
     return h.hexdigest()[:8]
@@ -178,7 +178,7 @@ def write(name, content):
     if name.endswith('.html'):
         content = _svgicons(content)
         v = _ver()
-        content = _re.sub(r'(/assets/(?:app\.css|newlook\.css|newlook\.js|app\.js|home\.js|pages\.js|worldmap\.js|live\.js|sitepage\.js|tools\.js|sla\.js|speedtest\.js|heatmap\.js))(?=")', r'\1?v=' + v, content)
+        content = _re.sub(r'(/assets/(?:app\.css|newlook\.css|newlook\.js|app\.js|home\.js|pages\.js|worldmap\.js|live\.js|sitepage\.js|tools\.js|sla\.js|speedtest\.js|heatmap\.js|state\.js|localmap\.js|history\.js|ip\.js|gameping\.js|embed\.js))(?=")', r'\1?v=' + v, content)
     with open(os.path.join(ROOT, name), 'w', encoding='utf-8') as f:
         f.write(content)
     print('wrote', name, len(content), 'bytes')
