@@ -4,14 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>HTTP status codes explained: what 200, 301, 404 and 503 mean</title>
-<meta name="description" content="A plain-English guide to HTTP status codes: the 2xx, 3xx, 4xx and 5xx families, the common ones, and what each means for a visitor or a site owner.">
+<meta name="description" content="A plain-English guide to HTTP status codes: the 1xx, 2xx, 3xx, 4xx and 5xx families, every common code from 100 to 511, and Cloudflare 52x errors.">
 <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1">
 <meta name="google-adsense-account" content="ca-pub-6517978259411056">
 <link rel="canonical" href="https://siteupdown.com/help/http-status-codes-explained"><link rel="alternate" hreflang="en-gb" href="https://siteupdown.com/help/http-status-codes-explained"><link rel="alternate" hreflang="x-default" href="https://siteupdown.com/help/http-status-codes-explained">
 <meta property="og:type" content="website"><meta property="og:site_name" content="siteupdown.com">
-<meta property="og:title" content="HTTP status codes explained: what 200, 301, 404 and 503 mean"><meta property="og:description" content="A plain-English guide to HTTP status codes: the 2xx, 3xx, 4xx and 5xx families, the common ones, and what each means for a visitor or a site owner."><meta property="og:url" content="https://siteupdown.com/help/http-status-codes-explained">
+<meta property="og:title" content="HTTP status codes explained: what 200, 301, 404 and 503 mean"><meta property="og:description" content="A plain-English guide to HTTP status codes: the 1xx, 2xx, 3xx, 4xx and 5xx families, every common code from 100 to 511, and Cloudflare 52x errors."><meta property="og:url" content="https://siteupdown.com/help/http-status-codes-explained">
 <meta property="og:image" content="https://siteupdown.com/assets/og/help-http-status-codes-explained.jpg"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:locale" content="en_GB">
-<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="HTTP status codes explained: what 200, 301, 404 and 503 mean"><meta name="twitter:description" content="A plain-English guide to HTTP status codes: the 2xx, 3xx, 4xx and 5xx families, the common ones, and what each means for a visitor or a site owner."><meta name="twitter:image" content="https://siteupdown.com/assets/og/help-http-status-codes-explained.jpg">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="HTTP status codes explained: what 200, 301, 404 and 503 mean"><meta name="twitter:description" content="A plain-English guide to HTTP status codes: the 1xx, 2xx, 3xx, 4xx and 5xx families, every common code from 100 to 511, and Cloudflare 52x errors."><meta name="twitter:image" content="https://siteupdown.com/assets/og/help-http-status-codes-explained.jpg">
 <link rel="alternate" type="application/rss+xml" title="siteupdown.com guides" href="/feed.xml"><meta name="application-name" content="siteupdown.com"><meta name="format-detection" content="telephone=no">
 <meta name="theme-color" content="#ffde59">
 <link rel="icon" href="/favicon.ico?v=3" sizes="any"><link rel="icon" href="/favicon-32.png?v=3" type="image/png" sizes="32x32"><link rel="icon" href="/favicon-64.png?v=3" type="image/png" sizes="64x64"><link rel="manifest" href="/site.webmanifest"><link rel="icon" href="/favicon-192.png?v=3" type="image/png" sizes="192x192"><link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3">
@@ -19,7 +19,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
 <link rel="stylesheet" href="/assets/app.css?v=07ea2794">
 <link rel="stylesheet" href="/assets/newlook.css?v=07ea2794">
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "HTTP status codes explained: what 200, 301, 404 and 503 mean", "description": "A plain-English guide to HTTP status codes: the 2xx, 3xx, 4xx and 5xx families, the common ones, and what each means for a visitor or a site owner.", "datePublished": "2026-11-02", "dateModified": "2026-11-02", "author": {"@type": "Organization", "name": "siteupdown.com", "url": "https://siteupdown.com/"}, "publisher": {"@type": "Organization", "name": "siteupdown.com", "url": "https://siteupdown.com/"}, "mainEntityOfPage": "https://siteupdown.com/help/http-status-codes-explained"}</script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://siteupdown.com/"}, {"@type": "ListItem", "position": 2, "name": "Help centre", "item": "https://siteupdown.com/help/"}, {"@type": "ListItem", "position": 3, "name": "HTTP status codes explained: what 200, 301, 404 and 503 mean", "item": "https://siteupdown.com/help/http-status-codes-explained"}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "HTTP status codes explained: what 200, 301, 404 and 503 mean", "description": "A plain-English guide to HTTP status codes: the 1xx, 2xx, 3xx, 4xx and 5xx families, every common code from 100 to 511, and Cloudflare 52x errors.", "datePublished": "2026-11-02", "dateModified": "2026-11-10", "author": {"@type": "Organization", "name": "siteupdown.com", "url": "https://siteupdown.com/"}, "publisher": {"@type": "Organization", "name": "siteupdown.com", "url": "https://siteupdown.com/"}, "mainEntityOfPage": "https://siteupdown.com/help/http-status-codes-explained"}</script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://siteupdown.com/"}, {"@type": "ListItem", "position": 2, "name": "Help centre", "item": "https://siteupdown.com/help/"}, {"@type": "ListItem", "position": 3, "name": "HTTP status codes explained: what 200, 301, 404 and 503 mean", "item": "https://siteupdown.com/help/http-status-codes-explained"}]}</script>
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -59,7 +59,80 @@
 <p>A <code>403</code> usually means the site is working fine and has chosen not to serve you. Typical causes are a security rule that blocks your country or network, a firewall that flags automated traffic, or a page that needs an account. Our checker reports a blocked request as <b>Inconclusive</b> rather than <b>Down</b>, because the site is clearly answering.</p>
 <h2>What it means for site owners</h2>
 <p>Search engines read these codes too. A page that returns <code>200</code> but shows an error message (a &ldquo;soft 404&rdquo;) confuses them. A <code>5xx</code> that lasts for days can make a page drop out of search results. Return the code that tells the truth.</p>
-<p>Want to see the status code a site returns right now? <a href="/">Run a check</a>: the result shows the HTTP code, response time and redirect chain.</p><div class="cta-box"><b>Check a website now</b><p>Is it down for everyone, or just you? Paste an address and we test it from fifteen places.</p><a class="btn" href="/"><span>Open the checker</span></a></div><h2>Related guides</h2><ul><li><a href="/help/error-404-not-found">What does a 404 Not Found error mean, and how do you fix it?</a></li><li><a href="/help/server-errors-500-502-503-504">500, 502, 503 and 504 errors: what server errors mean</a></li><li><a href="/help/website-not-loading-checklist">Website not loading? A step-by-step checklist</a></li></ul><p class="note">Last updated 2 November 2026. Written by the siteupdown.com team. <a href="/contact">Spotted a mistake?</a></p><p style="margin-top:20px"><a href="/help/">&larr; All help guides</a></p></div></section></main>
+<h2>The full reference</h2>
+<p>Here is every status code you are likely to meet, grouped by family, with what it means in plain English and what to do about it.</p>
+<h3>1xx: informational</h3>
+<ul>
+<li><b>100 Continue</b>: the server has seen the start of a large request and is happy for the rest to be sent. Browsers handle this silently.</li>
+<li><b>101 Switching Protocols</b>: the connection is changing to a different protocol, most often a WebSocket for live features such as chat. Not an error.</li>
+<li><b>103 Early Hints</b>: the server tells your browser which files it will need while it is still preparing the page, so loading starts sooner.</li>
+</ul>
+<h3>2xx: success</h3>
+<ul>
+<li><b>200 OK</b>: the request worked and the page came back.</li>
+<li><b>201 Created</b>: something new was saved, such as a new account or post. Common in app and API traffic.</li>
+<li><b>202 Accepted</b>: the server has taken the request and will deal with it later. It is not finished yet.</li>
+<li><b>204 No Content</b>: it worked, and there is nothing to send back. Often used when saving a setting.</li>
+<li><b>206 Partial Content</b>: only part of a file was sent, which is how video and large downloads load in pieces.</li>
+</ul>
+<h3>3xx: redirection</h3>
+<ul>
+<li><b>301 Moved Permanently</b>: the address changed for good. Search engines carry the old address&rsquo;s standing across.</li>
+<li><b>302 Found</b>: the page is elsewhere for now. Use it for short-term moves.</li>
+<li><b>303 See Other</b>: after you submit a form, you are sent to a results or thank-you page so a refresh does not submit it twice.</li>
+<li><b>304 Not Modified</b>: your browser already has the latest copy, so nothing was sent again.</li>
+<li><b>307 Temporary Redirect</b>: like 302, but the browser must repeat the same kind of request at the new address.</li>
+<li><b>308 Permanent Redirect</b>: like 301, but the browser must repeat the same kind of request at the new address. Used when a site moves from http to https and form data must survive.</li>
+</ul>
+<p>If you see <b>&ldquo;too many redirects&rdquo;</b>, two addresses are sending you back and forth. <a href="/help/err-too-many-redirects">Here is how to fix it</a>.</p>
+<h3>4xx: the request has a problem</h3>
+<ul>
+<li><b>400 Bad Request</b>: the server could not make sense of the request. Clear the site&rsquo;s cookies and check the address for odd characters.</li>
+<li><b>401 Unauthorized</b>: you need to sign in, or your sign-in was not accepted.</li>
+<li><b>402 Payment Required</b>: reserved for payment systems. A few services use it when an account or subscription has lapsed.</li>
+<li><b>403 Forbidden</b>: the server understood you but will not serve you. <a href="/help/error-403-forbidden">More on 403</a>.</li>
+<li><b>404 Not Found</b>: nothing lives at that address. <a href="/help/error-404-not-found">More on 404</a>.</li>
+<li><b>405 Method Not Allowed</b>: the page exists but does not accept that kind of request, for example submitting a form to a page that only displays content.</li>
+<li><b>406 Not Acceptable</b>: the server cannot send the content in a format your browser said it could accept.</li>
+<li><b>408 Request Timeout</b>: the server waited for your browser to finish sending the request and gave up. A slow or dropped connection is the usual cause.</li>
+<li><b>409 Conflict</b>: the request clashes with the current state of things, such as two people editing the same item at once.</li>
+<li><b>410 Gone</b>: the page was removed on purpose and will not return. Search engines drop a 410 page faster than a 404.</li>
+<li><b>413 Content Too Large</b>: what you tried to upload is bigger than the server allows.</li>
+<li><b>414 URI Too Long</b>: the web address is longer than the server will accept.</li>
+<li><b>415 Unsupported Media Type</b>: the server does not accept that kind of file or data.</li>
+<li><b>418 I&rsquo;m a teapot</b>: a joke code from a 1998 April Fools&rsquo; specification. Some sites return it on purpose, and a few use it to turn away automated visitors.</li>
+<li><b>422 Unprocessable Content</b>: the request was well formed but the contents were not valid, such as a form with a missing required field.</li>
+<li><b>429 Too Many Requests</b>: too many requests in a short time. <a href="/help/error-429-too-many-requests">What to do</a>.</li>
+<li><b>431 Request Header Fields Too Large</b>: your browser sent too much cookie or header data. Clearing cookies for the site usually fixes it.</li>
+<li><b>451 Unavailable For Legal Reasons</b>: the page is blocked because of a legal demand, for example in your country. The number is a nod to the novel <i>Fahrenheit 451</i>. <a href="/help/website-blocked-in-your-country">More on blocked sites</a>.</li>
+</ul>
+<h3>5xx: the server has a problem</h3>
+<ul>
+<li><b>500 Internal Server Error</b>: something broke on the server and it has no more specific answer.</li>
+<li><b>501 Not Implemented</b>: the server does not support what you asked it to do.</li>
+<li><b>502 Bad Gateway</b>: one server got a bad answer from another server behind it.</li>
+<li><b>503 Service Unavailable</b>: the server is overloaded or down for maintenance. This usually passes.</li>
+<li><b>504 Gateway Timeout</b>: one server waited too long for another behind it to answer.</li>
+<li><b>505 HTTP Version Not Supported</b>: the server does not speak the version of HTTP your browser used.</li>
+<li><b>507 Insufficient Storage</b>: the server has run out of space to complete the request.</li>
+<li><b>508 Loop Detected</b>: the server found itself going round in circles while handling the request.</li>
+<li><b>511 Network Authentication Required</b>: you must sign in to the network first, as on hotel, caf&eacute; or airport Wi-Fi.</li>
+</ul>
+<p>More detail on the common server errors is in <a href="/help/server-errors-500-502-503-504">500, 502, 503 and 504 explained</a>.</p>
+<h3>Cloudflare&rsquo;s own 52x codes</h3>
+<p>Many large sites sit behind Cloudflare, which adds its own error numbers. They are not official HTTP codes, but you will see them on error pages. They mean Cloudflare itself is working and the problem is between Cloudflare and the site&rsquo;s own server (the &ldquo;origin&rdquo;).</p>
+<ul>
+<li><b>520 Web Server Returned an Unknown Error</b>: the origin sent back something Cloudflare could not understand.</li>
+<li><b>521 Web Server Is Down</b>: the origin refused the connection. The site&rsquo;s server is off or blocking Cloudflare.</li>
+<li><b>522 Connection Timed Out</b>: Cloudflare could not reach the origin in time.</li>
+<li><b>523 Origin Is Unreachable</b>: Cloudflare could not find a route to the origin, often a DNS or network fault.</li>
+<li><b>524 A Timeout Occurred</b>: the connection was made but the origin took too long to answer.</li>
+<li><b>525 SSL Handshake Failed</b>: Cloudflare and the origin could not agree on a secure connection.</li>
+<li><b>526 Invalid SSL Certificate</b>: the origin&rsquo;s certificate is not valid. <a href="/help/ssl-certificate-errors">More on certificate errors</a>.</li>
+<li><b>530</b>: usually shown alongside a Cloudflare 1xxx error such as 1016, meaning Cloudflare cannot resolve the site&rsquo;s origin. For visitors this means the site&rsquo;s owner has a configuration problem to fix.</li>
+</ul>
+<p>As a visitor you can do nothing about a 5xx or 52x code except wait and try again. As a site owner, check your origin server, firewall and certificate first.</p>
+<p>Want to see the status code a site returns right now? <a href="/">Run a check</a>: the result shows the HTTP code, response time and redirect chain.</p><div class="cta-box"><b>Check a website now</b><p>Is it down for everyone, or just you? Paste an address and we test it from fifteen places.</p><a class="btn" href="/"><span>Open the checker</span></a></div><h2>Related guides</h2><ul><li><a href="/help/error-404-not-found">What does a 404 Not Found error mean, and how do you fix it?</a></li><li><a href="/help/server-errors-500-502-503-504">500, 502, 503 and 504 errors: what server errors mean</a></li><li><a href="/help/website-not-loading-checklist">Website not loading? A step-by-step checklist</a></li></ul><p class="note">Last updated 10 November 2026. Written by the siteupdown.com team. <a href="/contact">Spotted a mistake?</a></p><p style="margin-top:20px"><a href="/help/">&larr; All help guides</a></p></div></section></main>
 <footer class="site-foot"><div class="wrap nl-foot">
 <img src="/assets/nl-logo-light.webp" alt="Site up down?" width="831" height="391">
 <p class="note">Less refreshing. More knowing.</p>

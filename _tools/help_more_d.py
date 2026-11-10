@@ -37,7 +37,7 @@ ARTICLES_D = [
 {
 'slug': 'err-too-many-redirects', 'cat': 'fix',
 'title': 'ERR_TOO_MANY_REDIRECTS: how to fix a redirect loop',
-'desc': 'What a redirect loop is, why browsers show "too many redirects" or "redirected you too many times", and how visitors and site owners can fix it.',
+'desc': 'What a redirect loop is, why browsers say "too many redirects" or "redirected you too many times", and how to fix it as a visitor or site owner.',
 'related': ['clear-browser-cache-and-cookies', 'website-works-in-one-browser-not-another', 'http-status-codes-explained'],
 'body': '''
 <p class="lead">You open a page and the browser says &ldquo;This page isn&rsquo;t working: example.com redirected you too many times&rdquo;, or shows the code ERR_TOO_MANY_REDIRECTS. The site is sending your browser in circles, and the browser gives up after about twenty hops. This guide explains why and how to fix it, whether you are the visitor or the owner.</p>
