@@ -114,7 +114,7 @@ def head(title, desc, path, extra_head='', noindex=False):
 
 SHOW_SOCIALS = False  # set True once the social profiles exist and ad approval is done
 def foot(scripts):
-    groups = [('Check', [('Website checker', '/'), ('Is it down?', '/is-it-down/'), ('Outage map', '/outage-map'), ('Outage history', '/outage-history'), ('State of the internet', '/state-of-the-internet'), ('Compare sites', '/compare'), ('Monitor', '/monitor')]), ('Tools', [('Internet speed test', '/internet-speed-test'), ('Website speed test', '/speed'), ('What is my IP?', '/what-is-my-ip'), ('Game ping test', '/game-ping-test'), ('All tools', '/tools/')]), ('Learn', [('Help centre', '/help/'), ('How we check', '/how-we-check'), ('FAQ', '/faq')]), ('Company', [('Account', '/account'), ('About', '/about'), ('For business', '/business'), ('Contact', '/contact')]), ('Legal', [('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')])]
+    groups = [('Check', [('Website checker', '/'), ('Is it down?', '/is-it-down/'), ('Outage map', '/outage-map'), ('Outage history', '/outage-history'), ('State of the internet', '/state-of-the-internet'), ('Compare sites', '/compare'), ('Monitor', '/monitor')]), ('Tools', [('Internet speed test', '/internet-speed-test'), ('Website speed test', '/speed'), ('What is my IP?', '/what-is-my-ip'), ('Game ping test', '/game-ping-test'), ('All tools', '/tools/')]), ('Learn', [('Help centre', '/help/'), ('How we check', '/how-we-check'), ('FAQ', '/faq')]), ('Company', [('Account', '/account'), ('About', '/about'), ('For business', '/business'), ('Contact', '/contact')]), ('Legal', [('Terms &amp; legal', '/legal'), ('Privacy', '/privacy'), ('Editorial &amp; ad policy', '/editorial-policy')])]
     fgrid = ''.join('<div class="nl-fg"><h3>%s</h3>%s%s</div>' % (g, ''.join('<a href="%s">%s</a>' % (h, l) for l, h in items), '<button type="button" data-cookie-settings>Cookie settings</button>' if g == 'Legal' else '') for g, items in groups)
     SOCIALS_HTML = f'''<div class="socials" aria-label="Social media">
 <a href="#" title="Facebook" aria-label="Facebook">{I_FB}</a><a href="#" title="Instagram" aria-label="Instagram">{I_IG}</a><a href="#" title="X" aria-label="X">{I_X}</a><a href="#" title="TikTok" aria-label="TikTok">{I_TT}</a><a href="#" title="YouTube" aria-label="YouTube">{I_YT}</a>
@@ -432,7 +432,21 @@ def speed():
 <form class="stack" id="sp-form" novalidate style="max-width:640px;margin-bottom:22px"><label class="lbl" for="sp-input">Website address</label>
 <div class="row-actions" style="flex-wrap:nowrap"><div class="field" style="flex:1">{I_GLOBE}<input id="sp-input" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="example.com" maxlength="300"></div><button class="btn" id="sp-btn" type="submit"><span>Test speed</span></button></div><p class="err" id="sp-err" role="alert"></p></form>
 <div id="sp-out" hidden></div>
-</div></div></div></section>
+</div></div></div><div class="prose" style="margin-top:34px;max-width:760px">
+<h2>What this speed test measures</h2>
+<p>The test loads the page you enter three times from our server and reports the middle result, so one slow moment does not skew the answer. It breaks the total into the stages every web request goes through, which shows you <em>where</em> the time is going rather than just how long it took.</p>
+<ul>
+<li><b>Finding the server (DNS).</b> Turning the name into an address. Slow DNS usually points to the domain&rsquo;s name servers.</li>
+<li><b>Connecting.</b> Opening a connection to the server. This depends mostly on distance between us and the site.</li>
+<li><b>Securing the connection (TLS).</b> The HTTPS handshake that encrypts traffic.</li>
+<li><b>Waiting for the first byte.</b> How long the site takes to start replying. This is the best sign of how busy or slow the server or application is.</li>
+<li><b>Downloading.</b> How long the page itself takes to arrive, which grows with page weight.</li>
+</ul>
+<h2>How to read your grade</h2>
+<p>Under about 300&nbsp;ms to the first byte is quick, 300 to 800&nbsp;ms is fine for most sites, and above that it is worth looking at hosting, caching or heavy pages. Our measurement is from one data centre, so someone far away will see longer times. For a wider view use the <a href="/outage-map">outage map</a>, which shows response times from places around the world, and read <a href="/help/speed-up-your-website">how to speed up your website</a> and <a href="/help/what-is-a-good-response-time">what is a good response time</a>.</p>
+<p class="note">This is a server-side test of one page. It does not run scripts like a full browser lab test, so it will not match tools that measure rendering. Use it as a quick, honest first check.</p>
+</div>
+</section>
 '''
     write('speed.html', h + body + foot('<script src="/assets/app.js"></script>\n<script src="/assets/pages.js"></script>'))
 
@@ -450,6 +464,7 @@ def status():
 
 # ---------------------------------------------------------------- legal pages
 SEO_PROSE = {'About': ('About siteupdown.com: a free, independent website checker', 'About siteupdown.com: a free, independent website status, speed and uptime checker that tells you whether a site is down for everyone or just you.'),
+ 'Editorial policy': ('Editorial and advertising policy | siteupdown.com', 'How siteupdown.com writes its guides, checks its facts, corrects mistakes and keeps advertising separate from the results it shows.'),
  'Privacy': ('Privacy policy: how siteupdown.com handles your data', 'How siteupdown.com handles website checks, accounts, cookies and your data, in plain English, including what we keep and what we never collect.'),
  'Legal notice': ('Legal notice and terms of use | siteupdown.com', 'Legal notice and terms of use for siteupdown.com, an independent website status checker. Who we are, how to use the service and how to contact us.'),
  'Contact': ('Contact siteupdown.com: feedback, reports and questions', 'Get in touch with siteupdown.com: send feedback, report a problem, suggest a site to add or ask about your data. We read every message.')}
@@ -480,6 +495,26 @@ def static_pages():
 <p>siteupdown.com is not affiliated with the websites, games or services it checks. Regional probes run on the public <a href="https://globalping.io" rel="noopener">Globalping</a> network. The site is supported by advertising, so it stays free to use.</p>
 ''' + __import__('pages_extra').ABOUT_MORE)
     __import__('pages_extra').build(prose, head, write, foot, html, _json, _re)
+    prose('editorial-policy.html', 'Editorial policy', 'How siteupdown.com writes, checks, corrects and funds its content.', '/editorial-policy', '''
+<p class="lead">This page explains how the content on siteupdown.com is produced, how we keep it accurate, and how advertising fits in. We want you to be able to trust what you read here.</p>
+<h2>What we publish</h2>
+<p>siteupdown.com has three kinds of content. <b>Live results</b> come from our own automated checks of the sites on our public lists, repeated through the day from our own server and from probes around the world. <b>Guides</b> in the <a href="/help/">Help centre</a> explain how the internet works and how to fix common problems, such as DNS errors, certificate warnings and slow connections. <b>Site pages</b> (for example the &ldquo;Is YouTube down?&rdquo; pages) combine a live status with plain background on the service and recent history.</p>
+<h2>How we write and check</h2>
+<ul>
+<li><b>Written for people.</b> Guides are written by the siteupdown.com team in plain English, from practical experience of running website checks and monitoring.</li>
+<li><b>Numbers come from our own data.</b> Uptime figures, outage counts and response times are calculated from our own checks. We say how they are measured on <a href="/how-we-check">How we check</a> and we label them as guides, not official figures.</li>
+<li><b>Honest checks.</b> Our checker identifies itself and never pretends to be a browser to get past a site&rsquo;s protection. If a site blocks automated visitors we say so instead of calling it down.</li>
+<li><b>Dated and reviewed.</b> Guides show when they were last updated, and we review them when something they describe changes.</li>
+</ul>
+<h2>Corrections</h2>
+<p>If you spot a mistake or a result that looks wrong, tell us through the <a href="/contact">contact form</a>. We check every report, fix confirmed errors promptly and update the &ldquo;last updated&rdquo; date on the page.</p>
+<h2>Independence</h2>
+<p>siteupdown.com is not affiliated with, endorsed by or paid by the websites, games or services it checks. A company cannot pay to change its status, its ranking or what we write about it.</p>
+<h2>How advertising works</h2>
+<p>The site is free to use and is supported by advertising. Adverts are always clearly separate from our results and guides, and never look like a status result or a button. Advertising cookies are optional and are only used if you allow them in <a href="/privacy">our cookie choices</a>. We do not sell personal data. Advertisers do not see or influence our content.</p>
+<h2>Contact</h2>
+<p>Questions about this policy? Write to <a href="mailto:hello@siteupdown.com">hello@siteupdown.com</a> or use the <a href="/contact">contact page</a>.</p>
+''')
     prose('privacy.html', 'Privacy', 'How siteupdown.com handles checks, accounts, cookies and your data.', '/privacy', '''
 <p>We keep this short and plain. siteupdown.com checks whether websites are reachable. We collect as little as we can to do that.</p>
 <h2>Website checks</h2>
@@ -576,6 +611,10 @@ def static_pages():
 <p class="note">We only use your email to reply. See our <a href="/privacy">privacy policy</a>. Prefer email? Write to <a href="mailto:hello@siteupdown.com">hello@siteupdown.com</a>.</p>
 </form>
 <div id="cf-ok" class="cf-ok" hidden role="status"><h2>Message sent</h2><p>Thanks, we have it. We will reply to the email address you gave, usually within a few days.</p></div>
+<h2>What to expect</h2>
+<p>siteupdown.com is run by a small independent team. We read every message and usually reply within a few days. If you are reporting that a check gave the wrong result, include the website address and roughly when you ran it, which helps us reproduce it. For account or data requests, use the topic menu so the message reaches the right place. We never ask for your password and will not ask you to pay anything through this form.</p>
+<h2>Other ways to reach us</h2>
+<p>Email <a href="mailto:hello@siteupdown.com">hello@siteupdown.com</a>. For how we work and how we correct mistakes, read our <a href="/editorial-policy">editorial policy</a>, and for what we store about you read the <a href="/privacy">privacy policy</a>.</p>
 <script src="/assets/contact.js"></script>''')
     h = head('Admin — siteupdown.com', 'Admin area.', '/admin', noindex=True).replace('{BODYATTR}', '')
     write('admin.html', h + '''<section class="page adm-page"><div class="wrap"><div id="adm-root"><p class="lead">Loading&hellip;</p></div></div></section>''' + foot('<script src="/assets/app.js"></script><script src="/assets/admin.js"></script>'))
@@ -726,7 +765,7 @@ def help_pages():
                 '<p style="margin-top:20px"><a href="/help/">&larr; All help guides</a></p></div></section>')
         write('help/' + a['slug'] + '.html', h + body + foot('<script src="/assets/app.js"></script>'))
     # sitemap
-    urls = [('/', 'daily', '1.0'), ('/speed', 'monthly', '0.8'), ('/internet-speed-test', 'monthly', '0.8'), ('/what-is-my-ip', 'monthly', '0.8'), ('/game-ping-test', 'monthly', '0.8'), ('/outage-map', 'daily', '0.7'), ('/outage-history', 'daily', '0.6'), ('/state-of-the-internet', 'daily', '0.7'), ('/compare', 'weekly', '0.6'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8'), ('/tools/', 'monthly', '0.8')] + [('/tools/' + t['slug'], 'monthly', '0.7') for t in TOOLS] + [('/tools/uptime-sla-calculator', 'monthly', '0.7'), ('/how-we-check', 'monthly', '0.6'), ('/faq', 'monthly', '0.6')] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES if n not in HIDDEN] + [('/about', 'monthly', '0.5'), ('/business', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
+    urls = [('/', 'daily', '1.0'), ('/speed', 'monthly', '0.8'), ('/internet-speed-test', 'monthly', '0.8'), ('/what-is-my-ip', 'monthly', '0.8'), ('/game-ping-test', 'monthly', '0.8'), ('/outage-map', 'daily', '0.7'), ('/outage-history', 'daily', '0.6'), ('/state-of-the-internet', 'daily', '0.7'), ('/compare', 'weekly', '0.6'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8'), ('/editorial-policy', 'monthly', '0.4')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8'), ('/tools/', 'monthly', '0.8')] + [('/tools/' + t['slug'], 'monthly', '0.7') for t in TOOLS] + [('/tools/uptime-sla-calculator', 'monthly', '0.7'), ('/how-we-check', 'monthly', '0.6'), ('/faq', 'monthly', '0.6')] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES if n not in HIDDEN] + [('/about', 'monthly', '0.5'), ('/business', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
     sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join('<url><loc>%s%s</loc><lastmod>@@D@@</lastmod><changefreq>%s</changefreq><priority>%s</priority></url>\n' % (SITE, u, c, p) for u, c, p in urls).replace('@@D@@', _dt.date.today().isoformat()) + '</urlset>\n'
     open(os.path.join(ROOT, 'sitemap.xml'), 'w').write(sm)
 

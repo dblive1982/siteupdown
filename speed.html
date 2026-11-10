@@ -38,13 +38,27 @@
 <form class="stack" id="sp-form" novalidate style="max-width:640px;margin-bottom:22px"><label class="lbl" for="sp-input">Website address</label>
 <div class="row-actions" style="flex-wrap:nowrap"><div class="field" style="flex:1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18"/></svg><input id="sp-input" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="example.com" maxlength="300"></div><button class="btn" id="sp-btn" type="submit"><span>Test speed</span></button></div><p class="err" id="sp-err" role="alert"></p></form>
 <div id="sp-out" hidden></div>
-</div></div></div></section>
+</div></div></div><div class="prose" style="margin-top:34px;max-width:760px">
+<h2>What this speed test measures</h2>
+<p>The test loads the page you enter three times from our server and reports the middle result, so one slow moment does not skew the answer. It breaks the total into the stages every web request goes through, which shows you <em>where</em> the time is going rather than just how long it took.</p>
+<ul>
+<li><b>Finding the server (DNS).</b> Turning the name into an address. Slow DNS usually points to the domain&rsquo;s name servers.</li>
+<li><b>Connecting.</b> Opening a connection to the server. This depends mostly on distance between us and the site.</li>
+<li><b>Securing the connection (TLS).</b> The HTTPS handshake that encrypts traffic.</li>
+<li><b>Waiting for the first byte.</b> How long the site takes to start replying. This is the best sign of how busy or slow the server or application is.</li>
+<li><b>Downloading.</b> How long the page itself takes to arrive, which grows with page weight.</li>
+</ul>
+<h2>How to read your grade</h2>
+<p>Under about 300&nbsp;ms to the first byte is quick, 300 to 800&nbsp;ms is fine for most sites, and above that it is worth looking at hosting, caching or heavy pages. Our measurement is from one data centre, so someone far away will see longer times. For a wider view use the <a href="/outage-map">outage map</a>, which shows response times from places around the world, and read <a href="/help/speed-up-your-website">how to speed up your website</a> and <a href="/help/what-is-a-good-response-time">what is a good response time</a>.</p>
+<p class="note">This is a server-side test of one page. It does not run scripts like a full browser lab test, so it will not match tools that measure rendering. Use it as a quick, honest first check.</p>
+</div>
+</section>
 </main>
 <footer class="site-foot"><div class="wrap nl-foot">
 <img src="/assets/nl-logo-light.png" alt="Site up down?" width="831" height="391">
 <p class="note">Less refreshing. More knowing.</p>
 
-<nav class="nl-fgrid nl-fcard" aria-label="All pages"><div class="nl-fg"><h3>Check</h3><a href="/">Website checker</a><a href="/is-it-down/">Is it down?</a><a href="/outage-map">Outage map</a><a href="/outage-history">Outage history</a><a href="/state-of-the-internet">State of the internet</a><a href="/compare">Compare sites</a><a href="/monitor">Monitor</a></div><div class="nl-fg"><h3>Tools</h3><a href="/internet-speed-test">Internet speed test</a><a href="/speed">Website speed test</a><a href="/what-is-my-ip">What is my IP?</a><a href="/game-ping-test">Game ping test</a><a href="/tools/">All tools</a></div><div class="nl-fg"><h3>Learn</h3><a href="/help/">Help centre</a><a href="/how-we-check">How we check</a><a href="/faq">FAQ</a></div><div class="nl-fg"><h3>Company</h3><a href="/account">Account</a><a href="/about">About</a><a href="/business">For business</a><a href="/contact">Contact</a></div><div class="nl-fg"><h3>Legal</h3><a href="/legal">Terms &amp; legal</a><a href="/privacy">Privacy</a><button type="button" data-cookie-settings>Cookie settings</button></div></nav>
+<nav class="nl-fgrid nl-fcard" aria-label="All pages"><div class="nl-fg"><h3>Check</h3><a href="/">Website checker</a><a href="/is-it-down/">Is it down?</a><a href="/outage-map">Outage map</a><a href="/outage-history">Outage history</a><a href="/state-of-the-internet">State of the internet</a><a href="/compare">Compare sites</a><a href="/monitor">Monitor</a></div><div class="nl-fg"><h3>Tools</h3><a href="/internet-speed-test">Internet speed test</a><a href="/speed">Website speed test</a><a href="/what-is-my-ip">What is my IP?</a><a href="/game-ping-test">Game ping test</a><a href="/tools/">All tools</a></div><div class="nl-fg"><h3>Learn</h3><a href="/help/">Help centre</a><a href="/how-we-check">How we check</a><a href="/faq">FAQ</a></div><div class="nl-fg"><h3>Company</h3><a href="/account">Account</a><a href="/about">About</a><a href="/business">For business</a><a href="/contact">Contact</a></div><div class="nl-fg"><h3>Legal</h3><a href="/legal">Terms &amp; legal</a><a href="/privacy">Privacy</a><a href="/editorial-policy">Editorial &amp; ad policy</a><button type="button" data-cookie-settings>Cookie settings</button></div></nav>
 <p class="fine">&copy; <span data-year>2026</span> siteupdown.com. An independent website checker, not affiliated with the sites it checks. Regional probes use the public <a href="https://globalping.io" rel="noopener">Globalping</a> network.</p>
 </div></footer>
 <script src="/assets/app.js?v=797fa3aa"></script>
