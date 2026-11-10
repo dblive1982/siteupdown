@@ -723,5 +723,7 @@ ARTICLES = [
 from help_more_a import ARTICLES_A
 from help_more_b import ARTICLES_B
 from help_more_c import ARTICLES_C
-ARTICLES = ARTICLES + ARTICLES_A + ARTICLES_B + ARTICLES_C
+from help_more_d import ARTICLES_D
+from help_more_e import ARTICLES_E
+ARTICLES = ARTICLES + ARTICLES_A + ARTICLES_B + ARTICLES_C + ARTICLES_D + ARTICLES_E
 BY_SLUG = {a['slug']: a for a in ARTICLES}
