@@ -52,7 +52,7 @@
 :root[data-theme=light] body .legend i{border-color:var(--ink)}
 
 /* header + menu */
-.nl-head{background:#ffe680;position:relative;z-index:40}
+.nl-head{background:#ffde59;position:relative;z-index:40}
 .nl-bar{max-width:1120px;margin:0 auto;padding:40px 16px 18px;display:flex;justify-content:center;align-items:center;position:relative}
 .nl-logo{display:block;line-height:0}
 .nl-logo{display:flex;flex-direction:column;align-items:center}.nl-logo img{height:64px;width:auto;display:block}.nl-logo img.nl-mon{height:74px;margin-bottom:0;margin-right:18px;position:relative;z-index:1}
