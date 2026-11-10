@@ -490,3 +490,6 @@
 :root[data-theme=light] body .hm-leg i.a,:root[data-theme=light] body .hm-chip.a{background:#fbc531}
 :root[data-theme=light] body .grade.up{color:#0b0b0b;border-color:#0b0b0b;background:#7ed957}:root[data-theme=light] body .grade.slow{color:#0b0b0b;border-color:#0b0b0b;background:#fbc531}
 :root[data-theme=light] body .sp-level.raised{color:#a85d00}:root[data-theme=light] body .sp-level.high{color:#c0272d}:root[data-theme=light] body .dgroup .rep{color:#a85d00}
+
+:root[data-theme=light] body .cal i.has-tip:hover,:root[data-theme=light] body .cal i.has-tip:focus{outline:none;box-shadow:0 0 0 2px #0b0b0b;position:relative;z-index:1}
+:root[data-theme=light] body .cal-key{display:flex;align-items:center;gap:4px;font-size:12px;color:#555;margin:8px 0 0}:root[data-theme=light] body .cal-key i{width:14px;height:14px;border-radius:3px;background:#ece6cf;display:inline-block}:root[data-theme=light] body .cal-key i.c1{background:#ffe9a8}:root[data-theme=light] body .cal-key i.c2{background:#ffc766}:root[data-theme=light] body .cal-key i.c3{background:#f97316}:root[data-theme=light] body .cal-key i.c4{background:#b83d00}:root[data-theme=light] body .cal-key span{margin:0 4px}

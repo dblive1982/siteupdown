@@ -490,3 +490,6 @@
 @@ .hm-leg i.a,@@ .hm-chip.a{background:#fbc531}
 @@ .grade.up{color:#0b0b0b;border-color:#0b0b0b;background:#7ed957}@@ .grade.slow{color:#0b0b0b;border-color:#0b0b0b;background:#fbc531}
 @@ .sp-level.raised{color:#a85d00}@@ .sp-level.high{color:#c0272d}@@ .dgroup .rep{color:#a85d00}
+
+@@ .cal i.has-tip:hover,@@ .cal i.has-tip:focus{outline:none;box-shadow:0 0 0 2px #0b0b0b;position:relative;z-index:1}
+@@ .cal-key{display:flex;align-items:center;gap:4px;font-size:12px;color:#555;margin:8px 0 0}@@ .cal-key i{width:14px;height:14px;border-radius:3px;background:#ece6cf;display:inline-block}@@ .cal-key i.c1{background:#ffe9a8}@@ .cal-key i.c2{background:#ffc766}@@ .cal-key i.c3{background:#f97316}@@ .cal-key i.c4{background:#b83d00}@@ .cal-key span{margin:0 4px}
