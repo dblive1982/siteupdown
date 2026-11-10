@@ -493,5 +493,8 @@
 
 :root[data-theme=light] body .cal i.has-tip:hover,:root[data-theme=light] body .cal i.has-tip:focus{outline:none;box-shadow:0 0 0 2px #0b0b0b;position:relative;z-index:1}
 :root[data-theme=light] body .cal-key{display:flex;align-items:center;gap:4px;font-size:12px;color:#555;margin:8px 0 0}:root[data-theme=light] body .cal-key i{width:14px;height:14px;border-radius:3px;background:#ece6cf;display:inline-block}:root[data-theme=light] body .cal-key i.c1{background:#ffe9a8}:root[data-theme=light] body .cal-key i.c2{background:#ffc766}:root[data-theme=light] body .cal-key i.c3{background:#f97316}:root[data-theme=light] body .cal-key i.c4{background:#b83d00}:root[data-theme=light] body .cal-key span{margin:0 4px}
+:root[data-theme=light] body .cal-wrap{display:flex;gap:8px;align-items:flex-start}:root[data-theme=light] body .cal-scroll{overflow-x:auto;padding-bottom:4px;min-width:0}:root[data-theme=light] body .cal-scroll .cal{overflow:visible;padding:0}
+:root[data-theme=light] body .cal-side{display:grid;grid-template-rows:repeat(7,14px);gap:3px;margin-top:20px;font-size:11px;line-height:14px;color:#555}
+:root[data-theme=light] body .cal-top{display:grid;grid-auto-flow:column;grid-auto-columns:14px;gap:3px;height:17px;font-size:11px;line-height:14px;color:#555;margin-bottom:3px}:root[data-theme=light] body .cal-top span{white-space:nowrap;overflow:visible}
 
 body:after{content:"TEST SITE";position:fixed;right:10px;bottom:10px;background:#f59e0b;color:#000;font:700 12px/1 system-ui,sans-serif;letter-spacing:.08em;padding:7px 10px;border:2px solid #000;border-radius:6px;z-index:90;pointer-events:none}
