@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ERR_TOO_MANY_REDIRECTS: how to fix a redirect loop</title>
+<meta name="description" content="What a redirect loop is, why browsers show &quot;too many redirects&quot; or &quot;redirected you too many times&quot;, and how visitors and site owners can fix it.">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<link rel="canonical" href="https://siteupdown.com/help/err-too-many-redirects"><link rel="alternate" hreflang="en-gb" href="https://siteupdown.com/help/err-too-many-redirects"><link rel="alternate" hreflang="x-default" href="https://siteupdown.com/help/err-too-many-redirects">
+<meta property="og:type" content="website"><meta property="og:site_name" content="siteupdown.com">
+<meta property="og:title" content="ERR_TOO_MANY_REDIRECTS: how to fix a redirect loop"><meta property="og:description" content="What a redirect loop is, why browsers show &quot;too many redirects&quot; or &quot;redirected you too many times&quot;, and how visitors and site owners can fix it."><meta property="og:url" content="https://siteupdown.com/help/err-too-many-redirects">
+<meta property="og:image" content="https://siteupdown.com/assets/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:locale" content="en_GB">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="ERR_TOO_MANY_REDIRECTS: how to fix a redirect loop"><meta name="twitter:description" content="What a redirect loop is, why browsers show &quot;too many redirects&quot; or &quot;redirected you too many times&quot;, and how visitors and site owners can fix it."><meta name="twitter:image" content="https://siteupdown.com/assets/og.png">
+<meta name="application-name" content="siteupdown.com"><meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffde59">
+<link rel="icon" href="/favicon.ico?v=3" sizes="any"><link rel="icon" href="/favicon-32.png?v=3" type="image/png" sizes="32x32"><link rel="icon" href="/favicon-64.png?v=3" type="image/png" sizes="64x64"><link rel="manifest" href="/site.webmanifest"><link rel="icon" href="/favicon-192.png?v=3" type="image/png" sizes="192x192"><link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/assets/app.css?v=797fa3aa">
+<link rel="stylesheet" href="/assets/newlook.css?v=797fa3aa">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "ERR_TOO_MANY_REDIRECTS: how to fix a redirect loop", "description": "What a redirect loop is, why browsers show \"too many redirects\" or \"redirected you too many times\", and how visitors and site owners can fix it.", "datePublished": "2026-11-02", "dateModified": "2026-11-02", "author": {"@type": "Organization", "name": "siteupdown.com", "url": "https://siteupdown.com/"}, "publisher": {"@type": "Organization", "name": "siteupdown.com", "url": "https://siteupdown.com/"}, "mainEntityOfPage": "https://siteupdown.com/help/err-too-many-redirects"}</script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://siteupdown.com/"}, {"@type": "ListItem", "position": 2, "name": "Help centre", "item": "https://siteupdown.com/help/"}, {"@type": "ListItem", "position": 3, "name": "ERR_TOO_MANY_REDIRECTS: how to fix a redirect loop", "item": "https://siteupdown.com/help/err-too-many-redirects"}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="nl-head"><div class="nl-bar">
+<a class="nl-logo" href="/" aria-label="siteupdown.com home"><img src="/assets/nl-logo.png" alt="Site up down?" width="831" height="391"></a>
+<div class="nl-tools"><div id="auth"></div><button class="nl-menu-btn" id="nl-menu-btn" type="button" aria-expanded="false" aria-controls="nl-drawer" aria-label="Open menu"><span></span><span></span><span></span></button></div>
+</div></header>
+<div class="nl-scrim" id="nl-scrim" hidden></div>
+<nav class="nl-drawer" id="nl-drawer" aria-label="Main menu"><button class="nl-close" id="nl-close" type="button" aria-label="Close menu">&times;</button><h2>Check</h2><a href="/">Website checker<small>Is it down, or just you?</small></a><a href="/is-it-down/">All apps &amp; sites</a><a href="/outage-map">Outage map<small>Reachability around the world</small></a><a href="/outage-history">Outage history<small>What happened on past days</small></a><a href="/state-of-the-internet">State of the internet<small>This week in outages</small></a><a href="/compare">Compare sites<small>Two services side by side</small></a><a href="/monitor">Monitor &amp; alerts<small>Watch up to 25 sites</small></a><h2>Tools</h2><a href="/internet-speed-test">Internet speed test</a><a href="/speed">Website speed test</a><a href="/what-is-my-ip">What is my IP?</a><a href="/game-ping-test">Game ping test</a><a href="/tools/">All tools</a><h2>Learn</h2><a href="/help/">Help centre<small>Plain-English guides</small></a><a href="/how-we-check">How we check</a><a href="/faq">FAQ</a><h2>More</h2><a href="/account" class="nl-sub">Account</a><a href="/about" class="nl-sub">About</a><a href="/business" class="nl-sub">For business</a><a href="/contact" class="nl-sub">Contact</a></nav>
+<main id="main">
+<section class="page"><div class="wrap prose article"><nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/help/">Help centre</a> / Fix it from your side</nav><h1 style="margin:14px 0 20px">ERR_TOO_MANY_REDIRECTS: how to fix a redirect loop</h1>
+<p class="lead">You open a page and the browser says &ldquo;This page isn&rsquo;t working: example.com redirected you too many times&rdquo;, or shows the code ERR_TOO_MANY_REDIRECTS. The site is sending your browser in circles, and the browser gives up after about twenty hops. This guide explains why and how to fix it, whether you are the visitor or the owner.</p>
+<h2>What a redirect is</h2>
+<p>A redirect is an instruction from a server saying &ldquo;the page you want is somewhere else, go there&rdquo;. They are everywhere and usually invisible: from <code>http</code> to <code>https</code>, from <code>example.com</code> to <code>www.example.com</code>, from an old page to a new one. They use status codes in the 300 range, mainly 301 (moved permanently) and 302 (moved temporarily). See <a href="/help/http-status-codes-explained">HTTP status codes explained</a>.</p>
+<p>A loop happens when the destination sends you back to where you started. Page A says go to B, and B says go to A. Browsers stop after a limit and show the error rather than spinning forever.</p>
+<h2>If you are a visitor</h2>
+<p>Most cases that affect only you come from a stale or conflicting cookie, because many sites use a cookie to decide where to send you after sign-in.</p>
+<ol>
+<li><b>Check it is not everyone.</b> Paste the address into the <a href="/">website checker</a>. If it also fails for us, the problem is on the site and only the owner can fix it. Wait and try later.</li>
+<li><b>Clear cookies for that site only.</b> You do not need to wipe everything. In the address bar, open the site information, choose cookies or site settings, and delete the data for that one site. Our guide to <a href="/help/clear-browser-cache-and-cookies">clearing cache and cookies</a> shows each browser.</li>
+<li><b>Try a private window.</b> It starts with no cookies and no extensions. If the page loads there, the cause is a cookie or an extension in your normal window.</li>
+<li><b>Turn off extensions.</b> Privacy and security extensions can interfere with redirects. Disable them one at a time to find the culprit.</li>
+<li><b>Check your device clock.</b> A badly wrong date can break sign-in and security flows that rely on timing.</li>
+</ol>
+<h2>If you own the site</h2>
+<p>When everyone sees the loop, it is nearly always a configuration problem. The common causes are:</p>
+<ul>
+<li><b>HTTPS rules fighting each other.</b> Your server forces HTTPS, while a proxy or CDN in front of it connects to the server over plain HTTP. The server redirects to HTTPS, the proxy fetches it again over HTTP, and the loop never ends. The fix is to set the proxy&rsquo;s encryption mode to connect securely to the origin, not to remove the redirect.</li>
+<li><b>www and non-www rules in conflict.</b> One rule sends <code>www</code> to the bare domain while another sends the bare domain to <code>www</code>. Pick one canonical form and make sure only one rule exists.</li>
+<li><b>A CMS address mismatch.</b> In WordPress and similar systems the &ldquo;site address&rdquo; and &ldquo;home address&rdquo; settings must match what is actually served. A wrong value can redirect forever.</li>
+<li><b>Plugins or caching.</b> Two plugins that both enforce a redirect, or a cached redirect that no longer matches your rules, can cause a loop. Disable redirect and security plugins one at a time and purge the cache.</li>
+<li><b>Redirects on the login page.</b> A rule that sends visitors who are not signed in to the login page, combined with a login page that is also protected, creates a circle.</li>
+</ul>
+<h2>How to see the loop</h2>
+<p>The clearest way is to follow the chain. Our <a href="/tools/redirect-checker">redirect checker</a> shows each hop with its status code and destination, so you can spot the address that repeats. The same can be done with a command line tool by asking it to show headers and not follow redirects. Once you see the repeating pair of addresses, the rule responsible is usually obvious.</p>
+<h2>Prevent it coming back</h2>
+<p>Keep a single place where redirects are defined, rather than rules in the server, the CMS and the CDN all at once. After any change to HTTPS, domains or a proxy, test the home page, a deep page and the login page in a fresh private window. A <a href="/help/how-to-monitor-your-own-website">monitor</a> that follows redirects will alert you if a loop appears after a deploy.</p>
+<div class="cta-box"><b>Check a website now</b><p>Is it down for everyone, or just you? Paste an address and we test it from fifteen places.</p><a class="btn" href="/"><span>Open the checker</span></a></div><h2>Related guides</h2><ul><li><a href="/help/clear-browser-cache-and-cookies">How to clear the cache and cookies for one website</a></li><li><a href="/help/website-works-in-one-browser-not-another">A website works on one browser or device but not another</a></li><li><a href="/help/http-status-codes-explained">HTTP status codes explained: what 200, 301, 404 and 503 mean</a></li></ul><p class="note">Last updated 2 November 2026. Written by the siteupdown.com team. <a href="/contact">Spotted a mistake?</a></p><p style="margin-top:20px"><a href="/help/">&larr; All help guides</a></p></div></section></main>
+<footer class="site-foot"><div class="wrap nl-foot">
+<img src="/assets/nl-logo-light.png" alt="Site up down?" width="831" height="391">
+<p class="note">Less refreshing. More knowing.</p>
+
+<nav class="nl-fgrid nl-fcard" aria-label="All pages"><div class="nl-fg"><h3>Check</h3><a href="/">Website checker</a><a href="/is-it-down/">Is it down?</a><a href="/outage-map">Outage map</a><a href="/outage-history">Outage history</a><a href="/state-of-the-internet">State of the internet</a><a href="/compare">Compare sites</a><a href="/monitor">Monitor</a></div><div class="nl-fg"><h3>Tools</h3><a href="/internet-speed-test">Internet speed test</a><a href="/speed">Website speed test</a><a href="/what-is-my-ip">What is my IP?</a><a href="/game-ping-test">Game ping test</a><a href="/tools/">All tools</a></div><div class="nl-fg"><h3>Learn</h3><a href="/help/">Help centre</a><a href="/how-we-check">How we check</a><a href="/faq">FAQ</a></div><div class="nl-fg"><h3>Company</h3><a href="/account">Account</a><a href="/about">About</a><a href="/business">For business</a><a href="/contact">Contact</a></div><div class="nl-fg"><h3>Legal</h3><a href="/legal">Terms &amp; legal</a><a href="/privacy">Privacy</a><a href="/editorial-policy">Editorial &amp; ad policy</a><button type="button" data-cookie-settings>Cookie settings</button></div></nav>
+<p class="fine">&copy; <span data-year>2026</span> siteupdown.com. An independent website checker, not affiliated with the sites it checks. Regional probes use the public <a href="https://globalping.io" rel="noopener">Globalping</a> network.</p>
+</div></footer>
+<script src="/assets/app.js?v=797fa3aa"></script>
+<script src="/assets/newlook.js?v=797fa3aa"></script>
+</body>
+</html>

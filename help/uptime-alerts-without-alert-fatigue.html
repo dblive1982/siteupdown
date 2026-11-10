@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How to set up uptime alerts without alert fatigue</title>
+<meta name="description" content="Practical rules for monitoring alerts that people actually act on: what to check, how often, how many failures to wait for, and who to tell.">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<link rel="canonical" href="https://siteupdown.com/help/uptime-alerts-without-alert-fatigue"><link rel="alternate" hreflang="en-gb" href="https://siteupdown.com/help/uptime-alerts-without-alert-fatigue"><link rel="alternate" hreflang="x-default" href="https://siteupdown.com/help/uptime-alerts-without-alert-fatigue">
+<meta property="og:type" content="website"><meta property="og:site_name" content="siteupdown.com">
+<meta property="og:title" content="How to set up uptime alerts without alert fatigue"><meta property="og:description" content="Practical rules for monitoring alerts that people actually act on: what to check, how often, how many failures to wait for, and who to tell."><meta property="og:url" content="https://siteupdown.com/help/uptime-alerts-without-alert-fatigue">
+<meta property="og:image" content="https://siteupdown.com/assets/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:locale" content="en_GB">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="How to set up uptime alerts without alert fatigue"><meta name="twitter:description" content="Practical rules for monitoring alerts that people actually act on: what to check, how often, how many failures to wait for, and who to tell."><meta name="twitter:image" content="https://siteupdown.com/assets/og.png">
+<meta name="application-name" content="siteupdown.com"><meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffde59">
+<link rel="icon" href="/favicon.ico?v=3" sizes="any"><link rel="icon" href="/favicon-32.png?v=3" type="image/png" sizes="32x32"><link rel="icon" href="/favicon-64.png?v=3" type="image/png" sizes="64x64"><link rel="manifest" href="/site.webmanifest"><link rel="icon" href="/favicon-192.png?v=3" type="image/png" sizes="192x192"><link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/assets/app.css?v=797fa3aa">
+<link rel="stylesheet" href="/assets/newlook.css?v=797fa3aa">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "How to set up uptime alerts without alert fatigue", "description": "Practical rules for monitoring alerts that people actually act on: what to check, how often, how many failures to wait for, and who to tell.", "datePublished": "2026-11-02", "dateModified": "2026-11-02", "author": {"@type": "Organization", "name": "siteupdown.com", "url": "https://siteupdown.com/"}, "publisher": {"@type": "Organization", "name": "siteupdown.com", "url": "https://siteupdown.com/"}, "mainEntityOfPage": "https://siteupdown.com/help/uptime-alerts-without-alert-fatigue"}</script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://siteupdown.com/"}, {"@type": "ListItem", "position": 2, "name": "Help centre", "item": "https://siteupdown.com/help/"}, {"@type": "ListItem", "position": 3, "name": "How to set up uptime alerts without alert fatigue", "item": "https://siteupdown.com/help/uptime-alerts-without-alert-fatigue"}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="nl-head"><div class="nl-bar">
+<a class="nl-logo" href="/" aria-label="siteupdown.com home"><img src="/assets/nl-logo.png" alt="Site up down?" width="831" height="391"></a>
+<div class="nl-tools"><div id="auth"></div><button class="nl-menu-btn" id="nl-menu-btn" type="button" aria-expanded="false" aria-controls="nl-drawer" aria-label="Open menu"><span></span><span></span><span></span></button></div>
+</div></header>
+<div class="nl-scrim" id="nl-scrim" hidden></div>
+<nav class="nl-drawer" id="nl-drawer" aria-label="Main menu"><button class="nl-close" id="nl-close" type="button" aria-label="Close menu">&times;</button><h2>Check</h2><a href="/">Website checker<small>Is it down, or just you?</small></a><a href="/is-it-down/">All apps &amp; sites</a><a href="/outage-map">Outage map<small>Reachability around the world</small></a><a href="/outage-history">Outage history<small>What happened on past days</small></a><a href="/state-of-the-internet">State of the internet<small>This week in outages</small></a><a href="/compare">Compare sites<small>Two services side by side</small></a><a href="/monitor">Monitor &amp; alerts<small>Watch up to 25 sites</small></a><h2>Tools</h2><a href="/internet-speed-test">Internet speed test</a><a href="/speed">Website speed test</a><a href="/what-is-my-ip">What is my IP?</a><a href="/game-ping-test">Game ping test</a><a href="/tools/">All tools</a><h2>Learn</h2><a href="/help/">Help centre<small>Plain-English guides</small></a><a href="/how-we-check">How we check</a><a href="/faq">FAQ</a><h2>More</h2><a href="/account" class="nl-sub">Account</a><a href="/about" class="nl-sub">About</a><a href="/business" class="nl-sub">For business</a><a href="/contact" class="nl-sub">Contact</a></nav>
+<main id="main">
+<section class="page"><div class="wrap prose article"><nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/help/">Help centre</a> / For website owners</nav><h1 style="margin:14px 0 20px">How to set up uptime alerts without alert fatigue</h1>
+<p class="lead">Monitoring is only useful if the alerts are trusted. If your phone buzzes for every blip, you will soon ignore it, and the one alert that matters will be missed. If alerts are too rare, customers tell you about outages before your own tools do. This guide covers how to find the balance.</p>
+<h2>Start with what matters to users</h2>
+<p>Do not begin with a list of servers. Begin with what your visitors need to do: load the home page, sign in, search, pay. Each of those journeys is worth watching, because a site can respond to a simple request while a key feature is broken. A page that returns a normal response but shows an error message is a very common failure, so check for a specific word on the page as well as the status code. Our <a href="/monitor">monitor</a> supports keyword and port checks for this reason.</p>
+<h2>How often to check</h2>
+<p>Frequency is a trade-off. Checking every minute detects a problem within about a minute, but small, brief problems will trigger more alerts. Checking every five minutes is calmer and is plenty for most small sites. A rough guide:</p>
+<ul>
+<li><b>Business-critical services</b> (payments, sign-in): every minute.</li>
+<li><b>Normal websites and shops:</b> every one to five minutes.</li>
+<li><b>Blogs, brochure sites, internal tools:</b> five to fifteen minutes.</li>
+</ul>
+<h2>Wait for confirmation before alerting</h2>
+<p>The biggest single cause of false alarms is alerting on one failed check. The internet is not perfectly reliable: a lost packet, a busy moment or a short network blip can fail a single request without any real problem. A better rule is to alert only after two or three consecutive failures, or when several locations agree. That adds a few minutes of delay and removes most of the noise. It is the same principle we use: we count a site as down only after repeated failed checks, as described in <a href="/help/how-our-checks-work">how our checks work</a>.</p>
+<h2>Check from more than one place</h2>
+<p>If the only thing watching your site sits next to it in the same data centre, it will happily report that everything is fine while visitors elsewhere cannot get through. Checking from outside, and from a few regions, shows what real people see. It also helps you tell a partial problem, such as one region or one provider, from a total outage. See <a href="/help/down-for-some-people-not-others">why a site can be down for some people and not others</a>.</p>
+<h2>Separate urgent from informational</h2>
+<p>Not every event deserves the same noise. Sort alerts into levels:</p>
+<ul>
+<li><b>Wake someone up:</b> the site is down or checkout is failing.</li>
+<li><b>Look at it today:</b> responses are slow, a certificate expires in two weeks, a domain renews soon.</li>
+<li><b>Just record it:</b> a short blip that recovered by itself.</li>
+</ul>
+<p>Routing the second and third groups to email rather than a phone alarm keeps the urgent channel meaningful. Certificate and domain expiry in particular should alert well in advance, since they are entirely preventable. See <a href="/help/domain-name-expiry">domain name expiry</a> and <a href="/help/ssl-certificate-errors">SSL certificate errors</a>.</p>
+<h2>Tell the right people, in the right place</h2>
+<p>Decide in advance who receives each alert and what they should do first. One named person on call is better than a group that each assumes someone else will respond. Send alerts to the place people already look, such as email, Telegram, Slack or Discord, and include in the message what failed, since when, and a link to the status or runbook.</p>
+<h2>Alert on recovery too</h2>
+<p>A &ldquo;back up&rdquo; message tells the team they can stop investigating and gives you the length of the outage for your records. It also confirms that the problem was real. Without it, a quiet channel is ambiguous.</p>
+<h2>Review regularly</h2>
+<ul>
+<li>Once a month, look at which alerts fired and which needed action. Any alert that never needs action should be loosened or removed.</li>
+<li>After each real incident, ask whether you heard about it quickly enough, and whether an earlier warning, such as slow responses, was missed.</li>
+<li>Keep an eye on the trend of your uptime. Our guide to <a href="/help/uptime-percentages-explained">uptime percentages</a> shows what each figure means in minutes of real downtime.</li>
+</ul>
+<p>Good alerting is quiet most of the time, specific when it speaks, and impossible to ignore when it matters. When something does go wrong, tell your own users promptly, using the approach in <a href="/help/how-to-write-an-outage-update">how to write an outage update</a>.</p>
+<div class="cta-box"><b>Check a website now</b><p>Is it down for everyone, or just you? Paste an address and we test it from fifteen places.</p><a class="btn" href="/"><span>Open the checker</span></a></div><h2>Related guides</h2><ul><li><a href="/help/how-to-monitor-your-own-website">How to monitor your own website: what to check and how often</a></li><li><a href="/help/uptime-percentages-explained">Uptime percentages explained: what 99.9% really means</a></li><li><a href="/help/how-to-write-an-outage-update">How to write an outage update that people will trust</a></li></ul><p class="note">Last updated 2 November 2026. Written by the siteupdown.com team. <a href="/contact">Spotted a mistake?</a></p><p style="margin-top:20px"><a href="/help/">&larr; All help guides</a></p></div></section></main>
+<footer class="site-foot"><div class="wrap nl-foot">
+<img src="/assets/nl-logo-light.png" alt="Site up down?" width="831" height="391">
+<p class="note">Less refreshing. More knowing.</p>
+
+<nav class="nl-fgrid nl-fcard" aria-label="All pages"><div class="nl-fg"><h3>Check</h3><a href="/">Website checker</a><a href="/is-it-down/">Is it down?</a><a href="/outage-map">Outage map</a><a href="/outage-history">Outage history</a><a href="/state-of-the-internet">State of the internet</a><a href="/compare">Compare sites</a><a href="/monitor">Monitor</a></div><div class="nl-fg"><h3>Tools</h3><a href="/internet-speed-test">Internet speed test</a><a href="/speed">Website speed test</a><a href="/what-is-my-ip">What is my IP?</a><a href="/game-ping-test">Game ping test</a><a href="/tools/">All tools</a></div><div class="nl-fg"><h3>Learn</h3><a href="/help/">Help centre</a><a href="/how-we-check">How we check</a><a href="/faq">FAQ</a></div><div class="nl-fg"><h3>Company</h3><a href="/account">Account</a><a href="/about">About</a><a href="/business">For business</a><a href="/contact">Contact</a></div><div class="nl-fg"><h3>Legal</h3><a href="/legal">Terms &amp; legal</a><a href="/privacy">Privacy</a><a href="/editorial-policy">Editorial &amp; ad policy</a><button type="button" data-cookie-settings>Cookie settings</button></div></nav>
+<p class="fine">&copy; <span data-year>2026</span> siteupdown.com. An independent website checker, not affiliated with the sites it checks. Regional probes use the public <a href="https://globalping.io" rel="noopener">Globalping</a> network.</p>
+</div></footer>
+<script src="/assets/app.js?v=797fa3aa"></script>
+<script src="/assets/newlook.js?v=797fa3aa"></script>
+</body>
+</html>

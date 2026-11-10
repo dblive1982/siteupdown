@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What is a load balancer, and why does it matter for uptime?</title>
+<meta name="description" content="How load balancers share traffic between servers, how health checks keep broken servers out of rotation, and what to know when setting one up.">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<link rel="canonical" href="https://siteupdown.com/help/what-is-a-load-balancer"><link rel="alternate" hreflang="en-gb" href="https://siteupdown.com/help/what-is-a-load-balancer"><link rel="alternate" hreflang="x-default" href="https://siteupdown.com/help/what-is-a-load-balancer">
+<meta property="og:type" content="website"><meta property="og:site_name" content="siteupdown.com">
+<meta property="og:title" content="What is a load balancer, and why does it matter for uptime?"><meta property="og:description" content="How load balancers share traffic between servers, how health checks keep broken servers out of rotation, and what to know when setting one up."><meta property="og:url" content="https://siteupdown.com/help/what-is-a-load-balancer">
+<meta property="og:image" content="https://siteupdown.com/assets/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:locale" content="en_GB">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="What is a load balancer, and why does it matter for uptime?"><meta name="twitter:description" content="How load balancers share traffic between servers, how health checks keep broken servers out of rotation, and what to know when setting one up."><meta name="twitter:image" content="https://siteupdown.com/assets/og.png">
+<meta name="application-name" content="siteupdown.com"><meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffde59">
+<link rel="icon" href="/favicon.ico?v=3" sizes="any"><link rel="icon" href="/favicon-32.png?v=3" type="image/png" sizes="32x32"><link rel="icon" href="/favicon-64.png?v=3" type="image/png" sizes="64x64"><link rel="manifest" href="/site.webmanifest"><link rel="icon" href="/favicon-192.png?v=3" type="image/png" sizes="192x192"><link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/assets/app.css?v=797fa3aa">
+<link rel="stylesheet" href="/assets/newlook.css?v=797fa3aa">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "What is a load balancer, and why does it matter for uptime?", "description": "How load balancers share traffic between servers, how health checks keep broken servers out of rotation, and what to know when setting one up.", "datePublished": "2026-11-02", "dateModified": "2026-11-02", "author": {"@type": "Organization", "name": "siteupdown.com", "url": "https://siteupdown.com/"}, "publisher": {"@type": "Organization", "name": "siteupdown.com", "url": "https://siteupdown.com/"}, "mainEntityOfPage": "https://siteupdown.com/help/what-is-a-load-balancer"}</script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://siteupdown.com/"}, {"@type": "ListItem", "position": 2, "name": "Help centre", "item": "https://siteupdown.com/help/"}, {"@type": "ListItem", "position": 3, "name": "What is a load balancer, and why does it matter for uptime?", "item": "https://siteupdown.com/help/what-is-a-load-balancer"}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="nl-head"><div class="nl-bar">
+<a class="nl-logo" href="/" aria-label="siteupdown.com home"><img src="/assets/nl-logo.png" alt="Site up down?" width="831" height="391"></a>
+<div class="nl-tools"><div id="auth"></div><button class="nl-menu-btn" id="nl-menu-btn" type="button" aria-expanded="false" aria-controls="nl-drawer" aria-label="Open menu"><span></span><span></span><span></span></button></div>
+</div></header>
+<div class="nl-scrim" id="nl-scrim" hidden></div>
+<nav class="nl-drawer" id="nl-drawer" aria-label="Main menu"><button class="nl-close" id="nl-close" type="button" aria-label="Close menu">&times;</button><h2>Check</h2><a href="/">Website checker<small>Is it down, or just you?</small></a><a href="/is-it-down/">All apps &amp; sites</a><a href="/outage-map">Outage map<small>Reachability around the world</small></a><a href="/outage-history">Outage history<small>What happened on past days</small></a><a href="/state-of-the-internet">State of the internet<small>This week in outages</small></a><a href="/compare">Compare sites<small>Two services side by side</small></a><a href="/monitor">Monitor &amp; alerts<small>Watch up to 25 sites</small></a><h2>Tools</h2><a href="/internet-speed-test">Internet speed test</a><a href="/speed">Website speed test</a><a href="/what-is-my-ip">What is my IP?</a><a href="/game-ping-test">Game ping test</a><a href="/tools/">All tools</a><h2>Learn</h2><a href="/help/">Help centre<small>Plain-English guides</small></a><a href="/how-we-check">How we check</a><a href="/faq">FAQ</a><h2>More</h2><a href="/account" class="nl-sub">Account</a><a href="/about" class="nl-sub">About</a><a href="/business" class="nl-sub">For business</a><a href="/contact" class="nl-sub">Contact</a></nav>
+<main id="main">
+<section class="page"><div class="wrap prose article"><nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/help/">Help centre</a> / For website owners</nav><h1 style="margin:14px 0 20px">What is a load balancer, and why does it matter for uptime?</h1>
+<p class="lead">A busy website is rarely one computer. It is several servers working together, and something has to decide which server answers each visitor. That something is a load balancer. It is one of the main reasons large sites can stay up when individual machines fail, and understanding it helps you plan for your own site.</p>
+<h2>What a load balancer does</h2>
+<p>A load balancer sits in front of a group of servers and receives every incoming request. It then forwards each request to one of the servers behind it. To the visitor it looks like a single site with a single address. Behind the scenes the work is spread out, so no one server is overloaded.</p>
+<p>It gives you two benefits at once. First, <b>capacity</b>: you can handle more visitors by adding servers rather than buying a bigger one. Second, <b>resilience</b>: if one server breaks, the others carry on.</p>
+<h2>How it chooses a server</h2>
+<ul>
+<li><b>Round robin.</b> Requests go to each server in turn. Simple and fair when servers are similar.</li>
+<li><b>Least connections.</b> The next request goes to whichever server is handling the fewest right now. Better when some requests take much longer than others.</li>
+<li><b>Weighted.</b> Stronger servers get a larger share than weaker ones.</li>
+<li><b>Sticky sessions.</b> A visitor keeps being sent to the same server, often needed when a server remembers state such as a shopping basket. It is simple but makes a server failure more disruptive for the people on it.</li>
+</ul>
+<h2>Health checks: the part that protects uptime</h2>
+<p>A load balancer is only useful if it knows which servers are healthy. It regularly sends small test requests to each one, usually to a simple page or a dedicated health address. If a server stops answering correctly several times in a row, the balancer takes it out of rotation and sends traffic elsewhere. When the server recovers and passes checks again, it is added back.</p>
+<p>The quality of the health check matters more than people expect. A check that only tests whether the server is switched on will keep sending traffic to a server whose application has crashed. A better check confirms the application can reach its database and return a real answer. Be careful not to make it too heavy or too strict, or a short database hiccup can mark every server unhealthy at once and turn a small problem into a full outage.</p>
+<h2>Where load balancers sit</h2>
+<p>You will meet them at several layers. A <b>network</b> balancer passes connections along quickly without looking at their content. An <b>application</b> balancer reads each web request and can route by address, for example sending <code>/api</code> to one group of servers and everything else to another. A <a href="/help/what-is-a-cdn-and-why-outages-spread">content delivery network</a> does a similar job across the world, sending visitors to the nearest location. Large sites often use all three.</p>
+<h2>Common mistakes</h2>
+<ul>
+<li><b>A single balancer.</b> If the load balancer itself is one machine, it becomes the one thing that can take the whole site down. Managed services run balancers redundantly for this reason. If you run your own, run at least two.</li>
+<li><b>No spare capacity.</b> If three servers share the load and one fails, the remaining two take on 50% more each. If they were already near their limit, the failure cascades. Plan so the site survives losing one server.</li>
+<li><b>Everything in one place.</b> Spreading servers across several machines helps little if they all sit in the same data centre or on the same power feed. Many outages in <a href="/help/major-internet-outages-explained">well-known incidents</a> came from a shared dependency, not a lone server.</li>
+<li><b>Forgetting the database.</b> Balancing web servers does nothing if every server depends on one database that fails.</li>
+</ul>
+<h2>Checking it is working</h2>
+<p>Watch for uneven load, repeated server removals and slow responses from only some requests. External monitoring from outside your network, such as a <a href="/help/how-to-monitor-your-own-website">monitor on your site</a>, shows what visitors experience, which can differ from what the balancer reports. If you see errors only some of the time, a single bad server in the pool is a likely cause: see <a href="/help/server-errors-500-502-503-504">server errors 500, 502, 503 and 504</a> for what each response means. For how uptime figures translate into real downtime, read <a href="/help/uptime-percentages-explained">uptime percentages explained</a>.</p>
+<div class="cta-box"><b>Check a website now</b><p>Is it down for everyone, or just you? Paste an address and we test it from fifteen places.</p><a class="btn" href="/"><span>Open the checker</span></a></div><h2>Related guides</h2><ul><li><a href="/help/how-websites-stay-up">How websites stay up: redundancy, failover and backups</a></li><li><a href="/help/uptime-percentages-explained">Uptime percentages explained: what 99.9% really means</a></li><li><a href="/help/what-is-a-cdn-and-why-outages-spread">What is a CDN, and why do outages spread so widely?</a></li></ul><p class="note">Last updated 2 November 2026. Written by the siteupdown.com team. <a href="/contact">Spotted a mistake?</a></p><p style="margin-top:20px"><a href="/help/">&larr; All help guides</a></p></div></section></main>
+<footer class="site-foot"><div class="wrap nl-foot">
+<img src="/assets/nl-logo-light.png" alt="Site up down?" width="831" height="391">
+<p class="note">Less refreshing. More knowing.</p>
+
+<nav class="nl-fgrid nl-fcard" aria-label="All pages"><div class="nl-fg"><h3>Check</h3><a href="/">Website checker</a><a href="/is-it-down/">Is it down?</a><a href="/outage-map">Outage map</a><a href="/outage-history">Outage history</a><a href="/state-of-the-internet">State of the internet</a><a href="/compare">Compare sites</a><a href="/monitor">Monitor</a></div><div class="nl-fg"><h3>Tools</h3><a href="/internet-speed-test">Internet speed test</a><a href="/speed">Website speed test</a><a href="/what-is-my-ip">What is my IP?</a><a href="/game-ping-test">Game ping test</a><a href="/tools/">All tools</a></div><div class="nl-fg"><h3>Learn</h3><a href="/help/">Help centre</a><a href="/how-we-check">How we check</a><a href="/faq">FAQ</a></div><div class="nl-fg"><h3>Company</h3><a href="/account">Account</a><a href="/about">About</a><a href="/business">For business</a><a href="/contact">Contact</a></div><div class="nl-fg"><h3>Legal</h3><a href="/legal">Terms &amp; legal</a><a href="/privacy">Privacy</a><a href="/editorial-policy">Editorial &amp; ad policy</a><button type="button" data-cookie-settings>Cookie settings</button></div></nav>
+<p class="fine">&copy; <span data-year>2026</span> siteupdown.com. An independent website checker, not affiliated with the sites it checks. Regional probes use the public <a href="https://globalping.io" rel="noopener">Globalping</a> network.</p>
+</div></footer>
+<script src="/assets/app.js?v=797fa3aa"></script>
+<script src="/assets/newlook.js?v=797fa3aa"></script>
+</body>
+</html>

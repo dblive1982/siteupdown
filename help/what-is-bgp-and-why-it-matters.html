@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What is BGP, and why can one mistake take a whole company</title>
+<meta name="description" content="How the internet decides where to send traffic, what the Border Gateway Protocol does, and why a routing error can make big services unreachable for hours.">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<link rel="canonical" href="https://siteupdown.com/help/what-is-bgp-and-why-it-matters"><link rel="alternate" hreflang="en-gb" href="https://siteupdown.com/help/what-is-bgp-and-why-it-matters"><link rel="alternate" hreflang="x-default" href="https://siteupdown.com/help/what-is-bgp-and-why-it-matters">
+<meta property="og:type" content="website"><meta property="og:site_name" content="siteupdown.com">
+<meta property="og:title" content="What is BGP, and why can one mistake take a whole company"><meta property="og:description" content="How the internet decides where to send traffic, what the Border Gateway Protocol does, and why a routing error can make big services unreachable for hours."><meta property="og:url" content="https://siteupdown.com/help/what-is-bgp-and-why-it-matters">
+<meta property="og:image" content="https://siteupdown.com/assets/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:locale" content="en_GB">
+<meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="What is BGP, and why can one mistake take a whole company"><meta name="twitter:description" content="How the internet decides where to send traffic, what the Border Gateway Protocol does, and why a routing error can make big services unreachable for hours."><meta name="twitter:image" content="https://siteupdown.com/assets/og.png">
+<meta name="application-name" content="siteupdown.com"><meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#ffde59">
+<link rel="icon" href="/favicon.ico?v=3" sizes="any"><link rel="icon" href="/favicon-32.png?v=3" type="image/png" sizes="32x32"><link rel="icon" href="/favicon-64.png?v=3" type="image/png" sizes="64x64"><link rel="manifest" href="/site.webmanifest"><link rel="icon" href="/favicon-192.png?v=3" type="image/png" sizes="192x192"><link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="/assets/app.css?v=797fa3aa">
+<link rel="stylesheet" href="/assets/newlook.css?v=797fa3aa">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "What is BGP, and why can one mistake take a whole company offline?", "description": "How the internet decides where to send traffic, what the Border Gateway Protocol does, and why a routing error can make big services unreachable for hours.", "datePublished": "2026-11-02", "dateModified": "2026-11-02", "author": {"@type": "Organization", "name": "siteupdown.com", "url": "https://siteupdown.com/"}, "publisher": {"@type": "Organization", "name": "siteupdown.com", "url": "https://siteupdown.com/"}, "mainEntityOfPage": "https://siteupdown.com/help/what-is-bgp-and-why-it-matters"}</script><script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "Home", "item": "https://siteupdown.com/"}, {"@type": "ListItem", "position": 2, "name": "Help centre", "item": "https://siteupdown.com/help/"}, {"@type": "ListItem", "position": 3, "name": "What is BGP, and why can one mistake take a whole company offline?", "item": "https://siteupdown.com/help/what-is-bgp-and-why-it-matters"}]}</script>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header class="nl-head"><div class="nl-bar">
+<a class="nl-logo" href="/" aria-label="siteupdown.com home"><img src="/assets/nl-logo.png" alt="Site up down?" width="831" height="391"></a>
+<div class="nl-tools"><div id="auth"></div><button class="nl-menu-btn" id="nl-menu-btn" type="button" aria-expanded="false" aria-controls="nl-drawer" aria-label="Open menu"><span></span><span></span><span></span></button></div>
+</div></header>
+<div class="nl-scrim" id="nl-scrim" hidden></div>
+<nav class="nl-drawer" id="nl-drawer" aria-label="Main menu"><button class="nl-close" id="nl-close" type="button" aria-label="Close menu">&times;</button><h2>Check</h2><a href="/">Website checker<small>Is it down, or just you?</small></a><a href="/is-it-down/">All apps &amp; sites</a><a href="/outage-map">Outage map<small>Reachability around the world</small></a><a href="/outage-history">Outage history<small>What happened on past days</small></a><a href="/state-of-the-internet">State of the internet<small>This week in outages</small></a><a href="/compare">Compare sites<small>Two services side by side</small></a><a href="/monitor">Monitor &amp; alerts<small>Watch up to 25 sites</small></a><h2>Tools</h2><a href="/internet-speed-test">Internet speed test</a><a href="/speed">Website speed test</a><a href="/what-is-my-ip">What is my IP?</a><a href="/game-ping-test">Game ping test</a><a href="/tools/">All tools</a><h2>Learn</h2><a href="/help/">Help centre<small>Plain-English guides</small></a><a href="/how-we-check">How we check</a><a href="/faq">FAQ</a><h2>More</h2><a href="/account" class="nl-sub">Account</a><a href="/about" class="nl-sub">About</a><a href="/business" class="nl-sub">For business</a><a href="/contact" class="nl-sub">Contact</a></nav>
+<main id="main">
+<section class="page"><div class="wrap prose article"><nav class="crumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/help/">Help centre</a> / How our checks work</nav><h1 style="margin:14px 0 20px">What is BGP, and why can one mistake take a whole company offline?</h1>
+<p class="lead">The internet is not one network. It is tens of thousands of separate networks, run by internet providers, companies, universities and cloud platforms, all agreeing to pass traffic for one another. The way they tell each other where things are is called the Border Gateway Protocol, or BGP. It mostly works silently, which is why the rare times it fails make headlines.</p>
+<h2>A map made of announcements</h2>
+<p>Each network has a number, called an autonomous system number, and owns blocks of addresses. A network announces to its neighbours, &ldquo;you can reach these addresses through me&rdquo;. Neighbours pass those announcements on, adding their own details, and over time every large network builds a picture of the best path to every address.</p>
+<p>It is a little like roads with no central map. Each town only knows which neighbouring towns lead toward a destination and relies on them to know the next step. That design is why the internet has no single point of control and can grow so large. It is also why it relies on a lot of trust.</p>
+<h2>How a routing error causes an outage</h2>
+<p>If a network stops announcing its addresses, or announces them wrongly, the rest of the internet no longer knows how to reach them. Two broad things can go wrong:</p>
+<ul>
+<li><b>Withdrawal.</b> Routes to a company&rsquo;s addresses are withdrawn, often by an internal change that went wrong. The servers are running perfectly, but nobody can find the way to them. Because DNS servers also live on those addresses, names stop resolving too, which makes the problem look like the whole company has vanished.</li>
+<li><b>Leaks and hijacks.</b> A network announces addresses it does not own, or passes on routes it should not. Traffic then flows through the wrong place, where it may be slowed, dropped or, in the worst cases, intercepted. Most are honest configuration mistakes rather than attacks.</li>
+</ul>
+<h2>Why recovery can be slow</h2>
+<p>Fixing the mistake is usually quick once found. What takes time is everything around it. Engineers may be unable to reach the systems they need because those depend on the same network. Announcements take minutes to spread, and cached information in other networks lingers. When a company&rsquo;s own tools, door badges and internal chat run on the failed network, even getting into the building to fix it can become a problem. This is why a routing outage can last hours even when the cause is a single wrong line.</p>
+<h2>What it looks like from the outside</h2>
+<ul>
+<li>A large service is unreachable from everywhere at once, not just for some people.</li>
+<li>Names fail to resolve, and addresses time out instead of returning an error page.</li>
+<li>Connected services fail too: apps, sign-in buttons and embedded content that depend on the company&rsquo;s servers.</li>
+<li>Our <a href="/outage-map">outage map</a> shows reachability problems in every region, not a local pattern.</li>
+</ul>
+<p>The tools in our <a href="/tools/">tools section</a>, such as the DNS lookup and ping test, show whether a name resolves and an address responds, which helps tell a routing problem from an application fault. A <a href="/help/how-to-read-a-traceroute">traceroute</a> can show where packets stop.</p>
+<h2>How the industry is making it safer</h2>
+<p>Several improvements are slowly being adopted. Route filtering lets providers refuse announcements that make no sense. A system called RPKI lets network owners publish signed statements about which networks may announce their addresses, so wrong announcements can be rejected automatically. Providers also monitor for unexpected changes to their routes. None of this is universal yet, which is why incidents continue to happen, though most are now caught and corrected within minutes.</p>
+<h2>What you can do</h2>
+<p>As a user, nothing needs fixing on your side, and restarting your router or changing DNS will not help. Check that the service is down for others, wait, and look for updates from the company on a channel that does not depend on its own network. For the bigger picture of outages that spread, read <a href="/help/major-internet-outages-explained">major internet outages explained</a> and <a href="/help/why-big-websites-go-down">why big websites go down</a>.</p>
+<p class="note">This is a simplified explanation. Real routing involves policies, agreements between networks and many technical details we have left out on purpose.</p>
+<div class="cta-box"><b>Check a website now</b><p>Is it down for everyone, or just you? Paste an address and we test it from fifteen places.</p><a class="btn" href="/"><span>Open the checker</span></a></div><h2>Related guides</h2><ul><li><a href="/help/major-internet-outages-explained">Major internet outages and what caused them</a></li><li><a href="/help/what-is-dns-and-why-it-fails">What is DNS, and why does it fail?</a></li><li><a href="/help/how-to-read-a-traceroute">How to read a traceroute</a></li></ul><p class="note">Last updated 2 November 2026. Written by the siteupdown.com team. <a href="/contact">Spotted a mistake?</a></p><p style="margin-top:20px"><a href="/help/">&larr; All help guides</a></p></div></section></main>
+<footer class="site-foot"><div class="wrap nl-foot">
+<img src="/assets/nl-logo-light.png" alt="Site up down?" width="831" height="391">
+<p class="note">Less refreshing. More knowing.</p>
+
+<nav class="nl-fgrid nl-fcard" aria-label="All pages"><div class="nl-fg"><h3>Check</h3><a href="/">Website checker</a><a href="/is-it-down/">Is it down?</a><a href="/outage-map">Outage map</a><a href="/outage-history">Outage history</a><a href="/state-of-the-internet">State of the internet</a><a href="/compare">Compare sites</a><a href="/monitor">Monitor</a></div><div class="nl-fg"><h3>Tools</h3><a href="/internet-speed-test">Internet speed test</a><a href="/speed">Website speed test</a><a href="/what-is-my-ip">What is my IP?</a><a href="/game-ping-test">Game ping test</a><a href="/tools/">All tools</a></div><div class="nl-fg"><h3>Learn</h3><a href="/help/">Help centre</a><a href="/how-we-check">How we check</a><a href="/faq">FAQ</a></div><div class="nl-fg"><h3>Company</h3><a href="/account">Account</a><a href="/about">About</a><a href="/business">For business</a><a href="/contact">Contact</a></div><div class="nl-fg"><h3>Legal</h3><a href="/legal">Terms &amp; legal</a><a href="/privacy">Privacy</a><a href="/editorial-policy">Editorial &amp; ad policy</a><button type="button" data-cookie-settings>Cookie settings</button></div></nav>
+<p class="fine">&copy; <span data-year>2026</span> siteupdown.com. An independent website checker, not affiliated with the sites it checks. Regional probes use the public <a href="https://globalping.io" rel="noopener">Globalping</a> network.</p>
+</div></footer>
+<script src="/assets/app.js?v=797fa3aa"></script>
+<script src="/assets/newlook.js?v=797fa3aa"></script>
+</body>
+</html>
