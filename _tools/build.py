@@ -92,7 +92,7 @@ def head(title, desc, path, extra_head='', noindex=False):
 <meta property="og:title" content="{t}"><meta property="og:description" content="{d}"><meta property="og:url" content="{canon}">
 <meta property="og:image" content="{SITE}/assets/og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:locale" content="en_GB">
 <meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="{t}"><meta name="twitter:description" content="{d}"><meta name="twitter:image" content="{SITE}/assets/og.png">
-<meta name="application-name" content="siteupdown.com"><meta name="format-detection" content="telephone=no">
+<link rel="alternate" type="application/rss+xml" title="siteupdown.com guides" href="/feed.xml"><meta name="application-name" content="siteupdown.com"><meta name="format-detection" content="telephone=no">
 <meta name="theme-color" content="#ffde59">
 <link rel="icon" href="/favicon.ico?v=3" sizes="any"><link rel="icon" href="/favicon-32.png?v=3" type="image/png" sizes="32x32"><link rel="icon" href="/favicon-64.png?v=3" type="image/png" sizes="64x64"><link rel="manifest" href="/site.webmanifest"><link rel="icon" href="/favicon-192.png?v=3" type="image/png" sizes="192x192"><link rel="apple-touch-icon" href="/apple-touch-icon.png?v=3">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -176,8 +176,36 @@ def build_newlook_css():
     out = src.replace('@@', ':root[data-theme=light] body')
     open(os.path.join(ROOT, 'assets', 'newlook.css'), 'w', encoding='utf-8').write(out)
 
+def seo_extras(name, content):
+    """Per-page share image and (when the page has none of its own) breadcrumb + page structured data."""
+    if 'content="noindex' in content or name in ('index.html', '404.html', '403.html', '500.html'): return content
+    m = _re.search(r'<title>(.*?)</title>', content)
+    if not m: return content
+    title = html.unescape(m.group(1)); short = _re.split(r'\s[|\u2014\u2013-]\s(?=siteupdown)', title)[0].strip()
+    stem = name[:-5]; slug = stem.replace('/', '-')
+    label = 'Guide' if stem.startswith('help/') else 'Free tool' if stem.startswith('tools/') else 'Is it down?' if _re.match(r'is-.*-down$', stem) else 'siteupdown.com'
+    try:
+        import make_og
+        img = SITE + make_og.make(slug, short, label)
+        content = content.replace(SITE + '/assets/og.png', img)
+    except Exception as e:
+        print('og image skipped for', name, e)
+    if '"BreadcrumbList"' not in content:
+        parts = [('Home', SITE + '/')]
+        segs = stem.split('/')
+        if len(segs) > 1: parts.append((segs[0].capitalize() if segs[0] != 'help' else 'Help centre', SITE + '/' + segs[0] + '/'))
+        parts.append((short, SITE + '/' + stem))
+        kind = 'AboutPage' if stem == 'about' else 'ContactPage' if stem == 'contact' else 'CollectionPage' if stem.endswith('index') or stem in ('outage-history', 'outage-map', 'state-of-the-internet', 'compare') else 'WebPage'
+        d = {'@context': 'https://schema.org', '@graph': [
+            {'@type': kind, '@id': SITE + '/' + stem + '#page', 'url': SITE + '/' + stem, 'name': short, 'isPartOf': {'@type': 'WebSite', 'name': 'siteupdown.com', 'url': SITE + '/'}, 'inLanguage': 'en-GB',
+             'dateModified': _dt.date.today().isoformat(), 'publisher': {'@type': 'Organization', 'name': 'siteupdown.com', 'url': SITE + '/'}},
+            {'@type': 'BreadcrumbList', 'itemListElement': [{'@type': 'ListItem', 'position': i + 1, 'name': n, 'item': u} for i, (n, u) in enumerate(parts)]}]}
+        content = content.replace('</head>', '<script type="application/ld+json">' + _json.dumps(d, ensure_ascii=False) + '</script>\n</head>', 1)
+    return content
+
 def write(name, content):
     if name.endswith('.html'):
+        content = seo_extras(name, content)
         content = _svgicons(content)
         v = _ver()
         content = _re.sub(r'(/assets/(?:app\.css|newlook\.css|newlook\.js|app\.js|home\.js|pages\.js|worldmap\.js|live\.js|sitepage\.js|tools\.js|sla\.js|speedtest\.js|heatmap\.js|state\.js|localmap\.js|history\.js|ip\.js|gameping\.js|embed\.js))(?=")', r'\1?v=' + v, content)
@@ -452,7 +480,7 @@ def speed():
 
 # ---------------------------------------------------------------- status page
 def status():
-    h = head('Website status — siteupdown.com', 'Live status, uptime and recent outages for a website, checked every few minutes by siteupdown.com.', '/status').replace('{BODYATTR}', ' data-page="status"')
+    h = head('Website status — siteupdown.com', 'Live status, uptime and recent outages for a website, checked every few minutes by siteupdown.com.', '/status', noindex=True).replace('{BODYATTR}', ' data-page="status"')
     body = f'''
 <section class="page"><div class="wrap">
 <div class="card toplist">
@@ -768,6 +796,15 @@ def help_pages():
     urls = [('/', 'daily', '1.0'), ('/speed', 'monthly', '0.8'), ('/internet-speed-test', 'monthly', '0.8'), ('/what-is-my-ip', 'monthly', '0.8'), ('/game-ping-test', 'monthly', '0.8'), ('/outage-map', 'daily', '0.7'), ('/outage-history', 'daily', '0.6'), ('/state-of-the-internet', 'daily', '0.7'), ('/compare', 'weekly', '0.6'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8'), ('/editorial-policy', 'monthly', '0.4')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8'), ('/tools/', 'monthly', '0.8')] + [('/tools/' + t['slug'], 'monthly', '0.7') for t in TOOLS] + [('/tools/uptime-sla-calculator', 'monthly', '0.7'), ('/how-we-check', 'monthly', '0.6'), ('/faq', 'monthly', '0.6')] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES if n not in HIDDEN] + [('/about', 'monthly', '0.5'), ('/business', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
     sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join('<url><loc>%s%s</loc><lastmod>@@D@@</lastmod><changefreq>%s</changefreq><priority>%s</priority></url>\n' % (SITE, u, c, p) for u, c, p in urls).replace('@@D@@', _dt.date.today().isoformat()) + '</urlset>\n'
     open(os.path.join(ROOT, 'sitemap.xml'), 'w').write(sm)
+    # RSS feed of the help guides: lets readers, feed readers and aggregators follow new guides
+    def _rss_item(a):
+        link = SITE + '/help/' + a['slug']
+        return '<item><title>%s</title><link>%s</link><guid isPermaLink="true">%s</guid><pubDate>%s</pubDate><description>%s</description></item>' % (
+            html.escape(html.unescape(a['title'])), link, link, a.get('date', 'Mon, 02 Nov 2026 09:00:00 +0000'), html.escape(html.unescape(a['desc'])))
+    rss = ('<?xml version="1.0" encoding="UTF-8"?>\n<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>siteupdown.com guides</title><link>' + SITE + '/help/</link>'
+           '<atom:link href="' + SITE + '/feed.xml" rel="self" type="application/rss+xml"/><description>Plain-English guides to website outages, error codes, DNS, speed and uptime.</description><language>en-gb</language>'
+           + ''.join(_rss_item(a) for a in reversed(ARTICLES)) + '</channel></rss>\n')
+    open(os.path.join(ROOT, 'feed.xml'), 'w', encoding='utf-8').write(rss)
 
 
 # ---------------------------------------------------------------- tools
@@ -914,8 +951,9 @@ def heatmap_page():
             '<section class="lm" id="lm"><h2>Local reports</h2><p class="lead">Where visitors say a site is not working for them. Glows fade as reports get older and dim when a site recovers. Reports are rounded to about 10 km and never show exactly who or where.</p><div class="card lm-card"><div class="lm-bar"><div class="hm-tabs" id="lm-win" role="group" aria-label="Time window"><button type="button" class="btn small" data-h="3" aria-pressed="true"><span>Last 3 hours</span></button><button type="button" class="btn small" data-h="24" aria-pressed="false"><span>Last 24 hours</span></button></div><button type="button" class="btn small" id="lm-go"><span>Show the local map</span></button><button type="button" class="btn small ghost" id="lm-me" hidden><span>Centre on me</span></button></div><div class="lm-map" id="lm-map" hidden role="region" aria-label="Local outage reports map"></div><p class="note" id="lm-note">The map loads street maps from OpenStreetMap when you open it.</p></div></section>'
             '<section class="lm" id="rf"><h2>Latest reports</h2><p class="lead">The newest problems visitors have reported across all sites. Each one is a choice they picked, with no personal details.</p><div class="card lm-card"><ul class="rf" id="rf-list"><li class="rf-none">Loading…</li></ul></div></section>'
             '<form class="card hm-mine" onsubmit="var v=this.q.value.trim();if(v)location.href=\'/?q=\'+encodeURIComponent(v);return false" novalidate><b>Is a site down in your country?</b><span>Type any website and we check it from all our places at once, so you can see where it works and where it does not.</span><div class="hm-mrow"><input name="q" type="text" inputmode="url" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="e.g. netflix.com" aria-label="Website address"><button class="btn small" type="submit"><span>Check</span></button></div></form>'
+            '<div id="hm-regions"></div>'
             '<div id="hm-sites"></div>'
-            '<h2>How to read this map</h2><ul><li>Green means almost every site we watch answered from that place. Amber and red mean more of them did not.</li><li>A whole place turning red can point to a problem with a network or country, not just one website.</li><li>Some sites deliberately block automated checks from certain countries, so a lower figure is a hint, not proof of an outage.</li><li>The data comes from probes on the public <a href="https://globalping.io" rel="noopener">Globalping</a> network, refreshed through the day. Read <a href="/how-we-check">how we check</a> for the details.</li></ul>'
+            '<h2>How to read this map</h2><p>Each pin is one of the places we check from. For every place we ask how many of the websites and apps on our public lists answered, and how long a typical answer took.</p><ul><li><b>Colours:</b> green is 90% or more of sites reached, amber is 70 to 90%, red is under 70%. In response-time view, green is under 400 ms, amber is 400 to 900 ms and red is slower.</li><li>Green means almost every site we watch answered from that place. Amber and red mean more of them did not.</li><li>A whole place turning red can point to a problem with a network or country, not just one website.</li><li>Some sites deliberately block automated checks from certain countries, so a lower figure is a hint, not proof of an outage.</li><li>The data comes from probes on the public <a href="https://globalping.io" rel="noopener">Globalping</a> network, refreshed through the day. Read <a href="/how-we-check">how we check</a> for the details.</li></ul>'
             '<p style="margin-top:20px"><a href="/">&larr; Back to the website checker</a></p></div></section>')
     write('outage-map.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/heatmap.js"></script><script src="/assets/localmap.js"></script>'))
 
