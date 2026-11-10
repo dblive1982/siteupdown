@@ -508,4 +508,6 @@
 
 :root[data-theme=light] body .empty-note,:root[data-theme=light] body .adm-empty{background:#fffbea;border:1px dashed #e6d98a;border-radius:10px;padding:12px 14px;color:#555;margin:8px 0}
 
+@media(max-width:759px){:root[data-theme=light] body .site-foot a,:root[data-theme=light] body .site-foot button{padding-top:9px;padding-bottom:9px}}
+
 body:after{content:"TEST SITE";position:fixed;right:10px;bottom:10px;background:#f59e0b;color:#000;font:700 12px/1 system-ui,sans-serif;letter-spacing:.08em;padding:7px 10px;border:2px solid #000;border-radius:6px;z-index:90;pointer-events:none}
