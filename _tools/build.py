@@ -112,16 +112,18 @@ def head(title, desc, path, extra_head='', noindex=False):
 <main id="main">
 '''
 
+SHOW_SOCIALS = False  # set True once the social profiles exist and ad approval is done
 def foot(scripts):
     groups = [('Check', [('Website checker', '/'), ('Is it down?', '/is-it-down/'), ('Outage map', '/outage-map'), ('Outage history', '/outage-history'), ('State of the internet', '/state-of-the-internet'), ('Compare sites', '/compare'), ('Monitor', '/monitor')]), ('Tools', [('Internet speed test', '/internet-speed-test'), ('Website speed test', '/speed'), ('What is my IP?', '/what-is-my-ip'), ('Game ping test', '/game-ping-test'), ('All tools', '/tools/')]), ('Learn', [('Help centre', '/help/'), ('How we check', '/how-we-check'), ('FAQ', '/faq')]), ('Company', [('Account', '/account'), ('About', '/about'), ('For business', '/business'), ('Contact', '/contact')]), ('Legal', [('Terms &amp; legal', '/legal'), ('Privacy', '/privacy')])]
     fgrid = ''.join('<div class="nl-fg"><h3>%s</h3>%s%s</div>' % (g, ''.join('<a href="%s">%s</a>' % (h, l) for l, h in items), '<button type="button" data-cookie-settings>Cookie settings</button>' if g == 'Legal' else '') for g, items in groups)
+    SOCIALS_HTML = f'''<div class="socials" aria-label="Social media">
+<a href="#" title="Facebook" aria-label="Facebook">{I_FB}</a><a href="#" title="Instagram" aria-label="Instagram">{I_IG}</a><a href="#" title="X" aria-label="X">{I_X}</a><a href="#" title="TikTok" aria-label="TikTok">{I_TT}</a><a href="#" title="YouTube" aria-label="YouTube">{I_YT}</a>
+</div>'''
     return f'''</main>
 <footer class="site-foot"><div class="wrap nl-foot">
 <img src="/assets/nl-logo-light.png" alt="Site up down?" width="831" height="391">
 <p class="note">Less refreshing. More knowing.</p>
-<div class="socials" aria-label="Social media">
-<a href="#" title="Facebook" aria-label="Facebook">{I_FB}</a><a href="#" title="Instagram" aria-label="Instagram">{I_IG}</a><a href="#" title="X" aria-label="X">{I_X}</a><a href="#" title="TikTok" aria-label="TikTok">{I_TT}</a><a href="#" title="YouTube" aria-label="YouTube">{I_YT}</a>
-</div>
+{SOCIALS_HTML if SHOW_SOCIALS else ''}
 <nav class="nl-fgrid nl-fcard" aria-label="All pages">{fgrid}</nav>
 <p class="fine">&copy; <span data-year>2026</span> siteupdown.com. An independent website checker, not affiliated with the sites it checks. Regional probes use the public <a href="https://globalping.io" rel="noopener">Globalping</a> network.</p>
 </div></footer>
