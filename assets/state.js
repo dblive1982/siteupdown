@@ -21,7 +21,19 @@
     if (d.worst && d.worst.length) h += '<h2>Least reliable this week</h2>' + list(d.worst, function (o) { return [pct(o.pct) + ' uptime, ' + o.outages + (o.outages === 1 ? ' outage' : ' outages'), 'ro-end']; });
     if (d.cats && d.cats.length) h += '<h2>How each category did</h2><p class="note">Average uptime across the sites in each category.</p>' + bars(d.cats.map(function (c) { return { l: cap(c.cat), n: Math.max(0, c.pct - 95), t: pct(c.pct) }; }));
     if (ins.cascade && ins.cascade.length) h += '<h2>Shared provider trouble right now</h2>' + ins.cascade.map(function (c) { return '<p><b>' + esc(c.provider) + '</b>: ' + c.count + ' sites behind it look down or slow at the moment (' + c.sites.map(function (s) { return esc(s.name); }).join(', ') + '). When one provider has trouble, many unrelated sites can be affected together.</p>'; }).join('');
-    if (ins.cal) { var mx = Math.max.apply(null, ins.cal.map(function (x) { return x.n; })) || 1; h += '<h2>Outage calendar, last 13 weeks</h2><p class="note">Darker means more outages that day.</p><div class="cal" role="img" aria-label="Outages per day over 13 weeks">' + ins.cal.map(function (x) { var l = x.n ? Math.min(4, 1 + Math.floor(3 * x.n / mx)) : 0; return '<i class="c' + l + '" title="' + x.day + ': ' + x.n + ' outage' + (x.n === 1 ? '' : 's') + '"></i>'; }).join('') + '</div>'; }
+    if (ins.cal) {
+      var cl = ins.cal, mx = Math.max.apply(null, cl.map(function (x) { return x.n; })) || 1, tot = cl.reduce(function (a, x) { return a + x.n; }, 0), act = cl.filter(function (x) { return x.n; }).length, avg = tot / (cl.length || 1);
+      var top = cl.filter(function (x) { return x.n === mx && x.n; })[0];
+      var long = function (d) { return new Date(d + 'T12:00:00Z').toLocaleDateString([], { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' }); };
+      h += '<h2>Outage calendar, last 13 weeks</h2><p class="note">Each square is one day, oldest on the left and newest on the right, with each column a week. Darker means more outages started that day. Tap or hover a square for the date and the number.</p>';
+      h += '<p>' + (tot ? '<b>' + tot + '</b> outage' + (tot === 1 ? '' : 's') + ' in the last 13 weeks, on <b>' + act + '</b> different day' + (act === 1 ? '' : 's') + '. Busiest day: <b>' + long(top.day) + '</b> with ' + mx + '.' : 'No outages in the last 13 weeks.') + '</p>';
+      h += '<div class="cal" role="img" aria-label="Outages per day over 13 weeks">' + cl.map(function (x) {
+        var l = x.n ? Math.min(4, 1 + Math.floor(3 * x.n / mx)) : 0;
+        var tip = long(x.day) + ': ' + (x.n ? x.n + ' outage' + (x.n === 1 ? '' : 's') + ' started' + (x.n > avg * 1.5 ? ', busier than usual' : '') + '.' : 'no outages started.');
+        return '<i class="c' + l + ' has-tip" tabindex="0" data-tip="' + esc(tip) + '"></i>';
+      }).join('') + '</div>';
+      h += '<p class="cal-key" aria-hidden="true"><span>Fewer</span><i></i><i class="c1"></i><i class="c2"></i><i class="c3"></i><i class="c4"></i><span>More</span></p>';
+    }
     out.innerHTML = h;
   }).catch(function () { out.innerHTML = '<p class="note">We could not load the summary just now.</p>'; });
 })();
