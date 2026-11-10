@@ -390,3 +390,8 @@
     document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hide(); });
   })();
 })();
+
+/* Offline fallback page (the worker never caches pages). */
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  window.addEventListener('load', function () { try { navigator.serviceWorker.register('/sw.js').catch(function () {}); } catch (e) {} });
+}

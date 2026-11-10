@@ -1,5 +1,10 @@
-/* Service worker: shows the notifications people asked for. It does not cache pages or run in the background for anything else. */
-self.addEventListener('install', function () { self.skipWaiting(); });
+/* Service worker: shows the notifications people asked for, and shows a friendly page when you are offline. It never serves cached copies of pages, so results are always live. */
+var OFFLINE = '/offline.html', CK = 'sud-offline-v1';
+self.addEventListener('install', function (e) { e.waitUntil(caches.open(CK).then(function (c) { return c.add(OFFLINE); }).catch(function () {})); self.skipWaiting(); });
+self.addEventListener('fetch', function (e) {
+  if (e.request.mode !== 'navigate') return;
+  e.respondWith(fetch(e.request).catch(function () { return caches.match(OFFLINE).then(function (r) { return r || Response.error(); }); }));
+});
 self.addEventListener('activate', function (e) { e.waitUntil(self.clients.claim()); });
 self.addEventListener('push', function (e) {
   var d = {};
