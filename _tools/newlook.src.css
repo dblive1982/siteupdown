@@ -286,9 +286,9 @@
 @@ .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .nl-live{display:inline-flex;align-items:center;gap:0;margin-left:auto}
 @@ .checker .top .nl-live em{display:inline;color:#0b0b0b}
-@@ .hm-world.dg{background:#f1f1f5;border-color:#111}
-@@ .hm-world.dg .cn{fill:#000;font-weight:900;paint-order:stroke;stroke:#f1f1f5;stroke-width:10px;stroke-linejoin:round}
-@@ .hm-world.dg .oc{fill:#7b7f8f;opacity:1;font-weight:900}
+@@ .hm-world.dg{background:#c4e8ff;border-color:#111}
+@@ .hm-world.dg .cn{fill:#111;font-weight:900;paint-order:stroke;stroke:#fffbe8;stroke-width:12px;stroke-linejoin:round;letter-spacing:.04em}
+@@ .hm-world.dg .oc{fill:#4d86b0;opacity:1;font-weight:900;font-family:"Chalkboard SE","Comic Sans MS",system-ui,sans-serif;font-style:italic}
 @@ .rt-wrap table{margin:0}
 @@ .rt th{white-space:nowrap}
 @@ .rt td .sp-ms,@@ .rt td .hm-chip{white-space:nowrap}
