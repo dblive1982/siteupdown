@@ -289,8 +289,10 @@ def home():
 
 <section class="nl-acc"><div class="wrap">
 <div class="nl-d nl-fixed" id="recent-outages"><h2 class="nl-sum">Outages right now</h2><div class="nl-dbody"><div class="card toplist">
-<div class="pc-head"><div><span class="eyebrow"><i></i>Live · updates every minute</span><h2 id="ro-h">Outages right now<span class="dot">.</span></h2>
+<div class="pc-head"><div><span class="eyebrow"><i></i>Live · refreshes by itself every 30 seconds</span><h2 id="ro-h">Outages right now<span class="dot">.</span></h2>
 <p class="lead" id="ro-lead">Popular sites that are down at this moment, with any that came back in the last 24 hours underneath.</p></div></div>
+<div class="live-bar" id="live-bar"><span class="lb-dot" aria-hidden="true"></span><b id="lb-state">Connecting&hellip;</b><span id="lb-age" aria-live="off"></span><span class="lb-btns"><button type="button" id="lb-refresh">Refresh now</button><button type="button" id="lb-pause" aria-pressed="false">Pause</button></span></div>
+<div class="live-tiles" id="live-tiles"><button type="button" class="lt good" data-k="down"><b>&ndash;</b><span>sites down now</span></button><button type="button" class="lt good" data-k="slow"><b>&ndash;</b><span>running slower than usual</span></button><button type="button" class="lt info" data-k="back"><b>&ndash;</b><span>back up in the last 24 h</span></button></div>
 <ul class="ro-list" id="ro-list"><li class="skeleton">Loading&hellip;</li></ul>
 <h3 class="ro-sub">Running slower than usual</h3><ul class="ro-list" id="ro-slow"><li class="skeleton">Loading&hellip;</li></ul>
 <h3 class="ro-sub">More reports</h3>
