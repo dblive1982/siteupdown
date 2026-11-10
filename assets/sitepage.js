@@ -114,7 +114,7 @@
       msg.textContent = name + ' looks down. Our server got errors on two attempts ' + ago(cur.at) + '.';
     } else if (wblk && (v === 'timeout' || v === 'inconclusive')) {
       pill.className = 'sp-pill blocked'; pill.textContent = 'Blocked';
-      msg.textContent = name + ' \u2014 blocking automated checks. ' + host + ' is answering, but it turns our checks away' + (wblk.code ? ' (error ' + wblk.code + ')' : '') + '. ' + wblk.n + ' of ' + wblk.total + ' places we tried got a reply and were refused, so the site itself is running. Try opening it yourself to be sure.';
+      msg.textContent = name + ' \u2014 blocking automated checks. ' + host + ' is answering, but it turns our checks away' + (wblk.code ? ' (error ' + wblk.code + (window.SUD.codeInfo(wblk.code) ? ', ' + window.SUD.codeInfo(wblk.code).n.toLowerCase() + ': ' + window.SUD.codeInfo(wblk.code).t.charAt(0).toLowerCase() + window.SUD.codeInfo(wblk.code).t.slice(1).replace(/\.$/, '') : '') + ')' : '') + '. ' + wblk.n + ' of ' + wblk.total + ' places we tried got a reply and were refused, so the site itself is running. Try opening it yourself to be sure.';
     } else if (v === 'timeout') {
       pill.className = 'sp-pill unsure'; pill.textContent = 'No answer';
       msg.textContent = 'Our server did not get an answer from ' + host + ' ' + ago(cur.at) + '. It may be down, overloaded, or simply ignoring automated checks.';

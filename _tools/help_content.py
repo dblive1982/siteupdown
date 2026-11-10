@@ -176,14 +176,16 @@ ARTICLES = [
 <li>Type <code>ipconfig /flushdns</code> and press Enter.</li>
 <li>You should see &ldquo;Successfully flushed the DNS Resolver Cache&rdquo;.</li>
 </ol>
+<p><b>What that command does:</b> <code>ipconfig</code> is Windows&rsquo; tool for network settings, and <code>/flushdns</code> tells it to empty the list of remembered website addresses so your computer looks them up fresh next time. It changes nothing else and is safe to run.</p>
 <h2>macOS</h2>
 <ol>
 <li>Open <b>Terminal</b> (Applications &rarr; Utilities).</li>
 <li>Run: <code>sudo dscacheutil -flushcache; sudo killall -HUP mDNSResponder</code></li>
 <li>Enter your Mac password when asked. Nothing is printed when it works.</li>
 </ol>
+<p><b>What that command does:</b> <code>sudo</code> means &ldquo;run this as the administrator&rdquo;, which is why it asks for your password. <code>dscacheutil -flushcache</code> empties the list of remembered website addresses. The semicolon then runs a second command, <code>killall -HUP mDNSResponder</code>, which politely tells the Mac&rsquo;s name-lookup service to reload so the empty list takes effect. Neither command deletes your files.</p>
 <h2>Linux</h2>
-<p>It depends on how your system handles DNS. On most modern distributions using systemd-resolved, run <code>sudo resolvectl flush-caches</code>. Older systems may use <code>sudo systemd-resolve --flush-caches</code>. If you use dnsmasq or nscd, restart that service instead.</p>
+<p>It depends on how your system handles DNS. On most modern distributions using systemd-resolved, run <code>sudo resolvectl flush-caches</code> (administrator rights, then the system&rsquo;s name-lookup tool, told to empty its cache). Older systems may use <code>sudo systemd-resolve --flush-caches</code>, which does the same job under its older name. If you use dnsmasq or nscd, restart that service instead.</p>
 <h2>Chrome&rsquo;s own cache</h2>
 <p>Chrome keeps its own list. Go to <code>chrome://net-internals/#dns</code> and press <b>Clear host cache</b>. Some newer versions of Chrome move or hide this page, in which case restarting the browser clears it.</p>
 <h2>Your phone</h2>
@@ -420,7 +422,7 @@ ARTICLES = [
 </ol>
 <h2>What site owners should check</h2>
 <ul>
-<li>File permissions: folders are usually 755 and files 644.</li>
+<li>File permissions: folders are usually 755 and files 644. These numbers say who may do what: the owner can read and change the item, while everyone else can only read it (and open folders). Permissions that are too strict make the server refuse its own files.</li>
 <li>That the folder has an index file such as <code>index.html</code> or <code>index.php</code>.</li>
 <li>Firewall, security plugin and CDN rules that might be blocking legitimate visitors or tools.</li>
 <li>Any country or IP blocks you have set up.</li>
