@@ -114,7 +114,7 @@ def head(title, desc, path, extra_head='', noindex=False):
 
 SHOW_SOCIALS = False  # set True once the social profiles exist and ad approval is done
 def foot(scripts):
-    groups = [('Check', [('Website checker', '/'), ('Is it down?', '/is-it-down/'), ('Outage map', '/outage-map'), ('Outage history', '/outage-history'), ('State of the internet', '/state-of-the-internet'), ('Compare sites', '/compare'), ('Monitor', '/monitor')]), ('Tools', [('Internet speed test', '/internet-speed-test'), ('Website speed test', '/speed'), ('What is my IP?', '/what-is-my-ip'), ('Game ping test', '/game-ping-test'), ('All tools', '/tools/')]), ('Learn', [('Help centre', '/help/'), ('How we check', '/how-we-check'), ('FAQ', '/faq')]), ('Company', [('Account', '/account'), ('About', '/about'), ('For business', '/business'), ('Contact', '/contact')]), ('Legal', [('Terms &amp; legal', '/legal'), ('Privacy', '/privacy'), ('Editorial &amp; ad policy', '/editorial-policy')])]
+    groups = [('Check', [('Website checker', '/'), ('Is it down?', '/is-it-down/'), ('Outage map', '/outage-map'), ('Outage history', '/outage-history'), ('State of the internet', '/state-of-the-internet'), ('Compare sites', '/compare'), ('Monitor', '/monitor')]), ('Tools', [('Internet speed test', '/internet-speed-test'), ('Website speed test', '/speed'), ('What is my IP?', '/what-is-my-ip'), ('Game ping test', '/game-ping-test'), ('All tools', '/tools/')]), ('Learn', [('Help centre', '/help/'), ('Features', '/features'), ('How we check', '/how-we-check'), ('FAQ', '/faq')]), ('Company', [('Account', '/account'), ('About', '/about'), ('For business', '/business'), ('Contact', '/contact')]), ('Legal', [('Terms &amp; legal', '/legal'), ('Privacy', '/privacy'), ('Editorial &amp; ad policy', '/editorial-policy')])]
     fgrid = ''.join('<div class="nl-fg"><h3>%s</h3>%s%s</div>' % (g, ''.join('<a href="%s">%s</a>' % (h, l) for l, h in items), '<button type="button" data-cookie-settings>Cookie settings</button>' if g == 'Legal' else '') for g, items in groups)
     SOCIALS_HTML = f'''<div class="socials" aria-label="Social media">
 <a href="#" title="Facebook" aria-label="Facebook">{I_FB}</a><a href="#" title="Instagram" aria-label="Instagram">{I_IG}</a><a href="#" title="X" aria-label="X">{I_X}</a><a href="#" title="TikTok" aria-label="TikTok">{I_TT}</a><a href="#" title="YouTube" aria-label="YouTube">{I_YT}</a>
@@ -271,7 +271,7 @@ def home():
 <div class="map-card"><div class="map-wrap" id="map"><svg id="map-svg" role="img" aria-label="World map of probe results" preserveAspectRatio="xMidYMid meet"></svg>
 <div class="map-empty" id="map-empty"><span>No regional run yet. Check a website and the map lights up.</span></div><div class="tip" id="tip" hidden></div></div>
 <div class="legend" aria-label="Map legend"><span><i style="background:var(--green)"></i>Responded</span><span><i style="background:var(--amber)"></i>Blocked</span><span><i style="background:var(--red)"></i>Server error</span><span><i style="border:2px solid var(--grey)"></i>No connection</span></div>
-<p class="fine" style="margin-top:10px">Hover or tap a marker for details. Regions without a probe are not claimed. Each run is a snapshot, not continuous monitoring. Probe network: <a href="https://globalping.io" rel="noopener">Globalping</a>.</p></div>
+<p class="fine" style="margin-top:10px">Hover or tap a marker for details. Regions without a probe are not claimed. This map shows a regional check run on demand; the sites on your watchlist are monitored continuously, every minute, and popular sites about every five minutes. Probe network: <a href="https://globalping.io" rel="noopener">Globalping</a>.</p></div>
 <div class="details">
 <div class="row-actions"><button class="btn small ghost" type="button" id="wl-add" hidden>Add to my watchlist</button><a class="btn small ghost" id="open-site" target="_blank" rel="noopener noreferrer" hidden>Open website ↗</a><a class="btn small ghost" id="speed-link" hidden>Test speed ⚡</a></div>
 <div id="lv-home" hidden></div>
@@ -525,6 +525,56 @@ def static_pages():
 <p>siteupdown.com is not affiliated with the websites, games or services it checks. Regional probes run on the public <a href="https://globalping.io" rel="noopener">Globalping</a> network. The site is supported by advertising, so it stays free to use.</p>
 ''' + __import__('pages_extra').ABOUT_MORE)
     __import__('pages_extra').build(prose, head, write, foot, html, _json, _re)
+    prose('features.html', 'Features: what siteupdown.com does', 'Continuous website monitoring, instant alerts, outage history and free tools. Exactly what siteupdown.com does today, and what it does not.', '/features', '''
+<p class="lead">siteupdown.com tells you whether a website or app is down for everyone or just for you, and it keeps watching so you do not have to. This page lists exactly what it does today, and is honest about what it does not do.</p>
+<h2>Two ways it checks: on demand and continuously</h2>
+<ul>
+<li><b>On demand.</b> Type any address into the <a href="/">checker</a> and we test it straight away, with the result, the HTTP code explained in plain words, the response time, redirects and certificate details. The <a href="/outage-map">outage map</a> can also run a regional check from probes around the world.</li>
+<li><b>Continuously.</b> Every site on your <a href="/monitor">watchlist</a> is checked about <b>every minute</b>, around the clock. The popular sites on our public lists are checked about <b>every five minutes</b>. These are not one-off snapshots: they build a running history of uptime, response time and outages.</li>
+</ul>
+<h2>Fewer false alarms</h2>
+<p>A site is only called down after more than one failed check, so a single dropped request does not raise an alarm. When a site answers but refuses automated requests, we show it as unclear or blocked rather than down, because a server that answers is alive. Read <a href="/how-we-check">how we check</a> for the full method.</p>
+<h2>Alerts where you already are</h2>
+<ul>
+<li><b>Email</b> when a watched site goes down and when it is back.</li>
+<li><b>Browser notifications</b> on the devices you allow.</li>
+<li><b>Telegram, Slack and Discord</b> messages, so the alert reaches your team chat.</li>
+</ul>
+<p>We do not send SMS text messages or phone calls today.</p>
+<h2>Checks beyond "is it up?"</h2>
+<ul>
+<li>Check that a <b>word</b> is still on a page, for example the "Add to basket" button on a shop.</li>
+<li>Check that a <b>port</b> answers, such as a mail or game server.</li>
+<li>Watch <b>SSL certificate</b> expiry and get warned before visitors see a browser warning.</li>
+<li>See <b>app and login servers</b> for many big services, because a website can be up while its app is down.</li>
+</ul>
+<h2>History, reliability and reports</h2>
+<ul>
+<li>Each site page shows uptime, a typical-day response-time chart, an <b>outage timeline</b> and a reliability grade. A 13-week <b>outage calendar</b> sits on the home page and the State of the internet page.</li>
+<li>Every outage is recorded with its start time and how long it lasted.</li>
+<li>A <a href="/site-report">site reliability report</a> and the <a href="/tools/uptime-sla-calculator">uptime and SLA calculator</a> to turn a percentage into real minutes of downtime.</li>
+<li>The <a href="/state-of-the-internet">State of the internet</a> weekly summary and the <a href="/outage-history">outage history</a>.</li>
+</ul>
+<h2>Show your status on your own site</h2>
+<p>Every site page offers a live status card and a small badge you can paste into your own website, forum signature or README.</p>
+<h2>Visitor reports and help</h2>
+<p>Visitors can send an anonymous report when something is wrong, which shows alongside our own checks. The <a href="/help/">Help centre</a> has 57 plain-English guides to errors, DNS, SSL and slow connections, and the <a href="/tools/">tools</a> include a speed test, IP lookup, header checker and more, all free.</p>
+<h2>What it is not</h2>
+<ul>
+<li>It is not an enterprise incident-management system. There is no on-call scheduling, phone paging or SMS today.</li>
+<li>Regional checks depend on the public probe network we use, so a region without a probe is left blank instead of guessed.</li>
+<li>A paid plan for businesses is planned, and we would like to build it around what you ask for. <a href="/business">Tell us what you need</a>.</li>
+</ul>
+<h2>Frequently asked questions</h2>
+<h3>Does siteupdown.com monitor continuously or only on demand?</h3>
+<p>Both. On-demand checks give an instant answer. Watchlist sites are checked about every minute, and popular public sites about every five minutes, so history builds up without anyone pressing a button.</p>
+<h3>Is it free?</h3>
+<p>Yes. Checking, watching sites, email alerts and the tools are free today.</p>
+<h3>Will I get an alert if my site goes down?</h3>
+<p>Yes. Add it to your <a href="/monitor">watchlist</a> and choose email, browser notification, Telegram, Slack or Discord.</p>
+<h3>Why does a site show as blocked or unclear?</h3>
+<p>Some sites refuse automated checks. The site answered, so it is alive, but we cannot judge it fully. See <a href="/help/sites-that-block-automated-checks">sites that block automated checks</a>.</p>
+''')
     prose('editorial-policy.html', 'Editorial policy', 'How siteupdown.com writes, checks, corrects and funds its content.', '/editorial-policy', '''
 <p class="lead">This page explains how the content on siteupdown.com is produced, how we keep it accurate, and how advertising fits in. We want you to be able to trust what you read here.</p>
 <h2>What we publish</h2>
@@ -795,7 +845,7 @@ def help_pages():
                 '<p style="margin-top:20px"><a href="/help/">&larr; All help guides</a></p></div></section>')
         write('help/' + a['slug'] + '.html', h + body + foot('<script src="/assets/app.js"></script>'))
     # sitemap
-    urls = [('/', 'daily', '1.0'), ('/speed', 'monthly', '0.8'), ('/internet-speed-test', 'monthly', '0.8'), ('/what-is-my-ip', 'monthly', '0.8'), ('/game-ping-test', 'monthly', '0.8'), ('/outage-map', 'daily', '0.7'), ('/outage-history', 'daily', '0.6'), ('/state-of-the-internet', 'daily', '0.7'), ('/compare', 'weekly', '0.6'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8'), ('/editorial-policy', 'monthly', '0.4')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8'), ('/tools/', 'monthly', '0.8')] + [('/tools/' + t['slug'], 'monthly', '0.7') for t in TOOLS] + [('/tools/uptime-sla-calculator', 'monthly', '0.7'), ('/how-we-check', 'monthly', '0.6'), ('/faq', 'monthly', '0.6')] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES if n not in HIDDEN] + [('/about', 'monthly', '0.5'), ('/business', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
+    urls = [('/', 'daily', '1.0'), ('/features', 'monthly', '0.8'), ('/speed', 'monthly', '0.8'), ('/internet-speed-test', 'monthly', '0.8'), ('/what-is-my-ip', 'monthly', '0.8'), ('/game-ping-test', 'monthly', '0.8'), ('/outage-map', 'daily', '0.7'), ('/outage-history', 'daily', '0.6'), ('/state-of-the-internet', 'daily', '0.7'), ('/compare', 'weekly', '0.6'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8'), ('/editorial-policy', 'monthly', '0.4')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8'), ('/tools/', 'monthly', '0.8')] + [('/tools/' + t['slug'], 'monthly', '0.7') for t in TOOLS] + [('/tools/uptime-sla-calculator', 'monthly', '0.7'), ('/how-we-check', 'monthly', '0.6'), ('/faq', 'monthly', '0.6')] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES if n not in HIDDEN] + [('/about', 'monthly', '0.5'), ('/business', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
     sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join('<url><loc>%s%s</loc><lastmod>@@D@@</lastmod><changefreq>%s</changefreq><priority>%s</priority></url>\n' % (SITE, u, c, p) for u, c, p in urls).replace('@@D@@', _dt.date.today().isoformat()) + '</urlset>\n'
     open(os.path.join(ROOT, 'sitemap.xml'), 'w').write(sm)
     # RSS feed of the help guides: lets readers, feed readers and aggregators follow new guides
