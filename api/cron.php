@@ -182,4 +182,16 @@ $pdo->prepare('DELETE FROM incidents WHERE started_at < ? AND ended_at IS NOT NU
 $pdo->prepare('DELETE FROM shares WHERE created_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - 30 * 86400)]);
 $pdo->prepare('DELETE FROM resets WHERE expires_at < ?')->execute([gmdate('Y-m-d H:i:s', time() - 86400)]);
 }
+// Pro: sites watched by Pro members get a second check about 30 seconds into the minute, so they are checked roughly every 30 seconds.
+try {
+    require_once __DIR__ . '/_plan.php'; ensure_billing($pdo);
+    $proHosts = $pdo->query('SELECT DISTINCT w.host FROM watchlist w JOIN users u ON u.id = w.user_id WHERE ' . pro_users_sql('u'))->fetchAll(PDO::FETCH_COLUMN);
+    if ($proHosts) {
+        $wait = 30 - (time() - $t0);
+        if ($wait > 0) sleep($wait);
+        foreach (array_slice($proHosts, 0, 40) as $h) { if (time() - $t0 > 54) break; $probe($h); }
+    }
+    // Monthly report: sent on the 1st, once, to Pro members (each member is recorded so a re-run never repeats it).
+    if ((int)gmdate('j') === 1 && (int)gmdate('G') >= 7) { require_once __DIR__ . '/_report.php'; send_monthly_reports($pdo); }
+} catch (Throwable $e) { /* the Pro extras must never break the main run */ }
 if (PHP_SAPI === 'cli') echo "Probed $n sites, $nx extra checks, $nc certificates\n"; else out(200, ['probed' => $n, 'extra' => $nx, 'certs' => $nc]);
