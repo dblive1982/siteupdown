@@ -2,6 +2,9 @@
 """Builds the static pages (index, login, account, monitor, privacy, legal, contact, 404) with a shared header and footer.
 Run:  python3 _tools/build.py   (from the project folder)"""
 import datetime as _dt
+# Date the editorial content was last reviewed. Update when the page text or guides are reviewed.
+SITE_REVIEWED = '2026-11-10'
+SITE_REVIEWED_TEXT = '10 November 2026'
 import os, html
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
@@ -198,7 +201,7 @@ def seo_extras(name, content):
         kind = 'AboutPage' if stem == 'about' else 'ContactPage' if stem == 'contact' else 'CollectionPage' if stem.endswith('index') or stem in ('outage-history', 'outage-map', 'state-of-the-internet', 'compare') else 'WebPage'
         d = {'@context': 'https://schema.org', '@graph': [
             {'@type': kind, '@id': SITE + '/' + stem + '#page', 'url': SITE + '/' + stem, 'name': short, 'isPartOf': {'@type': 'WebSite', 'name': 'siteupdown.com', 'url': SITE + '/'}, 'inLanguage': 'en-GB',
-             'dateModified': _dt.date.today().isoformat(), 'publisher': {'@type': 'Organization', 'name': 'siteupdown.com', 'url': SITE + '/'}},
+             'dateModified': SITE_REVIEWED, 'publisher': {'@type': 'Organization', 'name': 'siteupdown.com', 'url': SITE + '/'}},
             {'@type': 'BreadcrumbList', 'itemListElement': [{'@type': 'ListItem', 'position': i + 1, 'name': n, 'item': u} for i, (n, u) in enumerate(parts)]}]}
         content = content.replace('</head>', '<script type="application/ld+json">' + _json.dumps(d, ensure_ascii=False) + '</script>\n</head>', 1)
     return content
@@ -782,7 +785,7 @@ def site_pages_build():
             '<p><button type="button" class="btn small ghost sp-embed-copy" data-for="sp-embed-code"><span>Copy badge code</span></button></p></div>' +
             '<h2>Questions about %s</h2><div class="faq">%s</div>' % (n, faqh) +
             '<h2>Other %s checks</h2><ul>%s</ul>' % (html.escape(catname.lower()), rel) +
-            '<p class="note">Category: %s. siteupdown.com is independent and is not affiliated with %s.</p>' % (html.escape(catname), n) +
+            '<p class="note">Category: %s. Last reviewed %s by the siteupdown.com team. <a href="/how-we-check">How we check</a> &middot; <a href="/editorial-policy">Editorial policy</a>. siteupdown.com is independent and is not affiliated with %s.</p>' % (html.escape(catname), SITE_REVIEWED_TEXT, n) +
             '<p style="margin-top:20px"><a href="/is-it-down/">&larr; All site status pages</a></p></div></section>')
         write(path.lstrip('/') + '.html', h + body + foot('<script src="/assets/worldmap.js"></script><script src="/assets/app.js"></script><script src="/assets/sitepage.js"></script><script src="/assets/live.js"></script>'))
     # directory
@@ -826,7 +829,7 @@ def help_pages():
     write('help/index.html', h + body + foot('<script src="/assets/app.js"></script>'))
     for a in ARTICLES:
         path = '/help/' + a['slug']
-        art = {"@context": "https://schema.org", "@type": "Article", "headline": a['title'], "description": a['desc'], "datePublished": "2026-11-02", "dateModified": "2026-11-02",
+        art = {"@context": "https://schema.org", "@type": "Article", "headline": a['title'], "description": a['desc'], "datePublished": "2026-11-02", "dateModified": a.get('updated', '2026-11-02'),
                "author": {"@type": "Organization", "name": "siteupdown.com", "url": SITE + "/"}, "publisher": {"@type": "Organization", "name": "siteupdown.com", "url": SITE + "/"},
                "mainEntityOfPage": SITE + path}
         crumbs = {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [
@@ -841,12 +844,29 @@ def help_pages():
                 '<h1 style="margin:14px 0 20px">' + html.escape(a['title']) + '</h1>' + a['body'] +
                 '<div class="cta-box"><b>Check a website now</b><p>Is it down for everyone, or just you? Paste an address and we test it from fifteen places.</p><a class="btn" href="/"><span>Open the checker</span></a></div>'
                 '<h2>Related guides</h2><ul>' + rel + '</ul>'
-                '<p class="note">Last updated 2 November 2026. Written by the siteupdown.com team. <a href="/contact">Spotted a mistake?</a></p>'
+                '<p class="note">Last updated ' + a.get('updated_text', '2 November 2026') + '. Written by the siteupdown.com team. <a href="/contact">Spotted a mistake?</a></p>'
                 '<p style="margin-top:20px"><a href="/help/">&larr; All help guides</a></p></div></section>')
         write('help/' + a['slug'] + '.html', h + body + foot('<script src="/assets/app.js"></script>'))
     # sitemap
     urls = [('/', 'daily', '1.0'), ('/features', 'monthly', '0.8'), ('/speed', 'monthly', '0.8'), ('/internet-speed-test', 'monthly', '0.8'), ('/what-is-my-ip', 'monthly', '0.8'), ('/game-ping-test', 'monthly', '0.8'), ('/outage-map', 'daily', '0.7'), ('/outage-history', 'daily', '0.6'), ('/state-of-the-internet', 'daily', '0.7'), ('/compare', 'weekly', '0.6'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8'), ('/editorial-policy', 'monthly', '0.4')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8'), ('/tools/', 'monthly', '0.8')] + [('/tools/' + t['slug'], 'monthly', '0.7') for t in TOOLS] + [('/tools/uptime-sla-calculator', 'monthly', '0.7'), ('/how-we-check', 'monthly', '0.6'), ('/faq', 'monthly', '0.6')] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES if n not in HIDDEN] + [('/about', 'monthly', '0.5'), ('/business', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
-    sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join('<url><loc>%s%s</loc><lastmod>@@D@@</lastmod><changefreq>%s</changefreq><priority>%s</priority></url>\n' % (SITE, u, c, p) for u, c, p in urls).replace('@@D@@', _dt.date.today().isoformat()) + '</urlset>\n'
+    # Real per-page lastmod: a page's date only moves when its content changes (hash ignores cache-busting ?v= strings).
+    # State lives in _tools/lastmod.json so unchanged pages keep their old date.
+    def _page_file(u):
+        if u == '/': return 'index.html'
+        return u.strip('/') + ('/index.html' if u.endswith('/') else '.html')
+    _lm_path = os.path.join(ROOT, '_tools', 'lastmod.json')
+    try: _lm = _json.load(open(_lm_path))
+    except Exception: _lm = {}
+    _lastmods = {}
+    for u, _c, _p in urls:
+        try: raw = open(os.path.join(ROOT, _page_file(u)), encoding='utf-8').read()
+        except Exception: continue
+        hsh = hashlib.sha1(_re.sub(r'\?v=[0-9a-f]{6,}', '', raw).encode('utf-8')).hexdigest()[:16]
+        old = _lm.get(u)
+        if not old or old.get('h') != hsh: old = {'h': hsh, 'd': _dt.date.today().isoformat()}
+        _lm[u] = old; _lastmods[u] = old['d']
+    open(_lm_path, 'w').write(_json.dumps(_lm, indent=0, sort_keys=True) + '\n')
+    sm = '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' + ''.join('<url><loc>%s%s</loc><lastmod>%s</lastmod><changefreq>%s</changefreq><priority>%s</priority></url>\n' % (SITE, u, _lastmods.get(u, SITE_REVIEWED), c, p) for u, c, p in urls) + '</urlset>\n'
     open(os.path.join(ROOT, 'sitemap.xml'), 'w').write(sm)
     # RSS feed of the help guides: lets readers, feed readers and aggregators follow new guides
     def _rss_item(a):
@@ -1035,6 +1055,16 @@ def insight_pages():
             '<p class="lead" id="st-lead">A summary of the last seven days across the popular sites we check, updated automatically.</p>'
             '<div id="st-out" aria-live="polite"><p class="note">Loading&hellip;</p></div>'
             '<h2>How we measure</h2><p>Every number here comes from our own checks of the sites on our public lists, repeated through the day, plus the problem reports visitors send us. We count a site as down only after repeated failed checks, and we never mark a site down just because it blocks automated visitors. These are guides, not official figures.</p>'
+            '<h2>How to read this page</h2>'
+            '<p>The summary above covers the last seven days. It shows which of the popular websites and apps we watch were reliable, which had trouble, and how each category (social media, streaming, gaming, shopping and so on) is doing overall. The figures refresh automatically, so you do not need to reload the page.</p>'
+            '<ul><li><b>Uptime</b> is the share of our checks in which a site answered properly. Even a very reliable site rarely scores a perfect 100%, because a single slow answer can count against it. See <a href="/help/uptime-percentages-explained">what uptime percentages really mean</a>.</li>'
+            '<li><b>Outages</b> are periods when repeated checks failed, not one-off blips. A site that blocks automated visitors is shown as inconclusive, never as down.</li>'
+            '<li><b>Response time</b> is how long a typical answer took. A site can be up and still slow. See <a href="/help/what-is-a-good-response-time">what a good response time is</a>.</li>'
+            '<li><b>Visitor reports</b> are anonymous and unverified. They show how many people say they are affected, which is useful for spotting a problem early but is not proof of one.</li></ul>'
+            '<h2>Why outages happen</h2>'
+            '<p>Most big outages come from a handful of causes: a faulty software or configuration change, a failure at a shared provider such as a CDN or cloud platform, an expired certificate, a DNS problem, or a surge of traffic. Because so many sites share the same providers, one fault can take down many well-known services at once. Our guides explain the common cases: <a href="/help/why-big-websites-go-down">why big websites go down</a>, <a href="/help/what-is-a-cdn-and-why-outages-spread">why outages spread</a> and <a href="/help/major-internet-outages-explained">major internet outages explained</a>.</p>'
+            '<h2>If a site you use is on this list</h2>'
+            '<p>Open its page from the <a href="/is-it-down/">Is it down? directory</a> to see live status and what others are reporting, or <a href="/">run a check</a> on any address. If a site is fine for everyone else, work through the <a href="/help/website-not-loading-checklist">website not loading checklist</a>.</p>'
             '<p style="margin-top:20px"><a href="/outage-history">See the full outage history &rarr;</a></p></div></section>')
     write('state-of-the-internet.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/state.js"></script>'))
     # printable report
@@ -1058,6 +1088,17 @@ def history_page():
             '<h2 id="hs-title" class="hs-title"></h2><div id="hs-out" aria-live="polite"><p class="note">Loading…</p></div></div>'
             '<h2>Days with activity</h2><div class="card hs-card"><ul class="rf hs-days" id="hs-days"><li class="rf-none">Loading…</li></ul></div>'
             '<p class="note">Dates are in UTC. Reports are anonymous visitor choices and are not verified. &ldquo;Detected down&rdquo; comes from our own automatic checks. Only counts are kept in this record, never who reported.</p>'
+            '<h2>How to use the outage history</h2>'
+            '<p>Choose a date to see what visitors reported and what our own checks detected on that day, or type a website to see only its record. The &ldquo;Days with activity&rdquo; list jumps straight to the days where something happened, which is the quickest way to look back at a past incident.</p>'
+            '<h2>Reported versus detected</h2>'
+            '<ul><li><b>Reported</b> means visitors told us they had a problem, and which kind (for example the site not loading, a login failing or the app being slow). These are anonymous choices and are not verified, so a spike shows that many people noticed something rather than proving why.</li>'
+            '<li><b>Detected down</b> means our own automatic checks failed repeatedly, from our server and from probes in other countries. We only call a site down after repeated failures, and a site that blocks automated checks is shown as inconclusive instead.</li></ul>'
+            '<p>When both line up on the same day, an outage is very likely real. When only reports rise, the problem may be local to one network or region. <a href="/help/down-for-some-people-not-others">Here is why a site can be down for some people and not others</a>.</p>'
+            '<h2>Good to know</h2>'
+            '<ul><li>All dates and times are in UTC, so an evening outage in the Americas can appear on the next calendar day.</li>'
+            '<li>Only counts are kept, never who reported.</li>'
+            '<li>The record is a guide based on our own checks. It is not an official service-level report, so for a formal record check the service&rsquo;s own status page.</li></ul>'
+            '<p>New to reading outage data? Start with <a href="/help/is-it-down-or-just-me">is it down or just me?</a> or see the <a href="/state-of-the-internet">state of the internet this week</a>.</p>'
             '<p style="margin-top:20px"><a href="/outage-map">&larr; Back to the outage map</a></p></div></section>')
     write('outage-history.html', h + body + foot('<script src="/assets/app.js"></script><script src="/assets/history.js"></script>'))
 

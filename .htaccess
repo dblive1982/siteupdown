@@ -51,6 +51,8 @@ ErrorDocument 403 /403.html
 ErrorDocument 500 /500.html
 
 <IfModule mod_headers.c>
+  # HSTS: tell browsers to use HTTPS only for the next year. No includeSubDomains/preload on purpose (mail and other subdomains are not covered by this site's certificate setup).
+  Header always set Strict-Transport-Security "max-age=31536000"
   Header always set X-Content-Type-Options "nosniff"
   Header always set X-Frame-Options "SAMEORIGIN"
   Header always set Referrer-Policy "strict-origin-when-cross-origin"
