@@ -91,7 +91,7 @@ function notify_watchers(PDO $pdo, string $host, bool $down, string $now, ?strin
                 "<p>Hi $name,</p><p>We could not reach <b>$h</b> on two checks in a row, so we think it is down. We will email you again as soon as it answers.</p>",
                 "Hi {$u['name']},\n\nWe could not reach $host on two checks in a row, so we think it is down. We will email you again as soon as it answers.",
                 'See live status', $page, '', 'down');
-            push_user($pdo, (int)$u['id'], "\u{1F534} $host looks down. We could not reach it on two checks in a row.", $page);
+            push_user($pdo, (int)$u['id'], "\u{1F534} $host looks down. We could not reach it on two checks in a row.", $page, 'down', $host);
         } else {
             $for = $since ? human_span(max(0, strtotime($now . ' UTC') - strtotime($since . ' UTC'))) : '';
             $ex = $for ? " It was down for $for." : '';
@@ -99,7 +99,7 @@ function notify_watchers(PDO $pdo, string $host, bool $down, string $now, ?strin
                 "<p>Hi $name,</p><p>Good news: <b>$h</b> is answering again.$ex</p>",
                 "Hi {$u['name']},\n\nGood news: $host is answering again.$ex",
                 'See live status', $page, '', 'up');
-            push_user($pdo, (int)$u['id'], "\u{1F7E2} $host is back up." . $ex, $page);
+            push_user($pdo, (int)$u['id'], "\u{1F7E2} $host is back up." . $ex, $page, 'up', $host);
         }
     }
 }

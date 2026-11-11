@@ -1,5 +1,5 @@
 <?php
-// Sends a short alert message to a user's connected channels (Telegram, Slack, Discord).
+// Sends a short alert message to a user's connected channels (Telegram, Slack, Discord) and, for Pro, their phone.
 // Webhook addresses are limited to the official Slack and Discord hosts, so a visitor can never make us call another server.
 declare(strict_types=1);
 
@@ -45,10 +45,12 @@ function push_channel(array $ch, string $text, string $link = ''): bool {
 }
 
 /** Send to every channel a user has connected; drop channels that report they are gone. */
-function push_user(PDO $pdo, int $uid, string $text, string $link = ''): void {
+function push_user(PDO $pdo, int $uid, string $text, string $link = '', string $event = '', string $host = ''): void {
     $q = $pdo->prepare('SELECT id, kind, target FROM alert_channels WHERE user_id=?');
     $q->execute([$uid]);
     foreach ($q->fetchAll() as $ch) {
         if (!push_channel($ch, $text, $link)) $pdo->prepare('DELETE FROM alert_channels WHERE id=?')->execute([$ch['id']]);
     }
+    // Pro: text message, and a phone call for outages, to the verified number.
+    if ($event !== '' && $host !== '') { try { require_once __DIR__ . '/_sms.php'; phone_alert($pdo, $uid, $event, $host); } catch (Throwable $e) { /* alerts must never break the check run */ } }
 }

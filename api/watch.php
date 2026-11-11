@@ -3,9 +3,11 @@
 require __DIR__ . '/_boot.php';
 require __DIR__ . '/_probe.php';
 require __DIR__ . '/_track.php';
+require __DIR__ . '/_plan.php';
 $pdo = db();
 $uid = require_user();
-const MAX_WATCH = 25;
+$plan = user_plan($pdo, $uid);
+$MAX = $plan['pro'] ? PRO_WATCH : FREE_WATCH;
 
 function my_list(PDO $pdo, int $uid): array {
     $s = $pdo->prepare('SELECT w.host, w.added_at, w.alerts, s.verdict, s.http_code, s.ms, s.checked_at
@@ -30,7 +32,7 @@ function probe_and_store(PDO $pdo, string $host): void {
     track_result($pdo, $host, $r['verdict'], $r['ms']);
 }
 
-if (($_SERVER['REQUEST_METHOD'] ?? '') === 'GET') out(200, ['items' => my_list($pdo, $uid), 'max' => MAX_WATCH]);
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'GET') out(200, ['items' => my_list($pdo, $uid), 'max' => $MAX, 'pro' => $plan['pro']]);
 $in = read_post();
 $a = (string)($in['action'] ?? '');
 if ($a === 'add') {
@@ -39,7 +41,7 @@ if ($a === 'add') {
     $host = $t[0];
     $n = $pdo->prepare('SELECT COUNT(*) FROM watchlist WHERE user_id=?');
     $n->execute([$uid]);
-    if ((int)$n->fetchColumn() >= MAX_WATCH) out(422, ['error' => 'Your watchlist is full (' . MAX_WATCH . ' sites). Remove one to add another.']);
+    if ((int)$n->fetchColumn() >= $MAX) out(422, ['error' => 'Your watchlist is full (' . $MAX . ' sites).' . ($plan['pro'] ? ' Remove one to add another.' : ' Remove one, or upgrade to Pro for up to ' . PRO_WATCH . ' sites.'), 'upgrade' => !$plan['pro']]);
     $e = $pdo->prepare('SELECT id FROM watchlist WHERE user_id=? AND host=?');
     $e->execute([$uid, $host]);
     if (!$e->fetch()) {
@@ -49,15 +51,15 @@ if ($a === 'add') {
         $s->execute([$host]);
         if (!$s->fetch()) { throttle('watchprobe', 20, 10); note_attempt('watchprobe'); probe_and_store($pdo, $host); }
     }
-    out(200, ['items' => my_list($pdo, $uid), 'max' => MAX_WATCH]);
+    out(200, ['items' => my_list($pdo, $uid), 'max' => $MAX, 'pro' => $plan['pro']]);
 }
 if ($a === 'remove') {
     $pdo->prepare('DELETE FROM watchlist WHERE user_id=? AND host=?')->execute([$uid, strtolower((string)($in['host'] ?? ''))]);
-    out(200, ['items' => my_list($pdo, $uid), 'max' => MAX_WATCH]);
+    out(200, ['items' => my_list($pdo, $uid), 'max' => $MAX, 'pro' => $plan['pro']]);
 }
 if ($a === 'alerts') {
     $pdo->prepare('UPDATE watchlist SET alerts=? WHERE user_id=? AND host=?')->execute([!empty($in['on']) ? 1 : 0, $uid, strtolower((string)($in['host'] ?? ''))]);
-    out(200, ['items' => my_list($pdo, $uid), 'max' => MAX_WATCH]);
+    out(200, ['items' => my_list($pdo, $uid), 'max' => $MAX, 'pro' => $plan['pro']]);
 }
 if ($a === 'check') {
     $host = strtolower((string)($in['host'] ?? ''));
@@ -67,6 +69,6 @@ if ($a === 'check') {
     throttle('watchprobe', 20, 10);
     note_attempt('watchprobe');
     probe_and_store($pdo, $host);
-    out(200, ['items' => my_list($pdo, $uid), 'max' => MAX_WATCH]);
+    out(200, ['items' => my_list($pdo, $uid), 'max' => $MAX, 'pro' => $plan['pro']]);
 }
 out(400, ['error' => 'Bad request.']);

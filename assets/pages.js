@@ -91,16 +91,17 @@
         fm.addEventListener('submit', function (e) { e.preventDefault(); S.api('twofa.php', { action: 'confirm', code: fm.elements.code.value }).then(function (j) { on = j.twofa; S.me.user.twofa = on; fm.reset(); paint(); S.toast(on ? 'Two-step sign-in is on.' : 'Two-step sign-in is off.'); }).catch(function (x) { $('.err', fm).textContent = x.message; }); });
       })();
       $('#pw-card').hidden = !S.me.user.pw; $('#del-pw-wrap').hidden = !S.me.user.pw;
-      tab(location.hash === '#settings' ? 'settings' : 'checks');
+      tab(/[?&]plan=ok/.test(location.search) || location.hash === '#plan' ? 'plan' : (location.hash === '#settings' ? 'settings' : 'checks'));
       loadChecks();
     });
     function tab(t) {
       S.$$('#tabs button').forEach(function (b) { b.setAttribute('aria-selected', b.getAttribute('data-t') === t); });
-      $('#p-checks').hidden = t !== 'checks'; $('#p-settings').hidden = t !== 'settings';
-      history.replaceState(null, '', '#' + t);
+      $('#p-checks').hidden = t !== 'checks'; $('#p-settings').hidden = t !== 'settings'; $('#p-plan').hidden = t !== 'plan';
+      if (t === 'plan' && window.SUD_planTab) window.SUD_planTab();
+      history.replaceState(null, '', location.pathname + location.search + '#' + t);
     }
     S.$$('#tabs button').forEach(function (b) { b.addEventListener('click', function () { tab(b.getAttribute('data-t')); }); });
-    window.addEventListener('hashchange', function () { tab(location.hash === '#settings' ? 'settings' : 'checks'); });
+    window.addEventListener('hashchange', function () { tab(location.hash === '#plan' ? 'plan' : (location.hash === '#settings' ? 'settings' : 'checks')); });
 
     function loadChecks() {
       S.api('history.php').then(function (j) {
@@ -153,7 +154,7 @@
     });
     function draw(j) {
       var L = $('#m-list');
-      $('#m-count').textContent = j.items.length + ' of ' + j.max + ' sites';
+      $('#m-count').innerHTML = esc(j.items.length) + ' of ' + esc(j.max) + ' sites' + (j.pro ? ' &middot; <b>Pro</b>: checked about every 30 seconds' : ' &middot; <a href="/pricing">Get Pro</a> for 100 sites, text and phone alerts');
       if (!j.items.length) { L.innerHTML = '<div class="empty">Your watchlist is empty.<br>Add a site above to see whether it is up.</div>'; return; }
       L.innerHTML = j.items.map(function (x) {
         return '<div class="item"><div class="t"><b>' + esc(x.host) + '</b><small>' + (x.at ? 'Last checked ' + esc(S.ago(x.at)) : 'Not checked yet') + (x.ms != null ? ' · ' + esc(S.ms(x.ms)) : '') + (x.code ? ' · HTTP ' + x.code : '') + (x.uptime != null ? ' · ' + x.uptime + '% up (24h)' : '') + '</small></div>'
@@ -188,7 +189,7 @@
     });
     $('#ch-wh').addEventListener('submit', function (e) {
       e.preventDefault(); var er = $('#ch-err'), i = $('#ch-url'), b = $('button', e.target); er.textContent = ''; b.disabled = true;
-      S.api('channels.php', { action: 'add_webhook', url: i.value }).then(function (j) { i.value = ''; drawCh(j); S.toast('Connected. A test message was sent.'); }).catch(function (x) { er.textContent = x.message; }).then(function () { b.disabled = false; });
+      S.api('channels.php', { action: 'add_webhook', url: i.value }).then(function (j) { i.value = ''; drawCh(j); S.toast('Connected. A test message was sent.'); }).catch(function (x) { er.innerHTML = x.message ? esc(x.message) + (x.status === 422 && /Pro/.test(x.message) ? ' <a href="/pricing">See Pro</a>' : '') : ''; }).then(function () { b.disabled = false; });
     });
     $('#ch-list').addEventListener('click', function (e) {
       var t = e.target.closest('[data-cht]'), r = e.target.closest('[data-chr]');

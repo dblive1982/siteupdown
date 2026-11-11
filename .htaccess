@@ -25,6 +25,9 @@ RewriteRule ^badge/([A-Za-z0-9.-]+)\.svg$ /api/badge.php?host=$1 [L,QSA]
 RewriteRule ^widget/([A-Za-z0-9.-]+)/?$ /api/widget.php?host=$1 [L,QSA]
 RewriteRule ^status/[A-Za-z0-9.-]+/?$ /status.html [L]
 
+# Customer status pages (Pro): /p/my-page
+RewriteRule ^p/([a-z0-9-]{3,40})/?$ /status-page.html [L]
+
 # Help centre: /help/ and /help/some-guide
 RewriteRule ^help/([a-z0-9-]+)/?$ /help/$1.html [L]
 RewriteRule ^tools/([a-z0-9-]+)/?$ /tools/$1.html [L]

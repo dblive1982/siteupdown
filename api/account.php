@@ -52,8 +52,12 @@ switch ($a) {
         throttle('acct', 6, 15);
         if (($in['confirm'] ?? '') !== 'DELETE') out(422, ['error' => 'Type DELETE to confirm.']);
         check_pw($u, $in);
+        // End any paid subscription first, so nobody keeps being charged for an account that no longer exists.
+        require_once __DIR__ . '/_plan.php'; ensure_billing($pdo);
+        $sb = $pdo->prepare('SELECT stripe_sub FROM users WHERE id=?'); $sb->execute([$uid]); $subId = (string)$sb->fetchColumn();
+        if ($subId !== '' && billing_on()) { $r = stripe_call('DELETE', 'subscriptions/' . rawurlencode($subId)); if (!$r) out(502, ['error' => 'We could not cancel your subscription just now, so your account was not deleted. Please try again, or use Manage billing to cancel first.']); }
         $pdo->beginTransaction();
-        foreach (['resets', 'saved_checks', 'watchlist', 'alert_channels', 'tg_links', 'extra_checks'] as $t) $pdo->prepare("DELETE FROM $t WHERE user_id=?")->execute([$uid]);
+        foreach (['resets', 'saved_checks', 'watchlist', 'alert_channels', 'tg_links', 'extra_checks', 'phones', 'phone_usage', 'status_pages'] as $t) $pdo->prepare("DELETE FROM $t WHERE user_id=?")->execute([$uid]);
         $pdo->prepare('DELETE FROM users WHERE id=?')->execute([$uid]);
         $pdo->commit();
         end_session();

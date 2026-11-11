@@ -63,8 +63,13 @@ if ($a === 'overview') {
     $top = $pdo->prepare('SELECT host, COUNT(*) AS n FROM reports WHERE ts > ? GROUP BY host ORDER BY n DESC LIMIT 8'); $top->execute([$t7]);
     $ch = $pdo->query('SELECT kind, COUNT(*) AS n FROM alert_channels GROUP BY kind')->fetchAll();
     $topw = $pdo->query('SELECT host, COUNT(*) AS n FROM watchlist GROUP BY host ORDER BY n DESC LIMIT 8')->fetchAll();
+    require_once __DIR__ . '/_plan.php'; ensure_billing($pdo);
     out(200, [
         'tiles' => [
+            'pro' => $one('SELECT COUNT(*) FROM users u WHERE ' . pro_users_sql('u')),
+            'pro_canceling' => $one("SELECT COUNT(*) FROM users u WHERE plan_state='canceling' AND " . pro_users_sql('u')),
+            'phones' => $one('SELECT COUNT(*) FROM phones WHERE verified=1'),
+            'status_pages' => $one('SELECT COUNT(*) FROM status_pages'),
             'users' => $one('SELECT COUNT(*) FROM users'),
             'new7' => $one('SELECT COUNT(*) FROM users WHERE created_at > ?', [$t7]),
             'active7' => $one('SELECT COUNT(*) FROM users WHERE last_login > ?', [$t7]),
