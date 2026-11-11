@@ -50,7 +50,7 @@ NAV = [('Regional map', '/#global-pulse'), ('Top websites', '/#top-sites'), ('Ga
 
 
 MENU = [
- ('Check', [('Website checker', '/', 'Is it down, or just you?'), ('All apps &amp; sites', '/is-it-down/', ''), ('Outage map', '/outage-map', 'Reachability around the world'), ('Outage history', '/outage-history', 'What happened on past days'), ('State of the internet', '/state-of-the-internet', 'This week in outages'), ('Compare sites', '/compare', 'Two services side by side'), ('Monitor &amp; alerts', '/monitor', 'Watch up to 25 sites')]),
+ ('Check', [('Website checker', '/', 'Is it down, or just you?'), ('All apps &amp; sites', '/is-it-down/', ''), ('Outage map', '/outage-map', 'Reachability around the world'), ('Outage history', '/outage-history', 'What happened on past days'), ('State of the internet', '/state-of-the-internet', 'This week in outages'), ('Compare sites', '/compare', 'Two services side by side'), ('Monitor &amp; alerts', '/monitor', 'Watch up to 10 sites (Pro: 100)')]),
  ('Tools', [('Internet speed test', '/internet-speed-test', ''), ('Website speed test', '/speed', ''), ('What is my IP?', '/what-is-my-ip', ''), ('Game ping test', '/game-ping-test', ''), ('All tools', '/tools/', '')]),
  ('Learn', [('Help centre', '/help/', 'Plain-English guides'), ('How we check', '/how-we-check', ''), ('FAQ', '/faq', '')]),
  ('More', [('Account', '/account', ''), ('About', '/about', ''), ('For business', '/business', ''), ('Contact', '/contact', '')]),
@@ -117,7 +117,7 @@ def head(title, desc, path, extra_head='', noindex=False):
 
 SHOW_SOCIALS = False  # set True once the social profiles exist and ad approval is done
 def foot(scripts):
-    groups = [('Check', [('Website checker', '/'), ('Is it down?', '/is-it-down/'), ('Outage map', '/outage-map'), ('Outage history', '/outage-history'), ('State of the internet', '/state-of-the-internet'), ('Compare sites', '/compare'), ('Monitor', '/monitor')]), ('Tools', [('Internet speed test', '/internet-speed-test'), ('Website speed test', '/speed'), ('What is my IP?', '/what-is-my-ip'), ('Game ping test', '/game-ping-test'), ('All tools', '/tools/')]), ('Learn', [('Help centre', '/help/'), ('Features', '/features'), ('How we check', '/how-we-check'), ('FAQ', '/faq')]), ('Company', [('Account', '/account'), ('About', '/about'), ('For business', '/business'), ('Contact', '/contact')]), ('Legal', [('Terms &amp; legal', '/legal'), ('Privacy', '/privacy'), ('Editorial &amp; ad policy', '/editorial-policy')])]
+    groups = [('Check', [('Website checker', '/'), ('Is it down?', '/is-it-down/'), ('Outage map', '/outage-map'), ('Outage history', '/outage-history'), ('State of the internet', '/state-of-the-internet'), ('Compare sites', '/compare'), ('Monitor', '/monitor')]), ('Tools', [('Internet speed test', '/internet-speed-test'), ('Website speed test', '/speed'), ('What is my IP?', '/what-is-my-ip'), ('Game ping test', '/game-ping-test'), ('All tools', '/tools/')]), ('Learn', [('Help centre', '/help/'), ('Features', '/features'), ('How we check', '/how-we-check'), ('FAQ', '/faq')]), ('Company', [('Pricing', '/pricing'), ('Account', '/account'), ('About', '/about'), ('For business', '/business'), ('Contact', '/contact')]), ('Legal', [('Terms &amp; legal', '/legal'), ('Privacy', '/privacy'), ('Editorial &amp; ad policy', '/editorial-policy')])]
     fgrid = ''.join('<div class="nl-fg"><h3>%s</h3>%s%s</div>' % (g, ''.join('<a href="%s">%s</a>' % (h, l) for l, h in items), '<button type="button" data-cookie-settings>Cookie settings</button>' if g == 'Legal' else '') for g, items in groups)
     SOCIALS_HTML = f'''<div class="socials" aria-label="Social media">
 <a href="#" title="Facebook" aria-label="Facebook">{I_FB}</a><a href="#" title="Instagram" aria-label="Instagram">{I_IG}</a><a href="#" title="X" aria-label="X">{I_X}</a><a href="#" title="TikTok" aria-label="TikTok">{I_TT}</a><a href="#" title="YouTube" aria-label="YouTube">{I_YT}</a>
@@ -139,7 +139,7 @@ def foot(scripts):
 import hashlib, re as _re
 def _ver():
     h = hashlib.md5()
-    for n in ('app.css', 'app.js', 'home.js', 'pages.js', 'worldmap.js', 'landmask.js', 'live.js', 'sitepage.js', 'tools.js', 'sla.js', 'speedtest.js', 'heatmap.js', 'localmap.js', 'history.js', 'ip.js', 'gameping.js', 'embed.js', 'state.js', 'newlook.js', 'newlook.css'):
+    for n in ('app.css', 'app.js', 'home.js', 'pages.js', 'worldmap.js', 'landmask.js', 'live.js', 'sitepage.js', 'tools.js', 'sla.js', 'pro.js', 'spage.js', 'pricing.js', 'speedtest.js', 'heatmap.js', 'localmap.js', 'history.js', 'ip.js', 'gameping.js', 'embed.js', 'state.js', 'newlook.js', 'newlook.css'):
         try: h.update(open(os.path.join(ROOT, 'assets', n), 'rb').read())
         except OSError: pass
     return h.hexdigest()[:8]
@@ -211,7 +211,7 @@ def write(name, content):
         content = seo_extras(name, content)
         content = _svgicons(content)
         v = _ver()
-        content = _re.sub(r'(/assets/(?:app\.css|newlook\.css|newlook\.js|app\.js|home\.js|pages\.js|worldmap\.js|live\.js|sitepage\.js|tools\.js|sla\.js|speedtest\.js|heatmap\.js|state\.js|localmap\.js|history\.js|ip\.js|gameping\.js|embed\.js))(?=")', r'\1?v=' + v, content)
+        content = _re.sub(r'(/assets/(?:app\.css|newlook\.css|newlook\.js|app\.js|home\.js|pages\.js|worldmap\.js|live\.js|sitepage\.js|tools\.js|sla\.js|pro\.js|spage\.js|pricing\.js|speedtest\.js|heatmap\.js|state\.js|localmap\.js|history\.js|ip\.js|gameping\.js|embed\.js))(?=")', r'\1?v=' + v, content)
     with open(os.path.join(ROOT, name), 'w', encoding='utf-8') as f:
         f.write(content)
     print('wrote', name, len(content), 'bytes')
@@ -253,7 +253,7 @@ def home():
 <section class="nl-tiles"><div class="wrap"><div class="nl-grid">
 <a class="nl-tile" href="/internet-speed-test"><b>Speed test</b><span>How fast is your internet?</span><img src="/assets/nl-tile-speed.svg?v=4" alt="" width="200" height="140" loading="lazy"></a>
 <a class="nl-tile map" href="/outage-map"><b>Outage map</b><span>What is down around the world</span><img src="/assets/nl-map.webp" alt="" width="580" height="437" loading="lazy"></a>
-<a class="nl-tile mon" href="/monitor"><b>Monitor</b><span>Email alerts for up to 25 sites</span><img src="/assets/nl-tile-monitor.svg" alt="" width="200" height="150" loading="lazy"></a>
+<a class="nl-tile mon" href="/monitor"><b>Monitor</b><span>Alerts for up to 10 sites, free</span><img src="/assets/nl-tile-monitor.svg" alt="" width="200" height="150" loading="lazy"></a>
 <a class="nl-tile help" href="/help/"><b>Help</b><span>Plain-English guides</span><img src="/assets/nl-tile-help.svg" alt="" width="160" height="160" loading="lazy"></a>
 </div></div></section>
 
@@ -382,10 +382,12 @@ def account():
 <section class="page"><div class="wrap" id="acct" hidden>
 <div class="card toplist">
 <div class="pc-head"><div><span class="eyebrow"><i></i>Your account</span><h2>Account<span class="dot">.</span></h2><p class="note" id="a-since" style="margin:8px 0 0"></p></div></div>
-<div class="tabs" id="tabs" role="tablist"><button type="button" role="tab" data-t="checks" aria-selected="true">My checks</button><button type="button" role="tab" data-t="settings" aria-selected="false">Settings</button></div>
+<div class="tabs" id="tabs" role="tablist"><button type="button" role="tab" data-t="checks" aria-selected="true">My checks</button><button type="button" role="tab" data-t="plan" aria-selected="false">Plan</button><button type="button" role="tab" data-t="settings" aria-selected="false">Settings</button></div>
 
 <div id="p-checks" class="pad"><div class="tools"><p class="note" style="margin:0">Your last 100 checks, saved while you were signed in. Only you can see them.</p><button class="btn small ghost" type="button" id="clear-checks" hidden>Clear all</button></div>
 <div class="list" id="checks-list"><div class="skeleton">Loading your checks…</div></div></div>
+
+<div id="p-plan" hidden class="pad" style="max-width:760px"><div class="skeleton">Loading your plan&hellip;</div></div>
 
 <div id="p-settings" hidden class="stack pad" style="max-width:680px">
 <form class="card stack" id="f-name" novalidate><h3>Profile</h3><p class="note" style="margin:0">Signed in as <b id="a-email"></b></p>
@@ -408,7 +410,7 @@ def account():
 </div>
 </div></div></section>
 '''
-    scripts = '<script src="/assets/app.js"></script>\n<script src="/assets/pages.js"></script>'
+    scripts = '<script src="/assets/app.js"></script>\n<script src="/assets/pages.js"></script>\n<script src="/assets/pro.js"></script>'
     write('account.html', h + body + foot(scripts))
 
 # ---------------------------------------------------------------- monitor
@@ -420,7 +422,7 @@ def monitor():
 <div class="pc-head"><div><span class="eyebrow"><i></i>Your watchlist</span><h1>Monitor<span class="dot">.</span></h1>
 <p class="lead">Keep an eye on the websites you care about. We re-check them every few minutes, keep their uptime history, and email you if one goes down.</p></div></div>
 <div class="pad">
-<div class="card" id="m-out" hidden><h3 style="margin-bottom:8px">Sign in to build your watchlist</h3><p class="note">A free account lets you save up to 25 sites and see their status at a glance. The checker on the home page stays free without one.</p>
+<div class="card" id="m-out" hidden><h3 style="margin-bottom:8px">Sign in to build your watchlist</h3><p class="note">A free account lets you save up to 10 sites (Pro: 100) and see their status at a glance. The checker on the home page stays free without one.</p>
 <div class="row-actions" style="margin-top:14px"><a class="btn" href="/login?next=%2Fmonitor"><span>Sign in</span>{I_ARROW}</a><a class="btn ghost" href="/login?next=%2Fmonitor#create">Create account</a></div></div>
 <div id="m-in" hidden>
 <form class="stack" id="m-add" novalidate style="max-width:640px;margin-bottom:22px"><label class="lbl" for="m-input">Add a website</label>
@@ -543,7 +545,7 @@ def static_pages():
 <li><b>Browser notifications</b> on the devices you allow.</li>
 <li><b>Telegram, Slack and Discord</b> messages, so the alert reaches your team chat.</li>
 </ul>
-<p>We do not send SMS text messages or phone calls today.</p>
+<p><b>Text-message and phone-call alerts</b> are part of <a href="/pricing">siteupdown Pro</a>, which is opening soon.</p>
 <h2>Checks beyond "is it up?"</h2>
 <ul>
 <li>Check that a <b>word</b> is still on a page, for example the "Add to basket" button on a shop.</li>
@@ -564,17 +566,17 @@ def static_pages():
 <p>Visitors can send an anonymous report when something is wrong, which shows alongside our own checks. The <a href="/help/">Help centre</a> has 57 plain-English guides to errors, DNS, SSL and slow connections, and the <a href="/tools/">tools</a> include a speed test, IP lookup, header checker and more, all free.</p>
 <h2>What it is not</h2>
 <ul>
-<li>It is not an enterprise incident-management system. There is no on-call scheduling, phone paging or SMS today.</li>
+<li>It is not an enterprise incident-management system. There is no on-call scheduling or escalation. Text and phone alerts are a Pro feature, sent on a best-effort basis.</li>
 <li>Regional checks depend on the public probe network we use, so a region without a probe is left blank instead of guessed.</li>
-<li>A paid plan for businesses is planned, and we would like to build it around what you ask for. <a href="/business">Tell us what you need</a>.</li>
+<li><a href="/pricing">siteupdown Pro</a> (&pound;5 a month, opening soon) adds text and phone alerts, a 100-site watchlist checked about every 30 seconds, your own status page and 12 months of reports. Free stays free. <a href="/business">Tell us what else you need</a>.</li>
 </ul>
 <h2>Frequently asked questions</h2>
 <h3>Does siteupdown.com monitor continuously or only on demand?</h3>
 <p>Both. On-demand checks give an instant answer. Watchlist sites are checked about every minute, and popular public sites about every five minutes, so history builds up without anyone pressing a button.</p>
 <h3>Is it free?</h3>
-<p>Yes. Checking, watching sites, email alerts and the tools are free today.</p>
+<p>Yes. Checking, watching up to 10 sites, email, browser, Telegram, Slack and Discord alerts, and all the tools are free. The optional Pro plan is &pound;5 a month.</p>
 <h3>Will I get an alert if my site goes down?</h3>
-<p>Yes. Add it to your <a href="/monitor">watchlist</a> and choose email, browser notification, Telegram, Slack or Discord.</p>
+<p>Yes. Add it to your <a href="/monitor">watchlist</a> and choose email, browser notification, Telegram, Slack or Discord. Pro adds text messages and phone calls.</p>
 <h3>Why does a site show as blocked or unclear?</h3>
 <p>Some sites refuse automated checks. The site answered, so it is alive, but we cannot judge it fully. See <a href="/help/sites-that-block-automated-checks">sites that block automated checks</a>.</p>
 ''')
@@ -609,6 +611,11 @@ def static_pages():
 <p>If you add an extra check (a word that must appear on a page, or a port that must answer), we store the website address, the word or port, and the latest result, so we can check it every minute and email you if it fails. You can remove a check at any time on the Monitor page, and deleting your account removes them all.</p>
 <h2>Browser extension</h2>
 <p>The siteupdown.com browser extension reads the address of the tab you are on only when you click its toolbar button. It sends just the website name (for example example.com, never the full page address, search terms or page content) to siteupdown.com so we can check whether the site is up. It does not read or store your browsing history, and it does not run in the background. If you are signed in to siteupdown.com in the same browser, the extension uses that sign-in to add a site to your watchlist when you ask it to. Nothing is sold or shared for advertising.</p>
+<h2>Pro plan, payments and phone alerts</h2>
+<p><strong>Payments.</strong> If you subscribe to siteupdown Pro, the payment is handled by Stripe on its own secure page. We never see or store your card number. We store your Stripe customer and subscription reference, whether your plan is active and when the current period ends, so we can switch Pro on and off. Stripe has its own privacy policy and acts for us in taking the payment.</p>
+<p><strong>Your phone number.</strong> If you add a number for text and call alerts, we store it, a one-way hash of the verification code we text you (the code itself is not kept), and a count of the texts and calls sent each month. The messages and calls are delivered through Twilio, which sees your number and the short alert text. Remove your number on the Plan tab, or delete your account, and it is deleted from our systems straight away.</p>
+<p><strong>Status pages.</strong> A status page is public by design. It shows the page name and the sites you choose, with their status and history, to anyone who has the address. We do not publish your name or email address on it. Delete the page at any time to take it offline.</p>
+<p><strong>Reports.</strong> Pro members are emailed a monthly report of the sites on their watchlist. The reports are built from our own checks and are only sent to you.</p>
 <h2>Alert channels</h2>
 <p>If you connect Telegram, Slack or Discord alerts, we store the Telegram chat number or the webhook address you give us, so we can send you a short message when a site on your watchlist goes down or comes back up. These messages pass through Telegram, Slack or Discord, which have their own privacy policies. You can remove a channel at any time on the Monitor page, send /stop to our Telegram bot, or delete your account to remove them all.</p>
 <p>If you sign in with Google, Google tells us your name and verified email address. We do not get access to anything else in your Google account.</p>
@@ -623,20 +630,26 @@ def static_pages():
 <p>siteupdown.com is supported by advertising. Third-party vendors, including Google, may use cookies to serve ads based on a visitor&rsquo;s previous visits to this and other websites. Google&rsquo;s use of advertising cookies enables it and its partners to serve ads based on visits to this site and/or other sites on the internet. Advertising cookies are only used if you allow them in our cookie choices. You can opt out of personalised advertising at <a href="https://www.google.com/settings/ads" rel="noopener">Google Ads Settings</a>, or at <a href="https://www.aboutads.info" rel="noopener">aboutads.info</a>.</p>
 <h2>Technical logs</h2>
 <p>To keep the service safe from abuse we briefly keep a one-way hash of the visitor&rsquo;s network address for rate limiting. It cannot be turned back into an address and is removed within a day.</p>
-<h2>Results are snapshots</h2>
-<p>A check shows what happened at one moment. Timeouts, blocked requests and DNS problems are not reported as confirmed downtime.</p>
+<h2>What results mean</h2>
+<p>A check shows what our server saw when it ran. Sites on a watchlist are checked about every minute, so a result is a record of recent checks, not a guarantee. Timeouts, blocked requests and DNS problems are not reported as confirmed downtime.</p>
 <h2>Contact</h2>
 <p>Questions about your data? Use the <a href="/contact">contact page</a>.</p>''')
     prose('legal.html', 'Legal notice', 'Legal notice for siteupdown.com.', '/legal', '''
 <p>siteupdown.com is an independent website status checker. It is not affiliated with, endorsed by or sponsored by any of the websites, games or services it checks, and all names and trademarks belong to their owners.</p>
 <h2>No guarantees</h2>
-<p>Results are provided as a convenience, as a snapshot at the moment of the check, and without any warranty. A result does not prove that a site is up or down for everyone, and should not be used as a service-level measurement or for critical decisions. We are not liable for loss arising from reliance on a result.</p>
+<p>Results are provided as a convenience, as a record of what our checks saw at the time, and without any warranty. A result does not prove that a site is up or down for everyone, and should not be used as a service-level measurement or for critical decisions. We are not liable for loss arising from reliance on a result.</p>
 <h2>Acceptable use</h2>
 <p>Please do not use the checker to attack, overload or probe other people&rsquo;s systems. We limit how often one visitor can run checks, and we only fetch public web addresses on the standard web ports.</p>
 <h2>Third parties</h2>
 <p>The internet speed test sends test data between your browser and Cloudflare\'s public speed-test servers, so Cloudflare sees your address as it would for any website you visit. We do not store your speed results.</p>
 <p>The what-is-my-IP page and the game ping test also run in your browser, and talk to Cloudflare and to public cloud servers, so those services see your address as any website would. We do not store your address or results. If you turn on browser notifications for a site, we store your browser\'s notification address and the site you chose, so we can send you an alert when it goes down or comes back. Turn it off on the same page and we delete it, and we also delete it automatically if your browser stops accepting notifications.</p>
 <p>Regional probes run on the public <a href="https://globalping.io" rel="noopener">Globalping</a> network. Sign-in with Google uses Google&rsquo;s own sign-in service, and the site&rsquo;s fonts (Space Grotesk and JetBrains Mono) are loaded from Google Fonts.</p>
+<h2>siteupdown Pro subscriptions</h2>
+<p><strong>What you get.</strong> Pro is a paid monthly subscription, at the price shown on the <a href="/pricing">pricing page</a> when you subscribe, that adds text and phone-call alerts, a larger watchlist with faster checks, a public status page, longer history and monthly reports. It renews automatically each month until you cancel.</p>
+<p><strong>Cancelling.</strong> You can cancel at any time from your account (Plan, then Manage billing). Pro continues until the end of the period you have paid for and then ends. We do not refund part of a month already started, except where the law requires it. If you are a consumer, you may have a statutory right to cancel within 14 days of subscribing. By using Pro straight away you ask us to start immediately, and if you then cancel in that period you may have to pay for what you have used. To cancel and ask for any refund you are due, email <a href="mailto:hello@siteupdown.com">hello@siteupdown.com</a>.</p>
+<p><strong>Fair use.</strong> Pro includes up to 100 text messages and 20 phone calls a month, up to 100 watched sites, and one status page of up to 30 sites. These limits protect the service from abuse. You must give a phone number that is yours, and you must not use alerts to send messages to anyone else.</p>
+<p><strong>No guarantee of delivery or uptime.</strong> Alerts, texts and calls are sent on a best-effort basis and depend on mobile networks and other providers outside our control, so they can be delayed or fail. Pro is not a service-level agreement. Do not rely on it as the only safeguard for anything where a missed alert could cause serious loss. Reports and status pages show what our own checks recorded and are not a guarantee of any site&rsquo;s performance.</p>
+<p><strong>Changes.</strong> We may change the features or the price of Pro. We will give you at least 30 days&rsquo; notice by email before a price rise takes effect, and you can cancel before it does. If your payment fails we will retry and tell you, and Pro ends if it cannot be collected.</p>
 <h2>Content</h2>
 <p>Site names shown in lists are used only to identify the services being checked.</p>''')
     prose('business.html', 'For business', 'siteupdown.com for business: planned monitoring for teams and companies, with status pages, more check types and shared alerts. Register your interest.', '/business', '''
@@ -848,7 +861,7 @@ def help_pages():
                 '<p style="margin-top:20px"><a href="/help/">&larr; All help guides</a></p></div></section>')
         write('help/' + a['slug'] + '.html', h + body + foot('<script src="/assets/app.js"></script>'))
     # sitemap
-    urls = [('/', 'daily', '1.0'), ('/features', 'monthly', '0.8'), ('/speed', 'monthly', '0.8'), ('/internet-speed-test', 'monthly', '0.8'), ('/what-is-my-ip', 'monthly', '0.8'), ('/game-ping-test', 'monthly', '0.8'), ('/outage-map', 'daily', '0.7'), ('/outage-history', 'daily', '0.6'), ('/state-of-the-internet', 'daily', '0.7'), ('/compare', 'weekly', '0.6'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8'), ('/editorial-policy', 'monthly', '0.4')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8'), ('/tools/', 'monthly', '0.8')] + [('/tools/' + t['slug'], 'monthly', '0.7') for t in TOOLS] + [('/tools/uptime-sla-calculator', 'monthly', '0.7'), ('/how-we-check', 'monthly', '0.6'), ('/faq', 'monthly', '0.6')] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES if n not in HIDDEN] + [('/about', 'monthly', '0.5'), ('/business', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
+    urls = [('/', 'daily', '1.0'), ('/features', 'monthly', '0.8'), ('/pricing', 'monthly', '0.8'), ('/speed', 'monthly', '0.8'), ('/internet-speed-test', 'monthly', '0.8'), ('/what-is-my-ip', 'monthly', '0.8'), ('/game-ping-test', 'monthly', '0.8'), ('/outage-map', 'daily', '0.7'), ('/outage-history', 'daily', '0.6'), ('/state-of-the-internet', 'daily', '0.7'), ('/compare', 'weekly', '0.6'), ('/monitor', 'monthly', '0.7'), ('/help/', 'weekly', '0.8'), ('/editorial-policy', 'monthly', '0.4')] + [('/help/' + a['slug'], 'monthly', '0.7') for a in ARTICLES] + [('/is-it-down/', 'daily', '0.8'), ('/tools/', 'monthly', '0.8')] + [('/tools/' + t['slug'], 'monthly', '0.7') for t in TOOLS] + [('/tools/uptime-sla-calculator', 'monthly', '0.7'), ('/how-we-check', 'monthly', '0.6'), ('/faq', 'monthly', '0.6')] + [(SP.page_path(n), 'daily', '0.6') for n, _, _, _ in SP.SITES if n not in HIDDEN] + [('/about', 'monthly', '0.5'), ('/business', 'monthly', '0.5'), ('/contact', 'yearly', '0.3'), ('/privacy', 'yearly', '0.3'), ('/legal', 'yearly', '0.3')]
     # Real per-page lastmod: a page's date only moves when its content changes (hash ignores cache-busting ?v= strings).
     # State lives in _tools/lastmod.json so unchanged pages keep their old date.
     def _page_file(u):
@@ -1199,5 +1212,40 @@ def seo_audit():
     with open(os.path.join(ROOT, 'api', '_seo.json'), 'w') as fh: _json.dump(res, fh, separators=(',', ':'))
     print('seo audit: %d indexable, %d clean (%d%%)' % (len(idx), clean, res['score']))
 
+# ---------------------------------------------------------------- pricing + customer status page
+def pricing():
+    h = head('Pricing: Free and Pro — siteupdown.com', 'Free website checks and alerts for everyone. siteupdown Pro adds text and phone alerts, a bigger watchlist, your own status page and 12 months of reports for £5 a month.', '/pricing').replace('{BODYATTR}', ' data-page="pricing"')
+    body = """
+<section class="page"><div class="wrap">
+<span class="eyebrow"><i></i>Pricing</span>
+<h1 style="margin:14px 0 8px">Free for everyone. Pro when it matters<span class="dot">.</span></h1>
+<p class="lead">Checking a site, watching it and getting an email when it goes down is free, and always will be. Pro is for people and businesses who need to be reached faster, on their phone, and who want proof of how their sites performed.</p>
+<div class="pr-grid">
+<div class="pr-card"><h2>Free</h2><div class="pr-price">&pound;0</div><p class="note" style="margin:0">No card, no time limit.</p>
+<ul class="pr-list"><li>Unlimited website checks and every free tool</li><li>Watch up to 10 sites, checked about every minute</li><li>Alerts by email, browser notification, Telegram, Slack and Discord</li><li>Extra checks: a word on the page, a port, SSL and domain expiry warnings</li><li>30 days of uptime reports</li><li>Status badges and live cards for your own website</li><li class="no">Text-message and phone-call alerts</li><li class="no">Your own public status page</li></ul>
+<a class="btn ghost pr-cta" href="/monitor">Start watching a site</a></div>
+<div class="pr-card pro"><h2>Pro <span class="pro-badge">POPULAR</span></h2><div class="pr-price" id="pr-price">&pound;5 <small>a month</small></div><p class="note" id="pr-year" style="margin:0" hidden></p>
+<ul class="pr-list"><li><b>Everything in Free</b></li><li><b>Text-message alerts</b> to your phone, up to 100 a month</li><li><b>Phone-call alerts</b> when a site goes down, up to 20 a month</li><li>Watch up to <b>100 sites</b>, checked about <b>every 30 seconds</b></li><li>Your own <b>public status page</b> with 90 days of history</li><li><b>12 months</b> of uptime history, any past month</li><li><b>Monthly report</b> by email, plus CSV download</li></ul>
+<button type="button" class="btn pr-cta" id="pr-go" style="width:100%">Upgrade to Pro</button><p class="err" role="alert" id="pr-err" style="margin:8px 0 0"></p><p class="fine" id="pr-note" style="margin:8px 0 0">Cancel any time from your account. Payments are handled by Stripe.</p></div>
+</div>
+<h2>Questions</h2>
+<h3>Can I cancel whenever I want?</h3><p>Yes. Open your account, choose Plan, then Manage billing. Pro stays on until the end of the period you have paid for, and then you go back to Free. We do not charge a cancellation fee.</p>
+<h3>What happens to my data if I go back to Free?</h3><p>Nothing is deleted. Your watchlist stays, although you will not be able to add sites beyond the free limit of 10. Text and call alerts stop, your status page is paused until you return to Pro, and reports show the last 30 days again. Email, Telegram, Slack and Discord alerts keep working.</p>
+<h3>Is my card safe?</h3><p>Card details are typed only on Stripe&rsquo;s secure payment page. siteupdown.com never sees or stores your card number.</p>
+<h3>Why are there limits on texts and calls?</h3><p>Text messages and calls cost us money for every one we send. The monthly limits (100 texts and 20 calls) stop a site that keeps going up and down from running up a bill, and they are far more than most people use. Alerts are sent on a best-effort basis, so for anything critical keep a second alert channel switched on.</p>
+<h3>Are the reports a service-level agreement?</h3><p>No. Reports are built from our own checks and are a good guide to how a site performed, but they are not a guarantee and not a legal record. Read <a href="/how-we-check">how we check</a> for the method.</p>
+<h3>Can I try it first?</h3><p>Everything else on siteupdown.com is free, so you can judge the checks, the alerts and the reports before you pay. If something about a charge looks wrong, email <a href="mailto:hello@siteupdown.com">hello@siteupdown.com</a> and we will put it right.</p>
+<p class="fine">Prices are in pounds sterling. See our <a href="/legal">terms</a> and <a href="/privacy">privacy policy</a>. This page describes the plan as it is today and may change; changes never take away what you have already paid for.</p>
+</div></section>
+"""
+    write('pricing.html', h + body + foot('<script src="/assets/app.js"></script>\n<script src="/assets/pricing.js"></script>'))
+
+def status_page():
+    h = head('Status page — siteupdown.com', 'A live status page powered by siteupdown.com.', '/status-page', noindex=True).replace('{BODYATTR}', ' data-page="spage"')
+    body = """
+<section class="page"><div class="wrap" id="spg" style="max-width:820px"><div class="skeleton" style="margin-top:24px">Loading status&hellip;</div></div></section>
+"""
+    write('status-page.html', h + body + foot('<script src="/assets/app.js"></script>\n<script src="/assets/spage.js"></script>'))
+
 if __name__ == '__main__':
-    build_newlook_css(); home(); login(); account(); monitor(); speed(); status(); static_pages(); help_pages(); tools_pages(); sla_page(); internet_speed_page(); heatmap_page(); history_page(); insight_pages(); ip_page(); gameping_page(); site_pages_build(); seo_audit()
+    build_newlook_css(); home(); login(); account(); pricing(); status_page(); monitor(); speed(); status(); static_pages(); help_pages(); tools_pages(); sla_page(); internet_speed_page(); heatmap_page(); history_page(); insight_pages(); ip_page(); gameping_page(); site_pages_build(); seo_audit()

@@ -92,6 +92,7 @@
       m.innerHTML = '<h1>Overview<span class="dot">.</span></h1><div class="adm-tiles">'
         + tile('Registered users', t.users) + tile('New this week', t.new7) + tile('Signed in this week', t.active7)
         + tile('Sites on watchlists', t.watching, t.hosts + ' different sites') + tile('Checks, last 24h', t.checks24) + tile('Problem reports, 24h', t.reports24) + tile('Outages, 7 days', t.incidents7) + '</div>'
+        + '<h2>Pro subscribers</h2><div class="adm-tiles">' + tile('Pro members', t.pro || 0, ((t.pro || 0) * 5) + ' GBP a month at list price') + tile('Cancelling', t.pro_canceling || 0, 'ends at the period end') + tile('Verified phones', t.phones || 0) + tile('Status pages', t.status_pages || 0) + '</div>'
         + '<p class="note">Last background probe: ' + esc(S.ago(j.last_probe)) + ' &middot; database: ' + esc(j.db) + '</p>'
         + '<div class="adm-grid">' + chart('New users', j.signups, 's-app') + chart('Users signing in', j.logins, 's-slow') + chart('Checks run', j.checks, 's-login') + chart('Problem reports', j.reports, 's-site') + '</div>'
         + '<div class="adm-grid">' + list('Most reported (7 days)', j.top_reported, function (r) { return '<li><span>' + esc(r.host) + '</span><b>' + n(r.n) + '</b></li>'; })
