@@ -13,7 +13,7 @@
 },
 "/compare": {
 "d": "2026-11-11",
-"h": "79ca430859df027a"
+"h": "5b831e5a22bc6dde"
 },
 "/contact": {
 "d": "2026-11-11",
@@ -273,7 +273,7 @@
 },
 "/internet-speed-test": {
 "d": "2026-11-11",
-"h": "34c5c0933cd675d2"
+"h": "a7ea432fe057df16"
 },
 "/is-aliexpress-down": {
 "d": "2026-11-11",
@@ -493,7 +493,7 @@
 },
 "/is-it-down/": {
 "d": "2026-11-11",
-"h": "d34ef6c70801f55f"
+"h": "a4beba3cd08af5bd"
 },
 "/is-itvx-down": {
 "d": "2026-11-11",
@@ -821,11 +821,11 @@
 },
 "/outage-history": {
 "d": "2026-11-11",
-"h": "5965ed7fb4d02f15"
+"h": "5b55c2bfeccaedb5"
 },
 "/outage-map": {
 "d": "2026-11-11",
-"h": "6b7971ee781e8cab"
+"h": "5a3e52401b1adb2c"
 },
 "/privacy": {
 "d": "2026-11-11",
@@ -837,11 +837,11 @@
 },
 "/state-of-the-internet": {
 "d": "2026-11-11",
-"h": "a41831e1f57b3090"
+"h": "51472ae15b7170cf"
 },
 "/tools/": {
 "d": "2026-11-11",
-"h": "4083c99d6bfe0021"
+"h": "87938d9495a1badf"
 },
 "/tools/dns-lookup": {
 "d": "2026-11-11",
@@ -893,7 +893,7 @@
 },
 "/tools/uptime-sla-calculator": {
 "d": "2026-11-11",
-"h": "95787c2e27d05ad4"
+"h": "8f6cfcc633feaee7"
 },
 "/tools/whois-domain-lookup": {
 "d": "2026-11-11",
